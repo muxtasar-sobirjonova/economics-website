@@ -1,0 +1,240 @@
+Created At: 2026-06-27T05:17:24Z
+Completed At: 2026-06-27T05:17:24Z
+File Path: `file:///C:/Users/user/.gemini/antigravity-ide/scratch/economics_website/app/lessons/%5BlessonId%5D/concepts/page.tsx`
+Total Lines: 232
+Total Bytes: 13016
+Showing lines 1 to 232
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: "use client";
+2: 
+3: import React from "react";
+4: import Link from "next/link";
+5: import { useParams, useRouter } from "next/navigation";
+6: import { useGameState } from "@/lib/progress";
+7: import { LESSONS } from "@/lib/data";
+8: import {
+9:   IconSearch,
+10:   IconBell,
+11:   IconDownload,
+12:   IconBook,
+13:   IconArrowRight,
+14:   IconLock,
+15:   IconCheck,
+16:   IconBookmark,
+17:   IconBrain,
+18:   IconChevronRight,
+19:   IconChevronLeft,
+20:   IconClock,
+21:   IconFileText,
+22:   IconPlayerPlayFilled
+23: } from "@tabler/icons-react";
+24: 
+25: export default function ConceptsPage() {
+26:   const params = useParams();
+27:   const lessonId = parseInt(params.lessonId as string) || 2;
+28:   const state = useGameState();
+29: 
+30:   const activeLesson = LESSONS.find((l) => l.id === lessonId) || LESSONS[1];
+31:   
+32:   return (
+33:     <div className="min-h-screen bg-[#F8F7FF] font-sans flex flex-col text-[#55526D]">
+34:       {/* Top Bar */}
+35:       <header className="flex items-center justify-between px-10 py-5 border-b border-transparent">
+36:         <div className="flex items-center gap-6 text-[14px] font-medium">
+37:           <Link href="/roadmap" className="flex items-center hover:text-[#7B68EE] transition-colors">Roadmap</Link>
+38:           <Link href={`/lessons/${lessonId}/concepts`} className="hover:text-[#7B68EE] transition-colors text-[#24203F] font-bold">Concepts</Link>
+39:           <Link href={`/lessons/${lessonId}/articles`} className="hover:text-[#7B68EE] transition-colors">Articles</Link>
+40:           <Link href={`/lessons/${lessonId}/quizzes`} className="hover:text-[#7B68EE] transition-colors">Quizzes</Link>
+41:           <Link href="/saved" className="hover:text-[#7B68EE] transition-colors">Saved</Link>
+42:         </div>
+43:         <div className="flex items-center gap-6">
+44:           <button className="hover:text-[#24203F] transition-colors"><IconSearch size={22} /></button>
+45:           <button className="hover:text-[#24203F] transition-colors"><IconBell size={22} /></button>
+46:           <div className="w-9 h-9 bg-[#F3F0FF] text-[#7B68EE] border border-[#E8E5F7] rounded-full flex items-center justify-center font-bold text-[14px] shadow-sm cursor-pointer hover:bg-[#7B68EE] hover:text-white transition-all">
+47:             M
+48:           </div>
+49:         </div>
+50:       </header>
+51: 
+52:       <main className="px-10 pb-16 max-w-[1240px] w-full mx-auto mt-6">
+53: 
+54:         {/* Hero Banner */}
+55:         <div className="bg-[#D1FAE5] rounded-[32px] p-8 flex items-center mb-10 shadow-sm border border-[#A7F3D0] relative overflow-hidden">
+56:           
+57:           {/* Background Motivational Quotes - Scattered & Messy */}
+58:           <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden mix-blend-multiply">
+59:              <p className="absolute top-[-5%] left-[-2%] text-[42px] font-black italic text-[#10B981] opacity-[0.04] -rotate-2 whitespace-nowrap">"Focus is a superpower in a world of distraction."</p>
+60:              <p className="absolute top-[15%] right-[-5%] text-[64px] font-extrabold italic text-[#10B981] opacity-[0.03] rotate-3 whitespace-nowrap">"Action is the foundational key to all success."</p>
+61:              <p className="absolute bottom-[-10%] left-[10%] text-[80px] font-bold italic text-[#10B981] opacity-[0.02] -rotate-1 whitespace-nowrap tracking-tighter">"Results are the only currency that matters."</p>
+62:              <p className="absolute top-[45%] left-[-10%] text-[24px] font-black italic text-[#10B981] opacity-[0.08] -rotate-6 whitespace-nowrap">"Action is the foundational key to all success."</p>
+63:              <p className="absolute top-[60%] right-[5%] text-[20px] font-extrabold italic text-[#10B981] opacity-[0.1] rotate-2 whitespace-nowrap">"Focus is a superpower in a world of distraction."</p>
+64:              <p className="absolute bottom-[5%] right-[-2%] text-[32px] font-bold italic text-[#10B981] opacity-[0.06] -rotate-3 whitespace-nowrap">"Results are the only currency that matters."</p>
+65:              <p className="absolute top-[5%] left-[30%] text-[16px] font-medium italic text-[#10B981] opacity-[0.12] rotate-1 whitespace-nowrap">"Focus is a superpower in a world of distraction."</p>
+66:           </div>
+67: 
+68:           <div className="flex-1 flex gap-6 items-center w-full relative z-10">
+69:             {/* Left Box Icon */}
+70:             <div className="w-[84px] h-[84px] bg-white rounded-[20px] flex items-center justify-center shrink-0 shadow-sm ml-2">
+71:               <IconBook size={40} className="text-[#B8B5CC]" stroke={1.5} />
+72:             </div>
+73:             
+74:             {/* Content (Title) */}
+75:             <div className="flex-1 px-3 min-w-0">
+76:               <div className="flex items-center gap-2 mb-2">
+77:                 <span className="bg-[#D1FAE5] text-[#10B981] px-3 py-1 rounded-full text-[11px] font-[800] tracking-wide uppercase">
+78:                   Current Lesson
+79:                 </span>
+80:               </div>
+81:               <h2 className="text-[#24203F] text-[18px] font-bold mb-1">
+82:                 Lesson {activeLesson.id}
+83:               </h2>
+84:               <h3 className="text-[#24203F] text-[24px] font-extrabold mb-2 leading-tight">
+85:                 {activeLesson.title}
+86:               </h3>
+87:               <div className="flex items-center text-[#8C88A8] text-[13px] font-medium">
+88:                 <IconClock size={16} className="mr-1.5" />
+89:                 {activeLesson.timeEstimate || 10} min read
+90:               </div>
+91:             </div>
+92: 
+93:             {/* Right text & button */}
+94:             <div className="w-[320px] shrink-0 flex flex-col justify-center mr-4">
+95:                <p className="text-[#55526D] text-[14px] leading-relaxed mb-4 font-medium">
+96:                  Learn how entrepreneurs spot real problems worth solving and why most people miss them.
+97:                </p>
+98:                <Link href={`/lessons/${activeLesson.id}/concepts/read`}>
+99:                  <button className="bg-[#7B68EE] hover:bg-[#6D5BE5] text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 w-fit text-[14px] shadow-sm">
+100:                    Continue Lesson
+101:                    <IconArrowRight size={16} />
+102:                  </button>
+103:                </Link>
+104:             </div>
+105:           </div>
+106:         </div>
+107: 
+108:         {/* Concept Summary & Article Grid */}
+109:         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+110:           {/* Concept Summary Section */}
+111:           <div className="lg:col-span-2">
+112:             <div className="flex items-center justify-between mb-5">
+113:                <h3 className="text-[12px] font-extrabold text-[#24203F] tracking-wider uppercase flex items-center gap-1.5">
+114:                   CONCEPT SUMMARY
+115:                </h3>
+116:             </div>
+117:             
+118:             <div className="bg-white rounded-3xl border border-[#E8E5F7] shadow-sm p-8 flex flex-col gap-4 h-[calc(100%-32px)]">
+119:                <p className="text-[#55526D] text-[15px] leading-relaxed">
+120:                  This lesson explores the fundamental principles of how entrepreneurs identify and act upon opportunities. Rather than simply creating products, successful entrepreneurs focus on recognizing inefficiencies, unsolved problems, and areas where value can be significantly increased for the consumer.
+121:                </p>
+122:                <p className="text-[#55526D] text-[15px] leading-relaxed">
+123:                  You will learn to distinguish between a mere idea and a viable economic opportunity by understanding market demands, resource allocation, and the critical role of timing and execution in a competitive landscape.
+124:                </p>
+125:             </div>
+126:           </div>
+127: 
+128:           {/* Article Section */}
+129:           <div>
+130:             <div className="mb-5">
+131:                <h3 className="text-[12px] font-extrabold text-[#24203F] tracking-wider uppercase flex items-center gap-1.5">
+132:                   ARTICLE
+133:                </h3>
+134:             </div>
+135:             <div className="bg-white rounded-3xl border border-[#E8E5F7] shadow-sm p-8 flex flex-col h-[calc(100%-32px)] relative">
+136:               <div className="flex gap-5 items-start mb-6">
+137:                 <div className="pt-1">
+138:                   <h4 className="font-extrabold text-[#24203F] text-[16px] mb-2">Dive deeper</h4>
+139:                   <p className="text-[#55526D] text-[14px] leading-relaxed font-medium">
+140:                     Read the full article to master these concepts and see real-world examples.
+141:                   </p>
+142:                 </div>
+143:               </div>
+144:               <div className="mt-auto pt-4">
+145:                 <Link href={`/lessons/${lessonId}/articles`}>
+146:                   <button className="w-full bg-[#FFFFFF] border-2 border-[#E8E5F7] hover:border-[#7B68EE] hover:text-[#7B68EE] text-[#55526D] font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm text-[14px]">
+147:                     Continue Lesson
+148:                     <IconArrowRight size={16} />
+149:                   </button>
+150:                 </Link>
+151:               </div>
+152:             </div>
+153:           </div>
+154:         </div>
+155: 
+156:         {/* Learning Path */}
+157:         <div>
+158:           <div className="flex items-center justify-between mb-5">
+159:             <h3 className="text-[12px] font-extrabold text-[#24203F] tracking-wider uppercase flex items-center gap-1.5">
+160:               LEARNING PATH
+161:             </h3>
+162:             <div className="flex items-center gap-3">
+163:               <button className="w-8 h-8 rounded-full flex items-center justify-center text-[#B8B5CC] hover:text-[#7B68EE] transition-colors border border-transparent hover:border-[#E8E5F7] bg-white shadow-sm">
+164:                 <IconChevronLeft size={18} stroke={2.5} />
+165:               </button>
+166:               <button className="w-8 h-8 rounded-full flex items-center justify-center text-[#8C88A8] hover:text-[#7B68EE] transition-colors border border-transparent hover:border-[#E8E5F7] bg-white shadow-sm">
+167:                 <IconChevronRight size={18} stroke={2.5} />
+168:               </button>
+169:             </div>
+170:           </div>
+171:           
+172:           <div className="relative pt-1 overflow-hidden">
+173:             <div className="flex justify-start relative z-10 gap-5 overflow-x-auto pb-5 scrollbar-hide snap-x" style={{ width: '100%' }}>
+174:               {LESSONS.map((lesson, index) => {
+175:                 const status = lesson.id < lessonId ? "Completed" : lesson.id === lessonId ? "In Progress" : "Locked";
+176:                 
+177:                 return (
+178:                   <div 
+179:                     key={lesson.id} 
+180:                     className={`flex-shrink-0 w-[280px] flex flex-col items-start p-5 rounded-[20px] bg-white border-[2px] transition-all min-h-[140px] cursor-pointer ${
+181:                       status === "In Progress" 
+182:                         ? "border-[#7B68EE] shadow-md hover:-translate-y-0.5" 
+183:                         : status === "Completed"
+184:                         ? "border-[#E8E5F7] shadow-sm hover:border-[#29C97A] hover:-translate-y-0.5"
+185:                         : "border-[#E8E5F7] shadow-sm bg-[#F8F7FF] opacity-90"
+186:                     }`}
+187:                   >
+188:                     <div className="text-[#55526D] text-[11px] font-bold uppercase tracking-wider mb-2">
+189:                       LESSON {lesson.id}
+190:                     </div>
+191:                     <h4 className={`font-bold text-[15px] leading-snug mb-auto ${status === "Locked" ? "text-[#55526D]" : "text-[#24203F]"}`}>
+192:                       {lesson.title}
+193:                     </h4>
+194:                     
+195:                     <div className="mt-5 w-full">
+196:                       {status === "Completed" && (
+197:                         <span className="bg-[#EAFBF3] text-[#29C97A] px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide flex items-center gap-1.5 w-fit">
+198:                           Completed
+199:                         </span>
+200:                       )}
+201:                       {status === "In Progress" && (
+202:                         <div className="w-full mt-1">
+203:                            <div className="flex justify-between text-[11px] font-bold text-[#7B68EE] mb-1.5">
+204:                              <span>In Progress</span>
+205:                              <span>45%</span>
+206:                            </div>
+207:                            <div className="w-full h-1.5 bg-[#F3F0FF] rounded-full overflow-hidden">
+208:                              <div className="h-full bg-[#7B68EE] rounded-full w-[45%]"></div>
+209:                            </div>
+210:                         </div>
+211:                       )}
+212:                       {status === "Locked" && (
+213:                         <span className="bg-[#FFF7DE] text-[#F3C34B] px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide flex items-center gap-1.5 w-fit">
+214:                           Locked <IconLock size={12} stroke={2.5} />
+215:                         </span>
+216:                       )}
+217:                     </div>
+218:                   </div>
+219:                 )
+220:               })}
+221:             </div>
+222:             {/* Scrollbar style track */}
+223:             <div className="w-full h-2 bg-[#E8E5F7] rounded-full mt-2 mx-1 max-w-[500px]">
+224:               <div className="w-1/4 h-full bg-[#B8B5CC] rounded-full"></div>
+225:             </div>
+226:           </div>
+227:         </div>
+228: 
+229:       </main>
+230:     </div>
+231:   );
+232: }
+The above content shows the entire, complete file contents of the requested file.

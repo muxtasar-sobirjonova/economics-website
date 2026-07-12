@@ -1,0 +1,286 @@
+Created At: 2026-06-27T05:17:10Z
+Completed At: 2026-06-27T05:17:10Z
+File Path: `file:///C:/Users/user/.gemini/antigravity-ide/scratch/economics_website/app/lessons/%5BlessonId%5D/articles/page.tsx`
+Total Lines: 278
+Total Bytes: 14559
+Showing lines 1 to 278
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: "use client";
+2: 
+3: import React, { useEffect, useState } from "react";
+4: import Link from "next/link";
+5: import { useParams, useRouter } from "next/navigation";
+6: import { useGameState } from "@/lib/progress";
+7: import { client } from "@/sanity/client";
+8: import { ARTICLES_QUERY } from "@/sanity/queries";
+9: import { LESSONS } from "@/lib/data";
+10: import {
+11:   IconSearch,
+12:   IconBell,
+13:   IconDownload,
+14:   IconBook,
+15:   IconArrowRight,
+16:   IconLock,
+17:   IconCheck,
+18:   IconBookmark,
+19:   IconBrain,
+20:   IconChevronRight,
+21:   IconChevronLeft,
+22:   IconClock,
+23:   IconFileText,
+24:   IconPlayerPlayFilled
+25: } from "@tabler/icons-react";
+26: 
+27: export default function ArticlesPage() {
+28:   const params = useParams();
+29:   const router = useRouter();
+30:   const lessonId = parseInt(params.lessonId as string) || 1;
+31:   const state = useGameState();
+32: 
+33:   const [lessons, setLessons] = useState<any[]>([]);
+34:   const [loading, setLoading] = useState(true);
+35: 
+36:   useEffect(() => {
+37:     async function fetchLessons() {
+38:       try {
+39:         const data = await client.fetch(ARTICLES_QUERY);
+40:         const { MOCK_CONTENT } = await import("@/lib/mockContent");
+41: 
+42:         const mergedLessons = LESSONS.map((lesson) => {
+43:           const sanityLesson = data?.find((d: any) => d.lessonId === lesson.id);
+44:           return {
+45:             ...lesson,
+46:             lessonId: lesson.id,
+47:             lessonNumber: lesson.id,
+48:             articleTitle: sanityLesson?.title || MOCK_CONTENT[lesson.id]?.article?.title || lesson.title,
+49:             articleText: sanityLesson?.content || MOCK_CONTENT[lesson.id]?.article?.text || "Content coming soon.",
+50:             articleSummary: sanityLesson?.summary || MOCK_CONTENT[lesson.id]?.article?.summary || "Summary coming soon.",
+51:           };
+52:         });
+53:         setLessons(mergedLessons);
+54:         setLoading(false);
+55:       } catch (error) {
+56:         console.error("Failed to fetch articles:", error);
+57:         import("@/lib/mockContent").then(({ MOCK_CONTENT }) => {
+58:           const mergedLessons = LESSONS.map((lesson) => ({
+59:             ...lesson,
+60:             lessonId: lesson.id,
+61:             lessonNumber: lesson.id,
+62:             articleTitle: MOCK_CONTENT[lesson.id]?.article?.title || lesson.title,
+63:             articleText: MOCK_CONTENT[lesson.id]?.article?.text || "Content coming soon.",
+64:             articleSummary: MOCK_CONTENT[lesson.id]?.article?.summary || "Summary coming soon.",
+65:           }));
+66:           setLessons(mergedLessons);
+67:           setLoading(false);
+68:         });
+69:       }
+70:     }
+71:     fetchLessons();
+72:   }, []);
+73: 
+74:   const activeArticle = lessons.find((l) => l.lessonId === lessonId);
+75: 
+76:   if (loading) return <div className="p-8 text-[#111827]">Loading articles...</div>;
+77:   if (!activeArticle) return <div className="p-8 text-center text-[#111827]">Article not found.</div>;
+78: 
+79:   return (
+80:     <div className="min-h-screen bg-[#F8F7FF] font-sans flex flex-col text-[#55526D]">
+81:       {/* Top Bar */}
+82:       <header className="flex items-center justify-between px-10 py-5 border-b border-transparent">
+83:         <div className="flex items-center gap-6 text-[14px] font-medium">
+84:           <Link href="/roadmap" className="flex items-center hover:text-[#7B68EE] transition-colors">Roadmap</Link>
+85:           <Link href={`/lessons/${lessonId}/concepts`} className="hover:text-[#7B68EE] transition-colors">Concepts</Link>
+86:           <Link href={`/lessons/${lessonId}/articles`} className="hover:text-[#7B68EE] transition-colors text-[#24203F] font-bold">Articles</Link>
+87:           <Link href={`/lessons/${lessonId}/quizzes`} className="hover:text-[#7B68EE] transition-colors">Quizzes</Link>
+88:           <Link href="/saved" className="hover:text-[#7B68EE] transition-colors">Saved</Link>
+89:         </div>
+90:         <div className="flex items-center gap-6">
+91:           <button className="hover:text-[#24203F] transition-colors"><IconSearch size={22} /></button>
+92:           <button className="hover:text-[#24203F] transition-colors"><IconBell size={22} /></button>
+93:           <div className="w-9 h-9 bg-[#F3F0FF] text-[#7B68EE] border border-[#E8E5F7] rounded-full flex items-center justify-center font-bold text-[14px] shadow-sm cursor-pointer hover:bg-[#7B68EE] hover:text-white transition-all">
+94:             M
+95:           </div>
+96:         </div>
+97:       </header>
+98: 
+99:       <main className="px-10 pb-16 max-w-[1240px] w-full mx-auto mt-6">
+100: 
+101:         {/* Hero Banner */}
+102:         <div className="bg-[#A7F3D0] rounded-[32px] p-8 flex items-center mb-10 shadow-sm border border-[#6EE7B7] relative overflow-hidden">
+103:           
+104:           {/* Background Motivational Quotes - Scattered & Messy */}
+105:           <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden mix-blend-multiply">
+106:              <p className="absolute top-[-5%] left-[-2%] text-[42px] font-black italic text-[#10B981] opacity-[0.04] -rotate-2 whitespace-nowrap">"Excellence is not an act, but a habit."</p>
+107:              <p className="absolute top-[15%] right-[-5%] text-[64px] font-extrabold italic text-[#10B981] opacity-[0.03] rotate-3 whitespace-nowrap">"If it were easy, everyone would do it."</p>
+108:              <p className="absolute bottom-[-10%] left-[10%] text-[80px] font-bold italic text-[#10B981] opacity-[0.02] -rotate-1 whitespace-nowrap tracking-tighter">"Own the process, own the outcome."</p>
+109:              <p className="absolute top-[45%] left-[-10%] text-[24px] font-black italic text-[#10B981] opacity-[0.08] -rotate-6 whitespace-nowrap">"If it were easy, everyone would do it."</p>
+110:              <p className="absolute top-[60%] right-[5%] text-[20px] font-extrabold italic text-[#10B981] opacity-[0.1] rotate-2 whitespace-nowrap">"Excellence is not an act, but a habit."</p>
+111:              <p className="absolute bottom-[5%] right-[-2%] text-[32px] font-bold italic text-[#10B981] opacity-[0.06] -rotate-3 whitespace-nowrap">"Own the process, own the outcome."</p>
+112:              <p className="absolute top-[5%] left-[30%] text-[16px] font-medium italic text-[#10B981] opacity-[0.12] rotate-1 whitespace-nowrap">"Excellence is not an act, but a habit."</p>
+113:           </div>
+114: 
+115:           <div className="flex-1 flex gap-6 items-center w-full relative z-10">
+116:             {/* Left Box Icon */}
+117:             <div className="w-[84px] h-[84px] bg-white rounded-[20px] flex items-center justify-center shrink-0 shadow-sm ml-2">
+118:               <IconFileText size={40} className="text-[#B8B5CC]" stroke={1.5} />
+119:             </div>
+120:             
+121:             {/* Content (Title) */}
+122:             <div className="flex-1 px-3 min-w-0">
+123:               <div className="flex items-center gap-2 mb-2">
+124:                 <span className="bg-[#D1FAE5] text-[#10B981] px-3 py-1 rounded-full text-[11px] font-[800] tracking-wide uppercase">
+125:                   Current Article
+126:                 </span>
+127:               </div>
+128:               <h2 className="text-[#24203F] text-[18px] font-bold mb-1">
+129:                 Lesson {activeArticle.id}
+130:               </h2>
+131:               <h3 className="text-[#24203F] text-[24px] font-extrabold mb-2 leading-tight truncate">
+132:                 {activeArticle.articleTitle}
+133:               </h3>
+134:               <div className="flex items-center text-[#8C88A8] text-[13px] font-medium">
+135:                 <IconClock size={16} className="mr-1.5" />
+136:                 {activeArticle.timeEstimate || 10} min read
+137:               </div>
+138:             </div>
+139: 
+140:             {/* Right text & button */}
+141:             <div className="w-[320px] shrink-0 flex flex-col justify-center mr-4">
+142:                <p className="text-[#55526D] text-[14px] leading-relaxed mb-4 font-medium line-clamp-2">
+143:                  {activeArticle.articleSummary || activeArticle.articleText}
+144:                </p>
+145:                <Link href={`/lessons/${activeArticle.id}/articles/read`}>
+146:                  <button className="bg-[#7B68EE] hover:bg-[#6D5BE5] text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 w-fit text-[14px] shadow-sm">
+147:                    Continue Article
+148:                    <IconArrowRight size={16} />
+149:                  </button>
+150:                </Link>
+151:             </div>
+152:           </div>
+153:         </div>
+154: 
+155:         {/* Article Summary & Quiz Grid */}
+156:         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+157:           {/* Article Summary Section */}
+158:           <div className="lg:col-span-2">
+159:             <div className="flex items-center justify-between mb-5">
+160:                <h3 className="text-[12px] font-extrabold text-[#24203F] tracking-wider uppercase flex items-center gap-1.5">
+161:                   ARTICLE SUMMARY
+162:                </h3>
+163:             </div>
+164:             
+165:             <div className="bg-white rounded-3xl border border-[#E8E5F7] shadow-sm p-8 flex flex-col gap-4 h-[calc(100%-32px)]">
+166:                <p className="text-[#55526D] text-[15px] leading-relaxed whitespace-pre-wrap">
+167:                  {activeArticle.articleSummary || activeArticle.articleText}
+168:                </p>
+169:             </div>
+170:           </div>
+171: 
+172:           {/* Quiz Section */}
+173:           <div>
+174:             {/* Latest Articles list */}
+175:             <div className="mt-8">
+176:               <h3 className="text-[11px] font-semibold tracking-widest uppercase mb-4 ml-1" style={{ color: "#111827" }}>
+177:                 All Articles
+178:               </h3>
+179:               <div>
+180:             <div className="bg-white rounded-3xl border border-[#E8E5F7] shadow-sm p-8 flex flex-col h-[calc(100%-32px)] relative">
+181:               <div className="flex gap-5 items-start mb-6">
+182:                 <div className="pt-1">
+183:                   <h4 className="font-extrabold text-[#24203F] text-[16px] mb-2">Test your understanding</h4>
+184:                   <p className="text-[#55526D] text-[14px] leading-relaxed font-medium">
+185:                     Take a quick quiz to reinforce what you've learned from this article.
+186:                   </p>
+187:                 </div>
+188:               </div>
+189:               <div className="mt-auto pt-4">
+190:                 <Link href={`/lessons/${lessonId}/quizzes`}>
+191:                   <button className="w-full bg-[#FFFFFF] border-2 border-[#E8E5F7] hover:border-[#7B68EE] hover:text-[#7B68EE] text-[#55526D] font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm text-[14px]">
+192:                     Start Quiz
+193:                     <IconArrowRight size={16} />
+194:                   </button>
+195:                 </Link>
+196:               </div>
+197:             </div>
+198:           </div>
+199:         </div>
+200: 
+201:         {/* Learning Path */}
+202:         <div>
+203:           <div className="flex items-center justify-between mb-5">
+204:             <h3 className="text-[12px] font-extrabold text-[#24203F] tracking-wider uppercase flex items-center gap-1.5">
+205:               LEARNING PATH
+206:             </h3>
+207:             <div className="flex items-center gap-3">
+208:               <button className="w-8 h-8 rounded-full flex items-center justify-center text-[#B8B5CC] hover:text-[#7B68EE] transition-colors border border-transparent hover:border-[#E8E5F7] bg-white shadow-sm">
+209:                 <IconChevronLeft size={18} stroke={2.5} />
+210:               </button>
+211:               <button className="w-8 h-8 rounded-full flex items-center justify-center text-[#8C88A8] hover:text-[#7B68EE] transition-colors border border-transparent hover:border-[#E8E5F7] bg-white shadow-sm">
+212:                 <IconChevronRight size={18} stroke={2.5} />
+213:               </button>
+214:             </div>
+215:           </div>
+216:           
+217:           <div className="relative pt-1 overflow-hidden">
+218:             <div className="flex justify-start relative z-10 gap-5 overflow-x-auto pb-5 scrollbar-hide snap-x" style={{ width: '100%' }}>
+219:               {lessons.map((lesson, index) => {
+220:                 const status = lesson.id < lessonId ? "Completed" : lesson.id === lessonId ? "In Progress" : "Locked";
+221:                 
+222:                 return (
+223:                   <div 
+224:                     key={lesson.id} 
+225:                     onClick={() => router.push(`/lessons/${lesson.id}/articles`)}
+226:                     className={`flex-shrink-0 w-[280px] flex flex-col items-start p-5 rounded-[20px] bg-white border-[2px] transition-all min-h-[140px] cursor-pointer ${
+227:                       status === "In Progress" 
+228:                         ? "border-[#7B68EE] shadow-md hover:-translate-y-0.5" 
+229:                         : status === "Completed"
+230:                         ? "border-[#E8E5F7] shadow-sm hover:border-[#29C97A] hover:-translate-y-0.5"
+231:                         : "border-[#E8E5F7] shadow-sm bg-[#F8F7FF] opacity-90"
+232:                     }`}
+233:                   >
+234:                     <div className="text-[#55526D] text-[11px] font-bold uppercase tracking-wider mb-2">
+235:                       LESSON {lesson.id}
+236:                     </div>
+237:                     <h4 className={`font-bold text-[15px] leading-snug mb-auto ${status === "Locked" ? "text-[#55526D]" : "text-[#24203F]"}`}>
+238:                       {lesson.articleTitle}
+239:                     </h4>
+240:                     
+241:                     <div className="mt-5 w-full">
+242:                       {status === "Completed" && (
+243:                         <span className="bg-[#EAFBF3] text-[#29C97A] px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide flex items-center gap-1.5 w-fit">
+244:                           Completed
+245:                         </span>
+246:                       )}
+247:                       {status === "In Progress" && (
+248:                         <div className="w-full mt-1">
+249:                            <div className="flex justify-between text-[11px] font-bold text-[#7B68EE] mb-1.5">
+250:                              <span>In Progress</span>
+251:                              <span>45%</span>
+252:                            </div>
+253:                            <div className="w-full h-1.5 bg-[#F3F0FF] rounded-full overflow-hidden">
+254:                              <div className="h-full bg-[#7B68EE] rounded-full w-[45%]"></div>
+255:                            </div>
+256:                         </div>
+257:                       )}
+258:                       {status === "Locked" && (
+259:                         <span className="bg-[#FFF7DE] text-[#F3C34B] px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide flex items-center gap-1.5 w-fit">
+260:                           Locked <IconLock size={12} stroke={2.5} />
+261:                         </span>
+262:                       )}
+263:                     </div>
+264:                   </div>
+265:                 )
+266:               })}
+267:             </div>
+268:             {/* Scrollbar style track */}
+269:             <div className="w-full h-2 bg-[#E8E5F7] rounded-full mt-2 mx-1 max-w-[500px]">
+270:               <div className="w-1/4 h-full bg-[#B8B5CC] rounded-full"></div>
+271:             </div>
+272:           </div>
+273:         </div>
+274: 
+275:       </main>
+276:     </div>
+277:   );
+278: }
+The above content shows the entire, complete file contents of the requested file.

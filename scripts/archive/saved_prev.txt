@@ -1,0 +1,114 @@
+Created At: 2026-06-27T05:15:12Z
+Completed At: 2026-06-27T05:15:12Z
+File Path: `file:///C:/Users/user/.gemini/antigravity-ide/scratch/economics_website/app/saved/page.tsx`
+Total Lines: 106
+Total Bytes: 4089
+Showing lines 1 to 106
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: "use client";
+2: 
+3: import React from "react";
+4: import Link from "next/link";
+5: import { useGameState } from "@/lib/progress";
+6: import { ALL_CONTENT } from "@/lib/data";
+7: import ArticleCard from "@/components/ArticleCard";
+8: 
+9: export default function SavedPage() {
+10:   const state = useGameState();
+11:   const savedSlugs = state.savedArticles || [];
+12: 
+13:   const savedArticles = ALL_CONTENT.filter((item) =>
+14:     savedSlugs.includes(item.slug),
+15:   );
+16: 
+17:   return (
+18:     <div className="flex-1 overflow-y-auto p-[32px] bg-transparent">
+19:       <div className="max-w-[1000px] mx-auto">
+20:         <h1 className="text-[32px] font-[800] text-[#0096a5] mb-2">
+21:           Saved Articles
+22:         </h1>
+23:         <p className="text-[#0096a5] mb-8">
+24:           Review the lessons and concepts you've saved for later.
+25:         </p>
+26: 
+27:         {savedSlugs.length === 0 ? (
+28:           <div className="bg-white rounded-[24px] border border-gray-200 p-12 text-center shadow-sm">
+29:             <h3 className="text-xl font-bold text-[#0096a5] mb-2">
+30:               No saved articles yet
+31:             </h3>
+32:             <p className="text-[#4ebdd5]">
+33:               When you find something interesting, click the "Save" button to
+34:               keep it here.
+35:             </p>
+36:           </div>
+37:         ) : (
+38:           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+39:             {savedSlugs.map((slug: string) => {
+40:               // Handle new dynamic saved format: lesson-{id}-{type}
+41:               if (slug.startsWith("lesson-")) {
+42:                 const parts = slug.split("-");
+43:                 const lessonId = parseInt(parts[1]);
+44:                 const type = parts[2] || "articles";
+45:                 const lesson = require("@/lib/data").LESSONS.find(
+46:                   (l: any) => l.id === lessonId,
+47:                 );
+48: 
+49:                 const typeDisplay =
+50:                   type === "concepts"
+51:                     ? "Concept"
+52:                     : type === "examples"
+53:                       ? "Real-World Example"
+54:                       : "Article";
+55: 
+56:                 return (
+57:                   <Link
+58:                     key={slug}
+59:                     href={`/lessons/${lessonId}/${type}/read`}
+60:                     className="group block bg-white rounded-xl border border-gray-200 p-6 hover:shadow-sm transition-shadow h-full flex flex-col"
+61:                   >
+62:                     <div className="mb-4">
+63:                       <span className="inline-block bg-[rgba(200,217,230,0.4)] text-[#4ebdd5] text-xs font-bold px-2 py-1 rounded-full uppercase tracking-wider">
+64:                         {typeDisplay}
+65:                       </span>
+66:                     </div>
+67: 
+68:                     <h2 className="font-semibold text-[#0096a5] text-lg leading-snug mb-2 group-hover:text-[#4ebdd5] transition-colors">
+69:                       {lesson?.title || `Lesson ${lessonId} ${typeDisplay}`}
+70:                     </h2>
+71: 
+72:                     <p className="text-[#4ebdd5] text-sm mt-2 line-clamp-3 mb-6 flex-1">
+73:                       {lesson?.subtitle ||
+74:                         `A saved ${typeDisplay.toLowerCase()} from Lesson ${lessonId}.`}
+75:                     </p>
+76: 
+77:                     <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-auto">
+78:                       <span className="text-[#4ebdd5] text-sm font-semibold flex items-center group-hover:translate-x-1 transition-transform ml-auto">
+79:                         Read more <span className="ml-1">→</span>
+80:                       </span>
+81:                     </div>
+82:                   </Link>
+83:                 );
+84:               }
+85: 
+86:               // Fallback for legacy ALL_CONTENT slugs
+87:               const article = ALL_CONTENT.find((item) => item.slug === slug);
+88:               if (article) {
+89:                 return (
+90:                   <ArticleCard
+91:                     key={slug}
+92:                     article={
+93:                       { ...article, slug: { current: article.slug } } as any
+94:                     }
+95:                   />
+96:                 );
+97:               }
+98:               return null;
+99:             })}
+100:           </div>
+101:         )}
+102:       </div>
+103:     </div>
+104:   );
+105: }
+106: 
+The above content shows the entire, complete file contents of the requested file.

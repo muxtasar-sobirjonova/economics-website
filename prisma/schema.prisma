@@ -1,0 +1,252 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+enum ItemType {
+  LESSON
+  QUIZ
+  ARTICLE
+}
+
+model User {
+  id               String             @id @default(cuid())
+  name             String?
+  email            String?            @unique
+  emailVerified    DateTime?
+  image            String?
+  password         String?
+  createdAt           DateTime           @default(now())
+  deletedAt           DateTime?
+  twoFactorSecret     String?
+  isTwoFactorEnabled  Boolean            @default(false)
+  lockedUntil         DateTime?
+  failedLoginAttempts Int                @default(0)
+  
+  progress         UserProgress?
+  quizAttempts     QuizAttempt[]
+  mistakeReviews   MistakeReview[]
+  agendaHistory    AgendaCompletion[]
+  dailyCompletions DailyCompletion[]
+  completedLessons CompletedLesson[]
+  quizResults      QuizResult[]
+  accounts         Account[]
+  sessions         Session[]
+  notes            Note[]
+  bookmarks        Bookmark[]
+}
+
+model DailyCompletion {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id])
+  dateString DateTime
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, dateString])
+  @@index([userId])
+}
+
+model UserProgress {
+  id             String  @id @default(cuid())
+  userId         String  @unique
+  user           User    @relation(fields: [userId], references: [id])
+  currentDay     Int     @default(1)
+  streak         Int     @default(0)
+  lastActiveDate String?
+  totalXP        Int     @default(0)
+  hearts         Int     @default(5)
+  dailyTimeGoal  Int     @default(60)
+  startDate      String?
+}
+
+model CompletedLesson {
+  id       String @id @default(cuid())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+  lessonId String
+  title    String
+  date     DateTime
+  xpEarned Int
+
+  @@unique([userId, lessonId])
+  @@index([userId])
+}
+
+model QuizResult {
+  id       String @id @default(cuid())
+  userId   String
+  user     User   @relation(fields: [userId], references: [id])
+  quizId   String
+  score    Int
+  date     DateTime
+  xpEarned Int
+  mistakes Json @default("[]")
+
+  @@unique([userId, quizId])
+  @@index([userId])
+  @@index([quizId])
+  @@index([userId, date])
+}
+
+model Lesson {
+  id           String @id @default(cuid())
+  title        String
+  tag          String
+  timeEstimate Int
+  dayOrder     Int    @unique
+  agendaCompletions AgendaCompletion[]
+  articles     Article[]
+  concepts     Concept[]
+
+  @@index([tag])
+}
+
+model Quiz {
+  id           String @id @default(cuid())
+  title        String
+  tag          String
+  timeEstimate Int
+  dayOrder     Int    @unique
+  agendaCompletions AgendaCompletion[]
+
+  @@index([tag])
+}
+
+model Article {
+  id           String @id @default(cuid())
+  lessonId     String
+  lesson       Lesson @relation(fields: [lessonId], references: [id])
+  agendaCompletions AgendaCompletion[]
+}
+
+model Concept {
+  id           String @id @default(cuid())
+  lessonId     String
+  lesson       Lesson @relation(fields: [lessonId], references: [id])
+  agendaCompletions AgendaCompletion[]
+}
+
+model AgendaCompletion {
+  id          String   @id @default(cuid())
+  userId      String
+  user        User     @relation(fields: [userId], references: [id])
+  itemType    ItemType
+  lessonId    String?
+  lesson      Lesson?  @relation(fields: [lessonId], references: [id])
+  quizId      String?
+  quiz        Quiz?    @relation(fields: [quizId], references: [id])
+  articleId   String?
+  article     Article? @relation(fields: [articleId], references: [id])
+  conceptId   String?
+  concept     Concept? @relation(fields: [conceptId], references: [id])
+  completedAt DateTime @default(now())
+  dateString  DateTime
+
+  @@index([userId])
+  @@index([dateString])
+  @@index([userId, dateString])
+  @@index([userId, lessonId, itemType])
+}
+
+model QuizAttempt {
+  id            String         @id @default(cuid())
+  userId        String
+  user          User           @relation(fields: [userId], references: [id])
+  quizId        String
+  questionId    String
+  questionText  String?
+  isCorrect     Boolean
+  userAnswer    String
+  correctAnswer String
+  explanation   String?
+  timestamp     DateTime       @default(now())
+  mistakeReview MistakeReview?
+
+  @@index([userId])
+  @@index([quizId])
+}
+
+model MistakeReview {
+  id            String      @id @default(cuid())
+  userId        String
+  user          User        @relation(fields: [userId], references: [id])
+  quizAttemptId String      @unique
+  quizAttempt   QuizAttempt @relation(fields: [quizAttemptId], references: [id], onDelete: Cascade)
+  reviewed      Boolean     @default(false)
+  reviewedAt    DateTime?
+
+  @@index([userId])
+  @@index([reviewed])
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String? @db.Text
+  access_token      String? @db.Text
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String? @db.Text
+  session_state     String?
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+  @@index([userId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  expires      DateTime
+
+  @@index([userId])
+}
+
+model VerificationToken {
+  identifier String
+  token      String   @unique
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+model Note {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  lessonId  String?
+  content   String   @db.Text
+  color     String?
+  source    String?
+  timestamp DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@index([userId])
+  @@index([userId, lessonId])
+}
+
+model Bookmark {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id])
+  slug      String
+  createdAt DateTime @default(now())
+
+  @@unique([userId, slug])
+  @@index([userId])
+  @@index([userId, slug])
+}

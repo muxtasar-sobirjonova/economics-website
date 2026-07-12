@@ -1,0 +1,322 @@
+Created At: 2026-06-27T05:17:10Z
+Completed At: 2026-06-27T05:17:10Z
+File Path: `file:///C:/Users/user/.gemini/antigravity-ide/scratch/economics_website/app/lessons/%5BlessonId%5D/quizzes/page.tsx`
+Total Lines: 314
+Total Bytes: 16706
+Showing lines 1 to 314
+The following code has been modified to include a line number before every line, in the format: <line_number>: <original_line>. Please note that any changes targeting the original code should remove the line number, colon, and leading space.
+1: "use client";
+2: 
+3: import React, { useEffect, useState } from "react";
+4: import Link from "next/link";
+5: import { useParams, useRouter } from "next/navigation";
+6: import { useGameState } from "@/lib/progress";
+7: import { client } from "@/sanity/client";
+8: import { QUIZZES_QUERY } from "@/sanity/queries";
+9: import { LESSONS, QUIZZES } from "@/lib/data";
+10: import {
+11:   IconSearch,
+12:   IconBell,
+13:   IconDownload,
+14:   IconBook,
+15:   IconArrowRight,
+16:   IconLock,
+17:   IconCheck,
+18:   IconBookmark,
+19:   IconBrain,
+20:   IconChevronRight,
+21:   IconChevronLeft,
+22:   IconClock,
+23:   IconFileText,
+24:   IconPlayerPlayFilled
+25: } from "@tabler/icons-react";
+26: 
+27: export default function QuizzesPage() {
+28:   const params = useParams();
+29:   const router = useRouter();
+30:   const lessonId = parseInt(params.lessonId as string) || 1;
+31:   const state = useGameState();
+32: 
+33:   const [lessons, setLessons] = useState<any[]>([]);
+34:   const [loading, setLoading] = useState(true);
+35: 
+36:   useEffect(() => {
+37:     async function fetchLessons() {
+38:       try {
+39:         const data = await client.fetch(QUIZZES_QUERY);
+40:         import("@/lib/data").then(({ LESSONS, QUIZZES }) => {
+41:           const mergedLessons = LESSONS.map((lesson) => {
+42:             const sanityLesson = data?.find((d: any) => d.lessonId === lesson.id);
+43:             const quiz = QUIZZES.find((q) => q.id === 100 + lesson.id);
+44:             return {
+45:               ...lesson,
+46:               lessonId: lesson.id,
+47:               lessonNumber: lesson.id,
+48:               title: sanityLesson?.title || lesson.title,
+49:               questions:
+50:                 (lesson.id === 1 ? quiz?.questions : sanityLesson?.questions) ||
+51:                 quiz?.questions || [],
+52:             };
+53:           });
+54:           setLessons(mergedLessons);
+55:           setLoading(false);
+56:         });
+57:       } catch (error) {
+58:         console.error("Failed to fetch from Sanity:", error);
+59:         import("@/lib/data").then(({ LESSONS, QUIZZES }) => {
+60:           const mergedLessons = LESSONS.map((lesson) => {
+61:             const quiz = QUIZZES.find((q) => q.id === 100 + lesson.id);
+62:             return {
+63:               ...lesson,
+64:               lessonId: lesson.id,
+65:               lessonNumber: lesson.id,
+66:               title: lesson.title,
+67:               questions: quiz?.questions || [],
+68:             };
+69:           });
+70:           setLessons(mergedLessons);
+71:           setLoading(false);
+72:         });
+73:       }
+74:     }
+75:     fetchLessons();
+76:   }, []);
+77: 
+78:   const activeLesson = lessons.find((l) => l.lessonId === lessonId);
+79:   const quizResult = state.quizResults.find(q => q.quizId === (100 + lessonId));
+80:   const mistakes = quizResult?.mistakes || [];
+81:   const hasCompleted = !!quizResult;
+82: 
+83:   if (loading) return <div className="p-8 text-[#111827]">Loading quizzes...</div>;
+84:   if (!activeLesson) return <div className="p-8 text-center text-[#111827]">Quiz not found.</div>;
+85: 
+86:   return (
+87:     <div className="min-h-screen bg-[#F8F7FF] font-sans flex flex-col text-[#55526D]">
+88:       {/* Top Bar */}
+89:       <header className="flex items-center justify-between px-10 py-5 border-b border-transparent">
+90:         <div className="flex items-center gap-6 text-[14px] font-medium">
+91:           <Link href="/roadmap" className="flex items-center hover:text-[#7B68EE] transition-colors">Roadmap</Link>
+92:           <Link href={`/lessons/${lessonId}/concepts`} className="hover:text-[#7B68EE] transition-colors">Concepts</Link>
+93:           <Link href={`/lessons/${lessonId}/articles`} className="hover:text-[#7B68EE] transition-colors">Articles</Link>
+94:           <Link href={`/lessons/${lessonId}/quizzes`} className="hover:text-[#7B68EE] transition-colors text-[#24203F] font-bold">Quizzes</Link>
+95:           <Link href="/saved" className="hover:text-[#7B68EE] transition-colors">Saved</Link>
+96:         </div>
+97:         <div className="flex items-center gap-6">
+98:           <button className="hover:text-[#24203F] transition-colors"><IconSearch size={22} /></button>
+99:           <button className="hover:text-[#24203F] transition-colors"><IconBell size={22} /></button>
+100:           <div className="w-9 h-9 bg-[#F3F0FF] text-[#7B68EE] border border-[#E8E5F7] rounded-full flex items-center justify-center font-bold text-[14px] shadow-sm cursor-pointer hover:bg-[#7B68EE] hover:text-white transition-all">
+101:             M
+102:           </div>
+103:         </div>
+104:       </header>
+105: 
+106:       <main className="px-10 pb-16 max-w-[1240px] w-full mx-auto mt-6">
+107: 
+108:         {/* Hero Banner */}
+109:         <div className="bg-[#7EE8B7] rounded-[32px] p-8 flex items-center mb-10 shadow-sm border border-[#34D399] relative overflow-hidden">
+110:           
+111:           {/* Background Motivational Quotes - Scattered & Messy */}
+112:           <div className="absolute inset-0 pointer-events-none select-none z-0 overflow-hidden mix-blend-multiply">
+113:              <p className="absolute top-[-5%] left-[-2%] text-[42px] font-black italic text-[#10B981] opacity-[0.05] -rotate-2 whitespace-nowrap">"Consistency beats intensity every time."</p>
+114:              <p className="absolute top-[15%] right-[-5%] text-[64px] font-extrabold italic text-[#10B981] opacity-[0.04] rotate-3 whitespace-nowrap">"Your potential is a limit you set yourself."</p>
+115:              <p className="absolute bottom-[-10%] left-[10%] text-[80px] font-bold italic text-[#10B981] opacity-[0.03] -rotate-1 whitespace-nowrap tracking-tighter">"Success is the sum of small efforts repeated."</p>
+116:              <p className="absolute top-[45%] left-[-10%] text-[24px] font-black italic text-[#10B981] opacity-[0.09] -rotate-6 whitespace-nowrap">"Your potential is a limit you set yourself."</p>
+117:              <p className="absolute top-[60%] right-[5%] text-[20px] font-extrabold italic text-[#10B981] opacity-[0.12] rotate-2 whitespace-nowrap">"Consistency beats intensity every time."</p>
+118:              <p className="absolute bottom-[5%] right-[-2%] text-[32px] font-bold italic text-[#10B981] opacity-[0.07] -rotate-3 whitespace-nowrap">"Success is the sum of small efforts repeated."</p>
+119:              <p className="absolute top-[5%] left-[30%] text-[16px] font-medium italic text-[#10B981] opacity-[0.15] rotate-1 whitespace-nowrap">"Consistency beats intensity every time."</p>
+120:           </div>
+121: 
+122:           <div className="flex-1 flex gap-6 items-center w-full relative z-10">
+123:             {/* Left Box Icon */}
+124:             <div className="w-[84px] h-[84px] bg-white rounded-[20px] flex items-center justify-center shrink-0 shadow-sm ml-2">
+125:               <IconBrain size={40} className="text-[#B8B5CC]" stroke={1.5} />
+126:             </div>
+127:             
+128:             {/* Content (Title) */}
+129:             <div className="flex-1 px-3 min-w-0">
+130:               <div className="flex items-center gap-2 mb-2">
+131:                 <span className="bg-[#D1FAE5] text-[#10B981] px-3 py-1 rounded-full text-[11px] font-[800] tracking-wide uppercase">
+132:                   Current Quiz
+133:                 </span>
+134:               </div>
+135:               <h2 className="text-[#24203F] text-[18px] font-bold mb-1">
+136:                 Lesson {activeLesson.lessonId}
+137:               </h2>
+138:               <h3 className="text-[#24203F] text-[24px] font-extrabold mb-2 leading-tight truncate">
+139:                 {activeLesson.title} Quiz
+140:               </h3>
+141:               <div className="flex items-center text-[#8C88A8] text-[13px] font-medium">
+142:                 <IconClock size={16} className="mr-1.5" />
+143:                 {activeLesson.timeEstimate || 5} min quiz
+144:               </div>
+145:             </div>
+146: 
+147:             {/* Right text & button */}
+148:             <div className="w-[320px] shrink-0 flex flex-col justify-center mr-4">
+149:                <p className="text-[#55526D] text-[14px] leading-relaxed mb-4 font-medium">
+150:                  Test your knowledge on {activeLesson.title}. This quiz will cover the concepts and articles you've just read.
+151:                </p>
+152:                <Link href={`/lessons/${activeLesson.lessonId}/quizzes/read`}>
+153:                  <button className="bg-[#7B68EE] hover:bg-[#6D5BE5] text-white font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 w-fit text-[14px] shadow-sm">
+154:                    Continue Quiz
+155:                    <IconArrowRight size={16} />
+156:                  </button>
+157:                </Link>
+158:             </div>
+159:           </div>
+160:         </div>
+161: 
+162:         {/* Mistakes & Quiz Grid */}
+163:         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-10">
+164:           {/* Mistakes Section */}
+165:           <div className="lg:col-span-2">
+166:             <div className="flex items-center justify-between mb-5">
+167:                <h3 className="text-[12px] font-extrabold text-[#24203F] tracking-wider uppercase flex items-center gap-1.5">
+168:                   REVIEW YOUR MISTAKES
+169:                </h3>
+170:             </div>
+171:             
+172:             <div className="bg-white rounded-3xl border border-[#E8E5F7] shadow-sm p-8 flex flex-col gap-4 h-[calc(100%-32px)]">
+173:                {!hasCompleted ? (
+174:                  <div className="flex flex-col justify-center h-full text-center py-6">
+175:                    <p className="text-[#55526D] text-[15px] leading-relaxed max-w-md mx-auto">
+176:                      You haven't completed this quiz yet. Take the quiz to receive personalized feedback and review your mistakes here!
+177:                    </p>
+178:                  </div>
+179:                ) : mistakes.length === 0 ? (
+180:                  <div className="flex flex-col items-center justify-center h-full text-center py-6">
+181:                    <div className="w-16 h-16 bg-[#EAFBF3] text-[#29C97A] rounded-2xl flex items-center justify-center mb-4 shadow-sm border border-[#E8E5F7]">
+182:                      <IconCheck size={32} stroke={3} />
+183:                    </div>
+184:                    <h4 className="font-extrabold text-[#24203F] text-[18px] mb-2">Flawless Victory!</h4>
+185:                    <p className="text-[#55526D] text-[15px] max-w-md mx-auto">
+186:                      You got everything right on your last attempt. Incredible work! Keep up the momentum.
+187:                    </p>
+188:                  </div>
+189:                ) : (
+190:                  <div className="flex flex-col gap-5 h-full">
+191:                    <h4 className="font-extrabold text-[#24203F] text-[18px]">Areas to Review</h4>
+192:                    <div className="flex-1 overflow-y-auto pr-2">
+193:                      <ul className="flex flex-col gap-3">
+194:                        {mistakes.map((mistake, i) => (
+195:                          <li key={i} className="flex gap-4 p-4 rounded-2xl bg-[#FFF0F0] border border-[#FFE2E2]">
+196:                            <span className="w-6 h-6 rounded-full bg-[#E95B5B] text-white flex items-center justify-center font-bold text-[12px] shrink-0">!</span>
+197:                            <span className="text-[#E95B5B] text-[14px] leading-relaxed font-medium">{mistake}</span>
+198:                          </li>
+199:                        ))}
+200:                      </ul>
+201:                    </div>
+202:                  </div>
+203:                )}
+204:             </div>
+205:           </div>
+206: 
+207:           {/* Action Section */}
+208:             {/* Cards Section */}
+209:             <div className="mt-8">
+210:               <h3 className="text-[11px] font-semibold tracking-widest uppercase mb-4 ml-1" style={{ color: "#111827" }}>
+211:                 All Quizzes
+212:               </h3>
+213:               <div>
+214:             <div className="bg-white rounded-3xl border border-[#E8E5F7] shadow-sm p-8 flex flex-col h-[calc(100%-32px)] relative">
+215:               <div className="flex gap-5 items-start mb-6">
+216:                 <div className="pt-1">
+217:                   <h4 className="font-extrabold text-[#24203F] text-[16px] mb-2">{hasCompleted ? "Retake Quiz" : "Test yourself"}</h4>
+218:                   <p className="text-[#55526D] text-[14px] leading-relaxed font-medium">
+219:                     {hasCompleted ? "Try again to beat your previous score and clear your mistakes." : "Take a quick quiz to reinforce what you've learned so far."}
+220:                   </p>
+221:                 </div>
+222:               </div>
+223:               <div className="mt-auto pt-4">
+224:                 <Link href={`/lessons/${lessonId}/quizzes/read`}>
+225:                   <button className="w-full bg-[#FFFFFF] border-2 border-[#E8E5F7] hover:border-[#7B68EE] hover:text-[#7B68EE] text-[#55526D] font-bold py-3 px-6 rounded-xl transition-all flex items-center justify-center gap-2 shadow-sm text-[14px]">
+226:                     Continue Quiz
+227:                     <IconArrowRight size={16} />
+228:                   </button>
+229:                 </Link>
+230:               </div>
+231:             </div>
+232:           </div>
+233:         </div>
+234: 
+235:         {/* Learning Path */}
+236:         <div>
+237:           <div className="flex items-center justify-between mb-5">
+238:             <h3 className="text-[12px] font-extrabold text-[#24203F] tracking-wider uppercase flex items-center gap-1.5">
+239:               LEARNING PATH
+240:             </h3>
+241:             <div className="flex items-center gap-3">
+242:               <button className="w-8 h-8 rounded-full flex items-center justify-center text-[#B8B5CC] hover:text-[#7B68EE] transition-colors border border-transparent hover:border-[#E8E5F7] bg-white shadow-sm">
+243:                 <IconChevronLeft size={18} stroke={2.5} />
+244:               </button>
+245:               <button className="w-8 h-8 rounded-full flex items-center justify-center text-[#8C88A8] hover:text-[#7B68EE] transition-colors border border-transparent hover:border-[#E8E5F7] bg-white shadow-sm">
+246:                 <IconChevronRight size={18} stroke={2.5} />
+247:               </button>
+248:             </div>
+249:           </div>
+250:           
+251:           <div className="relative pt-1 overflow-hidden">
+252:             <div className="flex justify-start relative z-10 gap-5 overflow-x-auto pb-5 scrollbar-hide snap-x" style={{ width: '100%' }}>
+253:               {lessons.map((lesson, index) => {
+254:                 const isCompleted = state.quizResults.some((q) => q.quizId === (100 + lesson.lessonId));
+255:                 const status = isCompleted ? "Completed" : lesson.lessonId === lessonId ? "In Progress" : "Locked";
+256:                 
+257:                 return (
+258:                   <div 
+259:                     key={lesson.lessonId} 
+260:                     onClick={() => router.push(`/lessons/${lesson.lessonId}/quizzes`)}
+261:                     className={`flex-shrink-0 w-[280px] flex flex-col items-start p-5 rounded-[20px] bg-white border-[2px] transition-all min-h-[140px] cursor-pointer ${
+262:                       status === "In Progress" 
+263:                         ? "border-[#7B68EE] shadow-md hover:-translate-y-0.5" 
+264:                         : status === "Completed"
+265:                         ? "border-[#E8E5F7] shadow-sm hover:border-[#29C97A] hover:-translate-y-0.5"
+266:                         : "border-[#E8E5F7] shadow-sm bg-[#F8F7FF] opacity-90"
+267:                     }`}
+268:                   >
+269:                     <div className="text-[#55526D] text-[11px] font-bold uppercase tracking-wider mb-2">
+270:                       LESSON {lesson.lessonId}
+271:                     </div>
+272:                     <h4 className={`font-bold text-[15px] leading-snug mb-auto ${status === "Locked" ? "text-[#55526D]" : "text-[#24203F]"}`}>
+273:                       {lesson.title}
+274:                     </h4>
+275:                     
+276:                     <div className="mt-5 w-full">
+277:                       {status === "Completed" && (
+278:                         <span className="bg-[#EAFBF3] text-[#29C97A] px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide flex items-center gap-1.5 w-fit">
+279:                           Completed
+280:                         </span>
+281:                       )}
+282:                       {status === "In Progress" && (
+283:                         <div className="w-full mt-1">
+284:                            <div className="flex justify-between text-[11px] font-bold text-[#7B68EE] mb-1.5">
+285:                              <span>In Progress</span>
+286:                              <span>45%</span>
+287:                            </div>
+288:                            <div className="w-full h-1.5 bg-[#F3F0FF] rounded-full overflow-hidden">
+289:                              <div className="h-full bg-[#7B68EE] rounded-full w-[45%]"></div>
+290:                            </div>
+291:                         </div>
+292:                       )}
+293:                       {status === "Locked" && (
+294:                         <span className="bg-[#FFF7DE] text-[#F3C34B] px-3 py-1.5 rounded-lg text-[11px] font-bold tracking-wide flex items-center gap-1.5 w-fit">
+295:                           Locked <IconLock size={12} stroke={2.5} />
+296:                         </span>
+297:                       )}
+298:                     </div>
+299:                   </div>
+300:                 )
+301:               })}
+302:             </div>
+303:             {/* Scrollbar style track */}
+304:             <div className="w-full h-2 bg-[#E8E5F7] rounded-full mt-2 mx-1 max-w-[500px]">
+305:               <div className="w-1/4 h-full bg-[#B8B5CC] rounded-full"></div>
+306:             </div>
+307:           </div>
+308:         </div>
+309: 
+310:       </main>
+311:     </div>
+312:   );
+313: }
+314: 
+The above content shows the entire, complete file contents of the requested file.
