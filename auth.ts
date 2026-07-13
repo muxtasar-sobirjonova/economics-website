@@ -4,7 +4,6 @@ import Google from "next-auth/providers/google"
 import { PrismaAdapter } from "@auth/prisma-adapter"
 import { prisma } from "@/lib/prisma"
 import { authConfig } from "./auth.config"
-import * as argon2 from "argon2"
 import bcrypt from "bcryptjs"
 import { ratelimit } from "@/lib/ratelimit"
 
@@ -77,24 +76,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         let passwordsMatch = false;
 
-        // 3. Argon2 Check (Modern) with Pepper
+        // 3. Bcrypt Check
         try {
-          passwordsMatch = await argon2.verify(user.password, password + PEPPER);
-        } catch (e) {
-          // 4. Legacy Bcrypt Fallback
-          try {
-            passwordsMatch = await bcrypt.compare(password, user.password);
-            if (passwordsMatch) {
-              // Rehash and update to argon2
-              const newHash = await argon2.hash(password + PEPPER);
-              await prisma.user.update({
-                where: { id: user.id },
-                data: { password: newHash },
-              });
-            }
-          } catch (err) {
-            passwordsMatch = false;
-          }
+          passwordsMatch = await bcrypt.compare(password, user.password);
+        } catch (err) {
+          passwordsMatch = false;
         }
 
         if (passwordsMatch) {
