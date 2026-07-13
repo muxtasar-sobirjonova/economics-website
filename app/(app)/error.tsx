@@ -20,7 +20,7 @@ export default function AppError({
         <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
           <AlertCircle size={32} />
         </div>
-        <h2 className="text-xl font-bold text-slate-800 mb-2">Unable to load dashboard</h2>
+        <h2 className="text-xl font-bold text-slate-800 mb-2">Unable to load page</h2>
         <p className="text-slate-600 mb-6 text-sm">
           We ran into a problem loading your learning data. Please try again.
         </p>
