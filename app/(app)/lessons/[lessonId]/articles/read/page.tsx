@@ -17,7 +17,7 @@ import { MarkReadButton } from "@/components/lessons/MarkReadButton";
 import { ReadPageBookmark } from "@/components/lessons/ReadPageBookmark";
 import { Playfair_Display } from "next/font/google";
 import { LessonOneCaseStudy } from "@/components/lessons/LessonOneCaseStudy";
-import DOMPurify from 'isomorphic-dompurify';
+
 
 const playfair = Playfair_Display({
   subsets: ["latin"],
@@ -173,7 +173,7 @@ export default async function ArticlesReadPage({
                       {activeLesson.title}
                     </h2>
                     <div className="prose prose-purple max-w-none prose-img:rounded-xl prose-img:w-full prose-table:block prose-table:overflow-x-auto text-[#1A1A2E] text-[17px] leading-[1.8] font-medium overflow-hidden w-full break-words">
-                      <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(activeLesson.articleText) }} />
+                      <div dangerouslySetInnerHTML={{ __html: activeLesson.articleText }} />
                     </div>
                   </>
                 )}

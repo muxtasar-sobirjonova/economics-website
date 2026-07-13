@@ -9,7 +9,7 @@ import { CONCEPT_BY_ID_QUERY } from "@/sanity/queries";
 import ReadingActions from "@/components/ReadingActions";
 import { ReadingTabs } from "@/components/lessons/ReadingTabs";
 import { NoteData, LessonDataSchema } from "@/types";
-import DOMPurify from 'isomorphic-dompurify';
+
 import { MOCK_CONTENT } from "@/lib/mockContent";
 import { getLessons } from "@/lib/data";
 import { MarkReadButton } from "@/components/lessons/MarkReadButton";
@@ -157,7 +157,7 @@ export default async function ConceptsReadPage({
                     {activeLesson.title}
                   </h2>
                   <div className="prose prose-purple max-w-none text-[#1A1A2E] text-[17px] leading-[1.8] font-[500]">
-                    <div dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(activeLesson.conceptText) }} />
+                    <div dangerouslySetInnerHTML={{ __html: activeLesson.conceptText }} />
                   </div>
               </div>
               <div className="relative z-10 flex items-center justify-end mt-12">
