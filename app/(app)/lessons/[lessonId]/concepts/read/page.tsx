@@ -73,7 +73,7 @@ export default async function ConceptsReadPage({
         lessonId: Number(baseLesson.dayOrder),
         slug: `lesson-${baseLesson.dayOrder}-concepts`,
         lessonNumber: Number(baseLesson.dayOrder),
-        title: MOCK_CONTENT[lessonId]?.concept?.title || baseLesson.title,
+        title: baseLesson.title,
         conceptText: MOCK_CONTENT[lessonId]?.concept?.text || "Content coming soon.",
       };
       takeawaysText = `<p>Key takeaways for ${baseLesson.title}</p>`;

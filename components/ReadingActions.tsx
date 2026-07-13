@@ -34,14 +34,65 @@ document.getElementById('main-content')
     const content = document.getElementById('main-content');
     if (!content.contains(range.commonAncestorContainer)) return;
     
-    const fragment = range.extractContents();
-    const mark = document.createElement('mark');
-    mark.style.background = activeHighlightColor;
-    mark.style.color = 'inherit';
-    mark.style.padding = '0';
-    mark.style.borderRadius = '2px';
-    mark.appendChild(fragment);
-    range.insertNode(mark);
+    const treeWalker = document.createTreeWalker(
+      range.commonAncestorContainer,
+      NodeFilter.SHOW_TEXT,
+      {
+        acceptNode: function(node) {
+          if (range.intersectsNode(node)) {
+            return NodeFilter.FILTER_ACCEPT;
+          }
+          return NodeFilter.FILTER_REJECT;
+        }
+      }
+    );
+
+    const nodesToWrap = [];
+    while(treeWalker.nextNode()) {
+      nodesToWrap.push(treeWalker.currentNode);
+    }
+
+    if (nodesToWrap.length === 0 && range.commonAncestorContainer.nodeType === Node.TEXT_NODE) {
+      nodesToWrap.push(range.commonAncestorContainer);
+    }
+
+    nodesToWrap.forEach(textNode => {
+      let startOffset = 0;
+      let endOffset = textNode.length;
+
+      if (textNode === range.startContainer) {
+        startOffset = range.startOffset;
+      }
+      if (textNode === range.endContainer) {
+        endOffset = range.endOffset;
+      }
+      
+      if (startOffset === endOffset) return;
+      
+      const textToWrap = textNode.nodeValue.substring(startOffset, endOffset);
+      if (textToWrap.trim() === '') return;
+
+      const mark = document.createElement('mark');
+      mark.style.background = activeHighlightColor;
+      mark.style.color = 'inherit';
+      mark.style.padding = '0';
+      mark.style.borderRadius = '2px';
+
+      const beforeText = textNode.nodeValue.substring(0, startOffset);
+      const afterText = textNode.nodeValue.substring(endOffset);
+
+      const parent = textNode.parentNode;
+      if (beforeText) {
+        parent.insertBefore(document.createTextNode(beforeText), textNode);
+      }
+      mark.textContent = textToWrap;
+      parent.insertBefore(mark, textNode);
+      if (afterText) {
+        parent.insertBefore(document.createTextNode(afterText), textNode);
+      }
+      parent.removeChild(textNode);
+    });
+    
     selection.removeAllRanges();
   });
 
