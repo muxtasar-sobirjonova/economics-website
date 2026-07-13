@@ -26,7 +26,7 @@ export async function setDailyTimeGoalAction(minutes: number): Promise<void> {
     data: { dailyTimeGoal: parsed.data }
   });
 
-  revalidatePath("/home");
+  revalidatePath("/", "layout");
 }
 
 const XpActionSchema = z.enum(["READ_ARTICLE", "READ_CONCEPT", "COMPLETE_QUIZ", "DAILY_LOGIN"]);
@@ -66,7 +66,7 @@ export async function addXpAction(actionType: XpActionType): Promise<void> {
     }
   });
 
-  revalidatePath("/home");
+  revalidatePath("/", "layout");
 }
 
 export async function deleteAccountAction(): Promise<void> {

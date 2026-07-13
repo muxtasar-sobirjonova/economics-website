@@ -230,5 +230,5 @@ export async function markQuizDoneAction(quizId: string, score: number, mistakes
     });
   }
 
-  revalidatePath("/quizzes");
+  revalidatePath("/", "layout");
 }

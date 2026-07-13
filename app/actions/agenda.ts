@@ -46,5 +46,5 @@ export async function markArticleDoneAction(lessonId: string): Promise<void> {
     data: { totalXP: { increment: 10 } }
   });
 
-  revalidatePath("/home");
+  revalidatePath("/", "layout");
 }
