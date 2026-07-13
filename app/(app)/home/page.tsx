@@ -115,28 +115,24 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
   const completedAgendaDates = recentCompletions.map(dc => dc.dateString.toISOString().split("T")[0]);
 
   const lessonIds = upcomingLessons.map(l => l.id);
-  const conceptIds = upcomingLessons.map(l => `${l.dayOrder}-concept`);
-  const articleIds = upcomingLessons.map(l => `${l.dayOrder}-article`);
-  const quizIds = upcomingQuizzes.map(q => (100 + q.dayOrder).toString());
+  const quizIds = upcomingQuizzes.map(q => q.id);
 
   const relevantAgendaCompletions = await prisma.agendaCompletion.findMany({
     where: { 
       userId,
       OR: [
         { lessonId: { in: lessonIds } },
-        { conceptId: { in: conceptIds } },
-        { articleId: { in: articleIds } },
         { quizId: { in: quizIds } }
       ]
     },
-    select: { lessonId: true, quizId: true, articleId: true, conceptId: true }
+    select: { lessonId: true, quizId: true, itemType: true }
   });
 
   const isCompleted = (type: string, id: string) => {
     return relevantAgendaCompletions.some(c => {
-      if (type === 'concept') return c.conceptId === id || (c.lessonId === id && !c.articleId); // legacy support if needed
-      if (type === 'article') return c.articleId === id;
-      if (type === 'quiz') return c.quizId === id;
+      if (type === 'concept') return c.lessonId === id && c.itemType === 'LESSON';
+      if (type === 'article') return c.lessonId === id && c.itemType === 'ARTICLE';
+      if (type === 'quiz') return c.quizId === id && c.itemType === 'QUIZ';
       return false;
     });
   };
@@ -156,12 +152,12 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
     
     let dayFullyCompleted = true;
     if (lesson) {
-      const conceptCompleted = isCompleted('concept', `${lesson.dayOrder}-concept`) || isCompleted('concept', lesson.id);
-      const articleCompleted = isCompleted('article', `${lesson.dayOrder}-article`) || isCompleted('article', lesson.id);
+      const conceptCompleted = isCompleted('concept', lesson.id);
+      const articleCompleted = isCompleted('article', lesson.id);
       if (!conceptCompleted || !articleCompleted) dayFullyCompleted = false;
     }
     if (quiz) {
-      const quizCompleted = isCompleted('quiz', (100 + quiz.dayOrder).toString());
+      const quizCompleted = isCompleted('quiz', quiz.id);
       if (!quizCompleted) dayFullyCompleted = false;
     }
     
@@ -177,8 +173,8 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
   const activeQuiz = upcomingQuizzes.find(q => q.dayOrder === activeDay);
 
   if (activeLesson) {
-    const conceptCompleted = isCompleted('concept', `${activeLesson.dayOrder}-concept`) || isCompleted('concept', activeLesson.id);
-    const articleCompleted = isCompleted('article', `${activeLesson.dayOrder}-article`) || isCompleted('article', activeLesson.id);
+    const conceptCompleted = isCompleted('concept', activeLesson.id);
+    const articleCompleted = isCompleted('article', activeLesson.id);
 
     agendaItems.push({
       id: `lesson-concept-${activeLesson.id}`,
@@ -201,7 +197,7 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
   }
 
   if (activeQuiz) {
-    const quizCompleted = isCompleted('quiz', (100 + activeQuiz.dayOrder).toString());
+    const quizCompleted = isCompleted('quiz', activeQuiz.id);
     agendaItems.push({
       id: `quiz-${activeQuiz.id}`,
       itemType: "QUIZ" as const,

@@ -20,23 +20,29 @@ export async function markArticleDoneAction(lessonId: string): Promise<void> {
 
   await ensureUserProgress(userId);
 
+  // Find real Lesson ID if possible, otherwise skip foreign key link
+  const realLesson = await prisma.lesson.findUnique({
+    where: { dayOrder: parseInt(lessonId) }
+  });
+  const dbLessonId = realLesson?.id || null;
+
   // Tick off Article
   const existingArticle = await prisma.agendaCompletion.findFirst({
-    where: { userId, lessonId, quizId: null, articleId: null, conceptId: null, dateString: todayDate, itemType: ItemType.ARTICLE }
+    where: { userId, lessonId: dbLessonId, dateString: todayDate, itemType: ItemType.ARTICLE }
   });
   if (!existingArticle) {
     await prisma.agendaCompletion.create({
-      data: { userId, itemType: ItemType.ARTICLE, dateString: todayDate, lessonId }
+      data: { userId, itemType: ItemType.ARTICLE, dateString: todayDate, lessonId: dbLessonId }
     });
   }
 
   // Tick off Concept
   const existingConcept = await prisma.agendaCompletion.findFirst({
-    where: { userId, lessonId, quizId: null, articleId: null, conceptId: null, dateString: todayDate, itemType: ItemType.LESSON }
+    where: { userId, lessonId: dbLessonId, dateString: todayDate, itemType: ItemType.LESSON }
   });
   if (!existingConcept) {
     await prisma.agendaCompletion.create({
-      data: { userId, itemType: ItemType.LESSON, dateString: todayDate, lessonId }
+      data: { userId, itemType: ItemType.LESSON, dateString: todayDate, lessonId: dbLessonId }
     });
   }
 

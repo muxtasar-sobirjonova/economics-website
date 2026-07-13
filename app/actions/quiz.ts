@@ -180,19 +180,26 @@ export async function markQuizDoneAction(quizId: string, score: number, mistakes
         }
       });
 
+      const realQuiz = await tx.quiz.findUnique({
+        where: { dayOrder: lessonNumber }
+      });
+      const realLesson = await tx.lesson.findUnique({
+        where: { dayOrder: actualLessonId }
+      });
+
       const itemsToTick = [
-        { type: ItemType.QUIZ, lessonId: null, quizId: String(100 + lessonNumber), articleId: null, conceptId: null },
-        { type: ItemType.LESSON, lessonId: null, quizId: null, articleId: null, conceptId: `${lessonNumber}-concept` },
-        { type: ItemType.LESSON, lessonId: null, quizId: null, articleId: `${lessonNumber}-article`, conceptId: null }
+        { type: ItemType.QUIZ, lessonId: null, quizId: realQuiz?.id || null },
+        { type: ItemType.LESSON, lessonId: realLesson?.id || null, quizId: null },
+        { type: ItemType.ARTICLE, lessonId: realLesson?.id || null, quizId: null }
       ];
 
       for (const item of itemsToTick) {
         const existing = await tx.agendaCompletion.findFirst({
-          where: { userId: userId, itemType: item.type, lessonId: item.lessonId, quizId: item.quizId, articleId: item.articleId, conceptId: item.conceptId, dateString: todayDate }
+          where: { userId: userId, itemType: item.type, lessonId: item.lessonId, quizId: item.quizId, dateString: todayDate }
         });
         if (!existing) {
           await tx.agendaCompletion.create({
-            data: { userId: userId, itemType: item.type, lessonId: item.lessonId, quizId: item.quizId, articleId: item.articleId, conceptId: item.conceptId, dateString: todayDate }
+            data: { userId: userId, itemType: item.type, lessonId: item.lessonId, quizId: item.quizId, dateString: todayDate }
           });
         }
       }
