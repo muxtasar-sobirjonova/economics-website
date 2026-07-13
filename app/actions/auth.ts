@@ -1,11 +1,9 @@
 "use server";
 
-import * as argon2 from 'argon2';
+import bcrypt from 'bcryptjs';
 import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 import { ratelimit } from '@/lib/ratelimit';
-
-const PEPPER = process.env.PASSWORD_PEPPER || "default-pepper";
 
 const SignupSchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -44,7 +42,7 @@ export async function signupAction(data: z.infer<typeof SignupSchema>) {
   }
 
   // 3. Hash password
-  const hashedPassword = await argon2.hash(password + PEPPER);
+  const hashedPassword = await bcrypt.hash(password, 10);
 
   // 4. Create User AND initialize UserProgress atomically
   await prisma.$transaction(async (tx) => {
