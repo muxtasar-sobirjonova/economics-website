@@ -21,7 +21,7 @@ const fadeUp: Variants = {
   show: { opacity: 1, y: 0, transition: { type: "spring", stiffness: 100, damping: 20 } }
 };
 
-export const MarketingHero = ({ studentCount }: { studentCount: string }) => {
+export const MarketingHero = () => {
   const ref = useRef<HTMLElement>(null);
   const { scrollYProgress } = useScroll({
     target: ref,
@@ -41,12 +41,6 @@ export const MarketingHero = ({ studentCount }: { studentCount: string }) => {
           animate="show"
           className="flex flex-col items-center justify-center text-center mb-16"
         >
-          <motion.div variants={fadeUp} className="inline-flex items-center gap-3 px-5 py-2.5 rounded-full bg-gray-50 flex-nowrap overflow-x-auto snap-x border border-gray-200 text-sm font-bold text-gray-600 mb-8 shadow-sm">
-             <span>Join {studentCount} students &middot; 30 Concepts &middot; 30 Articles &middot; 300 Quizzes</span>
-           <span className="bg-[#F5F3FF] text-brand-primary px-2 py-1 rounded-md text-[10px] uppercase tracking-wider border border-violet-100 hidden sm:inline-block">
-             + Growing Constantly
-           </span>
-        </motion.div>
         
         {/* Screen reader only text for the split headline */}
         <span className="sr-only" id="hero-heading">Master Entrepreneurial Economics, One Concept at a Time.</span>
