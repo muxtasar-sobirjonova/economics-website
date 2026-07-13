@@ -27,35 +27,22 @@ const getStudentCount = unstable_cache(
 );
 
 export default async function MarketingPage() {
-  try {
-    const session = await auth();
-    if (session?.user) {
-      redirect("/home");
-    }
-
-    const fetchedCount = await getStudentCount();
-    const pageData: MarketingPageData = {
-      studentCount: fetchedCount
-    };
-
-    return (
-      <div className="min-h-screen font-sans bg-white text-left selection:bg-brand-primary selection:text-white relative">
-        <MarketingNav />
-        <MarketingHero studentCount={pageData.studentCount} />
-        <MarketingSections />
-        <MarketingFooter />
-      </div>
-    );
-  } catch (error: any) {
-    return (
-      <div style={{ padding: '50px', background: 'white', color: 'red', fontFamily: 'monospace' }}>
-        <h1>FATAL 500 ERROR CAUGHT</h1>
-        <p><strong>Message:</strong> {error?.message || String(error)}</p>
-        <p><strong>Stack:</strong> {error?.stack || "No stack"}</p>
-        <p><strong>Name:</strong> {error?.name || "Unknown"}</p>
-        <hr />
-        <p>Please take a screenshot of this page and send it to your AI.</p>
-      </div>
-    )
+  const session = await auth();
+  if (session?.user) {
+    redirect("/home");
   }
+
+  const fetchedCount = await getStudentCount();
+  const pageData: MarketingPageData = {
+    studentCount: fetchedCount
+  };
+
+  return (
+    <div className="min-h-screen font-sans bg-white text-left selection:bg-brand-primary selection:text-white relative">
+      <MarketingNav />
+      <MarketingHero studentCount={pageData.studentCount} />
+      <MarketingSections />
+      <MarketingFooter />
+    </div>
+  );
 }
