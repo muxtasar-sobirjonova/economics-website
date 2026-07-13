@@ -7,7 +7,7 @@ import {
   IconCheck,
 } from "@tabler/icons-react";
 import { useParams } from "next/navigation";
-import { toggleBookmarkAction } from "@/app/actions/progress";
+import { toggleBookmarkAction } from "@/app/actions/notes";
 
 export default function ArticleActions({ initialSaved = false }: { initialSaved?: boolean }) {
   const params = useParams();

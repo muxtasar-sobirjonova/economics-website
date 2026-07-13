@@ -7,7 +7,7 @@ import {
   IconChevronRight,
   IconChevronLeft,
 } from "@tabler/icons-react";
-import { removeMistakeAction } from "@/app/actions/progress";
+import { removeMistakeAction } from "@/app/actions/quiz";
 import { motion, AnimatePresence } from "framer-motion";
 
 export interface Mistake {

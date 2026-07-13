@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { Bookmark } from "lucide-react";
-import { toggleBookmarkAction } from "@/app/actions/progress";
+import { toggleBookmarkAction } from "@/app/actions/notes";
 
 /**
  * Client-side bookmark toggle for the read page.

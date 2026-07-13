@@ -3,7 +3,7 @@
 import { useState, useEffect, useTransition } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { Question } from "../lib/types";
-import { markQuizDoneAction } from "@/app/actions/progress";
+import { markQuizDoneAction } from "@/app/actions/quiz";
 
 export default function QuizSection({
   quizId,

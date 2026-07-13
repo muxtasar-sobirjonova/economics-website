@@ -2,7 +2,7 @@
 
 import { useTransition, useState } from "react";
 import { useRouter } from "next/navigation";
-import { markArticleDoneAction } from "@/app/actions/progress";
+import { markArticleDoneAction } from "@/app/actions/agenda";
 
 /**
  * Wraps the "Next: Articles →" link.

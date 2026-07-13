@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { validateQuizAnswerAction, markQuizDoneAction } from "@/app/actions/progress";
+import { validateQuizAnswerAction, markQuizDoneAction } from "@/app/actions/quiz";
 
 export interface QuizStateOptions {
   lessonId: number;

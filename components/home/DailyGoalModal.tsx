@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect, useTransition } from 'react';
-import { setDailyTimeGoalAction } from '@/app/actions/progress';
+import { setDailyTimeGoalAction } from "@/app/actions/user";
 import { triggerConfetti } from '@/lib/confetti';
 
 export const DailyGoalModal = ({ currentGoal }: { currentGoal: number }) => {
