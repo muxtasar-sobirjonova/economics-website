@@ -19,117 +19,173 @@ export default function ReadingActions({
       script.id = 'article-highlight-script';
       script.innerHTML = `
 let activeHighlightColor = null;
+let currentMode = null; // 'draw' or 'erase'
+let canvas = null;
+let ctx = null;
+let isDrawing = false;
+let strokes = [];
+let currentStroke = null;
 
-// HIGHLIGHT on mouseup
-document.getElementById('main-content')
-  .addEventListener('mouseup', function(e) {
-    if (!activeHighlightColor) return;
-    
-    const selection = window.getSelection();
-    if (!selection || selection.isCollapsed) return;
-    
-    const range = selection.getRangeAt(0);
-    const content = document.getElementById('main-content');
-    if (!content.contains(range.commonAncestorContainer)) return;
-    
-    const treeWalker = document.createTreeWalker(
-      range.commonAncestorContainer,
-      NodeFilter.SHOW_TEXT,
-      {
-        acceptNode: function(node) {
-          if (range.intersectsNode(node)) {
-            return NodeFilter.FILTER_ACCEPT;
-          }
-          return NodeFilter.FILTER_REJECT;
-        }
-      }
-    );
-
-    const nodesToWrap = [];
-    while(treeWalker.nextNode()) {
-      nodesToWrap.push(treeWalker.currentNode);
-    }
-
-    if (nodesToWrap.length === 0 && range.commonAncestorContainer.nodeType === Node.TEXT_NODE) {
-      nodesToWrap.push(range.commonAncestorContainer);
-    }
-
-    nodesToWrap.forEach(textNode => {
-      let startOffset = 0;
-      let endOffset = textNode.length;
-
-      if (textNode === range.startContainer) {
-        startOffset = range.startOffset;
-      }
-      if (textNode === range.endContainer) {
-        endOffset = range.endOffset;
-      }
-      
-      if (startOffset === endOffset) return;
-      
-      const textToWrap = textNode.nodeValue.substring(startOffset, endOffset);
-      if (textToWrap.trim() === '') return;
-
-      const mark = document.createElement('mark');
-      mark.style.background = activeHighlightColor;
-      mark.style.color = 'inherit';
-      mark.style.padding = '0';
-      mark.style.borderRadius = '2px';
-
-      const beforeText = textNode.nodeValue.substring(0, startOffset);
-      const afterText = textNode.nodeValue.substring(endOffset);
-
-      const parent = textNode.parentNode;
-      if (beforeText) {
-        parent.insertBefore(document.createTextNode(beforeText), textNode);
-      }
-      mark.textContent = textToWrap;
-      parent.insertBefore(mark, textNode);
-      if (afterText) {
-        parent.insertBefore(document.createTextNode(afterText), textNode);
-      }
-      parent.removeChild(textNode);
-    });
-    
-    selection.removeAllRanges();
-  });
-
-window.clearAllHighlights = function() {
+function initCanvas() {
   const content = document.getElementById('main-content');
   if (!content) return;
-  const marks = content.querySelectorAll('mark');
-  marks.forEach(mark => {
-    const parent = mark.parentNode;
-    while (mark.firstChild) {
-      parent.insertBefore(mark.firstChild, mark);
+
+  if (document.getElementById('annotation-canvas')) return;
+
+  content.style.position = 'relative';
+
+  canvas = document.createElement('canvas');
+  canvas.id = 'annotation-canvas';
+  canvas.style.position = 'absolute';
+  canvas.style.top = '0';
+  canvas.style.left = '0';
+  canvas.style.pointerEvents = 'none'; 
+  canvas.style.zIndex = '5';
+  
+  content.insertBefore(canvas, content.firstChild);
+
+  ctx = canvas.getContext('2d');
+  
+  function resizeCanvas() {
+    canvas.width = content.offsetWidth;
+    canvas.height = content.offsetHeight;
+    redrawCanvas();
+  }
+  
+  resizeCanvas();
+  const ro = new ResizeObserver(resizeCanvas);
+  ro.observe(content);
+
+  canvas.addEventListener('mousedown', startDrawing);
+  canvas.addEventListener('mousemove', draw);
+  window.addEventListener('mouseup', stopDrawing);
+}
+
+function redrawCanvas() {
+  if (!ctx) return;
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  strokes.forEach(stroke => {
+    if (stroke.points.length === 0) return;
+    ctx.beginPath();
+    ctx.moveTo(stroke.points[0].x, stroke.points[0].y);
+    ctx.lineWidth = stroke.mode === 'erase' ? 24 : 16;
+    ctx.lineCap = 'round';
+    ctx.lineJoin = 'round';
+    if (stroke.mode === 'erase') {
+      ctx.globalCompositeOperation = 'destination-out';
+    } else {
+      ctx.globalCompositeOperation = 'multiply';
+      ctx.strokeStyle = stroke.color;
     }
-    parent.removeChild(mark);
-    parent.normalize();
+    for (let i = 1; i < stroke.points.length; i++) {
+      ctx.lineTo(stroke.points[i].x, stroke.points[i].y);
+    }
+    ctx.stroke();
   });
 }
 
-window.setHighlightColor = function(color, id) {
-  document.getElementById('main-content').style.cursor = 'text';
+function startDrawing(e) {
+  if (!currentMode) return;
+  isDrawing = true;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
   
-  if (activeHighlightColor === color) {
+  currentStroke = { mode: currentMode, color: activeHighlightColor, points: [{x, y}] };
+  strokes.push(currentStroke);
+  
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+  ctx.lineWidth = currentMode === 'erase' ? 24 : 16;
+  ctx.lineCap = 'round';
+  ctx.lineJoin = 'round';
+  
+  if (currentMode === 'erase') {
+    ctx.globalCompositeOperation = 'destination-out';
+  } else {
+    ctx.globalCompositeOperation = 'multiply';
+    ctx.strokeStyle = activeHighlightColor;
+  }
+}
+
+function draw(e) {
+  if (!isDrawing || !currentMode) return;
+  const rect = canvas.getBoundingClientRect();
+  const x = e.clientX - rect.left;
+  const y = e.clientY - rect.top;
+  
+  currentStroke.points.push({x, y});
+  
+  ctx.lineTo(x, y);
+  ctx.stroke();
+}
+
+function stopDrawing() {
+  if (!isDrawing) return;
+  isDrawing = false;
+  ctx.closePath();
+}
+
+window.setHighlightColor = function(color, id) {
+  if (!canvas) initCanvas();
+  
+  if (activeHighlightColor === color && currentMode === 'draw') {
+    currentMode = null;
     activeHighlightColor = null;
-    document.querySelectorAll('[id^="color-"]').forEach(el => {
-      el.style.outline = 'none';
-      el.style.transform = 'scale(1)';
-    });
-    return;
+    canvas.style.pointerEvents = 'none';
+    document.body.style.cursor = 'default';
+  } else {
+    currentMode = 'draw';
+    activeHighlightColor = color;
+    canvas.style.pointerEvents = 'auto';
+    document.body.style.cursor = 'crosshair';
   }
   
-  activeHighlightColor = color;
+  document.querySelectorAll('[id^="color-"], #eraser-btn').forEach(el => {
+    el.style.outline = 'none';
+    el.style.transform = 'scale(1)';
+    if (el.id === 'eraser-btn') el.style.background = 'transparent';
+  });
+  
+  if (currentMode === 'draw') {
+    const activeEl = document.getElementById(id);
+    if (activeEl) {
+      activeEl.style.outline = '2px solid #7B6FE7';
+      activeEl.style.outlineOffset = '2px';
+      activeEl.style.transform = 'scale(1.2)';
+    }
+  }
+}
+
+window.enableEraser = function() {
+  if (!canvas) initCanvas();
+  
+  if (currentMode === 'erase') {
+    currentMode = null;
+    canvas.style.pointerEvents = 'none';
+    document.body.style.cursor = 'default';
+  } else {
+    currentMode = 'erase';
+    activeHighlightColor = null;
+    canvas.style.pointerEvents = 'auto';
+    document.body.style.cursor = 'url("data:image/svg+xml;utf8,<svg xmlns=\\'http://www.w3.org/2000/svg\\' width=\\'24\\' height=\\'24\\' viewBox=\\'0 0 24 24\\' fill=\\'white\\' stroke=\\'black\\' stroke-width=\\'2\\' stroke-linecap=\\'round\\' stroke-linejoin=\\'round\\'><path d=\\'m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21\\'/><path d=\\'M22 21H7\\'/><path d=\\'m5 11 9 9\\'/></svg>") 0 24, auto';
+  }
+  
   document.querySelectorAll('[id^="color-"]').forEach(el => {
     el.style.outline = 'none';
     el.style.transform = 'scale(1)';
   });
-  const activeEl = document.getElementById(id);
-  if (activeEl) {
-    activeEl.style.outline = '2px solid #7B6FE7';
-    activeEl.style.outlineOffset = '2px';
-    activeEl.style.transform = 'scale(1.2)';
+  
+  const eraserEl = document.getElementById('eraser-btn');
+  if (currentMode === 'erase') {
+    eraserEl.style.background = '#F3F0FF';
+    eraserEl.style.outline = '2px solid #7B6FE7';
+    eraserEl.style.outlineOffset = '2px';
+    eraserEl.style.transform = 'scale(1.1)';
+  } else {
+    eraserEl.style.background = 'transparent';
+    eraserEl.style.outline = 'none';
+    eraserEl.style.transform = 'scale(1)';
   }
 }
       `;
@@ -139,18 +195,6 @@ window.setHighlightColor = function(color, id) {
 
   return (
     <>
-      <style>{`
-        mark {
-          color: inherit;
-          font-size: inherit;
-          font-weight: inherit;
-          font-style: inherit;
-          font-family: inherit;
-          line-height: inherit;
-          padding: 0;
-          border-radius: 2px;
-        }
-      `}</style>
       <div 
         dangerouslySetInnerHTML={{
           __html: `
@@ -159,28 +203,28 @@ window.setHighlightColor = function(color, id) {
               
               <div 
                 id="color-blue"   
-                onclick="setHighlightColor('#93C5FD', 'color-blue')" 
+                onclick="setHighlightColor('rgba(147, 197, 253, 0.4)', 'color-blue')" 
                 style="width: 18px; height: 18px; border-radius: 50%; background: #93C5FD; cursor: pointer; border: 2px solid transparent; outline: none; transition: all 0.15s ease;"></div>
               <div 
                 id="color-yellow" 
-                onclick="setHighlightColor('#FCD34D', 'color-yellow')" 
+                onclick="setHighlightColor('rgba(252, 211, 77, 0.4)', 'color-yellow')" 
                 style="width: 18px; height: 18px; border-radius: 50%; background: #FCD34D; cursor: pointer; border: 2px solid transparent; outline: none; transition: all 0.15s ease;"></div>
               <div 
                 id="color-pink"   
-                onclick="setHighlightColor('#F9A8D4', 'color-pink')" 
+                onclick="setHighlightColor('rgba(249, 168, 212, 0.4)', 'color-pink')" 
                 style="width: 18px; height: 18px; border-radius: 50%; background: #F9A8D4; cursor: pointer; border: 2px solid transparent; outline: none; transition: all 0.15s ease;"></div>
               <div 
                 id="color-green"  
-                onclick="setHighlightColor('#6EE7B7', 'color-green')" 
+                onclick="setHighlightColor('rgba(110, 231, 183, 0.4)', 'color-green')" 
                 style="width: 18px; height: 18px; border-radius: 50%; background: #6EE7B7; cursor: pointer; border: 2px solid transparent; outline: none; transition: all 0.15s ease;"></div>
 
               <div style="width: 1px; height: 16px; background: #EBEBEB;"></div>
               
               <div 
                 id="eraser-btn"
-                onclick="clearAllHighlights()" 
-                style="cursor: pointer; display: flex; align-items: center; justify-content: center; background: transparent; padding: 0; outline: none; transition: all 0.15s ease;" 
-                title="Clear all highlights"
+                onclick="enableEraser()" 
+                style="cursor: pointer; display: flex; align-items: center; justify-content: center; background: transparent; padding: 2px; border-radius: 4px; outline: none; transition: all 0.15s ease;" 
+                title="Eraser tool"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eraser"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
               </div>
