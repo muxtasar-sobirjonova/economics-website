@@ -30,13 +30,16 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
     description?: string;
     timeEstimate?: number;
     conceptText?: string;
+    conceptSummary?: string;
   }
   
   const lessons = await getLessons();
-  let activeLesson = lessons.find((l) => l.dayOrder === lessonId) as LessonData | undefined;
-  if (!activeLesson) {
+  let foundLesson = lessons.find((l) => l.dayOrder === lessonId) as LessonData | undefined;
+  if (!foundLesson) {
     notFound();
   }
+  
+  let activeLesson: LessonData = foundLesson;
 
   // Fetch Sanity Data for dynamic title/description
   try {
