@@ -19,12 +19,10 @@ export default function ReadingActions({
       script.id = 'article-highlight-script';
       script.innerHTML = `
 let activeHighlightColor = null;
-let eraserActive = false;
 
 // HIGHLIGHT on mouseup
 document.getElementById('main-content')
   .addEventListener('mouseup', function(e) {
-    if (eraserActive) return;
     if (!activeHighlightColor) return;
     
     const selection = window.getSelection();
@@ -96,58 +94,21 @@ document.getElementById('main-content')
     selection.removeAllRanges();
   });
 
-// ERASER on click
-document.getElementById('main-content')
-  .addEventListener('click', function(e) {
-    if (!eraserActive) return;
-    
-    let el = e.target;
-    while (el && el.id !== 'main-content') {
-      if (el.tagName === 'MARK') {
-        const parent = el.parentNode;
-        while (el.firstChild) {
-          parent.insertBefore(el.firstChild, el);
-        }
-        parent.removeChild(el);
-        parent.normalize();
-        return;
-      }
-      el = el.parentNode;
-    }
-  });
-
-window.toggleEraser = function() {
-  eraserActive = !eraserActive;
-  const btn = document.getElementById('eraser-btn');
+window.clearAllHighlights = function() {
   const content = document.getElementById('main-content');
-  
-  if (eraserActive) {
-    activeHighlightColor = null;
-    document.querySelectorAll('[id^="color-"]').forEach(el => {
-      el.style.outline = 'none';
-      el.style.transform = 'scale(1)';
-    });
-    btn.style.background = '#FFE8E8';
-    btn.style.outline = '2px solid #E53E3E';
-    btn.style.borderRadius = '6px';
-    btn.style.padding = '2px';
-    content.style.cursor = 'crosshair';
-  } else {
-    btn.style.background = 'transparent';
-    btn.style.outline = 'none';
-    btn.style.padding = '0';
-    content.style.cursor = 'text';
-  }
+  if (!content) return;
+  const marks = content.querySelectorAll('mark');
+  marks.forEach(mark => {
+    const parent = mark.parentNode;
+    while (mark.firstChild) {
+      parent.insertBefore(mark.firstChild, mark);
+    }
+    parent.removeChild(mark);
+    parent.normalize();
+  });
 }
 
 window.setHighlightColor = function(color, id) {
-  eraserActive = false;
-  const eraserBtn = document.getElementById('eraser-btn');
-  if (eraserBtn) {
-    eraserBtn.style.background = 'transparent';
-    eraserBtn.style.outline = 'none';
-    eraserBtn.style.padding = '0';
-  }
   document.getElementById('main-content').style.cursor = 'text';
   
   if (activeHighlightColor === color) {
@@ -217,9 +178,9 @@ window.setHighlightColor = function(color, id) {
               
               <div 
                 id="eraser-btn"
-                onclick="toggleEraser()" 
+                onclick="clearAllHighlights()" 
                 style="cursor: pointer; display: flex; align-items: center; justify-content: center; background: transparent; padding: 0; outline: none; transition: all 0.15s ease;" 
-                title="Toggle eraser"
+                title="Clear all highlights"
               >
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#555555" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="lucide lucide-eraser"><path d="m7 21-4.3-4.3c-1-1-1-2.5 0-3.4l9.6-9.6c1-1 2.5-1 3.4 0l5.6 5.6c1 1 1 2.5 0 3.4L13 21"/><path d="M22 21H7"/><path d="m5 11 9 9"/></svg>
               </div>

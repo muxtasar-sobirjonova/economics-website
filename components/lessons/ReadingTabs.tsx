@@ -113,8 +113,41 @@ export const ReadingTabs = ({
     });
   };
 
+  const [isOpen, setIsOpen] = useState(false);
+
   return (
-    <div className="sticky top-6 h-fit">
+    <>
+      {/* Floating Toggle Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed top-1/3 right-0 -translate-y-1/2 bg-[#5A4FBD] text-white p-2 rounded-l-md shadow-lg hover:bg-[#483d99] transition-all z-[60] flex flex-col items-center gap-2 border border-r-0 border-[#483d99]"
+        style={{ transform: `translateY(-50%) translateX(${isOpen ? '-380px' : '0'})` }}
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span className="text-[11px] font-bold tracking-widest uppercase rotate-180 mt-1" style={{ writingMode: 'vertical-rl' }}>
+          NOTES
+        </span>
+      </button>
+
+      {/* Overlay for mobile (optional) */}
+      {isOpen && (
+        <div 
+          className="fixed inset-0 bg-black/20 z-[40] lg:hidden"
+          onClick={() => setIsOpen(false)}
+        />
+      )}
+
+      {/* Sliding Drawer */}
+      <div 
+        className={`fixed top-[56px] right-0 h-[calc(100vh-56px)] w-[380px] max-w-[100vw] bg-[#F8F9FC] border-l border-gray-200 shadow-2xl z-[50] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      >
+        <div className="h-full overflow-y-auto p-6 flex flex-col">
+          <div className="flex justify-between items-center mb-6">
+            <h3 className="text-lg font-bold text-gray-900">Notes & Takeaways</h3>
+            <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-700 bg-gray-100 p-2 rounded-full">
+              <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+            </button>
+          </div>
       {!hideTakeaways && (
         <div className="flex bg-[#F8F9FC] p-1 rounded-xl mb-6 shadow-sm border border-gray-100">
           <button
@@ -187,6 +220,8 @@ export const ReadingTabs = ({
           </div>
         </div>
       )}
-    </div>
+        </div>
+      </div>
+    </>
   );
 };

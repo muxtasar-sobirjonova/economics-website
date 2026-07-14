@@ -86,7 +86,7 @@ export const LessonOneCaseStudy = () => {
         </h1>
       </div>
       
-      <div className="grid grid-cols-1 gap-y-[64px] items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-[64px] items-start">
         <EvidenceBlock index={0} />
         <EvidenceBlock index={1} />
       </div>
@@ -101,14 +101,14 @@ export const LessonOneCaseStudy = () => {
         </blockquote>
       </div>
 
-      <div className="grid grid-cols-1 gap-y-[64px] items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-[64px] items-start">
         <EvidenceBlock index={2} />
         <EvidenceBlock index={3} />
       </div>
 
       <div className="w-full my-12" />
 
-      <div className="grid grid-cols-1 gap-y-[64px] items-start">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-[64px] items-start">
         <EvidenceBlock index={4} />
         <EvidenceBlock index={5} />
       </div>

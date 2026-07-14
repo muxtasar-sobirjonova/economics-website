@@ -13,7 +13,7 @@ import { NoteData, LessonDataSchema } from "@/types";
 import { MOCK_CONTENT } from "@/lib/mockContent";
 import { getLessons } from "@/lib/data";
 import { MarkReadButton } from "@/components/lessons/MarkReadButton";
-import { ReadPageBookmark } from "@/components/lessons/ReadPageBookmark";
+
 import { Playfair_Display } from "next/font/google";
 
 const playfair = Playfair_Display({
@@ -93,7 +93,7 @@ export default async function ConceptsReadPage({
 
   // 3. Fetch user notes scoped to this lesson
   let initialNotes: NoteData[] = [];
-  let isBookmarked = false;
+
   try {
     const userNotes = await prisma.note.findMany({
       where: { userId, lessonId: String(lessonId) },
@@ -109,12 +109,7 @@ export default async function ConceptsReadPage({
       timestamp: n.timestamp ? n.timestamp.toISOString() : undefined
     }));
     
-    const slug = activeLesson.slug || `lesson-${activeLesson.lessonId}-concepts`;
-    const userBookmark = await prisma.bookmark.findFirst({
-      where: { userId, slug },
-    });
-    
-    isBookmarked = !!userBookmark;
+
   } catch (error) {
     console.error("Failed to fetch user notes or bookmarks:", error);
   }
@@ -127,9 +122,9 @@ export default async function ConceptsReadPage({
         </div>
       </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 flex-1 overflow-visible w-full px-6 max-w-[1200px] mx-auto relative">
-        {/* Left Column */}
-        <div className="flex-1 overflow-visible p-8 w-full">
+      <div className="flex-1 overflow-visible w-full px-6 max-w-4xl mx-auto relative flex flex-col">
+        {/* Main Content Column */}
+        <div className="flex-1 overflow-visible py-8 w-full">
           <div className="w-full mx-auto flex flex-col gap-6">
             <div className="relative pt-5 pb-10 flex flex-col">
               <div className="flex items-center justify-between mb-6">
@@ -139,10 +134,7 @@ export default async function ConceptsReadPage({
                 >
                   &larr; Back to Concepts
                 </Link>
-                <ReadPageBookmark
-                  slug={activeLesson.slug || `lesson-${activeLesson.lessonId}-concepts`}
-                  initialIsBookmarked={isBookmarked}
-                />
+
               </div>
               <div className="flex justify-between items-center mb-8 w-full sticky top-4 z-20 py-3 bg-[#F8F9FC]/95 backdrop-blur-sm rounded-lg border-b border-[#EBEBEB]">
                 <div className="inline-block border border-brand-primary bg-transparent text-brand-primary text-[11px] font-[800] tracking-[0.08em] uppercase px-3.5 py-1.5 rounded-full">
@@ -167,8 +159,8 @@ export default async function ConceptsReadPage({
           </div>
         </div>
 
-        {/* Right Column */}
-        <div className="w-full pt-8 order-2 lg:order-none pb-12 lg:pb-0">
+        {/* Floating Notes Drawer */}
+        <div className="z-50">
           <ReadingTabs
             lessonId={String(lessonId)}
             takeawaysText={takeawaysText}
