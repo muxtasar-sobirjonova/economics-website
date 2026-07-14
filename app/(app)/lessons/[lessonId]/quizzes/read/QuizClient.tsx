@@ -32,6 +32,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
     showShake,
     particles,
     handleSelectAnswer,
+    handleSubmitAnswer,
     handleNextQuestion,
     handlePrevQuestion,
     handleFinishQuiz,
@@ -184,6 +185,9 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                           bg = '#FEF2F2'; border = '#EF4444';
                           badgeBg = '#EF4444'; badgeColor = '#ffffff';
                        }
+                    } else if (isSelected) {
+                       bg = '#F8F9FF'; border = '#3D52A0';
+                       badgeBg = '#3D52A0'; badgeColor = '#ffffff';
                     }
                     
                     const disabledClass = hasAnsweredCurrent && !isCorrect && !isSelected ? 'opacity-40 pointer-events-none' : '';
@@ -255,16 +259,23 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                    ← Previous
                  </button>
                  
-                 {currentQuestionIndex === displayQuestions.length - 1 ? (
+                 {currentQuestionIndex === displayQuestions.length - 1 && hasAnsweredCurrent ? (
                    <button 
                      onClick={handleFinishQuiz}
                      className="bg-brand-primary hover:bg-brand-primary/90 text-white rounded-xl px-8 py-3 font-[700] text-[15px] shadow-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                    >
                      Finish Quiz
                    </button>
+                 ) : !hasAnsweredCurrent && currentSelected !== null ? (
+                   <button 
+                     onClick={handleSubmitAnswer}
+                     className="bg-brand-primary hover:bg-brand-primary/90 text-white rounded-xl px-8 py-3 font-[700] text-[15px] shadow-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+                   >
+                     Submit
+                   </button>
                  ) : (
                    <button 
-                     onClick={handleNextQuestion}
+                     onClick={hasAnsweredCurrent ? handleNextQuestion : handleNextQuestion} // Skip also goes next
                      className="bg-brand-primary hover:bg-brand-primary/90 text-white rounded-xl px-8 py-3 font-[700] text-[15px] shadow-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                    >
                      {hasAnsweredCurrent ? 'Next Question →' : 'Skip Question →'}

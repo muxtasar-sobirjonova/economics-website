@@ -66,6 +66,8 @@ const ValidateQuizAnswerSchema = z.object({
 
 // Replaced with SanityQuiz from "@/types"
 
+import { QUIZZES } from "@/lib/data";
+
 export async function validateQuizAnswerAction(lessonId: number, questionIndex: number, selectedOptionIndex: number) {
   const session = await auth();
   if (!session || !session.user || !session.user.id) {
@@ -87,8 +89,11 @@ export async function validateQuizAnswerAction(lessonId: number, questionIndex: 
   }
 
   const sanityQuiz = sanityData?.find((d) => d.lessonId === lessonId);
+  const fallbackQuiz = QUIZZES.find((q) => q.id === 100 + lessonId);
   
-  const questions = sanityQuiz?.questions || [];
+  // Use same logic as QuizClient to determine questions array
+  const questions = (lessonId === 1 ? fallbackQuiz?.questions : sanityQuiz?.questions) || fallbackQuiz?.questions || [];
+  
   const displayQuestions = questions.slice(0, 10);
   const question = displayQuestions[questionIndex];
 

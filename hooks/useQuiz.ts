@@ -25,14 +25,18 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
   const currentQuestion = displayQuestions[currentQuestionIndex];
   const currentSelected = selectedAnswers[currentQuestionIndex];
   const currentValidated = validatedCorrectAnswers[currentQuestionIndex];
-  const hasAnsweredCurrent = currentSelected !== null;
+  const hasAnsweredCurrent = currentValidated !== null;
 
-  const handleSelectAnswer = async (optionIndex: number) => {
+  const handleSelectAnswer = (optionIndex: number) => {
     if (hasAnsweredCurrent) return;
-    
     const newSelected = [...selectedAnswers];
     newSelected[currentQuestionIndex] = optionIndex;
     setSelectedAnswers(newSelected);
+  };
+
+  const handleSubmitAnswer = async () => {
+    if (hasAnsweredCurrent || currentSelected === null) return;
+    const optionIndex = currentSelected;
 
     try {
       const res = await validateQuizAnswerAction(lessonId, currentQuestionIndex, optionIndex);
@@ -131,6 +135,7 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
     showShake,
     particles,
     handleSelectAnswer,
+    handleSubmitAnswer,
     handleNextQuestion,
     handlePrevQuestion,
     handleFinishQuiz,
