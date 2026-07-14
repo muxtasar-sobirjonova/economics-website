@@ -115,17 +115,32 @@ export const ReadingTabs = ({
 
   const [isOpen, setIsOpen] = useState(false);
 
+  React.useEffect(() => {
+    const mainElement = document.querySelector('main');
+    if (mainElement) {
+      if (isOpen && window.innerWidth >= 1024) {
+        mainElement.style.paddingRight = '380px';
+        mainElement.style.transition = 'padding-right 0.3s ease-in-out';
+      } else {
+        mainElement.style.paddingRight = '0px';
+      }
+    }
+    return () => {
+      if (mainElement) mainElement.style.paddingRight = '0px';
+    };
+  }, [isOpen]);
+
   return (
     <>
       {/* Floating Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-1/3 right-0 -translate-y-1/2 bg-[#5A4FBD] text-white p-2 rounded-l-md shadow-lg hover:bg-[#483d99] transition-all z-[60] flex flex-col items-center gap-2 border border-r-0 border-[#483d99]"
+        className="fixed top-1/2 right-0 -translate-y-1/2 bg-[#5A4FBD] text-white p-2 rounded-l-md shadow-lg hover:bg-[#483d99] transition-all z-[60] flex flex-col items-center gap-2 border border-r-0 border-[#483d99]"
         style={{ transform: `translateY(-50%) translateX(${isOpen ? '-380px' : '0'})` }}
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
         <span className="text-[11px] font-bold tracking-widest uppercase rotate-180 mt-1" style={{ writingMode: 'vertical-rl' }}>
-          NOTES
+          KEY TAKEAWAYS & MY NOTES
         </span>
       </button>
 
