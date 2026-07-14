@@ -4,7 +4,6 @@ import { prisma } from "@/lib/prisma";
 import TodayAgendaCard from "@/components/TodayAgendaCard";
 import ReviewMistakesCard from "@/components/ReviewMistakesCard";
 import { DailyQuote } from "@/components/home/DailyQuote";
-import { DailyGoalModal } from "@/components/home/DailyGoalModal";
 import { DashboardHero } from "@/components/home/DashboardHero";
 import { LearningStats } from "@/components/home/LearningStats";
 
@@ -211,8 +210,6 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
 
   return (
     <>
-      <DailyGoalModal currentGoal={userProgress?.dailyTimeGoal || 60} />
-      
       <div className="flex flex-col justify-center py-10 px-4 md:px-12">
         <DashboardHero 
           completedAgendaDates={completedAgendaDates}
