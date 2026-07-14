@@ -63,7 +63,9 @@ export const CONCEPTS_QUERY = groq`*[_type == "lesson"] | order(lessonNumber asc
   lessonId,
   lessonNumber,
   title,
-  conceptText
+  conceptText,
+  conceptSummary,
+  conceptTakeaways
 }`;
 
 export const EXAMPLES_QUERY = groq`*[_type == "lesson"] | order(lessonNumber asc) {
@@ -77,7 +79,9 @@ export const ARTICLES_QUERY = groq`*[_type == "lesson"] | order(lessonNumber asc
   lessonId,
   lessonNumber,
   title,
-  articleContent
+  articleContent,
+  articleSummary,
+  articleTakeaways
 }`;
 
 export const QUIZZES_QUERY = groq`*[_type == "lesson"] | order(lessonNumber asc) {
@@ -98,14 +102,18 @@ export const ARTICLE_BY_ID_QUERY = groq`*[_type == "lesson" && lessonId == $less
   lessonId,
   lessonNumber,
   title,
-  articleContent
+  articleContent,
+  articleSummary,
+  articleTakeaways
 }`;
 
 export const CONCEPT_BY_ID_QUERY = groq`*[_type == "lesson" && lessonId == $lessonId][0] {
   lessonId,
   lessonNumber,
   title,
-  conceptText
+  conceptText,
+  conceptSummary,
+  conceptTakeaways
 }`;
 
 export const QUIZ_BY_ID_QUERY = groq`*[_type == "lesson" && lessonId == $lessonId][0] {

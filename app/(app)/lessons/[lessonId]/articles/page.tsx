@@ -36,12 +36,15 @@ export default async function ArticlesPage({ params }: { params: { lessonId: str
 
   let sanityArticle: SanityArticle | undefined = undefined;
   try {
-    const rawSanityData = await client.fetch(ARTICLES_QUERY);
-    const parsedData = z.array(ArticleDataSchema).safeParse(rawSanityData);
-    if (parsedData.success) {
-      sanityArticle = parsedData.data.find((d) => d.lessonId === lessonId);
-    } else {
-      console.error("[CRITICAL] Sanity CMS Articles validation failed:", parsedData.error.flatten());
+    const sanityData = await client.fetch<{ lessonId: number, title?: string, articleContent?: string, articleSummary?: string }[]>(ARTICLES_QUERY);
+    const lessonData = sanityData?.find((d) => d.lessonId === lessonId);
+    if (lessonData) {
+      sanityArticle = {
+        lessonId: lessonData.lessonId,
+        title: lessonData.title || "",
+        content: lessonData.articleContent,
+        articleSummary: lessonData.articleSummary
+      } as SanityArticle;
     }
   } catch (error) {
     console.error("Failed to fetch articles:", error);
@@ -54,9 +57,18 @@ export default async function ArticlesPage({ params }: { params: { lessonId: str
     mockContentFallback = MOCK_CONTENT[lessonId]?.article;
   }
 
-  const articleTitle = sanityArticle?.title || mockContentFallback?.title || baseLesson.title;
-  const articleText = sanityArticle?.content || mockContentFallback?.text || "Content coming soon.";
-  const articleSummary = sanityArticle?.summary || mockContentFallback?.summary || articleText;
+  let activeLesson;
+  if (sanityArticle) {
+    activeLesson = sanityArticle as any; // Allow the extra fields
+  } else if (mockContentFallback) {
+    activeLesson = mockContentFallback;
+  } else if (baseLesson) {
+    activeLesson = baseLesson;
+  }
+
+  const articleTitle = activeLesson?.title || baseLesson.title;
+  const articleText = activeLesson?.content || activeLesson?.text || "Content coming soon.";
+  const articleSummary = activeLesson?.articleSummary || activeLesson?.summary || articleText;
 
   // Dynamic Time Estimate based on word count
   let timeEstimate = baseLesson.timeEstimate;

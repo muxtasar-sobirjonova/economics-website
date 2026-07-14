@@ -205,18 +205,20 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
       </div>
 
       <div className="flex flex-col justify-start py-4 px-4 md:px-12">
-        <div className="flex flex-col lg:flex-row w-full mx-auto gap-8 max-w-[1200px]">
+        <div className="flex flex-col lg:flex-row w-full mx-auto gap-6 max-w-[1200px]">
           <TodayAgendaCard initialItems={agendaItems} />
           <DailyChallengeCard />
         </div>
         
-        <Suspense fallback={<div className="h-32 w-full bg-slate-100 animate-pulse rounded-xl mt-8" />}>
-          <DashboardStatsAsync 
-            userId={userId} 
-            streak={streak} 
-            totalXP={userProgress?.totalXP || 0} 
-          />
-        </Suspense>
+        <div className="mt-6 w-full mx-auto max-w-[1200px]">
+          <Suspense fallback={<div className="h-32 w-full bg-slate-100 animate-pulse rounded-xl" />}>
+            <DashboardStatsAsync 
+              userId={userId} 
+              streak={streak} 
+              totalXP={userProgress?.totalXP || 0} 
+            />
+          </Suspense>
+        </div>
       </div>
     </>
   );

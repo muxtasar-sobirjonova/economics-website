@@ -56,8 +56,12 @@ export const LessonDataSchema = z.object({
   description: z.string().optional(),
   title: z.string(),
   conceptText: z.any().optional(), // Portable text
+  conceptSummary: z.string().optional(),
+  conceptTakeaways: z.array(z.string()).optional(),
   exampleText: z.any().optional(),
   articleContent: z.any().optional(),
+  articleSummary: z.string().optional(),
+  articleTakeaways: z.array(z.string()).optional(),
   questions: z.array(QuizQuestionSchema).optional()
 });
 

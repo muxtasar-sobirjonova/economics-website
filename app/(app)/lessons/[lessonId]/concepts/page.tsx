@@ -40,14 +40,15 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
 
   // Fetch Sanity Data for dynamic title/description
   try {
-    const sanityData = await client.fetch<{ lessonId: number, title?: string, conceptText?: string }[]>(CONCEPTS_QUERY);
+    const sanityData = await client.fetch<{ lessonId: number, title?: string, conceptText?: string, conceptSummary?: string }[]>(CONCEPTS_QUERY);
     const sanityLesson = sanityData?.find((d) => d.lessonId === lessonId);
     if (sanityLesson) {
       activeLesson = {
         ...activeLesson,
         title: sanityLesson.title || activeLesson.title,
         conceptText: sanityLesson.conceptText,
-      };
+        conceptSummary: sanityLesson.conceptSummary,
+      } as any;
     } else {
       activeLesson = {
         ...activeLesson,
@@ -146,7 +147,7 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
           {/* Concept Summary Section */}
           <div className="flex-1 bg-white p-8 flex flex-col gap-4 border border-[#EBEBEB] border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
              <p className="text-gray-900 text-[15px] leading-[1.7] font-normal">
-               {activeLesson.description || "Master the fundamental principles of entrepreneurship."}
+               {activeLesson.conceptSummary || activeLesson.description || "Master the fundamental principles of entrepreneurship."}
              </p>
           </div>
 

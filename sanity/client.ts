@@ -11,6 +11,14 @@ export const client = createClient({
   useCdn: false,
 });
 
+export const writeClient = createClient({
+  projectId: projectId || 'placeholder',
+  dataset,
+  apiVersion,
+  useCdn: false,
+  token: process.env.SANITY_API_TOKEN,
+});
+
 import type { QueryParams, FilteredResponseQueryOptions } from 'next-sanity';
 
 // Override fetch config globally for sanity to utilize next/cache

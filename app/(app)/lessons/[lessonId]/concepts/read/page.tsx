@@ -56,6 +56,9 @@ export default async function ConceptsReadPage({
     
     if (parsedData.success) {
       activeLesson = parsedData.data;
+      if (activeLesson.conceptTakeaways && activeLesson.conceptTakeaways.length > 0) {
+        takeawaysText = `<ol class="list-decimal pl-4">` + activeLesson.conceptTakeaways.map(t => `<li class="mb-2">${t}</li>`).join('') + `</ol>`;
+      }
     } else {
       console.error("[CRITICAL] Sanity CMS Lesson validation failed:", parsedData.error.flatten());
     }
@@ -76,7 +79,9 @@ export default async function ConceptsReadPage({
         title: baseLesson.title,
         conceptText: MOCK_CONTENT[lessonId]?.concept?.text || "Content coming soon.",
       };
-      takeawaysText = `<p>Key takeaways for ${baseLesson.title}</p>`;
+      if (!takeawaysText) {
+        takeawaysText = `<p>Key takeaways for ${baseLesson.title}</p>`;
+      }
     }
   }
 

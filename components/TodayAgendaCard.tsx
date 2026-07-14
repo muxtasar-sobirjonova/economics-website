@@ -29,11 +29,11 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
 
   return (
     <div
-      className="flex flex-col h-[450px] overflow-y-auto"
+      className="flex flex-col overflow-y-auto"
       style={{
         flex: "1.5",
         backgroundColor: "white", 
-        padding: "40px",          
+        padding: "24px",          
         borderRadius: "24px",     
         boxShadow: "0 8px 32px rgba(0,0,0,0.04)" 
       }}

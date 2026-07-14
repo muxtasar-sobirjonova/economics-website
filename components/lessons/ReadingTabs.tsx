@@ -116,7 +116,7 @@ export const ReadingTabs = ({
   const [isOpen, setIsOpen] = useState(false);
 
   React.useEffect(() => {
-    const mainElement = document.querySelector('main');
+    const mainElement = document.querySelector('.content-page') as HTMLElement;
     if (mainElement) {
       if (isOpen && window.innerWidth >= 1024) {
         mainElement.style.paddingRight = '380px';

@@ -60,6 +60,9 @@ export default async function ArticlesReadPage({
     let sanityLesson;
     if (parsedData.success) {
       sanityLesson = parsedData.data;
+      if (sanityLesson.articleTakeaways && sanityLesson.articleTakeaways.length > 0) {
+        takeawaysText = `<ol class="list-decimal pl-4">` + sanityLesson.articleTakeaways.map(t => `<li class="mb-2">${t}</li>`).join('') + `</ol>`;
+      }
     } else {
       console.error("[CRITICAL] Sanity CMS Article validation failed:", parsedData.error.flatten());
     }
@@ -74,7 +77,9 @@ export default async function ArticlesReadPage({
         title: (lessonId === 1 ? MOCK_CONTENT[1].article.title : sanityLesson?.title) || MOCK_CONTENT[lessonId]?.article?.title || baseLesson.title,
         articleText: (lessonId === 1 ? MOCK_CONTENT[1].article.text : sanityLesson?.articleContent) || MOCK_CONTENT[lessonId]?.article?.text || "Content coming soon.",
       };
-      takeawaysText = `<p>Key takeaways for ${baseLesson.title}</p>`;
+      if (!takeawaysText) {
+        takeawaysText = `<p>Key takeaways for ${baseLesson.title}</p>`;
+      }
     }
   } catch (error) {
     console.error(`[CRITICAL] Sanity CMS fetch failed for article ${lessonId}`, error);
@@ -88,7 +93,9 @@ export default async function ArticlesReadPage({
         title: MOCK_CONTENT[lessonId]?.article?.title || baseLesson.title,
         articleText: MOCK_CONTENT[lessonId]?.article?.text || "Content coming soon.",
       };
-      takeawaysText = `<p>Key takeaways for ${baseLesson.title}</p>`;
+      if (!takeawaysText) {
+        takeawaysText = `<p>Key takeaways for ${baseLesson.title}</p>`;
+      }
     }
   }
 
