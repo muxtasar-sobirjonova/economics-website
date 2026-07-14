@@ -21,6 +21,7 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
   const [showFlash, setShowFlash] = useState(false);
   const [showShake, setShowShake] = useState(false);
   const [particles, setParticles] = useState<any[]>([]);
+  const [isSubmitting, setIsSubmitting] = useState(false);
 
   const currentQuestion = displayQuestions[currentQuestionIndex];
   const currentSelected = selectedAnswers[currentQuestionIndex];
@@ -35,7 +36,8 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
   };
 
   const handleSubmitAnswer = async () => {
-    if (hasAnsweredCurrent || currentSelected === null) return;
+    if (hasAnsweredCurrent || currentSelected === null || isSubmitting) return;
+    setIsSubmitting(true);
     const optionIndex = currentSelected;
 
     try {
@@ -83,6 +85,8 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
       const revertedSelected = [...selectedAnswers];
       revertedSelected[currentQuestionIndex] = null;
       setSelectedAnswers(revertedSelected);
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -139,6 +143,7 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
     handleNextQuestion,
     handlePrevQuestion,
     handleFinishQuiz,
-    handleReviewMistakes
+    handleReviewMistakes,
+    isSubmitting
   };
 }

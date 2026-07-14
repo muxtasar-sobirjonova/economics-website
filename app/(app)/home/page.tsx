@@ -2,13 +2,12 @@ import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import TodayAgendaCard from "@/components/TodayAgendaCard";
-import ReviewMistakesCard from "@/components/ReviewMistakesCard";
 import { DailyQuote } from "@/components/home/DailyQuote";
+import { DailyChallengeCard } from "@/components/home/DailyChallengeCard";
 import { DashboardHero } from "@/components/home/DashboardHero";
 import { LearningStats } from "@/components/home/LearningStats";
 
 import { ensureUserProgress } from "@/lib/user-progress";
-import { getUnreviewedMistakesFromDb } from "@/lib/db-utils";
 import { Suspense } from "react";
 import { Metadata } from 'next';
 
@@ -17,20 +16,6 @@ export const metadata: Metadata = {
   description: "Your personalized entrepreneurship economics learning dashboard.",
 };
 
-async function DashboardMistakes({ userId }: { userId: string }) {
-  const twentyFourHoursAgo = new Date(Date.now() - 24 * 60 * 60 * 1000);
-  const mistakeReviews = await getUnreviewedMistakesFromDb(userId, twentyFourHoursAgo);
-  const formattedMistakes = mistakeReviews.map(mr => ({
-    id: mr.quizAttemptId,
-    questionText: mr.quizAttempt.questionText || "Unknown question",
-    userAnswer: mr.quizAttempt.userAnswer,
-    correctAnswer: mr.quizAttempt.correctAnswer,
-    explanation: mr.quizAttempt.explanation,
-    timestamp: mr.quizAttempt.timestamp.toISOString()
-  }));
-
-  return <ReviewMistakesCard initialMistakes={formattedMistakes} />;
-}
 
 async function DashboardStatsAsync({ userId, streak, totalXP }: { userId: string, streak: number, totalXP: number }) {
   const localDate = new Date();
@@ -62,7 +47,8 @@ async function DashboardStatsAsync({ userId, streak, totalXP }: { userId: string
   const lessonXpThisWeek = weeklyLessonsAgg._sum.xpEarned || 0;
   const quizXpThisWeek = weeklyQuizzesAgg._sum.xpEarned || 0;
   const xpThisWeek = lessonXpThisWeek + quizXpThisWeek;
-  const avgQuizScore = quizAgg._avg.score ? Math.round(quizAgg._avg.score * 10) : 0;
+  let avgQuizScore = quizAgg._avg.score ? Math.round(quizAgg._avg.score * 10) : 0;
+  if (avgQuizScore > 100) avgQuizScore = 100;
 
   return (
     <LearningStats 
@@ -221,9 +207,7 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
       <div className="flex flex-col justify-start py-4 px-4 md:px-12">
         <div className="flex flex-col lg:flex-row w-full mx-auto gap-8 max-w-[1200px]">
           <TodayAgendaCard initialItems={agendaItems} />
-          <Suspense fallback={<div className="h-48 w-full bg-slate-100 animate-pulse rounded-xl" />}>
-            <DashboardMistakes userId={userId} />
-          </Suspense>
+          <DailyChallengeCard />
         </div>
         
         <Suspense fallback={<div className="h-32 w-full bg-slate-100 animate-pulse rounded-xl mt-8" />}>

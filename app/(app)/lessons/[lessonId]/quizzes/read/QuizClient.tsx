@@ -36,7 +36,8 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
     handleNextQuestion,
     handlePrevQuestion,
     handleFinishQuiz,
-    handleReviewMistakes
+    handleReviewMistakes,
+    isSubmitting
   } = useQuiz({ lessonId, displayQuestions });
 
   if (displayQuestions.length === 0) return <div className="p-8">No questions found.</div>;
@@ -269,9 +270,10 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                  ) : !hasAnsweredCurrent && currentSelected !== null ? (
                    <button 
                      onClick={handleSubmitAnswer}
-                     className="bg-brand-primary hover:bg-brand-primary/90 text-white rounded-xl px-8 py-3 font-[700] text-[15px] shadow-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+                     disabled={isSubmitting}
+                     className={`bg-brand-primary text-white rounded-xl px-8 py-3 font-[700] text-[15px] shadow-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-brand-primary/90'}`}
                    >
-                     Submit
+                     {isSubmitting ? 'Submitting...' : 'Submit'}
                    </button>
                  ) : (
                    <button 
