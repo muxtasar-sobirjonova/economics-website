@@ -2,6 +2,7 @@
 
 import { IconCheck } from "@tabler/icons-react";
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export interface AgendaItem {
   id: string;
@@ -13,6 +14,7 @@ export interface AgendaItem {
   isCompleted: boolean;
   difficulty?: "Beginner" | "Intermediate" | "Advanced";
   description?: string;
+  url?: string;
 }
 
 interface TodayAgendaCardProps {
@@ -33,28 +35,28 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
       style={{
         flex: "1.5",
         backgroundColor: "white", 
-        padding: "24px",          
+        padding: "20px",          
         borderRadius: "24px",     
         boxShadow: "0 8px 32px rgba(0,0,0,0.04)" 
       }}
     >
       {/* ── Header ── */}
-      <div className="flex justify-between items-end mb-2 shrink-0">
+      <div className="flex justify-between items-end mb-1 shrink-0">
         <h2 className="text-gray-900 font-[800] text-xl tracking-tight leading-none">
-          Today's Agenda
+          Today&apos;s Agenda
         </h2>
-        <div className="text-[13px] font-[500] text-brand-primary bg-[#F3F0FF] px-3 py-1 rounded-full leading-none">
-          ~{totalAgendaMinutes} min total
+        <div className="text-[12px] font-[600] text-[#5A4FBD] bg-[#F3F0FF] px-3 py-1 rounded-full leading-none">
+          up to {totalAgendaMinutes} minutes
         </div>
       </div>
       
       {/* Progress Bar */}
-      <div className="mb-4 flex flex-col gap-2 mt-2 shrink-0">
-        <div className="flex justify-between text-xs font-bold text-gray-500">
+      <div className="mb-3 flex flex-col gap-1.5 mt-2 shrink-0">
+        <div className="flex justify-between text-[11px] font-bold text-gray-400 uppercase tracking-wide">
           <span>Progress</span>
           <span>{completedCount} of {totalCount} done</span>
         </div>
-        <div className="w-full h-2 bg-gray-100 rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-[#F8F9FC] rounded-full overflow-hidden">
            <div className="h-full bg-brand-primary rounded-full transition-all duration-500" style={{ width: `${progressPercent}%` }}></div>
         </div>
       </div>
@@ -73,38 +75,37 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
           >
           {items.map((item, index) => {
             let theme;
-            let qtyText;
             
             const tag = item.tag ? item.tag.toUpperCase() : "";
             const title = item.title.toUpperCase();
             
             if (tag.includes("CONCEPT") || title.includes("CONCEPT") || (item.itemType === "LESSON" && index === 0)) {
               theme = { bg: "#fef3c7", text: "#d97706", label: "CONCEPT" };
-              qtyText = "1 Concept";
             } else if (tag.includes("ARTICLE") || title.includes("READ") || title.includes("ARTICLE") || item.itemType === "LESSON") {
               theme = { bg: "#dbeafe", text: "#2563eb", label: "ARTICLE" };
-              qtyText = "1 Article";
             } else {
               theme = { bg: "#f3e8ff", text: "#9333ea", label: "QUIZ" };
-              qtyText = "1 Quiz";
             }
 
-            const timeText = `~${item.timeEstimate} min`;
+            let timeText = `~${item.timeEstimate} min`;
+            if (theme.label === "CONCEPT") timeText = "5-10 min";
+            else if (theme.label === "ARTICLE") timeText = "5-20 min";
+            else if (theme.label === "QUIZ") timeText = "10 min";
+            
             const accentColor = theme.text;
             const badgeBg = theme.bg;
             const badgeText = theme.text;
-            const badgeLabel = theme.label;
+            const badgeLabelDisplay = theme.label;
             
-            return (
+            const innerCard = (
               <motion.div
-                key={item.id}
                 variants={{
                   hidden: { opacity: 0, y: 10, scale: 0.98 },
                   visible: { opacity: item.isCompleted ? 0.6 : 1, y: 0, scale: 1, transition: { type: 'spring', stiffness: 300, damping: 24 } }
                 }}
                 animate={{ opacity: item.isCompleted ? 0.6 : 1 }}
                 layout
-                className="flex items-center py-2 pr-3 pl-3 border-[1.5px] border-gray-100 rounded-2xl group bg-white transition-colors hover:shadow-sm hover:border-gray-200"
+                className="flex items-center py-2 pr-3 pl-3 border-[1.5px] border-gray-100 rounded-2xl group bg-white transition-colors hover:shadow-sm hover:border-brand-primary/50 cursor-pointer"
               >
                 {/* Left accent */}
                 <motion.div
@@ -119,7 +120,7 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
                     className="text-[10px] font-[800] px-2 py-0.5 rounded-md tracking-wider uppercase"
                     style={{ backgroundColor: badgeBg, color: badgeText }}
                   >
-                    {badgeLabel}
+                    {badgeLabelDisplay}
                   </motion.div>
 
                   {/* Title */}
@@ -153,6 +154,16 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
                 </div>
               </motion.div>
             );
+
+            return item.url ? (
+              <Link key={item.id} href={item.url} className="block outline-none focus:ring-2 focus:ring-brand-primary focus:ring-offset-2 rounded-2xl">
+                {innerCard}
+              </Link>
+            ) : (
+              <div key={item.id}>
+                {innerCard}
+              </div>
+            );
           })}
           </motion.div>
         ) : (
@@ -161,7 +172,7 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
               All caught up!
             </h3>
             <p className="text-[rgba(26,26,62,0.5)] text-sm mt-2">
-              You've finished your agenda for today.
+              You&apos;ve finished your agenda for today.
             </p>
           </div>
         )}

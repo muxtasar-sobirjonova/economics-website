@@ -24,6 +24,9 @@ import type { QueryParams, FilteredResponseQueryOptions } from 'next-sanity';
 // Override fetch config globally for sanity to utilize next/cache
 const originalFetch = client.fetch.bind(client);
 client.fetch = async <R = any>(query: string, params: QueryParams = {}, options: any = {}): Promise<R> => {
+  if (!projectId || projectId === 'placeholder') {
+    return [] as unknown as R;
+  }
   return originalFetch(query, params, {
     next: { revalidate: 3600 },
     ...options,

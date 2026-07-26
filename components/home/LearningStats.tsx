@@ -2,15 +2,19 @@
 
 import { IconFlame, IconCircleCheck, IconTrophy, IconStar } from '@tabler/icons-react';
 import { motion, useSpring, useTransform } from 'framer-motion';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 function AnimatedNumber({ value }: { value: number }) {
   const spring = useSpring(0, { mass: 0.8, stiffness: 75, damping: 15 });
   const display = useTransform(spring, (current) => Math.round(current).toLocaleString());
+  const [isClient, setIsClient] = useState(false);
 
   useEffect(() => {
+    setIsClient(true);
     spring.set(value);
   }, [value, spring]);
+
+  if (!isClient) return <span>{value.toLocaleString()}</span>;
 
   return <motion.span>{display}</motion.span>;
 }

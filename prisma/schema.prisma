@@ -14,6 +14,12 @@ enum ItemType {
   ARTICLE
 }
 
+enum Track {
+  ENTREPRENEURSHIP_ECONOMICS
+  DEVELOPMENT_ECONOMICS
+  BEHAVIORAL_ECONOMICS
+}
+
 model User {
   id               String             @id @default(cuid())
   name             String?
@@ -28,6 +34,8 @@ model User {
   lockedUntil         DateTime?
   failedLoginAttempts Int                @default(0)
   
+  activeTrack      Track?
+  trackProgress    TrackProgress[]
   progress         UserProgress?
   quizAttempts     QuizAttempt[]
   mistakeReviews   MistakeReview[]
@@ -44,67 +52,106 @@ model User {
 model DailyCompletion {
   id         String   @id @default(cuid())
   userId     String
-  user       User     @relation(fields: [userId], references: [id])
-  dateString DateTime
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  normalizedDate DateTime
   createdAt  DateTime @default(now())
 
-  @@unique([userId, dateString])
+  @@unique([userId, normalizedDate])
   @@index([userId])
 }
 
 model UserProgress {
   id             String  @id @default(cuid())
   userId         String  @unique
-  user           User    @relation(fields: [userId], references: [id])
+  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
   currentDay     Int     @default(1)
   streak         Int     @default(0)
   lastActiveDate String?
   totalXP        Int     @default(0)
   hearts         Int     @default(5)
+  lastHeartDecay DateTime @default(now())
   dailyTimeGoal  Int     @default(60)
   startDate      String?
+  createdAt      DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+}
+
+model TrackProgress {
+  id         String   @id @default(cuid())
+  userId     String
+  track      Track
+  currentDay Int      @default(1)
+  xp         Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @default(now()) @updatedAt
+
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, track])
+  @@index([userId])
 }
 
 model CompletedLesson {
-  id       String @id @default(cuid())
+  id       String   @id @default(cuid())
   userId   String
-  user     User   @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   lessonId String
   title    String
   date     DateTime
   xpEarned Int
+  track    Track
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
-  @@unique([userId, lessonId])
+  @@unique([userId, lessonId, track])
   @@index([userId])
 }
 
 model QuizResult {
-  id       String @id @default(cuid())
+  id       String   @id @default(cuid())
   userId   String
-  user     User   @relation(fields: [userId], references: [id])
+  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   quizId   String
   score    Int
   date     DateTime
   xpEarned Int
-  mistakes Json @default("[]")
+  
+  track    Track
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
-  @@unique([userId, quizId])
+  @@unique([userId, quizId, track])
   @@index([userId])
   @@index([quizId])
   @@index([userId, date])
 }
 
 model Lesson {
-  id           String @id @default(cuid())
-  title        String
-  tag          String
-  timeEstimate Int
-  dayOrder     Int    @unique
-  agendaCompletions AgendaCompletion[]
-  articles     Article[]
-  concepts     Concept[]
+  id               String   @id @default(cuid())
+  title            String
+  tag              String
+  timeEstimate     Int
+  dayOrder         Int
+  track    Track
 
+  conceptText      String?
+  conceptSummary   String?
+  conceptTakeaways Json?
+
+  articleTitle     String?
+  articleText      String?
+  articleSummary   String?
+  articleTakeaways Json?
+
+  articles         Article[]
+  concepts         Concept[]
+  agendaCompletions AgendaCompletion[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@unique([track, dayOrder])
   @@index([tag])
+  @@index([track])
 }
 
 model Quiz {
@@ -112,52 +159,71 @@ model Quiz {
   title        String
   tag          String
   timeEstimate Int
-  dayOrder     Int    @unique
+  dayOrder     Int
+  track    Track
   agendaCompletions AgendaCompletion[]
+  questions    QuizQuestion[]
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @default(now()) @updatedAt
 
+  @@unique([track, dayOrder])
   @@index([tag])
+  @@index([track])
+}
+
+model QuizQuestion {
+  id            String   @id @default(cuid())
+  quizId        String
+  quiz          Quiz     @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  questionText  String
+  options       String[]
+  correctAnswer String
+  explanation   String?
+  order         Int      @default(0)
+
+  @@index([quizId])
 }
 
 model Article {
   id           String @id @default(cuid())
   lessonId     String
-  lesson       Lesson @relation(fields: [lessonId], references: [id])
+  lesson       Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   agendaCompletions AgendaCompletion[]
 }
 
 model Concept {
   id           String @id @default(cuid())
   lessonId     String
-  lesson       Lesson @relation(fields: [lessonId], references: [id])
+  lesson       Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   agendaCompletions AgendaCompletion[]
 }
 
 model AgendaCompletion {
   id          String   @id @default(cuid())
   userId      String
-  user        User     @relation(fields: [userId], references: [id])
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   itemType    ItemType
   lessonId    String?
-  lesson      Lesson?  @relation(fields: [lessonId], references: [id])
+  lesson      Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   quizId      String?
-  quiz        Quiz?    @relation(fields: [quizId], references: [id])
+  quiz        Quiz?    @relation(fields: [quizId], references: [id], onDelete: Cascade)
   articleId   String?
-  article     Article? @relation(fields: [articleId], references: [id])
+  article     Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
   conceptId   String?
-  concept     Concept? @relation(fields: [conceptId], references: [id])
+  concept     Concept? @relation(fields: [conceptId], references: [id], onDelete: Cascade)
   completedAt DateTime @default(now())
-  dateString  DateTime
+  normalizedDate  DateTime
 
   @@index([userId])
-  @@index([dateString])
-  @@index([userId, dateString])
+  @@index([normalizedDate])
+  @@index([userId, normalizedDate])
   @@index([userId, lessonId, itemType])
 }
 
 model QuizAttempt {
   id            String         @id @default(cuid())
   userId        String
-  user          User           @relation(fields: [userId], references: [id])
+  user          User           @relation(fields: [userId], references: [id], onDelete: Cascade)
   quizId        String
   questionId    String
   questionText  String?
@@ -180,8 +246,10 @@ model MistakeReview {
   quizAttempt   QuizAttempt @relation(fields: [quizAttemptId], references: [id], onDelete: Cascade)
   reviewed      Boolean     @default(false)
   reviewedAt    DateTime?
+  track    Track
 
   @@index([userId])
+  @@index([userId, track])
   @@index([reviewed])
 }
 
@@ -232,11 +300,12 @@ model Note {
   color     String?
   source    String?
   timestamp DateTime?
+  track    Track
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@index([userId])
-  @@index([userId, lessonId])
+  @@index([userId, lessonId, track])
 }
 
 model Bookmark {
@@ -244,9 +313,10 @@ model Bookmark {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   slug      String
+  track    Track
   createdAt DateTime @default(now())
 
-  @@unique([userId, slug])
+  @@unique([userId, slug, track])
   @@index([userId])
-  @@index([userId, slug])
+  @@index([userId, slug, track])
 }

@@ -130,7 +130,7 @@ export const MarketingSections = () => (
       <div className="max-w-7xl mx-auto px-6">
         <ScrollReveal delay={0} className="mb-12 text-center max-w-3xl mx-auto">
           <Eyebrow>Our Approach</Eyebrow>
-          <SectionHeading align="center">Why Choose That's So Econ?</SectionHeading>
+          <SectionHeading align="center">Why Choose That&apos;s So Econ?</SectionHeading>
         </ScrollReveal>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <ScrollReveal delay={0.1}>
@@ -169,7 +169,7 @@ export const MarketingSections = () => (
           </div>
           <div className="relative z-10 text-left">
             <p className="text-xl md:text-2xl text-slate-900 font-medium leading-relaxed mb-8">
-              "We built That's So Econ to bridge the gap between academic theory and real-world venture building. Traditional education is often disconnected from the speed of the startup world. We provide the fastest path to building a powerful mental model for business."
+              &quot;We built That&apos;s So Econ to bridge the gap between academic theory and real-world venture building. Traditional education is often disconnected from the speed of the startup world. We provide the fastest path to building a powerful mental model for business.&quot;
             </p>
             <div className="flex items-center gap-4">
               <div className="w-14 h-14 rounded-full bg-gray-200 flex shrink-0"></div>

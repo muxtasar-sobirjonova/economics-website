@@ -75,16 +75,16 @@ export default function ArticleBody({
     },
   };
 
-  const magazineComponents: any = {
+  const magazineComponents: PortableTextComponents = {
     ...baseComponents,
     block: {
-      ...(baseComponents.block as any),
-      h3: ({ children }: any) => (
+      ...(baseComponents.block as Record<string, React.FC<unknown>>),
+      h3: ({ children }: { children?: React.ReactNode }) => (
         <h3 className="text-sm md:text-lg font-[800] mt-10 mb-4 text-[#0096a5] uppercase border-b-2 border-tropic inline-block tracking-wide">
           {children}
         </h3>
       ),
-      normal: ({ children }: any) => (
+      normal: ({ children }: { children?: React.ReactNode }) => (
         <p className="mb-6 text-[#0096a5] leading-[1.8] font-sans text-base md:text-[17px]">
           {children}
         </p>

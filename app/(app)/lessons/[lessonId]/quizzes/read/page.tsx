@@ -1,16 +1,10 @@
 import React from "react";
-import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { getLessonAccessStatus } from "@/lib/lesson-access";
-import { client } from "@/sanity/client";
-import { QUIZ_BY_ID_QUERY } from "@/sanity/queries";
-import { z } from "zod";
 import { ReadingTabs } from "@/components/lessons/ReadingTabs";
-import { NoteData, QuizQuestion, SanityQuizSchema } from "@/types";
-import { MOCK_CONTENT } from "@/lib/mockContent";
-import { getLessons, getQuizzes, QUIZZES } from "@/lib/data";
+import { NoteData, QuizQuestion } from "@/types";
 import QuizClient from "./QuizClient";
 import QuizPageLayout from "./QuizPageLayout";
 
@@ -36,33 +30,23 @@ export default async function QuizzesReadPage({
     redirect("/roadmap");
   }
 
-  // 2. Fetch lesson data from Sanity
-  const activeLesson = null;
-  let questions: any[] = [];
-  try {
-    const rawSanityLesson = await client.fetch(
-      QUIZ_BY_ID_QUERY,
-      { lessonId },
-      { next: { revalidate: 3600 } }
-    );
-    const parsedData = SanityQuizSchema.safeParse(rawSanityLesson);
-    
-    let sanityLesson;
-    if (parsedData.success) {
-      sanityLesson = parsedData.data;
-    } else {
-      console.error("[CRITICAL] Sanity CMS Quiz validation failed:", parsedData.error.flatten());
-    }
+  // 2. Fetch quiz data from Database
+  const userRecord = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { activeTrack: true }
+  });
+  const activeTrack = userRecord?.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
 
-    const quiz = QUIZZES.find((q) => q.id === 100 + lessonId);
-    
-    questions = (lessonId === 1 ? quiz?.questions : sanityLesson?.questions) || quiz?.questions || [];
-  } catch (error) {
-    console.error(`[CRITICAL] Sanity CMS fetch failed for quiz ${lessonId}`, error);
-    // Fallback to mock content
-    const quiz = QUIZZES.find((q) => q.id === 100 + lessonId);
-    questions = quiz?.questions || [];
-  }
+  const quiz = await prisma.quiz.findUnique({
+    where: { track_dayOrder: { track: activeTrack, dayOrder: lessonId } },
+    include: {
+      questions: {
+        orderBy: { order: 'asc' }
+      }
+    }
+  });
+
+  const questions = quiz?.questions || [];
 
   if (questions.length === 0) {
     return (
@@ -73,9 +57,10 @@ export default async function QuizzesReadPage({
   }
 
   // Strip correct options from questions to ensure secure client delivery
-  const secureQuestions = questions.map((q: any) => {
+  const secureQuestions = questions.map((q) => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { correctAnswer, ...rest } = q;
-    return rest as QuizQuestion;
+    return q as unknown as QuizQuestion;
   });
 
   // 3. Fetch user notes scoped to this lesson

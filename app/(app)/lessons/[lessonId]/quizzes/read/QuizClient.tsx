@@ -19,6 +19,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
   const displayQuestions = questions.slice(0, 10);
   
   const {
+    isHydrated,
     currentQuestionIndex,
     currentQuestion,
     currentSelected,
@@ -41,6 +42,10 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
   } = useQuiz({ lessonId, displayQuestions });
 
   if (displayQuestions.length === 0) return <div className="p-8">No questions found.</div>;
+
+  if (!isHydrated) {
+    return <div className="p-16 flex justify-center items-center h-[50vh]"><div className="w-8 h-8 border-4 border-[#7B6FE7] border-t-transparent rounded-full animate-spin"></div></div>;
+  }
 
   if (isFinished) {
     let message = "📚 Keep Studying";
@@ -66,7 +71,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                     backgroundColor: colors[Math.floor(Math.random() * colors.length)],
                     '--delay': `${delay}s`,
                     '--duration': `${duration}s`
-                  } as any}
+                  } as React.CSSProperties}
                 />
               );
             })}
@@ -241,7 +246,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                         {hasAnsweredCurrent && isCorrect && particles.length > 0 && currentSelected === idx && (
                           <div className="absolute top-1/2 right-6 w-0 h-0 pointer-events-none">
                             {particles.map(p => (
-                              <div key={p.id} className="absolute w-2 h-2 rounded-full animate-burst" style={{ backgroundColor: p.color, '--tx': p.tx, '--ty': p.ty, transform: 'translate(-50%, -50%)' } as any} />
+                              <div key={p.id} className="absolute w-2 h-2 rounded-full animate-burst" style={{ backgroundColor: p.color, '--tx': p.tx, '--ty': p.ty, transform: 'translate(-50%, -50%)' } as React.CSSProperties} />
                             ))}
                           </div>
                         )}

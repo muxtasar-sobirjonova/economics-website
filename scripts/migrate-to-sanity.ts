@@ -1,6 +1,5 @@
 import { createClient } from '@sanity/client';
 import { MOCK_CONTENT } from '../lib/mockContent';
-import { QUIZZES } from '../lib/data';
 import dotenv from 'dotenv';
 import path from 'path';
 
@@ -29,19 +28,20 @@ async function migrate() {
 
   for (const dayStr of Object.keys(MOCK_CONTENT)) {
     const dayOrder = parseInt(dayStr, 10);
-    const content = MOCK_CONTENT[dayOrder];
+    const content: any = MOCK_CONTENT[dayOrder];
     
     // Create Lesson
     const lessonSlug = `day-${dayOrder}`;
     const lessonDoc = {
       _type: 'lesson',
       _id: `lesson-${dayOrder}`,
-      title: content.concept.title,
+      title: content.concept?.title || 'Untitled Lesson',
       slug: { current: lessonSlug },
       tag: `Day ${dayOrder}`,
       dayOrder: dayOrder,
       timeEstimate: 15,
-      excerpt: content.concept.text.substring(0, 100) + '...',
+      conceptDescription: (content.concept as any)?.conceptDescription || '',
+      excerpt: content.concept?.text?.substring(0, 100) + '...',
     };
     console.log(`Creating Lesson: ${lessonDoc.title}`);
     await client.createOrReplace(lessonDoc);
@@ -68,13 +68,14 @@ async function migrate() {
     await client.createOrReplace(articleDoc);
     
     // Check if there's a quiz for this day
-    const quiz = QUIZZES.find(q => q.title.includes(`Lesson ${dayOrder}`));
+    const QUIZZES: any[] = [];
+    const quiz = QUIZZES.find((q: any) => q.title.includes(`Lesson ${dayOrder}`));
     if (quiz && quiz.questions) {
       console.log(`Creating ${quiz.questions.length} Questions for Day ${dayOrder}...`);
       
       const questionRefs = [];
       for (let i = 0; i < quiz.questions.length; i++) {
-        const q = quiz.questions[i];
+        const q: any = quiz.questions[i];
         const questionDoc = {
           _type: 'question',
           _id: `question-${dayOrder}-${i}`,

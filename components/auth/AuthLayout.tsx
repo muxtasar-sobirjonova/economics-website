@@ -12,7 +12,7 @@ export default function AuthLayout({ children, title, subtitle }: { children: Re
               T
             </div>
             <span className="font-bold text-[#24203F] text-[22px] tracking-wide">
-              That's So Econ.
+              That&apos;s So Econ.
             </span>
           </div>
           

@@ -1,6 +1,6 @@
 'use client';
 import { IconBook, IconCheck, IconLock } from '@tabler/icons-react';
-import { motion, useMotionValue, useMotionTemplate, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export const RoadmapMockup = () => (
   <div className="bg-[#F8F9FC] rounded-3xl border border-gray-200 shadow-xl relative w-full h-auto max-h-[520px] flex flex-col overflow-hidden text-left z-10 mx-auto group">

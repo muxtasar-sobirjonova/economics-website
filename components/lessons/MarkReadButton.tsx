@@ -1,6 +1,6 @@
 "use client";
 
-import { useTransition, useState } from "react";
+import { useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { markArticleDoneAction } from "@/app/actions/agenda";
 
@@ -12,17 +12,21 @@ import { markArticleDoneAction } from "@/app/actions/agenda";
 export function MarkReadButton({ lessonId, isArticle }: { lessonId: string, isArticle?: boolean }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
-  const [hasTicked, setHasTicked] = useState(false);
 
   const handleClick = () => {
+    // Optimistic Navigation: Immediately go to next page
+    router.push(`/lessons/${lessonId}/${isArticle ? 'quizzes' : 'articles'}`);
+    
+    // Background the save action
     startTransition(async () => {
       try {
-        await markArticleDoneAction(lessonId);
-        setHasTicked(true);
+        const res = await markArticleDoneAction(lessonId);
+        if (!res.success) {
+          console.error("Failed to mark done:", res.error);
+        }
       } catch {
         // Non-critical — don't block navigation on failure
       }
-      router.push(`/lessons/${lessonId}/${isArticle ? 'quizzes' : 'articles'}`);
     });
   };
 

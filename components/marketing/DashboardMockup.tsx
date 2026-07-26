@@ -1,7 +1,7 @@
 'use client';
 import { BrowserChrome } from './BrowserChrome';
 import { IconCheck, IconLock } from '@tabler/icons-react';
-import { motion, useMotionValue, useMotionTemplate, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export const DashboardMockup = () => (
   <motion.div 
@@ -15,7 +15,7 @@ export const DashboardMockup = () => (
       {/* ── Header ── */}
       <div className="flex justify-between items-end mb-2">
         <h2 className="text-gray-900 font-[800] text-xl tracking-tight leading-none">
-          Today's Agenda
+          Today&apos;s Agenda
         </h2>
         <div className="text-[13px] font-[500] text-brand-primary bg-[#F3F0FF] px-3 py-1 rounded-full leading-none">
           ~25 min total
@@ -48,7 +48,7 @@ export const DashboardMockup = () => (
             <div className="text-sm font-[600] leading-tight text-gray-900 line-clamp-1 max-w-[200px]">Value Creation</div>
             <div className="bg-gray-50 text-brand-primary font-[500] text-[11px] px-2 py-0.5 rounded-full whitespace-nowrap ml-auto">~5 min</div>
           </div>
-          <button className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-150 ml-3 cursor-pointer bg-green-700 border-green-700 border-[1.5px] shadow-[0_0_0_3px_rgba(21,128,61,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}>
+          <button className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-150 ml-3 cursor-pointer bg-green-700 border-green-700 border-[1.5px] shadow-[0_0_0_3px_rgba(21,128,61,0.15)] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" role="button" aria-label="Completed Concept" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); } }}>
             <IconCheck size={20} className="text-white" stroke={3} />
           </button>
         </div>
@@ -61,7 +61,7 @@ export const DashboardMockup = () => (
             <div className="text-sm font-[600] leading-tight text-gray-900 line-clamp-1 max-w-[200px]">AirBnB Case Study</div>
             <div className="bg-gray-50 text-brand-primary font-[500] text-[11px] px-2 py-0.5 rounded-full whitespace-nowrap ml-auto">~15 min</div>
           </div>
-          <button className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-150 ml-3 cursor-pointer border-gray-200 border-[1.5px] hover:border-[#5C4DE3] hover:bg-[#F3F0FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}><IconLock size={16} className="text-gray-400" /></button>
+          <button className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-150 ml-3 cursor-pointer border-gray-200 border-[1.5px] hover:border-[#5C4DE3] hover:bg-[#F3F0FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" role="button" aria-label="Locked Article" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); } }}><IconLock size={16} className="text-gray-400" /></button>
         </div>
         
         {/* Quiz */}
@@ -72,7 +72,7 @@ export const DashboardMockup = () => (
             <div className="text-sm font-[600] leading-tight text-gray-900 line-clamp-1 max-w-[200px]">Market Dynamics</div>
             <div className="bg-gray-50 text-brand-primary font-[500] text-[11px] px-2 py-0.5 rounded-full whitespace-nowrap ml-auto">~5 min</div>
           </div>
-          <button className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-150 ml-3 cursor-pointer border-gray-200 border-[1.5px] hover:border-[#5C4DE3] hover:bg-[#F3F0FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}><IconLock size={16} className="text-gray-400" /></button>
+          <button className="w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-all duration-150 ml-3 cursor-pointer border-gray-200 border-[1.5px] hover:border-[#5C4DE3] hover:bg-[#F3F0FF] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" role="button" aria-label="Locked Quiz" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') { e.preventDefault(); } }}><IconLock size={16} className="text-gray-400" /></button>
         </div>
       </div>
     </div>

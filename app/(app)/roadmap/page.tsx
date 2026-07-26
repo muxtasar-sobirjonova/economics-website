@@ -9,13 +9,9 @@ import { RoadmapProgress } from "@/lib/types/roadmap";
 import { ensureUserProgress } from "@/lib/user-progress";
 import { getLessons } from "@/lib/data";
 
-export default async function RoadmapPage() {
-  const session = await auth();
-  if (!session?.user || !session.user.id) {
-    redirect("/login");
-  }
+import { Suspense } from "react";
 
-  const userId = session.user.id;
+async function RoadmapContent({ userId }: { userId: string }) {
   await ensureUserProgress(userId);
 
   const lessons = await getLessons();
@@ -27,23 +23,33 @@ export default async function RoadmapPage() {
   };
 
   try {
-    const user = await prisma.user.findUnique({
-      where: { id: userId },
-      select: {
-        progress: {
-          select: { totalXP: true }
+    const localDate = new Date();
+    const jsDay = localDate.getUTCDay();
+    const todayIndex = jsDay === 0 ? 6 : jsDay - 1;
+    const monday = new Date(localDate);
+    monday.setUTCDate(localDate.getUTCDate() - todayIndex);
+    monday.setUTCHours(0, 0, 0, 0);
+
+    const [user, weeklyQuizzesAgg] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          completedLessons: {
+            select: { lessonId: true }
+          },
+          quizResults: {
+            select: { quizId: true }
+          },
         },
-        completedLessons: {
-          select: { lessonId: true }
-        },
-        quizResults: {
-          select: { quizId: true }
-        },
-      },
-    });
+      }),
+      prisma.quizResult.aggregate({
+        where: { userId, date: { gte: monday } },
+        _sum: { xpEarned: true }
+      })
+    ]);
 
     progressData = {
-      totalXP: user?.progress?.totalXP || 0,
+      totalXP: weeklyQuizzesAgg._sum.xpEarned || 0,
       completedLessonIds: (user?.completedLessons ?? []).map(l => parseInt(l.lessonId) || 0),
       completedQuizIds: (user?.quizResults ?? []).map(q => parseInt(q.quizId) || 0),
     };
@@ -51,6 +57,52 @@ export default async function RoadmapPage() {
     console.error("Failed to fetch roadmap data:", error);
     // gracefully fall back to initial 0/empty state
   }
+
+  return (
+    <div className="flex flex-col xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden p-4 gap-5">
+      {/* Left Content Area */}
+      <div className="flex-1 flex flex-col items-center xl:overflow-y-auto pb-10">
+        <RoadmapUnitCard 
+          chapterNumber={1} 
+          title="The Science of Prosperity" 
+          description="Understand what development really means and how we measure progress." 
+        />
+
+        <RoadmapMap lessons={lessons} 
+          completedLessonDayOrders={progressData.completedLessonIds} 
+          completedQuizDayOrders={progressData.completedQuizIds} 
+        />
+      </div>
+
+      {/* Right panel */}
+      <RoadmapSidebar lessons={lessons} 
+        serverTotalXP={progressData.totalXP} 
+        completedLessonDayOrders={progressData.completedLessonIds}
+        activeTrack="ENTREPRENEURSHIP_ECONOMICS" 
+      />
+    </div>
+  );
+}
+
+function RoadmapSkeleton() {
+  return (
+    <div className="flex flex-col xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden p-4 gap-5">
+      <div className="flex-1 flex flex-col items-center xl:overflow-y-auto pb-10">
+        <div className="w-full max-w-2xl h-32 bg-slate-100 animate-pulse rounded-2xl mb-8"></div>
+        <div className="w-full max-w-md h-[600px] bg-slate-100 animate-pulse rounded-2xl"></div>
+      </div>
+      <div className="w-full xl:w-80 h-[500px] bg-slate-100 animate-pulse rounded-2xl shrink-0"></div>
+    </div>
+  );
+}
+
+export default async function RoadmapPage() {
+  const session = await auth();
+  if (!session?.user || !session.user.id) {
+    redirect("/login");
+  }
+
+  const userId = session.user.id;
 
   // Derive initial for avatar
   const avatarLetter = session.user.name 
@@ -72,25 +124,9 @@ export default async function RoadmapPage() {
       </div>
 
       {/* Content area */}
-      <div className="flex flex-col xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden p-4 gap-5">
-        {/* Left Content Area */}
-        <div className="flex-1 flex flex-col items-center xl:overflow-y-auto pb-10">
-          <RoadmapUnitCard />
-
-          {/* @ts-ignore */}
-          <RoadmapMap lessons={lessons} 
-            completedLessonIds={progressData.completedLessonIds} 
-            completedQuizIds={progressData.completedQuizIds} 
-          />
-        </div>
-
-        {/* Right panel */}
-        {/* @ts-ignore */}
-          <RoadmapSidebar lessons={lessons} 
-          serverTotalXP={progressData.totalXP} 
-          completedLessonIds={progressData.completedLessonIds} 
-        />
-      </div>
+      <Suspense fallback={<RoadmapSkeleton />}>
+        <RoadmapContent userId={userId} />
+      </Suspense>
     </div>
   );
 }

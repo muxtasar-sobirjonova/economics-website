@@ -31,9 +31,13 @@ export const DailyGoalModal = ({ currentGoal }: { currentGoal: number }) => {
     
     startTransition(async () => {
       try {
-        await setDailyTimeGoalAction(minutes);
-        triggerConfetti();
-        setTimeout(() => setShowDailyGoalModal(false), 1500);
+        const res = await setDailyTimeGoalAction(minutes);
+        if (!res.success) {
+          console.error(res.error);
+        } else {
+          triggerConfetti();
+          setTimeout(() => setShowDailyGoalModal(false), 1500);
+        }
       } catch (err) {
         console.error(err);
       }
@@ -60,7 +64,7 @@ export const DailyGoalModal = ({ currentGoal }: { currentGoal: number }) => {
           </button>
         </div>
         <p className="text-slate-900/70 text-[15px] mb-8 leading-relaxed">
-          How much time can you commit to learning each day? We'll build
+          How much time can you commit to learning each day? We&apos;ll build
           your daily agenda around your goal.
         </p>
 

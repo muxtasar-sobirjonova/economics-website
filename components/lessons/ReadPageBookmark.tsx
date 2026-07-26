@@ -23,7 +23,10 @@ export function ReadPageBookmark({
     setIsBookmarked(next); // optimistic update
     startTransition(async () => {
       try {
-        await toggleBookmarkAction(slug);
+        const res = await toggleBookmarkAction(slug);
+        if (!res.success) {
+          setIsBookmarked(!next); // revert on failure
+        }
       } catch {
         setIsBookmarked(!next); // revert on failure
       }

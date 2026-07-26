@@ -17,10 +17,11 @@ export default function QuizSection({
   const searchParams = useSearchParams();
   const router = useRouter();
   const retryMode = searchParams?.get("retry") === "true";
-  const [, startTransition] = useTransition();
+  const [isPending, startTransition] = useTransition();
 
   const [answers, setAnswers] = useState<Record<string, string>>({});
   const [eliminated, setEliminated] = useState<Record<string, string[]>>({});
+  const [showExplanation, setShowExplanation] = useState<Record<string, boolean>>({});
   const [submitted, setSubmitted] = useState(false);
   const [score, setScore] = useState(0);
 
@@ -54,7 +55,7 @@ export default function QuizSection({
     let currentScore = 0;
     const mistakes: { questionId: string; userAnswer: string; questionText?: string; correctAnswer?: string; explanation?: string }[] = [];
 
-    questions.forEach((q: any) => {
+    questions.forEach((q) => {
       let isCorrect = false;
       if (q.type === "multiple-choice" && answers[q._key] === q.correctAnswer) {
         isCorrect = true;
@@ -87,8 +88,12 @@ export default function QuizSection({
     
     startTransition(async () => {
       try {
-        await markQuizDoneAction(quizId, overallScore, mistakes);
-        router.refresh();
+        const res = await markQuizDoneAction(quizId, overallScore, mistakes);
+        if (!res.success) {
+          console.error("Failed to submit quiz results", res.error);
+        } else {
+          router.refresh();
+        }
       } catch (err) {
         console.error("Failed to submit quiz results", err);
       }
@@ -170,6 +175,8 @@ export default function QuizSection({
                     onClick={() => handleSelect(q._key, opt)}
                     disabled={submitted}
                     style={optionStyle}
+                    aria-label={`Select option ${opt}`}
+                    aria-pressed={isSelected}
                     onMouseEnter={(e) => {
                       if (!submitted && !isSelected) {
                         e.currentTarget.style.borderColor = '#7B6FE7';
@@ -188,8 +195,9 @@ export default function QuizSection({
                     <span style={{ color: isSelected ? '#ffffff' : '#1A1A2E', fontSize: '14px', fontWeight: isSelected ? 600 : 400 }}>{opt}</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       {!isSelected && (
-                        <span 
+                        <button 
                           onClick={(e) => handleEliminate(e, q._key, opt)}
+                          aria-label={`Eliminate option ${opt}`}
                           style={{ 
                             color: isEliminated ? '#ef4444' : '#C7D7FF', 
                             fontSize: '18px', 
@@ -199,7 +207,7 @@ export default function QuizSection({
                           }}
                         >
                           -
-                        </span>
+                        </button>
                       )}
                       <span style={{ color: isSelected ? 'rgba(255,255,255,0.5)' : '#C7D7FF', fontSize: '16px' }}>→</span>
                     </div>
@@ -226,12 +234,24 @@ export default function QuizSection({
             </div>
           )}
 
-          {submitted && q.explanation && (
-            <div className="mt-4 p-4 bg-gray-50 rounded-lg text-sm text-gray-600 border border-gray-100">
-              <span className="font-semibold text-[#0096a5] block mb-1">
-                Explanation:
-              </span>
-              {q.explanation}
+          {(answers[q._key] || submitted) && q.explanation && (
+            <div className="mt-4 flex flex-col items-end">
+              <button
+                onClick={() => setShowExplanation(prev => ({ ...prev, [q._key]: !prev[q._key] }))}
+                className="text-xs font-semibold text-[#7B6FE7] hover:underline mb-2"
+                aria-expanded={!!showExplanation[q._key]}
+                aria-controls={`explanation-${q._key}`}
+              >
+                {showExplanation[q._key] ? "Hide Explanation" : "Show Explanation"}
+              </button>
+              {showExplanation[q._key] && (
+                <div id={`explanation-${q._key}`} className="w-full p-4 bg-[#EEF3FF] rounded-lg text-sm text-[#1A1A2E] border border-[#C7D7FF] text-left" aria-live="polite">
+                  <span className="font-semibold text-[#7B6FE7] block mb-1">
+                    Explanation:
+                  </span>
+                  {q.explanation}
+                </div>
+              )}
             </div>
           )}
         </div>
@@ -240,13 +260,14 @@ export default function QuizSection({
       {!submitted ? (
         <button
           onClick={handleSubmit}
-          disabled={Object.keys(answers).length === 0}
-          style={{ background: '#7B6FE7', color: '#ffffff', opacity: Object.keys(answers).length === 0 ? 0.5 : 1, fontWeight: 700, fontSize: '15px', borderRadius: '8px', padding: '14px 32px', width: '100%', border: 'none', cursor: Object.keys(answers).length === 0 ? 'not-allowed' : 'pointer' }}
+          disabled={Object.keys(answers).length === 0 || isPending}
+          className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
+          style={{ background: '#7B6FE7', color: '#ffffff', opacity: Object.keys(answers).length === 0 || isPending ? 0.5 : 1, fontWeight: 700, fontSize: '15px', borderRadius: '8px', padding: '14px 32px', width: '100%', border: 'none', cursor: Object.keys(answers).length === 0 || isPending ? 'not-allowed' : 'pointer' }}
         >
-          Submit Answers
+          {isPending ? "Submitting..." : "Submit Answers"}
         </button>
       ) : (
-        <div className="mt-8 text-center bg-white rounded-xl border border-gray-200 p-8 shadow-sm">
+        <div className="mt-8 text-center bg-white rounded-xl border border-gray-200 p-8 shadow-sm" aria-live="assertive" tabIndex={-1} ref={(el) => { if (el && submitted) el.focus(); }}>
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-[#1F2937]">Quiz Complete!</h3>
             <div className="bg-[#7B6FE7] text-white text-sm font-bold px-4 py-1.5 rounded-full">

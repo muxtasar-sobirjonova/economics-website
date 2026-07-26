@@ -50,7 +50,6 @@ export default function LessonCard({
   lessonId,
   lessonNumber,
   title,
-  description,
   isActive,
   isCompleted,
   section,

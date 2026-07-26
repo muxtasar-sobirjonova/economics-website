@@ -2,123 +2,123 @@ import { Question } from '../types';
 
 export const LESSON_1_QUESTIONS: Question[] = [
   {
-    _key: 'q1',
-    questionText: 'You are entering a market that is already "fully saturated" (like the pizza industry in the 1960s). How do you find a competitive advantage?',
-    type: 'multiple-choice',
-    options: [
-      'By trying to outperform incumbents on product quality across every feature.',
-      'By identifying a non-monetary resource (like time) that customers are currently "spending" or wasting that competitors have not bothered to optimize.',
-      'By lowering prices significantly to stide-mint market share from established players.',
-      'By waiting for a market shift to make current competitors obsolete.'
+    "_key": "q1",
+    "questionText": "[Theory] According to this lesson, what does entrepreneurship economics actually study?",
+    "type": "multiple-choice",
+    "options": [
+      "How to write a business plan that guarantees investor funding",
+      "How people decide where to allocate limited time and money when the future is unclear, and how early commitments shape what becomes possible later",
+      "How to calculate a company's exact market value before launch",
+      "How governments regulate new industries"
     ],
-    correctAnswer: 'By identifying a non-monetary resource (like time) that customers are currently "spending" or wasting that competitors have not bothered to optimize.'
+    "correctAnswer": "How people decide where to allocate limited time and money when the future is unclear, and how early commitments shape what becomes possible later"
   },
   {
-    _key: 'q2',
-    questionText: 'Every business is constrained by time, capital, or labor. What is the most effective approach to your biggest constraint?',
-    type: 'multiple-choice',
-    options: [
-      'Try to remove the constraint entirely through additional investment.',
-      'Turn the constraint into your defining competitive advantage.',
-      'Compromise on product quality until you have more capital.',
-      'Pause operations until the resource is no longer limited.'
+    "_key": "q2",
+    "questionText": "[Theory] What does \"opportunity cost\" mean, as illustrated in this lesson?",
+    "type": "multiple-choice",
+    "options": [
+      "The total cost of manufacturing a product",
+      "Choosing one path with limited time and money means giving up the other paths that were available, some of which might have turned out better",
+      "A fee charged by investors for early-stage funding",
+      "The cost difference between two competitors' products"
     ],
-    correctAnswer: 'Turn the constraint into your defining competitive advantage.'
+    "correctAnswer": "Choosing one path with limited time and money means giving up the other paths that were available, some of which might have turned out better"
   },
   {
-    _key: 'q3',
-    questionText: 'You must perform the same production task in both a high-labor-cost environment and a low-labor-cost environment. What is the logical economic decision?',
-    type: 'multiple-choice',
-    options: [
-      'Use the same production method in both to ensure brand consistency.',
-      'Always choose the method with the most modern technology, regardless of cost.',
-      'Change your production process—using more machinery where labor is expensive and more labor where wages are low—to reach the same goal.',
-      'Only operate in low-labor-cost environments.'
+    "_key": "q3",
+    "questionText": "[Theory] Why does this lesson argue that many early entrepreneurial actions are \"not about executing a plan\" but \"about learning\"?",
+    "type": "multiple-choice",
+    "options": [
+      "Because founders always know the right answer in advance and are just confirming it",
+      "Because information is weak and early signals are incomplete, so small experiments (prototypes, demos, price changes) are used to reveal what's actually true",
+      "Because execution is illegal without government approval",
+      "Because learning and executing are identical activities with no real difference"
     ],
-    correctAnswer: 'Change your production process—using more machinery where labor is expensive and more labor where wages are low—to reach the same goal.'
+    "correctAnswer": "Because information is weak and early signals are incomplete, so small experiments (prototypes, demos, price changes) are used to reveal what's actually true"
   },
   {
-    _key: 'q4',
-    questionText: 'Without historical data, how do you validate an unproven business idea?',
-    type: 'multiple-choice',
-    options: [
-      'Conduct a survey to see what people say they want.',
-      'Build the full version of the product to test the market.',
-      'Perform small, low-risk experiments to observe actual customer behavior and trade-offs.',
-      'Assume the idea is valid because no one else is doing it.'
+    "_key": "q4",
+    "questionText": "[Theory] According to this lesson, why doesn't having more funding eliminate a founder's need to make trade-off decisions?",
+    "type": "multiple-choice",
+    "options": [
+      "Because more funding always removes every constraint a founder faces",
+      "Because more money creates more options, but it doesn't remove the need to choose between them — every choice still forecloses others",
+      "Because funding has no relationship to a founder's decision-making at all",
+      "Because founders with more funding are legally required to pursue every option simultaneously"
     ],
-    correctAnswer: 'Perform small, low-risk experiments to observe actual customer behavior and trade-offs.'
+    "correctAnswer": "Because more money creates more options, but it doesn't remove the need to choose between them — every choice still forecloses others"
   },
   {
-    _key: 'q5',
-    questionText: 'You have enough capital to either improve product quality by 20% or shorten service time by 50%. Based on entrepreneurial economics, how do you decide?',
-    type: 'multiple-choice',
-    options: [
-      'Choose quality, because better products always win in the long run.',
-      'Choose time, because if the customer values speed (like in the Domino’s example), that focus creates the highest value.',
-      'Split the resources to do both partially.',
-      'Choose quality, as it reduces the risk of customer churn.'
+    "_key": "q5",
+    "questionText": "[Perspective/roleplay] You're one of NVIDIA's founders in 1993, deciding whether to keep making small, safe improvements to existing video chips or spend your limited cash and engineering time on an unproven parallel-computing chip design few people seem to want yet. Based on this lesson, what's the economically sound way to frame this decision?",
+    "type": "multiple-choice",
+    "options": [
+      "Always choose the safe, incremental path, since preserving the present is always the correct move under uncertainty",
+      "Weigh which path teaches you the most about a genuinely uncertain future against the real risk of burning through your limited runway before demand appears",
+      "Flip a coin, since no economic reasoning can apply to a decision this uncertain",
+      "Wait until a market research report definitively proves demand exists before committing any resources"
     ],
-    correctAnswer: 'Choose time, because if the customer values speed (like in the Domino’s example), that focus creates the highest value.'
+    "correctAnswer": "Weigh which path teaches you the most about a genuinely uncertain future against the real risk of burning through your limited runway before demand appears"
   },
   {
-    _key: 'q6',
-    questionText: 'If your business faced a 90% reduction in your available resources (time, money, or staff), what is the most economically sound priority?',
-    type: 'multiple-choice',
-    options: [
-      'Maintain the full product line to keep your brand image intact.',
-      'Identify the "minimum viable" version of your value proposition that could still solve the core problem and generate revenue.',
-      'Cut staff but keep all existing complex operations.',
-      'Increase marketing to bring in more cash.'
+    "_key": "q6",
+    "questionText": "[Perspective/roleplay] You're a founder who notices a competitor with the exact same product idea is spending months building developer tools and demos, while you're focused entirely on chasing immediate sales. Based on this lesson, what does this difference suggest about your likely long-term position?",
+    "type": "multiple-choice",
+    "options": [
+      "Nothing — identical starting ideas always produce identical outcomes regardless of what each team does next",
+      "Your competitor may be solving a deeper \"chicken-and-egg\" adoption problem that compounds into a stronger position over time, while chasing only immediate sales may leave that same problem unsolved",
+      "Chasing immediate sales always outperforms building developer tools in every situation",
+      "The two strategies are economically identical and will produce the same result"
     ],
-    correctAnswer: 'Identify the "minimum viable" version of your value proposition that could still solve the core problem and generate revenue.'
+    "correctAnswer": "Your competitor may be solving a deeper \"chicken-and-egg\" adoption problem that compounds into a stronger position over time, while chasing only immediate sales may leave that same problem unsolved"
   },
   {
-    _key: 'q7',
-    questionText: 'In a crowded market, why is it often more economically rational to be "different" than to be "better"?',
-    type: 'multiple-choice',
-    options: [
-      'Because "better" is too expensive to achieve.',
-      'Because "better" is subjective, while "different" allows you to solve a specific friction point no one else noticed.',
-      'Because competitors will always copy "better" products.',
-      'Because "different" products require less effort to build.'
+    "_key": "q7",
+    "questionText": "[Practical/logical] Two founding teams start with the same underlying product idea and similar initial resources. Years later, one has built a thriving business and the other has failed. Based on this lesson, what does this outcome most likely reflect?",
+    "type": "multiple-choice",
+    "options": [
+      "Random chance with no underlying pattern",
+      "A difference in the small, early decisions each team made about where to allocate limited time and money, which compounded over time into very different outcomes",
+      "The failing team must have had a worse original idea",
+      "Only the amount of funding each team raised determines the outcome"
     ],
-    correctAnswer: 'Because "better" is subjective, while "different" allows you to solve a specific friction point no one else noticed.'
+    "correctAnswer": "A difference in the small, early decisions each team made about where to allocate limited time and money, which compounded over time into very different outcomes"
   },
   {
-    _key: 'q8',
-    questionText: 'How do you determine the difference between a simple "problem" and a profitable economic opportunity?',
-    type: 'multiple-choice',
-    options: [
-      'A problem is an opportunity when you personally find it interesting.',
-      'A problem is an opportunity when the cost of solving it is less than the value customers are willing to pay to get rid of it.',
-      'A problem is an opportunity only when the market is large.',
-      'A problem is an opportunity only when you have a patent for the solution.'
+    "_key": "q8",
+    "questionText": "[Practical/logical] A founder delays committing any real resources to a new, uncertain market until every major unknown about customer demand has been fully resolved. Based on this lesson, what risk does this founder face?",
+    "type": "multiple-choice",
+    "options": [
+      "No risk at all — waiting for full certainty is always the economically optimal strategy",
+      "The risk that waiting is itself a costly decision, since the world keeps moving and partnerships, talent, or market position may be lost to a competitor who acted earlier",
+      "A risk that only applies to companies in the technology industry",
+      "A risk that can be eliminated simply by raising more funding"
     ],
-    correctAnswer: 'A problem is an opportunity when the cost of solving it is less than the value customers are willing to pay to get rid of it.'
+    "correctAnswer": "The risk that waiting is itself a costly decision, since the world keeps moving and partnerships, talent, or market position may be lost to a competitor who acted earlier"
   },
   {
-    _key: 'q9',
-    questionText: 'How does the "ticking clock" change the math for an entrepreneur compared to a government planner?',
-    type: 'multiple-choice',
-    options: [
-      'The logic is identical; the clock makes no difference.',
-      'The entrepreneur must focus on survival and immediate resource allocation because they are building from scratch without knowing if anyone will show up.',
-      'The entrepreneur has more time because they are not part of a committee.',
-      'The entrepreneur ignores long-term value to focus on quick profits.'
+    "_key": "q9",
+    "questionText": "[Practical/logical] A founder makes a well-reasoned, carefully considered decision to launch a promising product, but the business still fails because a key software partner never came on board and the ecosystem around the product never fully developed. Based on this lesson, what does this outcome illustrate?",
+    "type": "multiple-choice",
+    "options": [
+      "That good reasoning guarantees success, so this outcome could not actually happen",
+      "That good reasoning improves the odds of success but doesn't guarantee it, since outcomes depend on many moving parts — like complementary partners — that must also align after the decision is made",
+      "That the founder's original decision must have been irrational",
+      "That failure always means the founder ignored basic economic principles"
     ],
-    correctAnswer: 'The entrepreneur must focus on survival and immediate resource allocation because they are building from scratch without knowing if anyone will show up.'
+    "correctAnswer": "That good reasoning improves the odds of success but doesn't guarantee it, since outcomes depend on many moving parts — like complementary partners — that must also align after the decision is made"
   },
   {
-    _key: 'q10',
-    questionText: 'You notice a market inefficiency (e.g., people waiting too long for a service). What is the first step in applying entrepreneurial economics?',
-    type: 'multiple-choice',
-    options: [
-      'Calculate potential profit if you capture a large percentage of the market.',
-      'Build a technological tool to speed up the process.',
-      'Verify if customers value speed enough to pay for it, as the entrepreneur must read the market more clearly than the incumbents.',
-      'Copy the competitor\'s operations but move faster.'
+    "_key": "q10",
+    "questionText": "[Practical/logical] A hardware company spends significant early resources on prototypes, developer outreach, and pilot production runs, specifically to find out whether its new product concept will actually generate real demand, rather than immediately scaling up production. Based on this lesson, which concept does this behavior best illustrate?",
+    "type": "multiple-choice",
+    "options": [
+      "Cost-plus pricing",
+      "Using small experiments to reveal the biggest unknowns before committing further, scarce resources",
+      "A network effect between two unrelated companies",
+      "A government-imposed regulatory requirement"
     ],
-    correctAnswer: 'Verify if customers value speed enough to pay for it, as the entrepreneur must read the market more clearly than the incumbents.'
+    "correctAnswer": "Using small experiments to reveal the biggest unknowns before committing further, scarce resources"
   }
 ];

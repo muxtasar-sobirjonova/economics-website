@@ -1,27 +1,27 @@
 "use server";
 
 import { auth } from "@/auth";
+import { Track } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { revalidatePath } from "next/cache";
-
 import { NoteData } from "@/types";
+import { ActionError, ActionResponse, catchActionError } from "@/lib/errors";
 
-export async function saveGlobalNoteAction(note: NoteData) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return { error: "Unauthorized" };
-  }
-
-  const userId = session.user.id;
-
+export async function saveGlobalNoteAction(note: NoteData): Promise<ActionResponse<void>> {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      throw new ActionError("Unauthorized", "UNAUTHORIZED");
+    }
+
+    const userId = session.user.id;
+
     const existingNote = await prisma.note.findUnique({
       where: { id: note.id },
     });
 
     if (existingNote) {
       if (existingNote.userId !== userId) {
-        return { error: "Unauthorized" };
+        throw new ActionError("Unauthorized", "UNAUTHORIZED");
       }
       await prisma.note.update({
         where: { id: note.id, userId },
@@ -42,40 +42,41 @@ export async function saveGlobalNoteAction(note: NoteData) {
           color: note.color,
           source: note.source,
           timestamp: note.timestamp || new Date().toISOString(),
+          track: Track.ENTREPRENEURSHIP_ECONOMICS,
         },
       });
     }
-    return { success: true };
+    return { success: true, data: undefined };
   } catch (error) {
     console.error("Failed to save note:", error);
-    return { error: "Failed to save note" };
+    return catchActionError(error);
   }
 }
 
-export async function deleteGlobalNoteAction(noteId: string, lessonId: string) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return { error: "Unauthorized" };
-  }
-
-  const userId = session.user.id;
-
+export async function deleteGlobalNoteAction(noteId: string): Promise<ActionResponse<void>> {
   try {
+    const session = await auth();
+    if (!session?.user?.id) {
+      throw new ActionError("Unauthorized", "UNAUTHORIZED");
+    }
+
+    const userId = session.user.id;
+
     const existingNote = await prisma.note.findUnique({
       where: { id: noteId },
     });
 
     if (existingNote) {
       if (existingNote.userId !== userId) {
-        return { error: "Unauthorized" };
+        throw new ActionError("Unauthorized", "UNAUTHORIZED");
       }
       await prisma.note.delete({
         where: { id: noteId, userId },
       });
     }
-    return { success: true };
+    return { success: true, data: undefined };
   } catch (error) {
     console.error("Failed to delete note:", error);
-    return { error: "Failed to delete note" };
+    return catchActionError(error);
   }
 }

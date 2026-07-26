@@ -3,23 +3,15 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
+import { Track } from "@prisma/client";
 import { getLessonAccessStatus } from "@/lib/lesson-access";
-import { client } from "@/sanity/client";
-import { CONCEPT_BY_ID_QUERY } from "@/sanity/queries";
 import ReadingActions from "@/components/ReadingActions";
 import { ReadingTabs } from "@/components/lessons/ReadingTabs";
-import { NoteData, LessonDataSchema } from "@/types";
-
-import { MOCK_CONTENT } from "@/lib/mockContent";
+import { NoteData } from "@/types";
 import { getLessons } from "@/lib/data";
 import { MarkReadButton } from "@/components/lessons/MarkReadButton";
 
-import { Playfair_Display } from "next/font/google";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "700", "800", "900"],
-});
+import DOMPurify from "isomorphic-dompurify";
 
 export default async function ConceptsReadPage({
   params,
@@ -43,33 +35,19 @@ export default async function ConceptsReadPage({
     redirect("/roadmap");
   }
 
-  // 2. Fetch lesson data from Sanity with Caching and Scoped Query
+  // 2. Fetch lesson data from DB
   let activeLesson = null;
   let takeawaysText = "";
+  let activeTrack: Track = Track.ENTREPRENEURSHIP_ECONOMICS;
   try {
-    const rawSanityLesson = await client.fetch(
-      CONCEPT_BY_ID_QUERY,
-      { lessonId },
-      { next: { revalidate: 3600 } }
-    );
-    const parsedData = LessonDataSchema.safeParse(rawSanityLesson);
-    
-    if (parsedData.success) {
-      activeLesson = parsedData.data;
-      if (activeLesson.conceptTakeaways && activeLesson.conceptTakeaways.length > 0) {
-        takeawaysText = `<ol class="list-decimal pl-4">` + activeLesson.conceptTakeaways.map(t => `<li class="mb-2">${t}</li>`).join('') + `</ol>`;
-      }
-    } else {
-      console.error("[CRITICAL] Sanity CMS Lesson validation failed:", parsedData.error.flatten());
-    }
-  } catch (error) {
-    console.error(`[CRITICAL] Sanity CMS fetch failed for lesson ${lessonId}`, error);
-  }
+    const userRecord = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { activeTrack: true }
+    });
+    activeTrack = userRecord?.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
 
-  if (!activeLesson) {
-    // Fallback to mock content if sanity fails
-    const lessons = await getLessons();
-    const baseLesson = lessons.find((l) => Number(l.dayOrder) === lessonId) || lessons[0];
+    const lessons = await getLessons(activeTrack);
+    const baseLesson = lessons.find((l) => Number(l.dayOrder) === lessonId);
     
     if (baseLesson) {
       activeLesson = {
@@ -77,12 +55,19 @@ export default async function ConceptsReadPage({
         slug: `lesson-${baseLesson.dayOrder}-concepts`,
         lessonNumber: Number(baseLesson.dayOrder),
         title: baseLesson.title,
-        conceptText: MOCK_CONTENT[lessonId]?.concept?.text || "Content coming soon.",
+        conceptText: baseLesson.conceptText || "Content coming soon.",
+        conceptSummary: baseLesson.conceptSummary,
+        conceptTakeaways: typeof baseLesson.conceptTakeaways === 'string' ? JSON.parse(baseLesson.conceptTakeaways as string) : baseLesson.conceptTakeaways,
       };
-      if (!takeawaysText) {
+      
+      if (activeLesson.conceptTakeaways && Array.isArray(activeLesson.conceptTakeaways)) {
+        takeawaysText = `<ol class="list-decimal pl-4">` + activeLesson.conceptTakeaways.map((t: string) => `<li class="mb-2">${t}</li>`).join('') + `</ol>`;
+      } else {
         takeawaysText = `<p>Key takeaways for ${baseLesson.title}</p>`;
       }
     }
+  } catch (error) {
+    console.error(`[CRITICAL] Database fetch failed for concept ${lessonId}`, error);
   }
 
   // markArticleDoneAction is now triggered by the MarkReadButton client component
@@ -90,7 +75,7 @@ export default async function ConceptsReadPage({
 
   if (!activeLesson || !activeLesson.conceptText) {
     return (
-      <div className="p-8 text-center text-brand-primary bg-[#F8F9FC] min-h-screen">
+      <div className="p-8 text-center text-brand-primary bg-[#FCF6F0] min-h-screen">
         Content coming soon for this concept.
       </div>
     );
@@ -101,7 +86,7 @@ export default async function ConceptsReadPage({
 
   try {
     const userNotes = await prisma.note.findMany({
-      where: { userId, lessonId: String(lessonId) },
+      where: { userId, lessonId: String(lessonId), track: activeTrack as Track },
       orderBy: { createdAt: 'asc' },
     });
     
@@ -119,8 +104,10 @@ export default async function ConceptsReadPage({
     console.error("Failed to fetch user notes or bookmarks:", error);
   }
 
+  const cleanConceptHtml = DOMPurify.sanitize(activeLesson.conceptText);
+
   return (
-    <div className="content-page min-h-screen w-full font-sans flex flex-col p-0 bg-[#F8F9FC]">
+    <div className="content-page min-h-screen w-full font-sans flex flex-col p-0 bg-[#FCF6F0]">
       <div className="w-full bg-white border-b border-gray-100 h-[56px] px-8 flex items-center shrink-0">
         <div className="text-[13px] font-[700] tracking-[0.08em] text-gray-900 uppercase">
           CONCEPTS
@@ -141,21 +128,26 @@ export default async function ConceptsReadPage({
                 </Link>
 
               </div>
-              <div className="flex justify-between items-center mb-8 w-full sticky top-4 z-20 py-3 bg-[#F8F9FC]/95 backdrop-blur-sm rounded-lg border-b border-[#EBEBEB]">
+              <div className="flex justify-between items-center mb-8 w-full sticky top-4 z-20 py-3 bg-[#FCF6F0]/95 backdrop-blur-sm rounded-lg border-b border-[#EBEBEB]">
                 <div className="inline-block border border-brand-primary bg-transparent text-brand-primary text-[11px] font-[800] tracking-[0.08em] uppercase px-3.5 py-1.5 rounded-full">
                   LESSON {activeLesson.lessonId}
                 </div>
                 <div className="flex-shrink-0">
-                  <ReadingActions slug={activeLesson.slug || `lesson-${activeLesson.lessonId}-concepts`} />
+                  <ReadingActions />
                 </div>
               </div>
-              <div className="relative z-10" id="main-content">
-                  <h2 className={`${playfair.className} text-[#1A1A2E] text-[42px] font-[800] mb-10 leading-[1.1] tracking-tight uppercase`}>
+              <div className="relative z-10 text-center mb-16 pt-8" id="main-content">
+                  <h1 className={`text-[44px] md:text-[52px] font-black text-[#1A1A2E] leading-[1.1] uppercase tracking-tight`}>
                     {activeLesson.title}
-                  </h2>
-                  <div className="prose prose-purple max-w-none text-[#1A1A2E] text-[17px] leading-[1.8] font-[500]">
-                    <div dangerouslySetInnerHTML={{ __html: activeLesson.conceptText }} />
+                  </h1>
+                  <div className="text-center text-gray-400 font-sans font-[500] text-[13px] mt-6 tracking-wide uppercase">
+                    ESTIMATED READING TIME (10-20 MIN) • DAY 0{lessonId || 1}
                   </div>
+              </div>
+              <div className="flex flex-col">
+                <div className="prose prose-lg max-w-[800px] mx-auto w-full prose-h2:text-[#1A1A2E] prose-h2:uppercase prose-h2:tracking-tight prose-h2:font-bold prose-h2:mt-12 prose-p:text-[18px] prose-p:leading-[1.8] prose-p:text-gray-800">
+                  <div dangerouslySetInnerHTML={{ __html: cleanConceptHtml }} />
+                </div>
               </div>
               <div className="relative z-10 flex items-center justify-end mt-12">
                 <MarkReadButton lessonId={String(activeLesson.lessonId)} />

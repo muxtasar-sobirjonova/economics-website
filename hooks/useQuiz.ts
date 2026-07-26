@@ -1,4 +1,4 @@
-import { useState, useCallback } from "react";
+import { useState, useCallback, useEffect } from "react";
 import { validateQuizAnswerAction, markQuizDoneAction } from "@/app/actions/quiz";
 
 export interface QuizStateOptions {
@@ -15,6 +15,7 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
   const [mistakesList, setMistakesList] = useState<{questionId: string, userAnswer: string}[]>([]);
+  const [isHydrated, setIsHydrated] = useState(false);
   
   // Animation States
   const [animState, setAnimState] = useState<'idle'|'exiting'|'entering'>('idle');
@@ -22,6 +23,63 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
   const [showShake, setShowShake] = useState(false);
   const [particles, setParticles] = useState<any[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
+
+  // Load state from local storage on mount
+  useEffect(() => {
+    const key = `quiz-state-${lessonId}`;
+    const stored = localStorage.getItem(key);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored);
+        if (parsed.displayQuestionsLength === displayQuestions.length) {
+          setCurrentQuestionIndex(parsed.currentQuestionIndex);
+          setSelectedAnswers(parsed.selectedAnswers);
+          setValidatedCorrectAnswers(parsed.validatedCorrectAnswers);
+          setAnswers(parsed.answers);
+          setScore(parsed.score);
+          setMistakesList(parsed.mistakesList || []);
+          setIsFinished(parsed.isFinished || false);
+        }
+      } catch (e) {
+        console.error("Failed to parse quiz state", e);
+      }
+    }
+    setIsHydrated(true);
+  }, [lessonId, displayQuestions.length]);
+
+  // Save state to local storage on change
+  useEffect(() => {
+    if (!isHydrated) return;
+    const key = `quiz-state-${lessonId}`;
+    
+    if (isFinished) {
+      localStorage.removeItem(key);
+      return;
+    }
+
+    const stateToSave = {
+      displayQuestionsLength: displayQuestions.length,
+      currentQuestionIndex,
+      selectedAnswers,
+      validatedCorrectAnswers,
+      answers,
+      score,
+      mistakesList,
+      isFinished
+    };
+    localStorage.setItem(key, JSON.stringify(stateToSave));
+  }, [
+    isHydrated,
+    isFinished,
+    lessonId,
+    displayQuestions.length,
+    currentQuestionIndex,
+    selectedAnswers,
+    validatedCorrectAnswers,
+    answers,
+    score,
+    mistakesList
+  ]);
 
   const currentQuestion = displayQuestions[currentQuestionIndex];
   const currentSelected = selectedAnswers[currentQuestionIndex];
@@ -42,10 +100,13 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
 
     try {
       const res = await validateQuizAnswerAction(lessonId, currentQuestionIndex, optionIndex);
-      const isCorrect = res.isCorrect;
+      if (!res.success) {
+        throw new Error(res.error || "Failed to validate quiz answer");
+      }
+      const isCorrect = res.data.isCorrect;
       
       const newValidated = [...validatedCorrectAnswers];
-      newValidated[currentQuestionIndex] = res.correctOptionIndex ?? null;
+      newValidated[currentQuestionIndex] = res.data.correctOptionIndex ?? null;
       setValidatedCorrectAnswers(newValidated);
       
       const newAnswers = [...answers];
@@ -110,9 +171,12 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
     }, 450);
   }, [currentQuestionIndex]);
 
-  const handleFinishQuiz = useCallback(() => {
+  const handleFinishQuiz = useCallback(async () => {
     setIsFinished(true);
-    markQuizDoneAction((100 + lessonId).toString(), score, mistakesList);
+    const res = await markQuizDoneAction((100 + lessonId).toString(), score, mistakesList);
+    if (!res.success) {
+      console.error("Failed to mark quiz done:", res.error);
+    }
   }, [lessonId, score, mistakesList]);
 
   const handleReviewMistakes = useCallback(() => {
@@ -123,9 +187,11 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
     setSelectedAnswers(new Array(displayQuestions.length).fill(null));
     setValidatedCorrectAnswers(new Array(displayQuestions.length).fill(null));
     setMistakesList([]);
-  }, [displayQuestions.length]);
+    localStorage.removeItem(`quiz-state-${lessonId}`);
+  }, [displayQuestions.length, lessonId]);
 
   return {
+    isHydrated,
     currentQuestionIndex,
     currentQuestion,
     currentSelected,

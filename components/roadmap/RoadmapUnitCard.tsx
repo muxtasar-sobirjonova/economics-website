@@ -1,24 +1,40 @@
 import React from "react";
 import { Button } from "@/components/ui/Button";
 
-export const RoadmapUnitCard = () => {
+type RoadmapUnitCardProps = {
+  chapterNumber: number;
+  title: string;
+  description: string;
+  bgClass?: string;
+  btnClass?: string;
+};
+
+export const RoadmapUnitCard = ({
+  chapterNumber,
+  title,
+  description,
+  bgClass = "bg-primary-100",
+  btnClass = "bg-primary-500",
+}: RoadmapUnitCardProps) => {
   return (
-    <div className="w-full max-w-[520px] rounded-3xl px-8 py-8 mt-10 mb-6 relative shrink-0 font-sans bg-[#d2aefd] shadow-sm border-none">
-      <div className="pl-4">
-        <div className="text-[13px] font-bold tracking-widest text-[#3a2072] uppercase mb-2">
-          CHAPTER 1
+    <div 
+      className={`w-full max-w-[520px] rounded-3xl px-6 py-6 mt-10 mb-6 relative shrink-0 font-sans shadow-sm border-none ${bgClass}`}
+    >
+      <div className="pl-2 pr-32">
+        <div className="text-[12px] font-bold tracking-widest text-[#3a2072] uppercase mb-2 opacity-80">
+          CHAPTER {chapterNumber}
         </div>
-        <div className="font-extrabold text-2xl mb-4 text-gray-900 leading-[1.2] max-w-[70%]">
-          Foundations of Entrepreneurship Economics
+        <div className="font-extrabold text-xl mb-3 text-gray-900 leading-[1.25]">
+          {title}
         </div>
-        <div className="text-sm text-[#222222] font-medium leading-[1.6] pr-2">
-          Understand what entrepreneurship economics is, why
-          entrepreneurs exist, and how businesses create, deliver, and
-          capture value in the economy.
+        <div className="text-[14px] text-[#222222] font-medium leading-[1.5]">
+          {description}
         </div>
       </div>
-      <Button className="absolute top-8 right-8 bg-[#816de5] hover:bg-[#816de5]/90 rounded-[14px] flex items-center gap-2 group">
-        Start reading
+      <Button 
+        className={`absolute top-6 right-6 rounded-[14px] flex items-center gap-2 group text-white border-none shadow-sm px-4 py-2 font-bold transition-all hover:brightness-110 hover:-translate-y-[2px] ${btnClass}`}
+      >
+        Start
         <svg
           width="16"
           height="16"

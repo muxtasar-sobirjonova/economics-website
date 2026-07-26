@@ -1,3 +1,4 @@
+import { Track } from "@prisma/client";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
@@ -17,37 +18,28 @@ export const metadata: Metadata = {
 };
 
 
-async function DashboardStatsAsync({ userId, streak, totalXP }: { userId: string, streak: number, totalXP: number }) {
+async function DashboardStatsAsync({ userId, streak, activeTrack = Track.ENTREPRENEURSHIP_ECONOMICS }: { userId: string, streak: number, activeTrack?: Track }) {
   const localDate = new Date();
-  const days = ["M", "T", "W", "T", "F", "S", "S"];
   const jsDay = localDate.getUTCDay();
   const todayIndex = jsDay === 0 ? 6 : jsDay - 1;
   const monday = new Date(localDate);
   monday.setUTCDate(localDate.getUTCDate() - todayIndex);
   monday.setUTCHours(0, 0, 0, 0);
 
-  const [weeklyLessonsAgg, weeklyQuizzesAgg, quizAgg, totalLessonsAgg] = await Promise.all([
-    prisma.completedLesson.aggregate({
-      where: { userId, date: { gte: monday } },
-      _sum: { xpEarned: true }
-    }),
-    prisma.quizResult.aggregate({
-      where: { userId, date: { gte: monday } },
-      _sum: { xpEarned: true }
-    }),
-    prisma.quizResult.aggregate({
-      where: { userId },
-      _avg: { score: true },
-    }),
-    prisma.completedLesson.count({
-      where: { userId }
-    })
-  ]);
+  const {
+    weeklyQuizzesAgg,
+    quizAgg,
+    totalLessonsAgg,
+  } = await import('@/lib/data').then(m => m.getUserDashboardData(userId, activeTrack as Track, 1));
+  const { trackProgress } = await import('@/lib/data').then(m => m.getUserRoadmapProgress(userId, activeTrack));
 
-  const lessonXpThisWeek = weeklyLessonsAgg._sum.xpEarned || 0;
-  const quizXpThisWeek = weeklyQuizzesAgg._sum.xpEarned || 0;
-  const xpThisWeek = lessonXpThisWeek + quizXpThisWeek;
-  let avgQuizScore = quizAgg._avg.score ? Math.round(quizAgg._avg.score * 10) : 0;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const xpThisWeek = (weeklyQuizzesAgg as any)?._sum?.xpEarned || 0;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const totalXPComputed = (trackProgress as any)?.xp || 0;
+  
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let avgQuizScore = (quizAgg as any)?._avg?.score ? Math.round((quizAgg as any)._avg.score * 10) : 0;
   if (avgQuizScore > 100) avgQuizScore = 100;
 
   return (
@@ -56,12 +48,22 @@ async function DashboardStatsAsync({ userId, streak, totalXP }: { userId: string
       completedLessonsCount={totalLessonsAgg}
       avgQuizScore={avgQuizScore}
       xpThisWeek={xpThisWeek}
-      totalXP={totalXP}
+      totalXP={totalXPComputed}
     />
   );
 }
 
 async function DashboardData({ userId, userName }: { userId: string; userName: string }) {
+  const userRecord = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { activeTrack: true }
+  });
+
+  if (!userRecord || !userRecord.activeTrack) {
+    redirect("/track-selection");
+  }
+
+  const activeTrack = userRecord.activeTrack;
   await ensureUserProgress(userId);
   
   const userProgress = await prisma.userProgress.findUnique({ where: { userId } });
@@ -69,9 +71,9 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
   if (!userProgress) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4">
-        <h2 className="text-2xl font-bold mb-2 text-[#362A5C]">Welcome to That's So Econ!</h2>
+        <h2 className="text-2xl font-bold mb-2 text-[#362A5C]">Welcome to That&apos;s So Econ!</h2>
         <p className="text-gray-600 mb-6 max-w-md mx-auto">
-          We're setting up your learning profile. Please complete your onboarding or check back in a moment to view your dashboard.
+          We&apos;re setting up your learning profile. Please complete your onboarding or check back in a moment to view your dashboard.
         </p>
       </div>
     );
@@ -79,42 +81,24 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
 
   const streak = userProgress.streak || 0;
   const currentDay = userProgress.currentDay || 1;
-  const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+  const {
+    recentLessons,
+    recentCompletions,
+    upcomingLessons,
+    upcomingQuizzes,
+    relevantAgendaCompletions
+  } = await import('@/lib/data').then(m => m.getUserDashboardData(userId, activeTrack as Track, currentDay));
 
-  const [recentLessons, recentCompletions, upcomingLessons, upcomingQuizzes] = await Promise.all([
-    prisma.completedLesson.findMany({ where: { userId, date: { gte: thirtyDaysAgo } }, select: { date: true } }),
-    prisma.dailyCompletion.findMany({ where: { userId, dateString: { gte: thirtyDaysAgo } }, select: { dateString: true } }),
-    prisma.lesson.findMany({
-      where: { dayOrder: { gte: currentDay } },
-      orderBy: { dayOrder: 'asc' },
-      take: 10
-    }),
-    prisma.quiz.findMany({
-      where: { dayOrder: { gte: currentDay } },
-      orderBy: { dayOrder: 'asc' },
-      take: 10
-    })
-  ]);
+  const todayStr = new Date().toISOString().split("T")[0];
+  const completedLessonIdsToday = recentLessons
+    .filter((l: { date: Date; lessonId: string }) => l.date.toISOString().split("T")[0] === todayStr)
+    .map((l: { lessonId: string }) => l.lessonId);
 
-  const completedLessonDates = recentLessons.map(l => l.date.toISOString().split("T")[0]);
-  const completedAgendaDates = recentCompletions.map(dc => dc.dateString.toISOString().split("T")[0]);
-
-  const lessonIds = upcomingLessons.map(l => l.id);
-  const quizIds = upcomingQuizzes.map(q => q.id);
-
-  const relevantAgendaCompletions = await prisma.agendaCompletion.findMany({
-    where: { 
-      userId,
-      OR: [
-        { lessonId: { in: lessonIds } },
-        { quizId: { in: quizIds } }
-      ]
-    },
-    select: { lessonId: true, quizId: true, itemType: true }
-  });
+  const completedLessonDates = recentLessons.map((l: { date: Date }) => l.date.toISOString().split("T")[0]);
+  const completedAgendaDates = recentCompletions.map((dc: { normalizedDate: Date }) => dc.normalizedDate.toISOString().split("T")[0]);
 
   const isCompleted = (type: string, id: string) => {
-    return relevantAgendaCompletions.some(c => {
+    return relevantAgendaCompletions.some((c: { lessonId: string | null; quizId: string | null; itemType: string }) => {
       if (type === 'concept') return c.lessonId === id && c.itemType === 'LESSON';
       if (type === 'article') return c.lessonId === id && c.itemType === 'ARTICLE';
       if (type === 'quiz') return c.quizId === id && c.itemType === 'QUIZ';
@@ -125,15 +109,15 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
   const agendaItems = [];
 
   const maxDayOrder = Math.max(
-    ...upcomingLessons.map(l => l.dayOrder),
-    ...upcomingQuizzes.map(q => q.dayOrder),
+    ...upcomingLessons.map((l: { dayOrder: number }) => l.dayOrder),
+    ...upcomingQuizzes.map((q: { dayOrder: number }) => q.dayOrder),
     currentDay
   );
 
   let activeDay = currentDay;
-  for (let d = currentDay; d <= maxDayOrder; d++) {
-    const lesson = upcomingLessons.find(l => l.dayOrder === d);
-    const quiz = upcomingQuizzes.find(q => q.dayOrder === d);
+  for (let d = currentDay > 1 ? currentDay - 1 : currentDay; d <= maxDayOrder; d++) {
+    const lesson = upcomingLessons.find((l: { dayOrder: number; id: string; title: string }) => l.dayOrder === d);
+    const quiz = upcomingQuizzes.find((q: { dayOrder: number; id: string; title: string; tag: string }) => q.dayOrder === d);
     
     let dayFullyCompleted = true;
     if (lesson) {
@@ -151,11 +135,15 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
     if (!dayFullyCompleted) {
       activeDay = d;
       break;
+    } else if (lesson && completedLessonIdsToday.includes(lesson.id)) {
+      // If it was completed TODAY, stay on this day to show the checkmarks!
+      activeDay = d;
+      break;
     }
   }
 
-  const activeLesson = upcomingLessons.find(l => l.dayOrder === activeDay);
-  const activeQuiz = upcomingQuizzes.find(q => q.dayOrder === activeDay);
+  const activeLesson = upcomingLessons.find((l: { dayOrder: number; id: string; title: string }) => l.dayOrder === activeDay);
+  const activeQuiz = upcomingQuizzes.find((q: { dayOrder: number; id: string; title: string; tag: string }) => q.dayOrder === activeDay);
 
   if (activeLesson) {
     const conceptCompleted = isCompleted('concept', activeLesson.id);
@@ -168,7 +156,8 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
       title: activeLesson.title,
       tag: 'CONCEPT',
       timeEstimate: 10,
-      isCompleted: conceptCompleted
+      isCompleted: conceptCompleted,
+      url: `/lessons/${activeLesson.dayOrder}/concepts`
     });
     agendaItems.push({
       id: `lesson-article-${activeLesson.id}`,
@@ -177,7 +166,8 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
       title: `Reading: ${activeLesson.title}`,
       tag: 'ARTICLE',
       timeEstimate: 20,
-      isCompleted: articleCompleted
+      isCompleted: articleCompleted,
+      url: `/lessons/${activeLesson.dayOrder}/articles`
     });
   }
 
@@ -189,25 +179,35 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
       itemId: (100 + activeQuiz.dayOrder).toString(),
       title: activeQuiz.title,
       tag: activeQuiz.tag,
-      timeEstimate: activeQuiz.timeEstimate,
-      isCompleted: quizCompleted
+      timeEstimate: 10,
+      isCompleted: quizCompleted,
+      url: `/lessons/${activeQuiz.dayOrder}/quizzes`
     });
   }
 
+  const trackNames: Record<string, string> = {
+    ENTREPRENEURSHIP_ECONOMICS: "Entrepreneurship Economics",
+    BEHAVIORAL_ECONOMICS: "Behavioral Economics",
+    DEVELOPMENT_ECONOMICS: "Development Economics"
+  };
+  const activeTrackName = trackNames[activeTrack] || "Economics";
+
   return (
     <>
+      <DailyQuote activeTrack={activeTrack} />
       <div className="flex flex-col justify-center py-10 px-4 md:px-12">
         <DashboardHero 
           completedAgendaDates={completedAgendaDates}
           completedDates={completedLessonDates}
           userName={userName} 
+          activeTrackName={activeTrackName}
         />
       </div>
 
       <div className="flex flex-col justify-start py-4 px-4 md:px-12">
         <div className="flex flex-col lg:flex-row w-full mx-auto gap-6 max-w-[1200px]">
           <TodayAgendaCard initialItems={agendaItems} />
-          <DailyChallengeCard />
+          <DailyChallengeCard userId={userId} />
         </div>
         
         <div className="mt-6 w-full mx-auto max-w-[1200px]">
@@ -215,7 +215,7 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
             <DashboardStatsAsync 
               userId={userId} 
               streak={streak} 
-              totalXP={userProgress?.totalXP || 0} 
+              activeTrack={activeTrack}
             />
           </Suspense>
         </div>
@@ -235,7 +235,6 @@ export default async function DashboardPage() {
 
   return (
     <div className="flex flex-col font-sans min-h-screen bg-[#F8F9FC]">
-      <DailyQuote />
       <Suspense fallback={
         <div className="flex flex-col items-center justify-center min-h-[70vh] w-full px-4">
           <div className="w-12 h-12 border-4 border-slate-200 border-t-brand-primary rounded-full animate-spin mb-4"></div>

@@ -1,16 +1,5 @@
 import React from "react";
 import Image from "next/image";
-import { Playfair_Display, Lora } from "next/font/google";
-
-const playfair = Playfair_Display({
-  subsets: ["latin"],
-  weight: ["400", "700", "800", "900"],
-});
-const lora = Lora({
-  subsets: ["latin"],
-  weight: ["400", "500", "600", "700"],
-  style: ["normal", "italic"],
-});
 
 const hardcodedBlocks = [
   {
@@ -43,15 +32,10 @@ const EvidenceBlock = ({ index }: { index: number }) => {
   const block = hardcodedBlocks[index];
   return (
     <div className="flex flex-col w-full">
-      <div className="border-b-[2px] border-[#111827]/30 pb-1 mb-6">
-        <span className="font-sans font-[700] uppercase text-[11px] tracking-[0.08em] text-gray-600">
-          CASE FILE: EVIDENCE Nº{index + 1}
-        </span>
-      </div>
 
       <div className="flex flex-col xl:flex-row gap-6 mb-6">
         <h2
-          className={`${lora.className} font-[700] text-[#111827] text-xl uppercase leading-[1.4] flex-1`}
+          className={`font-bold text-[#111827] text-xl uppercase leading-[1.4] flex-1`}
         >
           — {block.q}
         </h2>
@@ -66,7 +50,7 @@ const EvidenceBlock = ({ index }: { index: number }) => {
         </div>
       </div>
       <p
-        className={`${lora.className} text-[#111827] text-[17px] leading-[1.8] font-[400]`}
+        className={`text-[#111827] text-[17px] leading-[1.8] font-normal`}
       >
         {block.a}
       </p>
@@ -79,9 +63,9 @@ export const LessonOneCaseStudy = () => {
     <>
       <div className="text-center mb-12">
         <h1
-          className={`${playfair.className} font-[900] text-[#111827] leading-[1.05] uppercase tracking-[-0.02em] text-[38px] md:text-[48px]`}
+          className={`font-black text-[#111827] leading-[1.05] uppercase tracking-[-0.02em] text-[38px] md:text-[48px]`}
         >
-          DOMINO'S PIZZA &amp;<br />
+          DOMINO&apos;S PIZZA &amp;<br />
           ENTREPRENEURIAL ECONOMICS
         </h1>
       </div>
@@ -92,13 +76,13 @@ export const LessonOneCaseStudy = () => {
       </div>
 
       <div className="w-full my-12 mx-auto">
-        <blockquote
-          className={`${lora.className} italic text-[22px] leading-[1.6] text-gray-600 border-l-[3px] border-brand-primary pl-4 my-6`}
+        <p
+          className={`italic font-semibold text-[22px] leading-[1.6] text-gray-600 border-l-[3px] border-brand-primary pl-4 my-6`}
         >
-          "Traditional economics explains why Domino's worked.
+          &quot;Traditional economics explains why Domino&apos;s worked.
           Entrepreneurial economics is what Monaghan was doing while
-          building it."
-        </blockquote>
+          building it.&quot;
+        </p>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-[64px] items-start">

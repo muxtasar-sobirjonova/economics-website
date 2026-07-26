@@ -1,5 +1,5 @@
 'use client';
-import { motion, useMotionValue, useMotionTemplate, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export const FlashcardMockup = () => (
   <div className="bg-white rounded-3xl border border-gray-200 shadow-[0_8px_32px_rgba(0,0,0,0.04)] w-full text-center relative overflow-hidden flex flex-col h-[480px]">

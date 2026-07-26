@@ -31,6 +31,7 @@ export const StickyNote = ({
     if (contentRef.current && contentRef.current.innerHTML !== note.content) {
       contentRef.current.innerHTML = note.content;
     }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Intentional empty array to only run on mount
 
   const handleInput = () => {
@@ -66,26 +67,31 @@ export const StickyNote = ({
       }}
     >
       <div className="flex gap-1.5 mb-2">
-        <div
-          onClick={() => updateNoteColor(note.id, "#FFF9C4")}
-          className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer bg-[#FFF9C4]"
-        ></div>
-        <div
+        <button
+          onClick={() => updateNoteColor(note.id, "#FFF5D6")}
+          aria-label="Set color to Yellow"
+          className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer bg-[#FFF5D6]"
+        ></button>
+        <button
           onClick={() => updateNoteColor(note.id, "#FFD6D6")}
+          aria-label="Set color to Red"
           className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer bg-[#FFD6D6]"
-        ></div>
-        <div
+        ></button>
+        <button
           onClick={() => updateNoteColor(note.id, "#D6E8FF")}
+          aria-label="Set color to Blue"
           className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer bg-[#D6E8FF]"
-        ></div>
-        <div
+        ></button>
+        <button
           onClick={() => updateNoteColor(note.id, "#D6F5E3")}
+          aria-label="Set color to Green"
           className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer bg-[#D6F5E3]"
-        ></div>
-        <div
+        ></button>
+        <button
           onClick={() => updateNoteColor(note.id, "#E8D6FF")}
+          aria-label="Set color to Purple"
           className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer bg-[#E8D6FF]"
-        ></div>
+        ></button>
       </div>
 
       <div className="flex gap-1 mb-2 border-b border-black/10 pb-2">
@@ -173,6 +179,7 @@ export const StickyNote = ({
       {canDelete && (
         <button
           onClick={() => deleteNote(note.id)}
+          aria-label="Delete note"
           className="absolute top-2 right-2 bg-transparent border-none cursor-pointer text-base text-gray-500 leading-none"
         >
           ×

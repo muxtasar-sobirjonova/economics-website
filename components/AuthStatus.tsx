@@ -1,8 +1,7 @@
 'use client';
 
 import { useSession, signOut } from 'next-auth/react';
-import Link from 'next/link';
-import { IconLogin, IconUserPlus, IconLogout } from '@tabler/icons-react';
+import { IconLogout } from '@tabler/icons-react';
 
 export function AuthStatus() {
   const { data: session, status } = useSession();

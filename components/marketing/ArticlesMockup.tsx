@@ -1,5 +1,5 @@
 'use client';
-import { motion, useMotionValue, useMotionTemplate, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export const ArticlesMockup = () => (
   <div className="bg-[#F8F9FC] rounded-3xl border border-gray-200 shadow-xl overflow-hidden text-left flex flex-col h-[400px] w-full shrink-0 relative">
@@ -26,7 +26,7 @@ export const ArticlesMockup = () => (
            <span className="inline-block bg-purple-50 text-purple-600 text-xs font-bold px-2 py-1 rounded-full">Unit Economics</span>
          </div>
          <h2 className="font-semibold text-purple-700 text-lg leading-snug mb-2 group-hover:text-purple-500 transition-colors">Why Uber Still Bleeds Cash</h2>
-         <p className="text-purple-500 text-sm mt-2 line-clamp-3 mb-6 flex-1">A deep dive into structural margins and why growth doesn't always equal profitability.</p>
+         <p className="text-purple-500 text-sm mt-2 line-clamp-3 mb-6 flex-1">A deep dive into structural margins and why growth doesn&apos;t always equal profitability.</p>
          <div className="flex items-center justify-between border-t border-gray-100 pt-4 mt-auto">
            <span className="text-purple-600 text-sm font-semibold flex items-center group-hover:translate-x-1 transition-transform">Read more <span className="ml-1">→</span></span>
          </div>

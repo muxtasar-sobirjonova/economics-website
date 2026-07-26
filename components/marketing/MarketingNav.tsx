@@ -9,7 +9,7 @@ export const MarketingNav = () => (
             T
           </div>
           <span className="font-bold text-slate-900 text-xl tracking-tight">
-            That's So Econ.
+            That&apos;s So Econ.
           </span>
         </Link>
       </div>

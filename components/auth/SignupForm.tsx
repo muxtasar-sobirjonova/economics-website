@@ -60,7 +60,12 @@ export function SignupForm() {
     setLoading(true);
 
     try {
-      await signupAction({ name: data.name, email: data.email, password: data.password });
+      const res = await signupAction({ name: data.name, email: data.email, password: data.password });
+      if (!res.success) {
+        setError(res.error);
+        setLoading(false);
+        return;
+      }
       router.push('/login?registered=true');
     } catch (err) {
       if (err instanceof Error) {

@@ -1,3 +1,4 @@
+import { Track } from "@prisma/client";
 import { prisma } from "./prisma";
 
 export async function logQuizAttemptInDb(
@@ -24,7 +25,7 @@ export async function logQuizAttemptInDb(
         data: {
           userId,
           quizAttemptId: attempt.id,
-          reviewed: false,
+          reviewed: false, track: Track.ENTREPRENEURSHIP_ECONOMICS,
         },
       });
       createdAttempts.push(attempt);
@@ -37,7 +38,7 @@ export async function getUnreviewedMistakesFromDb(userId: string, sinceDate: Dat
   return prisma.mistakeReview.findMany({
     where: {
       userId,
-      reviewed: false,
+      reviewed: false, track: Track.ENTREPRENEURSHIP_ECONOMICS,
       quizAttempt: {
         timestamp: {
           gte: sinceDate,

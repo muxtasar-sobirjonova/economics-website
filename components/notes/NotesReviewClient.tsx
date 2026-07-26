@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef } from "react";
+import Link from "next/link";
 import { Lesson } from "@prisma/client";
 
 export interface Note {
@@ -213,6 +214,18 @@ export const NotesReviewClient = ({ initialNotes, lessons }: { initialNotes: Not
      const rot = rotations[index % rotations.length];
      return { transform: `rotate(${rot}deg)`, backgroundColor: '#FFF9C4', position: 'absolute' as const, top: 0, left: 0 };
   };
+
+  if (initialNotes.length === 0) {
+    return (
+      <div className="flex-1 min-h-screen bg-[#F8F9FC] flex flex-col p-10 relative max-w-[1200px] mx-auto w-full items-center justify-center">
+        <h2 className="text-[28px] font-[900] text-gray-900 mb-2">No notes yet!</h2>
+        <p className="text-base text-gray-500 mb-8">You haven&apos;t saved any notes yet. Complete lessons and save notes to review them here.</p>
+        <Link href="/roadmap" className="bg-[#3D52A0] text-white px-6 py-3 rounded-[12px] font-[700] text-sm shadow-sm hover:opacity-90 transition-opacity inline-flex items-center justify-center">
+          Go to Roadmap
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="flex-1 min-h-screen bg-[#F8F9FC] relative overflow-hidden flex flex-col p-10 max-w-[1200px] mx-auto w-full select-none">

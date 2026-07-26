@@ -1,12 +1,7 @@
-import { Question } from './types';
+import { Track } from "@prisma/client";
 
-import { LESSON_1_QUESTIONS } from './quizzes/lesson1';
-import { LESSON_2_QUESTIONS } from './quizzes/lesson2';
-import { LESSON_3_QUESTIONS } from './quizzes/lesson3';
-import { LESSON_4_QUESTIONS } from './quizzes/lesson4';
-import { LESSON_5_QUESTIONS } from './quizzes/lesson5';
-import { LESSON_6_QUESTIONS } from './quizzes/lesson6';
-import { CHAPTER_1_QUIZ_QUESTIONS } from './quizzes/chapter1';
+
+
 
 export const LESSON_CONCEPTS: { [key: number]: string } = {
   1: "Understand what entrepreneurship economics is, why entrepreneurs exist, and how businesses create, deliver, and capture value in the economy.",
@@ -15,42 +10,146 @@ export const LESSON_CONCEPTS: { [key: number]: string } = {
   4: "Learn the core economic drivers behind consumer behavior and why customers choose one product over another.",
   5: "Analyze the mechanisms of value creation, delivery, and how to effectively capture a share of that value.",
   6: "Examine how profit drives incentives and shapes the daily decision-making process of successful entrepreneurs.",
-  7: "Understand the economic constraints and operational leverage that determine why some businesses scale while others fail.",
-};
 
+  8: "Understand the fundamental economic problem of having seemingly unlimited human wants in a world of limited resources.",
+  9: "Learn what a trade-off is and how to weigh the expected value and opportunity cost of each choice.",
+  10: "Discover Opportunity Cost, the potential benefit you lose when you choose one alternative over another.",
+  11: "Understand Capital Scarcity and how budgeting forces prioritization and extends a startup's runway.",
+  12: "Explore Time Scarcity, the entrepreneur's only true asset, and how delegation reclaims it.",
+  13: "Learn about Sunk Costs, the fallacy of letting unrecoverable past costs influence your future decision-making.",
+};
 import { prisma } from "@/lib/prisma";
 import { cache } from "react";
+import { CacheService } from "./cache";
+import { Lesson, Quiz } from "@prisma/client";
 
-export const getLessons = cache(async () => {
-  return prisma.lesson.findMany({
-    orderBy: { dayOrder: 'asc' }
-  });
+export const getLessons = cache(async (track: Track = "ENTREPRENEURSHIP_ECONOMICS") => {
+  const cacheKey = `lessons:${track}`;
+  let lessons = await CacheService.get<Lesson[]>(cacheKey);
+  
+  if (!lessons) {
+    lessons = await prisma.lesson.findMany({
+      where: { track },
+      orderBy: { dayOrder: 'asc' }
+    });
+    await CacheService.set(cacheKey, lessons, 3600); // cache for 1 hour
+  }
+  return lessons;
 });
 
-export const getQuizzes = cache(async () => {
-  return prisma.quiz.findMany({
-    orderBy: { dayOrder: 'asc' }
-  });
+export const getQuizzes = cache(async (track: Track = "ENTREPRENEURSHIP_ECONOMICS") => {
+  const cacheKey = `quizzes:${track}`;
+  let quizzes = await CacheService.get<Quiz[]>(cacheKey);
+
+  if (!quizzes) {
+    quizzes = await prisma.quiz.findMany({
+      where: { track },
+      orderBy: { dayOrder: 'asc' }
+    });
+    await CacheService.set(cacheKey, quizzes, 3600); // cache for 1 hour
+  }
+  return quizzes;
 });
 
-// Map lesson IDs to their questions
-const questionsByLesson: { [key: number]: Question[] } = {
-  1: LESSON_1_QUESTIONS,
-  2: LESSON_2_QUESTIONS,
-  3: LESSON_3_QUESTIONS,
-  4: LESSON_4_QUESTIONS,
-  5: LESSON_5_QUESTIONS,
-  6: LESSON_6_QUESTIONS,
+export const getUserRoadmapProgress = async (userId: string, track: Track) => {
+  const cacheKey = `user_roadmap_progress:${userId}:${track}`;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let data = await CacheService.get<any>(cacheKey);
+
+  if (!data) {
+    const [user, trackProgress] = await Promise.all([
+      prisma.user.findUnique({
+        where: { id: userId },
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          activeTrack: true,
+          completedLessons: {
+            where: { track }
+          },
+          quizResults: {
+            where: { track }
+          },
+        },
+      }),
+      prisma.trackProgress.findUnique({
+        where: { userId_track: { userId, track } }
+      })
+    ]);
+
+    data = { user, trackProgress };
+    await CacheService.set(cacheKey, data, 300); // cache for 5 minutes
+  }
+
+  return data;
 };
 
-export const QUIZZES = [
-  { id: 101, title: 'Lesson 1 Quiz', subtitle: 'Test your knowledge of Lesson 1', type: 'QUIZ', slug: 'lesson-1-quiz', questions: questionsByLesson[1], timeEstimate: 10 },
-  { id: 102, title: 'Lesson 2 Quiz', subtitle: 'Test your knowledge of Lesson 2', type: 'QUIZ', slug: 'lesson-2-quiz', questions: questionsByLesson[2], timeEstimate: 10 },
-  { id: 103, title: 'Lesson 3 Quiz', subtitle: 'Test your knowledge of Lesson 3', type: 'QUIZ', slug: 'lesson-3-quiz', questions: questionsByLesson[3], timeEstimate: 10 },
-  { id: 104, title: 'Lesson 4 Quiz', subtitle: 'Test your knowledge of Lesson 4', type: 'QUIZ', slug: 'lesson-4-quiz', questions: questionsByLesson[4], timeEstimate: 10 },
-  { id: 105, title: 'Lesson 5 Quiz', subtitle: 'Test your knowledge of Lesson 5', type: 'QUIZ', slug: 'lesson-5-quiz', questions: questionsByLesson[5], timeEstimate: 10 },
-  { id: 106, title: 'Lesson 6 Quiz', subtitle: 'Test your knowledge of Lesson 6', type: 'QUIZ', slug: 'lesson-6-quiz', questions: questionsByLesson[6], timeEstimate: 10 },
-  { id: 108, title: 'Chapter 1 Quiz', subtitle: 'Test your knowledge of all 6 lessons', type: 'QUIZ', slug: 'chapter-1-quiz', questions: CHAPTER_1_QUIZ_QUESTIONS, timeEstimate: 20 },
-];
+export const invalidateUserCache = async (userId: string, track: Track) => {
+  await CacheService.delete(`user_roadmap_progress:${userId}:${track}`);
+  await CacheService.delete(`user_dashboard_data:${userId}:${track}`);
+};
 
-export const ALL_CONTENT = [];
+export const getUserDashboardData = async (userId: string, track: Track, currentDay: number) => {
+  const cacheKey = `user_dashboard_data:${userId}:${track}`;
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let data = await CacheService.get<any>(cacheKey);
+
+  if (!data) {
+    const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
+    const localDate = new Date();
+    const jsDay = localDate.getUTCDay();
+    const todayIndex = jsDay === 0 ? 6 : jsDay - 1;
+    const monday = new Date(localDate);
+    monday.setUTCDate(localDate.getUTCDate() - todayIndex);
+    monday.setUTCHours(0, 0, 0, 0);
+
+    const [
+      recentLessons, 
+      recentCompletions, 
+      upcomingLessons, 
+      upcomingQuizzes,
+      weeklyQuizzesAgg,
+      quizAgg,
+      totalLessonsAgg
+    ] = await Promise.all([
+      prisma.completedLesson.findMany({ where: { userId, track, date: { gte: thirtyDaysAgo } }, select: { date: true, lessonId: true } }),
+      prisma.dailyCompletion.findMany({ where: { userId, normalizedDate: { gte: thirtyDaysAgo } }, select: { normalizedDate: true } }),
+      prisma.lesson.findMany({ where: { track, dayOrder: { gte: currentDay - 1 } }, orderBy: { dayOrder: 'asc' }, take: 10 }),
+      prisma.quiz.findMany({ where: { track, dayOrder: { gte: currentDay - 1 } }, orderBy: { dayOrder: 'asc' }, take: 10 }),
+      prisma.quizResult.aggregate({ where: { userId, track, date: { gte: monday } }, _sum: { xpEarned: true } }),
+      prisma.quizResult.aggregate({ where: { userId, track }, _avg: { score: true } }),
+      prisma.completedLesson.count({ where: { userId, track } })
+    ]);
+
+    const lessonIds = upcomingLessons.map(l => l.id);
+    const quizIds = upcomingQuizzes.map(q => q.id);
+
+    const relevantAgendaCompletions = await prisma.agendaCompletion.findMany({
+      where: { 
+        userId,
+        OR: [
+          { lessonId: { in: lessonIds } },
+          { quizId: { in: quizIds } }
+        ]
+      },
+      select: { lessonId: true, quizId: true, itemType: true }
+    });
+
+    data = {
+      recentLessons,
+      recentCompletions,
+      upcomingLessons,
+      upcomingQuizzes,
+      weeklyQuizzesAgg,
+      quizAgg,
+      totalLessonsAgg,
+      relevantAgendaCompletions
+    };
+
+    await CacheService.set(cacheKey, data, 300); // cache for 5 minutes
+  }
+
+  return data;
+};
+

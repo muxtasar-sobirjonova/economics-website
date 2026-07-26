@@ -1,6 +1,6 @@
 'use client';
 import { IconBulb, IconClock } from '@tabler/icons-react';
-import { motion, useMotionValue, useMotionTemplate, useSpring } from 'framer-motion';
+import { motion } from 'framer-motion';
 
 export const ConceptsMockup = () => (
   <div className="bg-[#F8F9FC] rounded-3xl border border-gray-200 shadow-xl overflow-hidden text-left flex flex-col h-[400px] w-full shrink-0 relative">

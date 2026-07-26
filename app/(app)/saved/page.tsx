@@ -1,4 +1,5 @@
 import React from "react";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { getLessons } from "@/lib/data";
 import { auth } from "@/auth";
@@ -22,18 +23,24 @@ export default async function SavedPage({
   const take = 20;
   const skip = (page - 1) * take;
 
+  const userRecord = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { activeTrack: true }
+  });
+  const activeTrack = userRecord?.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
+
   // Fetch real Note records from the database
   let globalNotes: { id: string; lessonId: number; content: string; color?: string; source?: string; timestamp?: string }[] = [];
   let totalNotes = 0;
   try {
     const [notes, count] = await Promise.all([
       prisma.note.findMany({
-        where: { userId },
+        where: { userId, track: activeTrack },
         orderBy: { createdAt: "desc" },
         take,
         skip
       }),
-      prisma.note.count({ where: { userId } })
+      prisma.note.count({ where: { userId, track: activeTrack } })
     ]);
     totalNotes = count;
     
@@ -48,7 +55,7 @@ export default async function SavedPage({
     console.error("Failed to fetch notes:", error);
   }
 
-  const lessons = await getLessons();
+  const lessons = await getLessons(activeTrack);
 
   return (
     <div className="flex flex-col w-full min-h-screen">
@@ -57,14 +64,14 @@ export default async function SavedPage({
       {totalNotes > 20 && (
         <div className="flex justify-center gap-4 py-8 bg-[#F8F9FC]">
           {page > 1 && (
-            <a href={`/saved?page=${page - 1}`} className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 font-semibold text-sm">
+            <Link href={`/saved?page=${page - 1}`} className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 font-semibold text-sm">
               ← Previous
-            </a>
+            </Link>
           )}
           {page * take < totalNotes && (
-            <a href={`/saved?page=${page + 1}`} className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 font-semibold text-sm">
+            <Link href={`/saved?page=${page + 1}`} className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 font-semibold text-sm">
               Next →
-            </a>
+            </Link>
           )}
         </div>
       )}

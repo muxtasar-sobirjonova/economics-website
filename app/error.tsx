@@ -25,7 +25,7 @@ export default function Error({
         </div>
         <h2 className="text-2xl font-bold text-slate-800 mb-2">Something went wrong</h2>
         <p className="text-slate-600 mb-6">
-          We've encountered an unexpected error. Please try again or go back to the home page.
+          We&apos;ve encountered an unexpected error. Please try again or go back to the home page.
         </p>
         <div className="flex flex-col sm:flex-row gap-3 justify-center">
           <button

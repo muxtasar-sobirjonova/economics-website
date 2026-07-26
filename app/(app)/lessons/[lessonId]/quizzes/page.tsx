@@ -5,7 +5,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { client } from "@/sanity/client";
 import { QUIZZES_QUERY } from "@/sanity/queries";
-import { getLessons, getQuizzes, QUIZZES } from "@/lib/data";
+import { getLessons } from "@/lib/data";
 import { getLessonAccessStatus } from "@/lib/lesson-access";
 import { IconClock, IconFileText, IconTrendingUp, IconClipboardList, IconCheck, IconArrowRight } from "@tabler/icons-react";
 import { BrainCircuit } from "lucide-react";
@@ -31,7 +31,13 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
     redirect("/roadmap");
   }
 
-  const lessons = await getLessons();
+  const userRecord = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { activeTrack: true }
+  });
+  const activeTrack = userRecord?.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
+
+  const lessons = await getLessons(activeTrack);
   const baseLesson = lessons.find((l) => Number(l.dayOrder) === lessonId) || lessons[0];
 
   let sanityQuiz: SanityQuiz | undefined = undefined;
@@ -47,7 +53,10 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
   } catch (error) {
     console.error("Failed to fetch quizzes from Sanity:", error);
   }
-  const localQuiz = QUIZZES.find((q) => q.id === 100 + lessonId);
+  const localQuiz = await prisma.quiz.findUnique({
+    where: { track_dayOrder: { track: activeTrack, dayOrder: lessonId } },
+    include: { questions: true }
+  });
 
   const quizTitle = sanityQuiz?.title || localQuiz?.title || baseLesson.title;
   
@@ -59,24 +68,52 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
   }
 
   // Fetch actual quiz completions and mistakes from Prisma
-  let quizResults: { quizId: string; mistakes: string }[] = [];
+  let quizResults: { quizId: string }[] = [];
+  let mistakes: Mistake[] = [];
   try {
     quizResults = await prisma.quizResult.findMany({
       where: { userId },
-      select: { quizId: true, mistakes: true }
-    }) as { quizId: string; mistakes: string }[];
+      select: { quizId: true }
+    });
+
+    const unreviewedMistakes = await prisma.mistakeReview.findMany({
+      where: {
+        userId,
+        reviewed: false,
+        quizAttempt: {
+          quizId: String(100 + lessonId)
+        }
+      },
+      include: {
+        quizAttempt: true
+      },
+      orderBy: {
+        quizAttempt: {
+          timestamp: 'desc'
+        }
+      }
+    });
+
+    // Deduplicate by questionId so we only show the latest mistake per question
+    const uniqueMistakesMap = new Map();
+    for (const mr of unreviewedMistakes) {
+      if (!uniqueMistakesMap.has(mr.quizAttempt.questionId)) {
+        uniqueMistakesMap.set(mr.quizAttempt.questionId, {
+          questionId: mr.quizAttempt.questionId,
+          userAnswer: mr.quizAttempt.userAnswer,
+          questionText: mr.quizAttempt.questionText || undefined,
+          correctAnswer: mr.quizAttempt.correctAnswer,
+          explanation: mr.quizAttempt.explanation || undefined
+        });
+      }
+    }
+    mistakes = Array.from(uniqueMistakesMap.values());
   } catch (error) {
-    console.error("Failed to fetch quiz results from Prisma:", error);
+    console.error("Failed to fetch quiz results or mistakes from Prisma:", error);
   }
 
   const currentQuizResult = quizResults.find(q => q.quizId === String(100 + lessonId));
   const hasCompleted = !!currentQuizResult;
-  let mistakes: Mistake[] = [];
-  try {
-    mistakes = currentQuizResult ? JSON.parse(currentQuizResult.mistakes || "[]") : [];
-  } catch (e) {
-    mistakes = [];
-  }
 
   const completedQuizLessonIds = quizResults.map(q => parseInt(q.quizId) - 100);
 
@@ -107,7 +144,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
               </h3>
               <div className="flex items-center text-gray-600 text-sm font-medium">
                 <IconClock size={18} className="mr-2" />
-                {timeEstimate} min quiz
+                10 min quiz
               </div>
               <div className="text-sm text-gray-600 truncate mt-1 max-w-[500px]">
                 {"Test your understanding of the concepts."}
@@ -161,7 +198,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                    </div>
                     <h4 className="font-bold text-gray-900 text-base mb-1">No attempts yet</h4>
                     <p className="text-gray-600 text-sm leading-[1.6] max-w-md mx-auto font-normal">
-                      You haven't completed this quiz yet. Take the quiz to receive personalized feedback and review your mistakes here!
+                      You haven&apos;t completed this quiz yet. Take the quiz to receive personalized feedback and review your mistakes here!
                     </p>
                   </div>
                ) : mistakes.length === 0 ? (

@@ -20,8 +20,11 @@ export default function ArticleActions({ initialSaved = false }: { initialSaved?
     setIsSaved(!isSaved); // Optimistic
     startTransition(async () => {
       try {
-        await toggleBookmarkAction(slug);
-      } catch (err) {
+        const res = await toggleBookmarkAction(slug);
+        if (!res.success) {
+          setIsSaved(isSaved); // Revert
+        }
+      } catch {
         setIsSaved(isSaved); // Revert
       }
     });

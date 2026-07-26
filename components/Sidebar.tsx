@@ -7,17 +7,9 @@ import {
   IconHome,
   IconMap,
   IconBulb,
-  IconWorld,
   IconArticle,
-  IconClipboardList,
   IconBookmark,
-  IconMoon,
-  IconChevronLeft,
-  IconChevronDown,
-  IconArrowRight,
-  IconPencil,
   IconNotes,
-  IconBell,
   IconMenu2,
   IconX
 } from "@tabler/icons-react";
@@ -123,7 +115,7 @@ export default function Sidebar() {
              T
           </div>
           <span className="font-bold text-white text-lg tracking-wide">
-            That's So Econ.
+            That&apos;s So Econ.
           </span>
         </div>
         <button onClick={() => setIsOpen(!isOpen)} className="p-1" aria-label="Toggle menu" aria-expanded={isOpen}>
@@ -140,7 +132,7 @@ export default function Sidebar() {
                T
             </div>
             <span className="font-bold text-white text-[22px] tracking-wide">
-              That's So Econ.
+              That&apos;s So Econ.
             </span>
           </div>
 

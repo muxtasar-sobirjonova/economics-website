@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
 import { Lightbulb, BookOpen, Brain } from "lucide-react";
 import { IconCheck, IconX } from "@tabler/icons-react";
@@ -8,13 +8,15 @@ import { IconCheck, IconX } from "@tabler/icons-react";
 export const DashboardHero = ({ 
   completedAgendaDates, 
   completedDates,
-  userName 
+  userName,
+  activeTrackName = "Entrepreneurship Economics"
 }: { 
   completedAgendaDates: string[], 
   completedDates: string[],
-  userName: string 
+  userName: string,
+  activeTrackName?: string
 }) => {
-  const days = ["M", "T", "W", "T", "F", "S", "S"];
+  const days = useMemo(() => ["M", "T", "W", "T", "F", "S", "S"], []);
 
   const [mounted, setMounted] = useState(false);
   const [todayIndex, setTodayIndex] = useState(0);
@@ -39,7 +41,7 @@ export const DashboardHero = ({
     });
     setWeekDates(dates);
     setMounted(true);
-  }, []);
+  }, [days]);
 
   const allCompletedDates = Array.from(new Set([...completedDates, ...completedAgendaDates]));
 
@@ -54,7 +56,7 @@ export const DashboardHero = ({
         </h1>
 
         <p className="text-slate-900 text-lg leading-relaxed mb-8 max-w-[400px] font-medium">
-          Your Personal Entrepreneurship Economics Teacher.
+          Your Personal {activeTrackName} Teacher.
         </p>
 
         {/* Action Buttons */}
@@ -119,8 +121,8 @@ export const DashboardHero = ({
                 const isMissed = i < todayIndex && !isCompleted;
 
                 return (
-                  <div key={i} className="flex flex-col items-center gap-2 relative group cursor-default">
-                    <span className="font-bold text-xs text-slate-500">
+                  <div key={i} className="flex flex-col items-center gap-2 relative group cursor-default" aria-label={`${day} ${isCompleted ? 'completed' : isMissed ? 'missed' : isToday ? 'today' : 'upcoming'}`}>
+                    <span className="font-bold text-xs text-slate-500" aria-hidden="true">
                       {day}
                     </span>
                     <div
@@ -133,6 +135,7 @@ export const DashboardHero = ({
                               ? "bg-transparent border-[1.5px] border-brand-primary"
                               : "bg-transparent border-[1.5px] border-dashed border-indigo-200"
                       }`}
+                      aria-hidden="true"
                     >
                       {isCompleted && <IconCheck size={18} stroke={3} />}
                       {isMissed && <IconX size={16} stroke={3} />}
@@ -140,7 +143,7 @@ export const DashboardHero = ({
                     
                     {/* Tooltip */}
                     {(isCompleted || isToday) && (
-                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max px-3 py-1.5 bg-slate-900 text-white text-[11px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg">
+                      <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max px-3 py-1.5 bg-slate-900 text-white text-[11px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg" aria-hidden="true">
                         {isToday && !isCompleted ? "Study today!" : `${isCompleted ? "Completed lessons" : "On track"}`}
                         <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-[#1A1A3E]"></div>
                       </div>

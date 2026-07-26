@@ -1,56 +1,48 @@
+import { Track } from "@prisma/client";
 "use server";
 
 import { auth } from "@/auth";
-import { prisma } from "@/lib/prisma";
-import { Prisma, ItemType } from "@prisma/client";
 import { ensureUserProgress } from "@/lib/user-progress";
 import { revalidatePath } from "next/cache";
-import { z } from "zod";
 
-export async function markArticleDoneAction(lessonId: string): Promise<void> {
-  const session = await auth();
-  if (!session || !session.user || !session.user.id) {
-    throw new Error("Unauthorized");
-  }
-  const userId = session.user.id;
-  
-  // Use UTC server time to prevent client spoofing
-  const todayDate = new Date();
-  todayDate.setUTCHours(0,0,0,0);
+import { AgendaService } from "@/services/agendaService";
+import { XpService } from "@/services/xpService";
+import { ActionError, ActionResponse, catchActionError } from "@/lib/errors";
+import { invalidateUserCache } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
 
-  await ensureUserProgress(userId);
+export async function markArticleDoneAction(lessonId: string): Promise<ActionResponse<void>> {
+  try {
+    const session = await auth();
+    if (!session || !session.user || !session.user.id) {
+      throw new ActionError("Unauthorized", "UNAUTHORIZED");
+    }
+    const userId = session.user.id;
+    
+    await ensureUserProgress(userId);
 
-  // Find real Lesson ID if possible, otherwise skip foreign key link
-  const realLesson = await prisma.lesson.findUnique({
-    where: { dayOrder: parseInt(lessonId) }
-  });
-  const dbLessonId = realLesson?.id || null;
+    const { getLessonAccessStatus } = await import("@/lib/lesson-access");
+    const access = await getLessonAccessStatus(userId, parseInt(lessonId, 10));
+    if (!access.isUnlocked) {
+      throw new ActionError("Lesson is locked", "FORBIDDEN");
+    }
 
-  // Tick off Article
-  const existingArticle = await prisma.agendaCompletion.findFirst({
-    where: { userId, lessonId: dbLessonId, dateString: todayDate, itemType: ItemType.ARTICLE }
-  });
-  if (!existingArticle) {
-    await prisma.agendaCompletion.create({
-      data: { userId, itemType: ItemType.ARTICLE, dateString: todayDate, lessonId: dbLessonId }
+    const isNew = await AgendaService.markItemDone(userId, lessonId, "ARTICLE");
+    if (isNew) {
+      await XpService.awardXp(userId, 10, "ARTICLE");
+    }
+
+    const userRecord = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { activeTrack: true }
     });
+    const activeTrack = userRecord?.activeTrack || Track.ENTREPRENEURSHIP_ECONOMICS;
+
+    await invalidateUserCache(userId, activeTrack);
+    revalidatePath("/", "layout");
+    
+    return { success: true, data: undefined };
+  } catch (error) {
+    return catchActionError(error);
   }
-
-  // Tick off Concept
-  const existingConcept = await prisma.agendaCompletion.findFirst({
-    where: { userId, lessonId: dbLessonId, dateString: todayDate, itemType: ItemType.LESSON }
-  });
-  if (!existingConcept) {
-    await prisma.agendaCompletion.create({
-      data: { userId, itemType: ItemType.LESSON, dateString: todayDate, lessonId: dbLessonId }
-    });
-  }
-
-  // Optionally grant XP for reading
-  await prisma.userProgress.update({
-    where: { userId },
-    data: { totalXP: { increment: 10 } }
-  });
-
-  revalidatePath("/", "layout");
 }

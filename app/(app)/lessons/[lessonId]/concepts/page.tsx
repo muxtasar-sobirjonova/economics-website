@@ -3,7 +3,8 @@ import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { auth } from "@/auth";
 import { getLessonAccessStatus } from "@/lib/lesson-access";
-import { getLessons, getQuizzes, QUIZZES } from "@/lib/data";
+import { getLessons } from "@/lib/data";
+import { prisma } from "@/lib/prisma";
 import { BookOpen } from "lucide-react";
 import { IconClock, IconFileText, IconTrendingUp, IconCompass, IconLoader } from "@tabler/icons-react";
 import { LessonHeader } from "@/components/lessons/LessonHeader";
@@ -33,8 +34,14 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
     conceptSummary?: string;
   }
   
-  const lessons = await getLessons();
-  let foundLesson = lessons.find((l) => l.dayOrder === lessonId) as LessonData | undefined;
+  const userRecord = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { activeTrack: true }
+  });
+  const activeTrack = userRecord?.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
+
+  const lessons = await getLessons(activeTrack);
+  const foundLesson = lessons.find((l) => l.dayOrder === lessonId) as LessonData | undefined;
   if (!foundLesson) {
     notFound();
   }
@@ -51,7 +58,7 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
         title: sanityLesson.title || activeLesson.title,
         conceptText: sanityLesson.conceptText,
         conceptSummary: sanityLesson.conceptSummary,
-      } as any;
+      };
     } else {
       activeLesson = {
         ...activeLesson,
@@ -102,7 +109,7 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
               </h3>
               <div className="flex items-center text-gray-600 text-sm font-medium">
                 <IconClock size={18} className="mr-2" />
-                {timeEstimate} min read
+                5-10 min read
               </div>
               <div className="text-sm text-gray-600 truncate mt-1 max-w-[500px]">
                 {activeLesson.subtitle}

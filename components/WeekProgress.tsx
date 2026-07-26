@@ -22,8 +22,8 @@ export default function WeekProgress({ history }: WeekProgressProps) {
   return (
     <div className="flex items-center justify-between gap-2 w-full max-w-sm">
       {days.map((date, idx) => {
-        const dateString = date.toISOString().split("T")[0];
-        const activity = history.find((h) => h.date === dateString);
+        const normalizedDateStr = date.toISOString().split("T")[0];
+        const activity = history.find((h) => h.date === normalizedDateStr);
 
         let bgColor = "bg-gray-100";
         let ringColor = "ring-gray-100";
@@ -46,7 +46,7 @@ export default function WeekProgress({ history }: WeekProgressProps) {
         }
 
         return (
-          <div key={dateString} className="flex flex-col items-center gap-2">
+          <div key={normalizedDateStr} className="flex flex-col items-center gap-2">
             <span className="text-xs font-semibold text-gray-400">
               {dayLabels[date.getDay()]}
             </span>

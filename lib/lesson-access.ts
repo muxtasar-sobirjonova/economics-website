@@ -7,15 +7,24 @@ export const getLessonAccessStatus = cache(async (userId: string, targetLessonId
   let isUnlocked = false;
 
   try {
-    const [user, targetLesson, progress] = await Promise.all([
+    const userRecord = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { activeTrack: true }
+    });
+    const track = userRecord?.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
+
+    const [user, targetLesson] = await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
         select: {
-          completedLessons: { select: { lessonId: true } },
+          completedLessons: {
+            where: { track },
+            select: { lessonId: true }
+          },
         },
       }),
       prisma.lesson.findUnique({
-        where: { dayOrder: targetLessonId },
+        where: { track_dayOrder: { track, dayOrder: targetLessonId } },
         select: { dayOrder: true },
       }),
       ensureUserProgress(userId)
@@ -25,8 +34,6 @@ export const getLessonAccessStatus = cache(async (userId: string, targetLessonId
       const id = parseInt(l.lessonId, 10) || 0;
       return id > 100 ? id - 100 : id;
     });
-    
-    const currentDay = progress?.currentDay ?? 1;
     
     // Strict sequential unlocking: Must have completed the previous lesson
     const hasCompletedPreviousLesson = completedLessonIds.includes(targetLessonId - 1);

@@ -11,7 +11,7 @@ interface BookmarkButtonProps {
 }
 
 export default function BookmarkButton({ slug, initialIsSaved, variant = 'light' }: BookmarkButtonProps) {
-  const [isPending, startTransition] = useTransition();
+  const [, startTransition] = useTransition();
   const [optimisticSaved, setOptimisticSaved] = useOptimistic(
     initialIsSaved,
     (state, newSaved: boolean) => newSaved
@@ -26,7 +26,10 @@ export default function BookmarkButton({ slug, initialIsSaved, variant = 'light'
       setOptimisticSaved(newSavedState);
       
       try {
-        await toggleBookmarkAction(slug);
+        const res = await toggleBookmarkAction(slug);
+        if (!res.success) {
+          console.error("Failed to toggle bookmark", res.error);
+        }
       } catch (error) {
         console.error("Failed to toggle bookmark", error);
         // We can't revert useOptimistic explicitly from catch, it reverts automatically when transition fails

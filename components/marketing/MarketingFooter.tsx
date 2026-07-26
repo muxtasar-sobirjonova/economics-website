@@ -10,14 +10,14 @@ export const MarketingFooter = () => (
               T
             </div>
             <span className="font-bold text-slate-900 text-2xl tracking-tight">
-              That's So Econ.
+              That&apos;s So Econ.
             </span>
           </div>
           <p className="text-gray-600 font-medium">Master Entrepreneurial Economics, One Concept at a Time.</p>
         </div>
       </div>
       <div className="border-t border-gray-200 mt-12 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm font-medium text-gray-600">
-        <div>© {new Date().getFullYear()} That's So Econ. All rights reserved.</div>
+        <div>© {new Date().getFullYear()} That&apos;s So Econ. All rights reserved.</div>
         <div className="flex gap-6">
           <Link href="#" className="hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">Privacy</Link>
           <Link href="#" className="hover:text-slate-900 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">Terms</Link>

@@ -12,8 +12,8 @@ vi.mock('next/link', () => ({
 // Mock framer-motion to avoid animation issues in jsdom
 vi.mock('framer-motion', () => ({
   motion: {
-    div: ({ children, ...props }: any) => <div {...props}>{children}</div>,
-    li: ({ children, ...props }: any) => <li {...props}>{children}</li>,
+    div: ({ children, layout, initial, animate, variants, whileHover, whileTap, transition, ...props }: any) => <div {...props}>{children}</div>,
+    li: ({ children, layout, initial, animate, variants, whileHover, whileTap, transition, ...props }: any) => <li {...props}>{children}</li>,
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));

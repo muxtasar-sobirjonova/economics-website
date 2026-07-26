@@ -1,3 +1,5 @@
+import type { PortableTextBlock } from "@portabletext/types";
+
 export interface Topic {
   _id: string;
   title: string;
@@ -19,7 +21,7 @@ export interface Article {
   title: string;
   slug: { current: string };
   topic: Topic;
-  body: any[]; // Sanity portable text blocks
+  body: PortableTextBlock[]; // Sanity portable text blocks
   excerpt?: string;
   author?: string;
   publishedAt: string;

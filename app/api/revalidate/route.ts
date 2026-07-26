@@ -13,7 +13,7 @@ export async function POST(req: NextRequest) {
     }
 
     return NextResponse.json({ message: 'No action taken', timestamp: Date.now() }, { status: 200 });
-  } catch (err: any) {
+  } catch (err: unknown) {
     console.error('Webhook error:', err);
     return NextResponse.json(
       { error: 'Webhook handler failed' },

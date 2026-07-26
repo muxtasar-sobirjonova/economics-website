@@ -33,22 +33,32 @@ export const ReadingTabs = ({
   );
   const [isPending, startTransition] = useTransition();
   const [saveStatus, setSaveStatus] = useState<string>("");
+  const lastSavedNotesRef = React.useRef<string>(JSON.stringify(notes));
 
   // Debounced Auto-Save
   React.useEffect(() => {
     if (activePanel !== "notes") return;
     
     const handler = setTimeout(() => {
+      const currentNotesString = JSON.stringify(notes);
+      if (currentNotesString === lastSavedNotesRef.current) return;
+      
+      const lastSavedNotes = JSON.parse(lastSavedNotesRef.current);
       let isSaving = false;
+      
       for (const note of notes) {
-        if (note.content && note.content.trim().length > 0) {
+        const lastSavedNote = lastSavedNotes.find((n: NoteData) => n.id === note.id);
+        const hasChanged = !lastSavedNote || lastSavedNote.content !== note.content || lastSavedNote.color !== note.color;
+        
+        if (hasChanged && note.content && note.content.trim().length > 0) {
           isSaving = true;
           startTransition(async () => {
             try {
-              await saveGlobalNoteAction({
+              const res = await saveGlobalNoteAction({
                 ...note,
                 source: "Concept",
               });
+              if (!res.success) throw new Error(res.error || "Auto-save failed");
               setSaveStatus("Auto-saved");
               setTimeout(() => setSaveStatus(""), 2000);
             } catch (error) {
@@ -57,6 +67,10 @@ export const ReadingTabs = ({
             }
           });
         }
+      }
+      
+      if (isSaving) {
+        lastSavedNotesRef.current = currentNotesString;
       }
     }, 1500);
 
@@ -76,7 +90,10 @@ export const ReadingTabs = ({
       
       startTransition(async () => {
         try {
-          await deleteGlobalNoteAction(id, lessonId);
+          const res = await deleteGlobalNoteAction(id);
+          if (!res.success) {
+            console.error("Delete failed:", res.error);
+          }
         } catch (error) {
           console.error(error);
         }
@@ -98,10 +115,11 @@ export const ReadingTabs = ({
       try {
         for (const note of notes) {
           if (note.content && note.content.trim().length > 0) {
-            await saveGlobalNoteAction({
+            const res = await saveGlobalNoteAction({
               ...note,
               source: "Concept",
             });
+            if (!res.success) throw new Error(res.error || "Save failed");
           }
         }
         setSaveStatus("Saved to My Notes!");
@@ -119,7 +137,7 @@ export const ReadingTabs = ({
     const mainElement = document.querySelector('.content-page') as HTMLElement;
     if (mainElement) {
       if (isOpen && window.innerWidth >= 1024) {
-        mainElement.style.paddingRight = '380px';
+        mainElement.style.paddingRight = '308px';
         mainElement.style.transition = 'padding-right 0.3s ease-in-out';
       } else {
         mainElement.style.paddingRight = '0px';
@@ -136,7 +154,7 @@ export const ReadingTabs = ({
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="fixed top-1/2 right-0 -translate-y-1/2 bg-[#5A4FBD] text-white p-2 rounded-l-md shadow-lg hover:bg-[#483d99] transition-all z-[60] flex flex-col items-center gap-2 border border-r-0 border-[#483d99]"
-        style={{ transform: `translateY(-50%) translateX(${isOpen ? '-380px' : '0'})` }}
+        style={{ transform: `translateY(-50%) translateX(${isOpen ? '-308px' : '0'})` }}
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
         <span className="text-[11px] font-bold tracking-widest uppercase rotate-180 mt-1" style={{ writingMode: 'vertical-rl' }}>
@@ -154,14 +172,14 @@ export const ReadingTabs = ({
 
       {/* Sliding Drawer */}
       <div 
-        className={`fixed top-[56px] right-0 h-[calc(100vh-56px)] w-[380px] max-w-[100vw] bg-[#F8F9FC] border-l border-gray-200 shadow-2xl z-[50] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 h-screen w-[308px] max-w-[100vw] bg-[#F8F9FC] border-l border-gray-200 shadow-2xl z-[50] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
-        <div className="h-full flex flex-col">
+        <div className="h-full flex flex-col overflow-hidden">
           {/* Fixed Header */}
           <div className="px-6 pt-5 pb-3 shrink-0 bg-[#F8F9FC] border-b border-gray-100 relative z-10">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-gray-900">Notes & Takeaways</h3>
-              <button onClick={() => setIsOpen(false)} className="text-gray-400 hover:text-gray-700 bg-gray-100 p-2 rounded-full">
+              <button onClick={() => setIsOpen(false)} aria-label="Close notes drawer" className="text-gray-400 hover:text-gray-700 bg-gray-100 p-2 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
               </button>
             </div>

@@ -61,7 +61,7 @@ export const MarketingHero = () => {
         </motion.h1>
         
         <motion.p variants={fadeUp} className="text-xl text-gray-600 mb-10 leading-relaxed font-medium max-w-2xl mx-auto">
-          Learn core concepts, apply them through real-world case studies, and build a notebook you'll actually use. <strong className="text-slate-900">Constantly updated with fresh case studies and interactive lessons.</strong>
+          Learn core concepts, apply them through real-world case studies, and build a notebook you&apos;ll actually use. <strong className="text-slate-900">Constantly updated with fresh case studies and interactive lessons.</strong>
         </motion.p>
         
         <motion.div variants={fadeUp} className="flex flex-col sm:flex-row items-center justify-center gap-4 mt-10 w-full sm:w-auto">
