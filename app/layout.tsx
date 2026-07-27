@@ -6,7 +6,7 @@ import NextTopLoader from 'nextjs-toploader';
 const inter = Inter({ subsets: ["latin"], display: 'swap' });
 
 export const viewport: Viewport = {
-  themeColor: "#1A1A3E",
+  themeColor: "#51487F",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1, // prevents zoom on focus in iOS
