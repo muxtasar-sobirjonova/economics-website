@@ -68,7 +68,7 @@ async function RoadmapContent({ userId }: { userId: string }) {
   const lessons = await getLessons(activeTrack as import("@prisma/client").Track);
 
   return (
-    <div className="flex flex-col xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden p-4 gap-5">
+    <div className="flex flex-col-reverse xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden p-4 gap-5">
       {/* Left Content Area */}
       <div className="flex-1 flex flex-col items-center xl:overflow-y-auto pb-10">
         <RoadmapMap lessons={lessons} 
@@ -90,7 +90,7 @@ async function RoadmapContent({ userId }: { userId: string }) {
 
 function RoadmapSkeleton() {
   return (
-    <div className="flex flex-col xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden p-4 gap-5">
+    <div className="flex flex-col-reverse xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden p-4 gap-5">
       <div className="flex-1 flex flex-col items-center xl:overflow-y-auto pb-10">
         <div className="w-full max-w-2xl h-32 bg-slate-100 animate-pulse rounded-2xl mb-8"></div>
         <div className="w-full max-w-md h-[600px] bg-slate-100 animate-pulse rounded-2xl"></div>
