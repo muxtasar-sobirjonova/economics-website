@@ -31,9 +31,8 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
 
   return (
     <div
-      className="flex flex-col overflow-y-auto"
+      className="flex flex-col overflow-y-auto w-full lg:flex-[1.5]"
       style={{
-        flex: "1.5",
         backgroundColor: "white", 
         padding: "20px",          
         borderRadius: "24px",     

@@ -48,7 +48,7 @@ export const DashboardHero = ({
   return (
     <div className="flex flex-col lg:flex-row items-center justify-between w-full mx-auto gap-12 max-w-[1200px]">
       {/* Left col */}
-      <div className="flex-1 w-full max-w-[600px] flex flex-col justify-start items-start text-left">
+      <div className="w-full lg:flex-1 max-w-[600px] flex flex-col justify-start items-start text-left">
         <h1
           className="text-slate-900 tracking-tight mb-4 text-[48px] font-extrabold leading-[1.1] -tracking-tight"
         >
