@@ -37,16 +37,16 @@ export async function DailyChallengeCard({ userId }: { userId?: string }) {
   }
 
   return (
-    <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-6 w-full md:w-[320px] shrink-0 flex flex-col relative">
-      <div className="absolute top-6 right-6 bg-purple-100/50 text-purple-600 text-[11px] font-bold tracking-wide px-3 py-1 rounded-full">
+    <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-5 lg:p-6 w-full md:w-[320px] shrink-0 flex flex-col relative">
+      <div className="absolute top-5 lg:top-6 right-5 lg:right-6 bg-purple-100/50 text-purple-600 text-[10px] lg:text-[11px] font-bold tracking-wide px-2 lg:px-3 py-1 rounded-full">
         Optional
       </div>
       
-      <h3 className="font-bold text-[17px] text-[#1A1A3E] mb-3 flex items-center gap-2">
+      <h3 className="font-bold text-base lg:text-[17px] text-[#1A1A3E] mb-2 lg:mb-3 flex items-center gap-2">
         💡 Daily Challenge
       </h3>
       
-      <p className="text-[14px] leading-[1.6] text-slate-700 mb-4">
+      <p className="text-[13px] lg:text-[14px] leading-[1.6] text-slate-700 mb-3 lg:mb-4">
         {challenge.prompt}
       </p>
 

@@ -31,7 +31,7 @@ export const DailyQuote = ({ activeTrack = "ENTREPRENEURSHIP_ECONOMICS" }: { act
   return (
     <div className="w-full text-center pt-6 lg:pt-10 pb-2 lg:pb-4">
       <p
-        className="text-slate-900 italic mx-auto px-4 max-w-[800px] text-[15px] lg:text-base leading-relaxed font-sans"
+        className="text-slate-900 italic mx-auto px-4 max-w-[800px] text-sm lg:text-[15px] leading-relaxed font-sans"
       >
         “{currentQuote.text}”
       </p>

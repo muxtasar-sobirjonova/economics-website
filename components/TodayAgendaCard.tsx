@@ -31,14 +31,14 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
 
   return (
     <div
-      className="flex flex-col w-full lg:flex-[1.5] bg-white p-5 lg:p-6 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.04)] overflow-visible"
+      className="flex flex-col w-full lg:flex-[1.5] bg-white p-4 lg:p-6 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.04)] overflow-visible"
     >
       {/* ── Header ── */}
       <div className="flex justify-between items-end mb-1 shrink-0">
-        <h2 className="text-gray-900 font-[800] text-xl tracking-tight leading-none">
+        <h2 className="text-gray-900 font-[800] text-lg lg:text-xl tracking-tight leading-none">
           Today&apos;s Agenda
         </h2>
-        <div className="text-[12px] font-[600] text-[#5A4FBD] bg-[#F3F0FF] px-3 py-1 rounded-full leading-none">
+        <div className="text-[11px] lg:text-[12px] font-[600] text-[#5A4FBD] bg-[#F3F0FF] px-2 lg:px-3 py-1 rounded-full leading-none">
           up to {totalAgendaMinutes} minutes
         </div>
       </div>
@@ -98,7 +98,7 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
                 }}
                 animate={{ opacity: item.isCompleted ? 0.6 : 1 }}
                 layout
-                className="flex items-center py-2 pr-3 pl-3 border-[1.5px] border-gray-100 rounded-2xl group bg-white transition-colors hover:shadow-sm hover:border-brand-primary/50 cursor-pointer"
+                className="flex items-center py-2 px-2.5 lg:px-3 border-[1.5px] border-gray-100 rounded-2xl group bg-white transition-colors hover:shadow-sm hover:border-brand-primary/50 cursor-pointer"
               >
                 {/* Left accent */}
                 <motion.div
@@ -117,12 +117,12 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
                   </motion.div>
 
                   {/* Title */}
-                  <motion.div layout className="text-sm font-[600] leading-tight text-gray-900 line-clamp-1 max-w-[200px]">
+                  <motion.div layout className="text-xs lg:text-sm font-[600] leading-tight text-gray-900 line-clamp-1 max-w-[160px] sm:max-w-[200px]">
                     {item.title}
                   </motion.div>
                   
                   {/* Time Pill */}
-                  <motion.div layout className="bg-gray-50 text-brand-primary font-[500] text-[11px] px-2 py-0.5 rounded-full whitespace-nowrap ml-auto">
+                  <motion.div layout className="bg-gray-50 text-brand-primary font-[500] text-[10px] lg:text-[11px] px-1.5 lg:px-2 py-0.5 rounded-full whitespace-nowrap ml-auto">
                     {timeText}
                   </motion.div>
                 </div>
