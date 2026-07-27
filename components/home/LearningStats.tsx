@@ -46,9 +46,9 @@ export const LearningStats = ({
             <div className="w-8 h-8 rounded-full bg-amber-50 flex items-center justify-center shrink-0">
               <IconFlame size={18} className="text-amber-500" stroke={2.5} />
             </div>
-            <span className="font-bold text-slate-900 text-[13px] whitespace-nowrap">Current Streak</span>
+            <span className="font-bold text-slate-900 text-xs lg:text-[13px] whitespace-normal leading-tight">Current Streak</span>
           </div>
-          <div className="text-2xl font-black text-slate-900 leading-none"><AnimatedNumber value={backendStreak} /> <span className="text-[13px] font-bold text-gray-500">days</span></div>
+          <div className="text-2xl font-black text-slate-900 leading-none mt-auto"><AnimatedNumber value={backendStreak} /> <span className="text-[13px] font-bold text-gray-500">days</span></div>
         </div>
 
         <div className="bg-white rounded-3xl p-4 flex flex-col gap-3 hover:-translate-y-1 transition-all duration-300 active:scale-[0.97] active:translate-y-0 cursor-pointer shadow-sm">
@@ -56,9 +56,9 @@ export const LearningStats = ({
             <div className="w-8 h-8 rounded-full bg-blue-50 flex items-center justify-center shrink-0">
               <IconCircleCheck size={18} className="text-blue-500" stroke={2.5} />
             </div>
-            <span className="font-bold text-slate-900 text-[13px] whitespace-nowrap">Lessons</span>
+            <span className="font-bold text-slate-900 text-xs lg:text-[13px] whitespace-normal leading-tight">Lessons</span>
           </div>
-          <div className="text-2xl font-black text-slate-900 leading-none"><AnimatedNumber value={completedLessonsCount} /> <span className="text-[13px] font-bold text-gray-500">completed</span></div>
+          <div className="text-2xl font-black text-slate-900 leading-none mt-auto"><AnimatedNumber value={completedLessonsCount} /> <span className="text-[13px] font-bold text-gray-500">completed</span></div>
         </div>
 
         <div className="bg-white rounded-3xl p-4 flex flex-col gap-3 hover:-translate-y-1 transition-all duration-300 active:scale-[0.97] active:translate-y-0 cursor-pointer shadow-sm">
@@ -66,9 +66,9 @@ export const LearningStats = ({
             <div className="w-8 h-8 rounded-full bg-emerald-50 flex items-center justify-center shrink-0">
               <IconTrophy size={18} className="text-emerald-500" stroke={2.5} />
             </div>
-            <span className="font-bold text-slate-900 text-[13px] whitespace-nowrap">Avg Quiz Score</span>
+            <span className="font-bold text-slate-900 text-xs lg:text-[13px] whitespace-normal leading-tight">Avg Quiz Score</span>
           </div>
-          <div className="flex items-end gap-2 leading-none">
+          <div className="flex items-end gap-2 leading-none mt-auto">
             <div className="text-2xl font-black text-slate-900">
               <AnimatedNumber value={avgQuizScore} /><span className="text-[13px] font-bold text-gray-500">%</span>
             </div>
@@ -87,9 +87,9 @@ export const LearningStats = ({
             <div className="w-8 h-8 rounded-full bg-[#F5F3FF] flex items-center justify-center shrink-0">
               <IconStar size={18} className="text-[#8B5CF6]" stroke={2.5} />
             </div>
-            <span className="font-bold text-slate-900 text-[13px] whitespace-nowrap">XP This Week</span>
+            <span className="font-bold text-slate-900 text-xs lg:text-[13px] whitespace-normal leading-tight">XP This Week</span>
           </div>
-          <div className="text-2xl font-black text-slate-900 leading-none"><AnimatedNumber value={xpThisWeek} /> <span className="text-[13px] font-bold text-gray-500">XP</span></div>
+          <div className="text-2xl font-black text-slate-900 leading-none mt-auto"><AnimatedNumber value={xpThisWeek} /> <span className="text-[13px] font-bold text-gray-500">XP</span></div>
         </div>
 
         <div className="bg-white rounded-3xl p-4 flex flex-col gap-3 hover:-translate-y-1 transition-all duration-300 active:scale-[0.97] active:translate-y-0 cursor-pointer shadow-sm">
@@ -97,9 +97,9 @@ export const LearningStats = ({
             <div className="w-8 h-8 rounded-full bg-pink-50 flex items-center justify-center shrink-0">
               <IconStar size={18} className="text-pink-500" stroke={2.5} />
             </div>
-            <span className="font-bold text-slate-900 text-[13px] whitespace-nowrap">Total XP</span>
+            <span className="font-bold text-slate-900 text-xs lg:text-[13px] whitespace-normal leading-tight">Total XP</span>
           </div>
-          <div className="text-2xl font-black text-slate-900 leading-none"><AnimatedNumber value={totalXP} /> <span className="text-[13px] font-bold text-gray-500">XP</span></div>
+          <div className="text-2xl font-black text-slate-900 leading-none mt-auto"><AnimatedNumber value={totalXP} /> <span className="text-[13px] font-bold text-gray-500">XP</span></div>
         </div>
       </div>
     </div>

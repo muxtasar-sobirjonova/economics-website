@@ -50,7 +50,7 @@ export const DashboardHero = ({
       {/* Left col */}
       <div className="w-full lg:flex-1 max-w-[600px] flex flex-col justify-start items-start text-left">
         <h1
-          className="text-slate-900 tracking-tight mb-4 text-[48px] font-extrabold leading-[1.1] -tracking-tight"
+          className="text-slate-900 tracking-tight mb-3 lg:mb-4 text-4xl lg:text-[48px] font-extrabold leading-[1.1] lg:-tracking-tight"
         >
           Welcome back{userName ? `, ${userName}` : '!'}
         </h1>
@@ -60,17 +60,17 @@ export const DashboardHero = ({
         </p>
 
         {/* Action Buttons */}
-        <div className="flex flex-wrap items-center gap-4 mb-8">
-          <Link href="/roadmap">
+        <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 lg:gap-4 mb-6 lg:mb-8 w-full">
+          <Link href="/roadmap" className="flex">
             <button
-              className="bg-brand-primary text-white font-medium text-[15px] tracking-wide py-3.5 px-8 rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-brand-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+              className="w-full bg-brand-primary text-white font-medium text-[15px] tracking-wide py-3.5 px-8 rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-brand-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
             >
               Continue Learning
             </button>
           </Link>
-          <a href="#review-mistakes">
+          <a href="#review-mistakes" className="flex">
             <button
-              className="bg-transparent text-brand-primary font-medium text-[15px] tracking-wide py-3.5 px-6 rounded-2xl hover:bg-[#F3F0FF] transition-all border-2 border-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+              className="w-full bg-transparent text-brand-primary font-medium text-[15px] tracking-wide py-3.5 px-6 rounded-2xl hover:bg-[#F3F0FF] transition-all border-2 border-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
             >
               Review Mistakes
             </button>
@@ -78,7 +78,7 @@ export const DashboardHero = ({
         </div>
 
         {/* Features Row */}
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center gap-3 lg:gap-6">
           <div className="flex items-center gap-2 text-slate-900 text-[13px] font-bold">
             <Lightbulb size={16} color="#EAB308" /> Concepts
           </div>
@@ -98,7 +98,7 @@ export const DashboardHero = ({
       <div className="w-full lg:w-[380px] shrink-0 flex flex-col gap-3">
 
         <div
-          className="bg-white flex flex-col justify-between rounded-3xl p-8 border-none shadow-sm h-full"
+          className="bg-white flex flex-col justify-between rounded-3xl p-6 lg:p-8 border-none shadow-sm h-full"
         >
           <div>
             <div className="flex justify-between items-center mb-8">

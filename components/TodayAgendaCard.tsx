@@ -31,13 +31,7 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
 
   return (
     <div
-      className="flex flex-col overflow-y-auto w-full lg:flex-[1.5]"
-      style={{
-        backgroundColor: "white", 
-        padding: "20px",          
-        borderRadius: "24px",     
-        boxShadow: "0 8px 32px rgba(0,0,0,0.04)" 
-      }}
+      className="flex flex-col w-full lg:flex-[1.5] bg-white p-5 lg:p-6 rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.04)] overflow-visible"
     >
       {/* ── Header ── */}
       <div className="flex justify-between items-end mb-1 shrink-0">
