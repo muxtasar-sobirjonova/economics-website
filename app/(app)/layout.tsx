@@ -11,7 +11,7 @@ export default function AppLayout({
     <SessionProviderWrapper>
       <div className="absolute inset-0 flex flex-col md:flex-row overflow-hidden w-full bg-[#F8F9FC]">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto relative">
+        <main className="grow shrink overflow-y-auto relative">
           {children}
         </main>
       </div>
