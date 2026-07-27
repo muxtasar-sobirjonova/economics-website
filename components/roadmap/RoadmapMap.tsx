@@ -276,7 +276,7 @@ export const RoadmapMap = ({
         const svgHeight = coords.length > 0 ? coords[coords.length - 1].y + 120 : 200;
 
         // Determine nextUrl and disabled state for the chapter Start button
-        let onStartClick = () => {};
+        let startHref: string | undefined = undefined;
         let chapterDisabled = true;
 
         const isLessonUnlocked = (lessonIdx: number) => {
@@ -301,14 +301,14 @@ export const RoadmapMap = ({
 
         if (firstActiveLesson) {
           chapterDisabled = false;
-          onStartClick = () => router.push(`/lessons/${firstActiveLesson.dayOrder}/concepts`);
+          startHref = `/lessons/${firstActiveLesson.dayOrder}/concepts`;
         } else if (isQuizActive) {
           chapterDisabled = false;
-          onStartClick = () => router.push(`/lessons/${chapterQuizDayOrder}/quizzes`);
+          startHref = `/lessons/${chapterQuizDayOrder}/quizzes`;
         } else if (isAllLessonsDone && isQuizDone) {
           // Entire chapter is done, let them review the first lesson
           chapterDisabled = false;
-          onStartClick = () => router.push(`/lessons/${chapterLessons[0]?.dayOrder || 1}/concepts`);
+          startHref = `/lessons/${chapterLessons[0]?.dayOrder || 1}/concepts`;
         }
 
         return (
@@ -319,7 +319,7 @@ export const RoadmapMap = ({
               description={chapterInfo.description}
               bgClass={(chapterInfo as Record<string, unknown>).bgClass as string}
               btnClass={(chapterInfo as Record<string, unknown>).btnClass as string}
-              onStartClick={onStartClick}
+              startHref={startHref}
               disabled={chapterDisabled}
             />
 

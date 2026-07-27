@@ -1,5 +1,6 @@
 import React from "react";
 import { Button } from "@/components/ui/Button";
+import Link from "next/link";
 
 type RoadmapUnitCardProps = {
   chapterNumber: number;
@@ -7,7 +8,7 @@ type RoadmapUnitCardProps = {
   description: string;
   bgClass?: string;
   btnClass?: string;
-  onStartClick?: () => void;
+  startHref?: string;
   disabled?: boolean;
 };
 
@@ -17,7 +18,7 @@ export const RoadmapUnitCard = ({
   description,
   bgClass = "bg-primary-100",
   btnClass = "bg-primary-500",
-  onStartClick,
+  startHref,
   disabled = false,
 }: RoadmapUnitCardProps) => {
   return (
@@ -35,26 +36,52 @@ export const RoadmapUnitCard = ({
           {description}
         </div>
       </div>
-      <Button 
-        onClick={onStartClick}
-        disabled={disabled}
-        className={`absolute top-6 right-6 rounded-[14px] flex items-center gap-2 group text-white border-none shadow-sm px-4 py-2 font-bold transition-all hover:brightness-110 hover:-translate-y-[2px] ${btnClass}`}
-      >
-        {disabled ? "Locked" : "Start"}
-        <svg
-          width="16"
-          height="16"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2.5"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-          className="transition-transform group-hover:translate-x-1"
-        >
-          <path d="M5 12h14M12 5l7 7-7 7" />
-        </svg>
-      </Button>
+      
+      {startHref && !disabled ? (
+        <Link href={startHref} className={`absolute top-6 right-6 ${disabled ? "pointer-events-none" : ""}`}>
+          <Button 
+            disabled={disabled}
+            className={`rounded-[14px] flex items-center gap-2 group text-white border-none shadow-sm px-4 py-2 font-bold transition-all hover:brightness-110 hover:-translate-y-[2px] ${btnClass}`}
+          >
+            {disabled ? "Locked" : "Start"}
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="transition-transform group-hover:translate-x-1"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </Button>
+        </Link>
+      ) : (
+        <div className="absolute top-6 right-6">
+          <Button 
+            disabled={true}
+            className={`rounded-[14px] flex items-center gap-2 group text-white border-none shadow-sm px-4 py-2 font-bold transition-all hover:brightness-110 hover:-translate-y-[2px] ${btnClass}`}
+          >
+            Locked
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth="2.5"
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="transition-transform group-hover:translate-x-1"
+            >
+              <path d="M5 12h14M12 5l7 7-7 7" />
+            </svg>
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
