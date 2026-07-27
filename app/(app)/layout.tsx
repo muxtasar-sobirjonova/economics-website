@@ -9,9 +9,9 @@ export default function AppLayout({
 }) {
   return (
     <SessionProviderWrapper>
-      <div className="h-screen flex flex-col md:flex-row overflow-hidden w-full">
+      <div className="absolute inset-0 flex flex-col md:flex-row overflow-hidden w-full bg-[#F8F9FC]">
         <Sidebar />
-        <main className="flex-1 overflow-y-auto relative min-h-0" style={{ backgroundColor: "#F8F9FC" }}>
+        <main className="flex-1 overflow-y-auto relative">
           {children}
         </main>
       </div>
