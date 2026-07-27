@@ -210,7 +210,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                ) : (
                   <div className="flex flex-col gap-5 h-full">
                     <h4 className="font-bold text-[#1F2937] text-lg">Areas to Review</h4>
-                    <div className="flex-1 overflow-y-auto pr-2">
+                    <div className="flex-1 overflow-y-auto pr-2 max-h-[250px]">
                       <ul className="flex flex-col gap-3">
                         {mistakes.map((mistake, i) => (
                           <li key={i} className="flex gap-4 p-4 rounded-2xl bg-brand-primary/5 border border-brand-primary/20">

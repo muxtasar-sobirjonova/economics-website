@@ -135,7 +135,8 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
           ...prev,
           {
             questionId: currentQuestion._key || currentQuestion.id,
-            userAnswer: currentQuestion.options[optionIndex]
+            userAnswer: currentQuestion.options[optionIndex],
+            questionText: currentQuestion.questionText || currentQuestion.question || "Question text not provided"
           }
         ]);
         setShowShake(true);
