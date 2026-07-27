@@ -1,8 +1,5 @@
 "use client";
 
-import { useEffect } from "react";
-import { AlertCircle } from "lucide-react";
-
 export default function AppError({
   error,
   reset,
@@ -10,27 +7,18 @@ export default function AppError({
   error: Error & { digest?: string };
   reset: () => void;
 }) {
-  useEffect(() => {
-    console.error("Dashboard error boundary caught an error:", error);
-  }, [error]);
-
   return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] px-4 text-center">
-      <div className="bg-white p-8 rounded-2xl shadow-sm border border-slate-100 max-w-md w-full">
-        <div className="w-16 h-16 bg-red-50 text-red-500 rounded-full flex items-center justify-center mx-auto mb-6">
-          <AlertCircle size={32} />
-        </div>
-        <h2 className="text-xl font-bold text-slate-800 mb-2">Unable to load page</h2>
-        <p className="text-slate-600 mb-6 text-sm">
-          We ran into a problem loading your learning data. Please try again.
-        </p>
-        <button
-          onClick={() => reset()}
-          className="w-full py-3 bg-brand-primary text-white font-medium rounded-xl hover:opacity-90 transition-opacity"
-        >
-          Try Again
-        </button>
-      </div>
+    <div className="p-8 m-4 bg-red-50 text-red-900 border border-red-200 rounded-2xl">
+      <h2 className="text-xl font-bold mb-4">Dashboard Client Error</h2>
+      <p className="font-mono text-sm mb-4 break-all">{error.message || "Unknown error"}</p>
+      {error.stack && (
+        <pre className="text-xs bg-white p-4 rounded overflow-auto max-h-[300px] mb-4">
+          {error.stack}
+        </pre>
+      )}
+      <button onClick={() => reset()} className="px-4 py-2 bg-red-600 text-white rounded font-bold">
+        Retry
+      </button>
     </div>
   );
 }
