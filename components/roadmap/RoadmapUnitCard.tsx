@@ -7,6 +7,8 @@ type RoadmapUnitCardProps = {
   description: string;
   bgClass?: string;
   btnClass?: string;
+  onStartClick?: () => void;
+  disabled?: boolean;
 };
 
 export const RoadmapUnitCard = ({
@@ -15,10 +17,12 @@ export const RoadmapUnitCard = ({
   description,
   bgClass = "bg-primary-100",
   btnClass = "bg-primary-500",
+  onStartClick,
+  disabled = false,
 }: RoadmapUnitCardProps) => {
   return (
     <div 
-      className={`w-full max-w-[520px] rounded-3xl px-6 py-6 mt-10 mb-6 relative shrink-0 font-sans shadow-sm border-none ${bgClass}`}
+      className={`w-full max-w-[520px] rounded-3xl px-6 py-6 mt-10 mb-6 relative shrink-0 font-sans shadow-sm border-none ${bgClass} ${disabled ? "opacity-60" : ""}`}
     >
       <div className="pl-2 pr-32">
         <div className="text-[12px] font-bold tracking-widest text-[#3a2072] uppercase mb-2 opacity-80">
@@ -32,9 +36,11 @@ export const RoadmapUnitCard = ({
         </div>
       </div>
       <Button 
+        onClick={onStartClick}
+        disabled={disabled}
         className={`absolute top-6 right-6 rounded-[14px] flex items-center gap-2 group text-white border-none shadow-sm px-4 py-2 font-bold transition-all hover:brightness-110 hover:-translate-y-[2px] ${btnClass}`}
       >
-        Start
+        {disabled ? "Locked" : "Start"}
         <svg
           width="16"
           height="16"

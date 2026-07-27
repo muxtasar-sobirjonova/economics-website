@@ -275,6 +275,42 @@ export const RoadmapMap = ({
         // Add padding at the bottom of the SVG to prevent clipping
         const svgHeight = coords.length > 0 ? coords[coords.length - 1].y + 120 : 200;
 
+        // Determine nextUrl and disabled state for the chapter Start button
+        let onStartClick = () => {};
+        let chapterDisabled = true;
+
+        const isLessonUnlocked = (lessonIdx: number) => {
+          if (chapterIndex === 0 && lessonIdx === 0) return true;
+          
+          if (lessonIdx === 0) {
+            const prevChapterQuizDayOrder = chapters[chapterIndex - 1][chapters[chapterIndex - 1].length - 1].dayOrder + 1;
+            return completedQuizDayOrders.includes(prevChapterQuizDayOrder);
+          }
+
+          const prevLesson = chapterLessons[lessonIdx - 1];
+          return completedLessonDayOrders.includes(prevLesson.dayOrder);
+        };
+
+        const firstActiveLesson = chapterLessons.find((l, idx) => {
+          return isLessonUnlocked(idx) && !completedLessonDayOrders.includes(l.dayOrder);
+        });
+
+        const isAllLessonsDone = lastLesson ? completedLessonDayOrders.includes(lastLesson.dayOrder) : false;
+        const isQuizDone = completedQuizDayOrders.includes(chapterQuizDayOrder);
+        const isQuizActive = isAllLessonsDone && !isQuizDone;
+
+        if (firstActiveLesson) {
+          chapterDisabled = false;
+          onStartClick = () => router.push(`/lessons/${firstActiveLesson.dayOrder}/concepts`);
+        } else if (isQuizActive) {
+          chapterDisabled = false;
+          onStartClick = () => router.push(`/lessons/${chapterQuizDayOrder}/quizzes`);
+        } else if (isAllLessonsDone && isQuizDone) {
+          // Entire chapter is done, let them review the first lesson
+          chapterDisabled = false;
+          onStartClick = () => router.push(`/lessons/${chapterLessons[0]?.dayOrder || 1}/concepts`);
+        }
+
         return (
           <React.Fragment key={`chapter-${chapterNum}`}>
             <RoadmapUnitCard 
@@ -283,6 +319,8 @@ export const RoadmapMap = ({
               description={chapterInfo.description}
               bgClass={(chapterInfo as Record<string, unknown>).bgClass as string}
               btnClass={(chapterInfo as Record<string, unknown>).btnClass as string}
+              onStartClick={onStartClick}
+              disabled={chapterDisabled}
             />
 
             <svg
