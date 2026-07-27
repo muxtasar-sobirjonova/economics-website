@@ -9,9 +9,9 @@ export default function AppLayout({
 }) {
   return (
     <SessionProviderWrapper>
-      <div className="fixed inset-0 flex flex-col md:flex-row overflow-hidden w-full bg-[#F8F9FC]">
+      <div className="min-h-screen flex flex-col md:fixed md:inset-0 md:flex-row md:overflow-hidden w-full bg-[#F8F9FC]">
         <Sidebar />
-        <main className="grow shrink overflow-y-auto relative">
+        <main className="flex-1 w-full relative md:overflow-y-auto">
           {children}
         </main>
       </div>
