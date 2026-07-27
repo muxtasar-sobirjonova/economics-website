@@ -9,9 +9,10 @@ export interface Note {
   lessonId: number;
   content: string;
   color?: string;
+  source?: string;
 }
 
-export const NotesReviewClient = ({ initialNotes, lessons }: { initialNotes: Note[], lessons: Lesson[] }) => {
+export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", subtitle = "Your saved insights across all lessons", size = "normal" }: { initialNotes: Note[], lessons: Lesson[], title?: string, subtitle?: string, size?: 'normal' | 'large' }) => {
   // Group notes by lessonId
   const notesByLesson = initialNotes.reduce((acc: Record<number, Note[]>, note: Note) => {
     if (!acc[note.lessonId]) acc[note.lessonId] = [];
@@ -142,7 +143,7 @@ export const NotesReviewClient = ({ initialNotes, lessons }: { initialNotes: Not
      return (
        <div className="flex-1 min-h-screen bg-[#F8F9FC] flex flex-col p-10 relative max-w-[1200px] mx-auto w-full">
          <div className="mb-2 shrink-0">
-           <h1 className="text-[13px] font-[700] text-gray-900 uppercase tracking-[0.08em] mb-1">My Notes</h1>
+           <h1 className="text-[13px] font-[700] text-gray-900 uppercase tracking-[0.08em] mb-1">{title}</h1>
            <p className="text-sm text-gray-500">Card Review Complete</p>
          </div>
          
@@ -174,7 +175,7 @@ export const NotesReviewClient = ({ initialNotes, lessons }: { initialNotes: Not
                  Review Again
                </button>
              )}
-             <button onClick={() => setActiveLessonId(null)} className="bg-brand-primary text-white px-6 py-3 rounded-lg font-medium shadow-sm hover:bg-brand-primary/90 transition-colors">
+             <button onClick={() => { setActiveLessonId(null); setIsComplete(false); }} className="bg-brand-primary text-white px-6 py-3 rounded-lg font-medium shadow-sm hover:bg-brand-primary/90 transition-colors">
                ← Back to days
              </button>
            </div>
@@ -227,6 +228,9 @@ export const NotesReviewClient = ({ initialNotes, lessons }: { initialNotes: Not
     );
   }
 
+  const cardWidthClass = size === 'large' ? 'w-[700px]' : 'w-[460px]';
+  const cardMinHeightClass = size === 'large' ? 'min-h-[360px]' : 'min-h-[240px]';
+
   return (
     <div className="flex-1 min-h-screen bg-[#F8F9FC] relative overflow-hidden flex flex-col p-10 max-w-[1200px] mx-auto w-full select-none">
       {/* Flash overlay */}
@@ -237,10 +241,10 @@ export const NotesReviewClient = ({ initialNotes, lessons }: { initialNotes: Not
       {/* Header and Day Pills */}
       <div className="mb-2 shrink-0">
         <h1 className="text-[13px] font-[700] text-gray-900 uppercase tracking-[0.08em] mb-1">
-          My Notes
+          {title}
         </h1>
         <p className="text-sm text-gray-500">
-          Your saved insights across all lessons
+          {subtitle}
         </p>
       </div>
 
@@ -335,7 +339,7 @@ export const NotesReviewClient = ({ initialNotes, lessons }: { initialNotes: Not
           </div>
 
           {/* Left Pile (Memorized) */}
-          <div className="absolute left-10 top-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none">
+          <div className="absolute left-10 top-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none hidden md:flex">
             <div className="text-green-500 font-[700] text-xs mb-4">✓ Memorized</div>
             <div className="relative w-[100px] h-[130px]">
                {knewIt.map((_, i) => (
@@ -350,7 +354,7 @@ export const NotesReviewClient = ({ initialNotes, lessons }: { initialNotes: Not
           </div>
 
           {/* Right Pile (Review Again Tracker) */}
-          <div className="absolute right-10 top-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none">
+          <div className="absolute right-10 top-1/2 -translate-y-1/2 flex flex-col items-center pointer-events-none hidden md:flex">
             <div className="text-red-500 font-[700] text-xs mb-4">↻ Review Again</div>
             <div className="relative w-[100px] h-[130px]">
                {Array.from({length: reviewAgainCount}).map((_, i) => (
@@ -365,31 +369,31 @@ export const NotesReviewClient = ({ initialNotes, lessons }: { initialNotes: Not
           </div>
 
           {/* The Stack */}
-          <div className="relative w-[460px] h-[240px] flex items-center justify-center shrink-0">
+          <div className={`relative ${cardWidthClass} ${cardMinHeightClass} flex items-center justify-center shrink-0`}>
             
             {/* Slide Under Temp Card (rejoining back of queue visually) */}
             {showSlideUnder && slideUnderCard && (
-               <div className="absolute w-[460px] min-h-[240px] rounded-xl p-7 animate-slideUnder z-[7]"
+               <div className={`absolute ${cardWidthClass} ${cardMinHeightClass} rounded-xl p-7 animate-slideUnder z-[7]`}
                     style={{ backgroundColor: slideUnderCard.color || '#FFF9C4' }}>
                </div>
             )}
 
             {/* Ghost 2 */}
             {ghost2 && (
-              <div className="absolute w-[460px] min-h-[240px] rounded-xl p-7 opacity-35 z-[8]" 
+              <div className={`absolute ${cardWidthClass} ${cardMinHeightClass} rounded-xl p-7 opacity-35 z-[8]`} 
                    style={{ backgroundColor: ghost2.color || '#FFF9C4', transform: 'translateY(20px) scale(0.94)' }} />
             )}
             
             {/* Ghost 1 */}
             {ghost1 && (
-              <div className={`absolute w-[460px] min-h-[240px] rounded-xl p-7 opacity-60 ${animState === 'flyingLeft' ? 'animate-stackPopV2 delay-[0.4s]' : 'z-[9]'}`}
+              <div className={`absolute ${cardWidthClass} ${cardMinHeightClass} rounded-xl p-7 opacity-60 ${animState === 'flyingLeft' ? 'animate-stackPopV2 delay-[0.4s]' : 'z-[9]'}`}
                    style={{ backgroundColor: ghost1.color || '#FFF9C4', transform: 'translateY(10px) scale(0.97)' }} />
             )}
 
             {/* Active Card */}
             {activeCard && (
               <div 
-                className={`absolute w-[460px] min-h-[240px] rounded-xl p-7 shadow-[0_8px_32px_rgba(0,0,0,0.15)] flex flex-col z-[10] ${animClass}`}
+                className={`absolute ${cardWidthClass} ${cardMinHeightClass} rounded-xl p-7 shadow-[0_8px_32px_rgba(0,0,0,0.15)] flex flex-col z-[10] ${animClass}`}
                 style={{ 
                   backgroundColor: activeCard.color || '#FFF9C4', 
                   cursor: isDragging ? 'grabbing' : 'grab',
@@ -410,7 +414,7 @@ export const NotesReviewClient = ({ initialNotes, lessons }: { initialNotes: Not
                     <div className="text-red-500 text-xl font-[900] px-4 py-2 rotate-[15deg]">↻ REVIEW</div>
                  </div>
 
-                 <div className="text-base leading-[1.8] text-gray-900 font-sans flex-1 overflow-hidden" dangerouslySetInnerHTML={{ __html: activeCard.content }} />
+                 <div className="text-base leading-[1.8] text-gray-900 font-sans flex-1 overflow-y-auto scrollbar-hide break-words whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: activeCard.content }} />
                  
                  <div className="mt-6 flex justify-between items-center shrink-0">
                     <span className="text-[11px] text-gray-400">Lesson {lesson?.id} · {lesson?.title}</span>
@@ -420,11 +424,11 @@ export const NotesReviewClient = ({ initialNotes, lessons }: { initialNotes: Not
           </div>
 
           {/* Action Buttons */}
-          <div className="mt-4 flex gap-4 justify-center shrink-0">
-             <button onClick={() => confirmAction('reviewAgain')} className="bg-red-50 border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px]">
+          <div className="mt-8 flex gap-4 justify-center shrink-0 z-20">
+             <button onClick={() => confirmAction('reviewAgain')} className="bg-white/80 backdrop-blur border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
                ↻ Review Again
              </button>
-             <button onClick={() => confirmAction('knewIt')} className="bg-green-50 border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px]">
+             <button onClick={() => confirmAction('knewIt')} className="bg-white/80 backdrop-blur border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
                ✓ Memorized
              </button>
           </div>

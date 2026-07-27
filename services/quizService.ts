@@ -6,7 +6,6 @@ import { logQuizAttemptInDb } from "@/lib/db-utils";
 
 export class QuizService {
   static async processQuizAttempt(userId: string, quizId: string, score: number, mistakes: Mistake[], actualLessonId: number) {
-    const passed = score >= 6;
     const xpEarned = score * 2;
     
     const todayDate = new Date();
@@ -15,7 +14,10 @@ export class QuizService {
     await ensureUserProgress(userId);
 
     const userRecord = await prisma.user.findUnique({ where: { id: userId }, select: { activeTrack: true } });
-    const track = userRecord?.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
+    if (!userRecord) {
+      throw new Error("User record not found");
+    }
+    const track = userRecord.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
 
     const realQuiz = await prisma.quiz.findUnique({
       where: { track_dayOrder: { track, dayOrder: actualLessonId } },
@@ -29,6 +31,15 @@ export class QuizService {
       throw new Error("Lesson or Quiz not found");
     }
 
+    if (realQuiz.id !== quizId) {
+      throw new Error("Invalid quizId for the active track.");
+    }
+    
+    // Pass if score is >= 80% of total questions, or at least 1 if empty
+    const totalQuestions = realQuiz.questions.length;
+    const passingScore = Math.max(1, Math.ceil(totalQuestions * 0.8));
+    const passed = score >= passingScore;
+
     const validQuestionTexts = realQuiz.questions.map(q => q.questionText);
     const validMistakes = mistakes.filter(m => m.questionText && validQuestionTexts.includes(m.questionText));
 
@@ -37,7 +48,7 @@ export class QuizService {
     const existingResult = await prisma.quizResult.findUnique({
       where: { userId_quizId_track: { userId, quizId, track } }
     });
-    const alreadySolved = existingResult && existingResult.score >= 6;
+    const alreadySolved = existingResult && existingResult.score >= passingScore;
 
     if (passed) {
       const finalScore = alreadySolved ? existingResult.score : score;

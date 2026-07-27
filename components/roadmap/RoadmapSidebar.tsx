@@ -3,7 +3,7 @@
 import React, { useTransition } from "react";
 import { Lesson } from "@prisma/client";
 import { switchTrackAction } from "@/app/actions/user";
-import { useRouter } from "next/navigation";
+
 
 export function getLeagueData(weeklyXP: number) {
   if (weeklyXP < 100) return { name: "Bronze League", min: 0, max: 100 };
@@ -24,7 +24,7 @@ export const RoadmapSidebar = ({
   lessons: Lesson[];
   activeTrack: string;
 }) => {
-  const router = useRouter();
+  
   const [isPending, startTransition] = useTransition();
   const totalXP = serverTotalXP;
   
@@ -46,8 +46,6 @@ export const RoadmapSidebar = ({
         const res = await switchTrackAction(newTrack);
         if (!res.success) {
           console.error("Failed to switch track:", res.error);
-        } else {
-          router.refresh();
         }
       } catch (err) {
         console.error("Failed to switch track:", err);

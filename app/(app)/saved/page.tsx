@@ -6,6 +6,8 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { NotesReviewClient } from "@/components/notes/NotesReviewClient";
 
+export const dynamic = "force-dynamic";
+
 export default async function SavedPage({
   searchParams,
 }: {
@@ -33,24 +35,44 @@ export default async function SavedPage({
   let globalNotes: { id: string; lessonId: number; content: string; color?: string; source?: string; timestamp?: string }[] = [];
   let totalNotes = 0;
   try {
-    const [notes, count] = await Promise.all([
+    // Only fetch notes that do NOT start with DailyChallenge-
+    const [rawNotes, count] = await Promise.all([
       prisma.note.findMany({
         where: { userId, track: activeTrack },
         orderBy: { createdAt: "desc" },
-        take,
+        take: take + 10,
         skip
       }),
-      prisma.note.count({ where: { userId, track: activeTrack } })
+      prisma.note.count({ 
+        where: { userId, track: activeTrack } 
+      })
     ]);
+    
+    console.log("DEBUG: rawNotes count", rawNotes.length);
+    console.log("DEBUG: rawNotes", JSON.stringify(rawNotes.map(n => ({ id: n.id, source: n.source }))));
+
+    // Filter out daily challenges in javascript to avoid Prisma null/NOT bugs
+    const notes = rawNotes.filter(n => {
+       const isDaily = typeof n.source === 'string' && n.source.startsWith('DailyChallenge-');
+       return !isDaily;
+    }).slice(0, take);
+    
+    console.log("DEBUG: filtered notes count", notes.length);
     totalNotes = count;
     
     // Format to match the client component's expectation if necessary
-    globalNotes = notes.map(n => ({
-      id: n.id,
-      lessonId: parseInt(n.lessonId || '1'),
-      content: n.content,
-      timestamp: n.createdAt.toISOString()
-    }));
+    globalNotes = notes.map(n => {
+      const content = n.content;
+      const lessonId = parseInt(n.lessonId || '1');
+      
+      return {
+        id: n.id,
+        lessonId,
+        content,
+        source: n.source || undefined,
+        timestamp: n.createdAt.toISOString()
+      };
+    });
   } catch (error) {
     console.error("Failed to fetch notes:", error);
   }

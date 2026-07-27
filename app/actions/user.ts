@@ -3,7 +3,7 @@
 import { auth } from "@/auth";
 import { Track } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
-import { ensureUserProgress } from "@/lib/user-progress";
+import { ensureUserProgress, switchActiveTrack } from "@/lib/user-progress";
 import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { ActionError, ActionResponse, catchActionError } from "@/lib/errors";
@@ -130,7 +130,11 @@ export async function switchTrackAction(track: string): Promise<ActionResponse<v
     }
     const userId = session.user.id;
     
-    const { switchActiveTrack } = await import("@/lib/user-progress");
+    const { success } = await ratelimit.limit(`switchTrack_${userId}`);
+    if (!success) {
+      throw new ActionError("Too many track switch requests. Please slow down.");
+    }
+    
     await switchActiveTrack(userId, track as Track);
     
     revalidatePath("/", "layout");

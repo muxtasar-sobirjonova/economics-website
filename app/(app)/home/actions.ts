@@ -1,5 +1,5 @@
-import { Track } from "@prisma/client";
 "use server";
+import { Track } from "@prisma/client";
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
@@ -29,12 +29,15 @@ export async function saveDailyChallengeThought(content: string, challengeId: st
     });
   } else {
     if (!content.trim()) return; // Don't create empty notes
+    const userRecord = await prisma.user.findUnique({ where: { id: session.user.id }, select: { activeTrack: true } });
+    const activeTrack = userRecord?.activeTrack || Track.ENTREPRENEURSHIP_ECONOMICS;
     return prisma.note.create({
       data: {
         userId: session.user.id,
         content,
         source: `DailyChallenge-${challengeId}`,
-        color: "#F8F9FC", track: Track.ENTREPRENEURSHIP_ECONOMICS
+        color: "#F8F9FC", 
+        track: activeTrack
       }
     });
   }

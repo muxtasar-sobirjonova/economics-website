@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
 import { ensureUserProgress } from "@/lib/user-progress";
+import { getLessons } from "@/lib/data";
 import { cache } from "react";
 
 export const getLessonAccessStatus = cache(async (userId: string, targetLessonId: number) => {
@@ -35,11 +36,20 @@ export const getLessonAccessStatus = cache(async (userId: string, targetLessonId
       return id > 100 ? id - 100 : id;
     });
     
-    // Strict sequential unlocking: Must have completed the previous lesson
-    const hasCompletedPreviousLesson = completedLessonIds.includes(targetLessonId - 1);
+    const trackLessons = await getLessons(track);
+    const targetIndex = trackLessons.findIndex(l => l.dayOrder === targetLessonId);
+
+    // Strict sequential unlocking based on actual ordered lessons
+    let hasCompletedPreviousLesson = false;
+    if (targetIndex > 0) {
+      const previousLessonDayOrder = trackLessons[targetIndex - 1].dayOrder;
+      // Also account for the > 100 magic number logic if it applies
+      hasCompletedPreviousLesson = completedLessonIds.includes(previousLessonDayOrder) || 
+                                   completedLessonIds.includes(previousLessonDayOrder > 100 ? previousLessonDayOrder - 100 : previousLessonDayOrder);
+    }
 
     isUnlocked = Boolean(targetLesson) && (
-      targetLessonId === 1 || 
+      targetIndex === 0 || 
       hasCompletedPreviousLesson
     );
   } catch (error) {

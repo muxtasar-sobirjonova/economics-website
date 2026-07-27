@@ -68,15 +68,7 @@ export const getUserProgress = cache(async (userId: string) => {
     }
   }
 
-  // Sync active track's currentDay to userProgress.currentDay
-  const track = await getActiveTrack(userId);
-  const trackProg = await getTrackProgress(userId, track);
-  if (progress.currentDay !== trackProg.currentDay) {
-    progress = await prisma.userProgress.update({
-      where: { userId },
-      data: { currentDay: trackProg.currentDay }
-    });
-  }
+
   
   return progress;
 });
@@ -121,40 +113,46 @@ export async function ensureUserProgress(userId: string) {
     }
   }
 
-  const track = await getActiveTrack(userId);
-  const trackProg = await getTrackProgress(userId, track);
-  if (progress.currentDay !== trackProg.currentDay) {
-    progress = await prisma.userProgress.update({
-      where: { userId },
-      data: { currentDay: trackProg.currentDay }
-    });
-  }
+
   
   return progress;
 }
 
 export async function syncCurrentDayToTrackProgress(userId: string, currentDay: number) {
   const track = await getActiveTrack(userId);
-  await prisma.trackProgress.upsert({
-    where: { userId_track: { userId, track } },
-    update: { currentDay },
-    create: { userId, track, currentDay }
-  });
+  
+  await prisma.$transaction([
+    prisma.trackProgress.upsert({
+      where: { userId_track: { userId, track } },
+      update: { currentDay },
+      create: { userId, track, currentDay }
+    }),
+    prisma.userProgress.update({
+      where: { userId },
+      data: { currentDay }
+    })
+  ]);
 }
 
 export async function switchActiveTrack(userId: string, track: Track) {
-  // Update user's active track
-  await prisma.user.update({
-    where: { id: userId },
-    data: { activeTrack: track }
-  });
+  await prisma.$transaction(async (tx) => {
+    // Update user's active track
+    await tx.user.update({
+      where: { id: userId },
+      data: { activeTrack: track }
+    });
 
-  // Get/Create progress for this track
-  const trackProg = await getTrackProgress(userId, track);
+    // Get/Create progress for this track
+    const trackProg = await tx.trackProgress.upsert({
+      where: { userId_track: { userId, track } },
+      update: {},
+      create: { userId, track, currentDay: 1 }
+    });
 
-  // Sync back to global UserProgress
-  await prisma.userProgress.update({
-    where: { userId },
-    data: { currentDay: trackProg.currentDay }
+    // Sync back to global UserProgress
+    await tx.userProgress.update({
+      where: { userId },
+      data: { currentDay: trackProg.currentDay }
+    });
   });
 }

@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import { RoadmapMap } from "@/components/roadmap/RoadmapMap";
 import { RoadmapSidebar } from "@/components/roadmap/RoadmapSidebar";
-import { RoadmapUnitCard } from "@/components/roadmap/RoadmapUnitCard";
+
 import { RoadmapProgress } from "@/lib/types/roadmap";
 import { ensureUserProgress } from "@/lib/user-progress";
 import { getLessons } from "@/lib/data";
@@ -12,15 +12,12 @@ import { getLessons } from "@/lib/data";
 import { Suspense } from "react";
 
 async function RoadmapContent({ userId }: { userId: string }) {
-  await ensureUserProgress(userId);
-
-  const lessons = await getLessons();
-
   let progressData: RoadmapProgress = {
     totalXP: 0,
     completedLessonIds: [],
     completedQuizIds: [],
   };
+  let activeTrack = "ENTREPRENEURSHIP_ECONOMICS";
 
   try {
     const localDate = new Date();
@@ -30,15 +27,17 @@ async function RoadmapContent({ userId }: { userId: string }) {
     monday.setUTCDate(localDate.getUTCDate() - todayIndex);
     monday.setUTCHours(0, 0, 0, 0);
 
-    const [user, weeklyQuizzesAgg] = await Promise.all([
+    const [, user, weeklyQuizzesAgg] = await Promise.all([
+      ensureUserProgress(userId),
       prisma.user.findUnique({
         where: { id: userId },
         select: {
+          activeTrack: true,
           completedLessons: {
-            select: { lessonId: true }
+            select: { lessonId: true, track: true }
           },
           quizResults: {
-            select: { quizId: true }
+            select: { quizId: true, track: true }
           },
         },
       }),
@@ -48,29 +47,34 @@ async function RoadmapContent({ userId }: { userId: string }) {
       })
     ]);
 
+    if (user?.activeTrack) {
+      activeTrack = user.activeTrack;
+    }
+
     progressData = {
-      totalXP: weeklyQuizzesAgg._sum.xpEarned || 0,
-      completedLessonIds: (user?.completedLessons ?? []).map(l => parseInt(l.lessonId) || 0),
-      completedQuizIds: (user?.quizResults ?? []).map(q => parseInt(q.quizId) || 0),
+      totalXP: weeklyQuizzesAgg?._sum?.xpEarned || 0,
+      completedLessonIds: (user?.completedLessons ?? [])
+        .filter(l => l.track === activeTrack)
+        .map(l => parseInt(l.lessonId) || 0),
+      completedQuizIds: (user?.quizResults ?? [])
+        .filter(q => q.track === activeTrack)
+        .map(q => parseInt(q.quizId) || 0),
     };
   } catch (error) {
     console.error("Failed to fetch roadmap data:", error);
     // gracefully fall back to initial 0/empty state
   }
 
+  const lessons = await getLessons(activeTrack as import("@prisma/client").Track);
+
   return (
     <div className="flex flex-col xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden p-4 gap-5">
       {/* Left Content Area */}
       <div className="flex-1 flex flex-col items-center xl:overflow-y-auto pb-10">
-        <RoadmapUnitCard 
-          chapterNumber={1} 
-          title="The Science of Prosperity" 
-          description="Understand what development really means and how we measure progress." 
-        />
-
         <RoadmapMap lessons={lessons} 
           completedLessonDayOrders={progressData.completedLessonIds} 
-          completedQuizDayOrders={progressData.completedQuizIds} 
+          completedQuizDayOrders={progressData.completedQuizIds}
+          activeTrack={activeTrack}
         />
       </div>
 
@@ -78,7 +82,7 @@ async function RoadmapContent({ userId }: { userId: string }) {
       <RoadmapSidebar lessons={lessons} 
         serverTotalXP={progressData.totalXP} 
         completedLessonDayOrders={progressData.completedLessonIds}
-        activeTrack="ENTREPRENEURSHIP_ECONOMICS" 
+        activeTrack={activeTrack} 
       />
     </div>
   );
@@ -105,11 +109,7 @@ export default async function RoadmapPage() {
   const userId = session.user.id;
 
   // Derive initial for avatar
-  const avatarLetter = session.user.name 
-    ? session.user.name.charAt(0).toUpperCase() 
-    : session.user.email 
-      ? session.user.email.charAt(0).toUpperCase() 
-      : "U";
+  const avatarLetter = (session?.user?.name?.trim().charAt(0) || session?.user?.email?.trim().charAt(0) || "?").toUpperCase();
 
   return (
     <div className="roadmap-page min-h-screen w-full font-sans flex flex-col p-0">

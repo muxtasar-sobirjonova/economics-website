@@ -117,11 +117,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
 
   const completedQuizLessonIds = quizResults.map(q => parseInt(q.quizId) - 100);
 
-  const avatarLetter = session.user.name
-    ? session.user.name.charAt(0).toUpperCase()
-    : session.user.email
-      ? session.user.email.charAt(0).toUpperCase()
-      : "U";
+  const avatarLetter = (session?.user?.name?.trim().charAt(0) || session?.user?.email?.trim().charAt(0) || "?").toUpperCase();
 
   return (
     <div className="min-h-screen font-sans flex flex-col text-[#1F2937] bg-slate-50">

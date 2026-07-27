@@ -11,6 +11,7 @@ import { LearningStats } from "@/components/home/LearningStats";
 import { ensureUserProgress } from "@/lib/user-progress";
 import { Suspense } from "react";
 import { Metadata } from 'next';
+import { getUserDashboardData, getUserRoadmapProgress } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Dashboard | That's So Econ",
@@ -30,8 +31,8 @@ async function DashboardStatsAsync({ userId, streak, activeTrack = Track.ENTREPR
     weeklyQuizzesAgg,
     quizAgg,
     totalLessonsAgg,
-  } = await import('@/lib/data').then(m => m.getUserDashboardData(userId, activeTrack as Track, 1));
-  const { trackProgress } = await import('@/lib/data').then(m => m.getUserRoadmapProgress(userId, activeTrack));
+  } = await getUserDashboardData(userId, activeTrack as Track, 1);
+  const { trackProgress } = await getUserRoadmapProgress(userId, activeTrack);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const xpThisWeek = (weeklyQuizzesAgg as any)?._sum?.xpEarned || 0;
@@ -87,15 +88,21 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
     upcomingLessons,
     upcomingQuizzes,
     relevantAgendaCompletions
-  } = await import('@/lib/data').then(m => m.getUserDashboardData(userId, activeTrack as Track, currentDay));
+  } = await getUserDashboardData(userId, activeTrack as Track, currentDay);
 
   const todayStr = new Date().toISOString().split("T")[0];
+  
+  const extractDateStr = (dateVal: Date | string) => {
+    if (typeof dateVal === 'string') return dateVal.split("T")[0];
+    return dateVal.toISOString().split("T")[0];
+  };
+
   const completedLessonIdsToday = recentLessons
-    .filter((l: { date: Date; lessonId: string }) => l.date.toISOString().split("T")[0] === todayStr)
+    .filter((l: { date: Date | string; lessonId: string }) => extractDateStr(l.date) === todayStr)
     .map((l: { lessonId: string }) => l.lessonId);
 
-  const completedLessonDates = recentLessons.map((l: { date: Date }) => l.date.toISOString().split("T")[0]);
-  const completedAgendaDates = recentCompletions.map((dc: { normalizedDate: Date }) => dc.normalizedDate.toISOString().split("T")[0]);
+  const completedLessonDates = recentLessons.map((l: { date: Date | string }) => extractDateStr(l.date));
+  const completedAgendaDates = recentCompletions.map((dc: { normalizedDate: Date | string }) => extractDateStr(dc.normalizedDate));
 
   const isCompleted = (type: string, id: string) => {
     return relevantAgendaCompletions.some((c: { lessonId: string | null; quizId: string | null; itemType: string }) => {

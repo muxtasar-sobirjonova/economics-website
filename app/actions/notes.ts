@@ -6,6 +6,7 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { rateLimit } from "@/lib/rate-limit";
 import { ActionError, ActionResponse, catchActionError } from "@/lib/errors";
+import { getLessonAccessStatus } from "@/lib/lesson-access";
 const SaveGlobalNoteSchema = z.object({
   lessonId: z.string().min(1).optional(),
   content: z.string().min(1).max(5000),
@@ -31,13 +32,15 @@ export async function saveGlobalNoteAction(lessonId: string | undefined, content
     }
 
     if (parsed.data.lessonId) {
-      const { getLessonAccessStatus } = await import("@/lib/lesson-access");
+      
       const lessonNum = parseInt(parsed.data.lessonId, 10);
-      if (!isNaN(lessonNum)) {
-        const access = await getLessonAccessStatus(userId, lessonNum);
-        if (!access.isUnlocked) {
-          throw new ActionError("Lesson is locked or invalid");
-        }
+      if (isNaN(lessonNum)) {
+        throw new ActionError("Invalid lessonId provided");
+      }
+      
+      const access = await getLessonAccessStatus(userId, lessonNum);
+      if (!access.isUnlocked) {
+        throw new ActionError("Lesson is locked or invalid");
       }
     }
 
@@ -45,7 +48,10 @@ export async function saveGlobalNoteAction(lessonId: string | undefined, content
       where: { id: userId },
       select: { activeTrack: true }
     });
-    const track = userRecord?.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
+    if (!userRecord) {
+      throw new ActionError("User record not found");
+    }
+    const track = userRecord.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
 
     await prisma.note.create({
       data: {
@@ -64,7 +70,7 @@ export async function saveGlobalNoteAction(lessonId: string | undefined, content
   }
 }
 
-const ToggleBookmarkSchema = z.string().min(1).max(255).startsWith("/");
+const ToggleBookmarkSchema = z.string().min(1).max(255).regex(/^[a-zA-Z0-9\-\/]+$/, "Invalid bookmark format");
 
 export async function toggleBookmarkAction(slug: string): Promise<ActionResponse<void>> {
   try {

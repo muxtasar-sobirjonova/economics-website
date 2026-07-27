@@ -7,6 +7,7 @@ import { ARTICLES_QUERY } from "@/sanity/queries";
 import { getLessons } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
 import { getLessonAccessStatus } from "@/lib/lesson-access";
+import { MOCK_CONTENT, DEV_MOCK_CONTENT } from "@/lib/mockContent";
 import { IconClock, IconFileText, IconTrendingUp, IconBrain } from "@tabler/icons-react";
 import { FileText } from "lucide-react";
 import { LearningPathSlider } from "@/components/lessons/LearningPathSlider";
@@ -17,7 +18,7 @@ import { LessonHeader } from "@/components/lessons/LessonHeader";
 
 import { Suspense } from "react";
 
-async function ArticlesContent({ userId, lessonId, avatarLetter }: { userId: string, lessonId: number, avatarLetter: string }) {
+async function ArticlesContent({ userId, lessonId }: { userId: string, lessonId: number }) {
   const { isUnlocked, completedLessonIds } = await getLessonAccessStatus(userId, lessonId);
 
   // Security Logic: Ensure the requested lesson is actually unlocked
@@ -53,8 +54,8 @@ async function ArticlesContent({ userId, lessonId, avatarLetter }: { userId: str
   // Use mock content as fallback if Sanity fetch fails
   let mockContentFallback = null;
   if (!sanityArticle) {
-    const { MOCK_CONTENT } = await import("@/lib/mockContent");
-    mockContentFallback = MOCK_CONTENT[lessonId]?.article;
+    if (activeTrack === "ENTREPRENEURSHIP_ECONOMICS") mockContentFallback = MOCK_CONTENT[lessonId]?.article;
+    else if (activeTrack === "DEVELOPMENT_ECONOMICS") mockContentFallback = DEV_MOCK_CONTENT[lessonId]?.article;
   }
 
   interface ActiveArticleData {
@@ -86,7 +87,7 @@ async function ArticlesContent({ userId, lessonId, avatarLetter }: { userId: str
     };
   }
 
-  const articleTitle = activeLesson?.title || baseLesson.title;
+  const articleTitle = activeLesson?.title || baseLesson?.title || `Lesson ${lessonId}`;
   const articleText = activeLesson?.content || activeLesson?.text || "Content coming soon.";
   const articleSummary = activeLesson?.summary || articleText;
 
@@ -95,8 +96,8 @@ async function ArticlesContent({ userId, lessonId, avatarLetter }: { userId: str
   if (!timeEstimate) {
     if (articleText) {
       // rough word count / 200 wpm
-      const words = articleText.replace(/<[^>]*>?/gm, '').split(/\s+/).length;
-      timeEstimate = Math.max(1, Math.ceil(words / 200));
+      const words = (articleText || "").replace(/<[^>]*>?/g, '').split(/\s+/).length;
+      timeEstimate = Math.max(1, Math.ceil((words || 0) / 200)) || 5;
     } else {
       timeEstimate = 10;
     }
@@ -115,13 +116,13 @@ async function ArticlesContent({ userId, lessonId, avatarLetter }: { userId: str
             <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-gray-900 mb-1.5 drop-shadow-sm">
               ARTICLE
             </div>
-            <h3 className="text-gray-900 text-[26px] font-bold mb-2 leading-tight whitespace-nowrap">
+            <h3 className="text-gray-900 text-[26px] font-bold mb-2 leading-tight md:whitespace-nowrap">
               {articleTitle}
             </h3>
             <div className="flex items-center text-gray-600 text-sm font-medium">
-              <IconClock size={18} className="mr-2" />
-              5-20 min read
-            </div>
+                <IconClock size={18} className="mr-2" />
+                {timeEstimate} min read
+              </div>
             <div className="text-sm text-gray-600 truncate mt-1 max-w-[500px]">
               {"Read the core article for this concept."}
             </div>
@@ -233,18 +234,14 @@ export default async function ArticlesPage({ params }: { params: { lessonId: str
   const userId = session.user.id;
   const lessonId = parseInt(params.lessonId) || 1;
 
-  const avatarLetter = session.user.name
-    ? session.user.name.charAt(0).toUpperCase()
-    : session.user.email
-      ? session.user.email.charAt(0).toUpperCase()
-      : "U";
+  const avatarLetter = (session?.user?.name?.trim().charAt(0) || session?.user?.email?.trim().charAt(0) || "?").toUpperCase();
 
   return (
     <div className="min-h-screen font-sans flex flex-col text-[#1F2937] bg-slate-50">
       <LessonHeader lessonId={lessonId} activeTab="articles" avatarLetter={avatarLetter} />
 
       <Suspense fallback={<ArticlesSkeleton />}>
-        <ArticlesContent userId={userId} lessonId={lessonId} avatarLetter={avatarLetter} />
+        <ArticlesContent userId={userId} lessonId={lessonId} />
       </Suspense>
     </div>
   );

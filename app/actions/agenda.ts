@@ -1,9 +1,10 @@
-import { Track } from "@prisma/client";
 "use server";
+import { Track } from "@prisma/client";
 
 import { auth } from "@/auth";
 import { ensureUserProgress } from "@/lib/user-progress";
 import { revalidatePath } from "next/cache";
+import { getLessonAccessStatus } from "@/lib/lesson-access";
 
 import { AgendaService } from "@/services/agendaService";
 import { XpService } from "@/services/xpService";
@@ -21,7 +22,7 @@ export async function markArticleDoneAction(lessonId: string): Promise<ActionRes
     
     await ensureUserProgress(userId);
 
-    const { getLessonAccessStatus } = await import("@/lib/lesson-access");
+    
     const access = await getLessonAccessStatus(userId, parseInt(lessonId, 10));
     if (!access.isUnlocked) {
       throw new ActionError("Lesson is locked", "FORBIDDEN");

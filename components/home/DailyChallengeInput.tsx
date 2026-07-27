@@ -14,14 +14,6 @@ export function DailyChallengeInput({
   const [, startTransition] = useTransition();
   const [saveStatus, setSaveStatus] = useState("");
   const textareaRef = useRef<HTMLTextAreaElement>(null);
-
-  useEffect(() => {
-    if (textareaRef.current) {
-      textareaRef.current.style.height = 'auto';
-      textareaRef.current.style.height = `${Math.max(42, textareaRef.current.scrollHeight)}px`;
-    }
-  }, [content]);
-
   useEffect(() => {
     if (content === initialContent) return;
 
@@ -52,8 +44,7 @@ export function DailyChallengeInput({
         value={content}
         onChange={(e) => setContent(e.target.value)}
         placeholder="Write your thoughts here..."
-        className="w-full bg-slate-50 border border-transparent rounded-[24px] py-[11px] pl-10 pr-4 text-[13px] font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-purple-200 focus:ring-4 focus:ring-purple-50 transition-all resize-none overflow-hidden leading-tight"
-        style={{ minHeight: '42px' }}
+        className="w-full h-[120px] bg-slate-50 border border-transparent rounded-[24px] py-[11px] pl-10 pr-4 text-[13px] font-medium text-slate-700 placeholder:text-slate-400 focus:outline-none focus:bg-white focus:border-purple-200 focus:ring-4 focus:ring-purple-50 transition-all resize-none overflow-y-auto leading-tight"
       />
       {saveStatus && (
         <div className="absolute right-4 bottom-2.5 text-[10px] font-bold text-slate-300 pointer-events-none">

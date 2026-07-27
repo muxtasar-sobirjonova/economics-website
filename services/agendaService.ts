@@ -12,7 +12,10 @@ export class AgendaService {
     }
 
     const userRecord = await prisma.user.findUnique({ where: { id: userId }, select: { activeTrack: true } });
-    const track = userRecord?.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
+    if (!userRecord) {
+      throw new Error("User record not found");
+    }
+    const track = userRecord.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
 
     const realLesson = await prisma.lesson.findUnique({
       where: { track_dayOrder: { track, dayOrder: parsedLessonId } }

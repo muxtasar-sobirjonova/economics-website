@@ -76,6 +76,7 @@ export default function Sidebar() {
   const dashboardItems = [
     { name: "Home", href: "/home", icon: IconHome },
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
+    { name: "My Challenges", href: "/challenges", matchHref: "/challenges", icon: IconBulb },
   ];
 
   const learnItems = [

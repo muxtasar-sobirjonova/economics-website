@@ -10,7 +10,7 @@ import { IconClock, IconFileText, IconTrendingUp, IconCompass, IconLoader } from
 import { LessonHeader } from "@/components/lessons/LessonHeader";
 import { client } from "@/sanity/client";
 import { CONCEPTS_QUERY } from "@/sanity/queries";
-import { MOCK_CONTENT } from "@/lib/mockContent";
+import { MOCK_CONTENT, DEV_MOCK_CONTENT } from "@/lib/mockContent";
 import { LearningPathSlider } from "@/components/lessons/LearningPathSlider";
 export default async function ConceptsPage({ params }: { params: { lessonId: string } }) {
   const session = await auth();
@@ -60,11 +60,17 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
         conceptSummary: sanityLesson.conceptSummary,
       };
     } else {
-      activeLesson = {
-        ...activeLesson,
-        title: MOCK_CONTENT[lessonId]?.concept?.title || activeLesson.title,
-        conceptText: MOCK_CONTENT[lessonId]?.concept?.text,
-      };
+      let mockFallback = null;
+      if (activeTrack === "ENTREPRENEURSHIP_ECONOMICS") mockFallback = MOCK_CONTENT[lessonId]?.concept;
+      else if (activeTrack === "DEVELOPMENT_ECONOMICS") mockFallback = DEV_MOCK_CONTENT[lessonId]?.concept;
+
+      if (mockFallback) {
+        activeLesson = {
+          ...activeLesson,
+          title: mockFallback.title || activeLesson.title,
+          conceptText: mockFallback.text,
+        };
+      }
     }
   } catch (error) {
     console.error("Failed to fetch Sanity data for concepts dashboard", error);
@@ -75,18 +81,14 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
   if (!timeEstimate) {
     if (activeLesson.conceptText) {
       // rough word count / 200 wpm
-      const words = activeLesson.conceptText.replace(/<[^>]*>?/gm, '').split(/\s+/).length;
-      timeEstimate = Math.max(1, Math.ceil(words / 200));
+      const words = (activeLesson.conceptText || "").replace(/<[^>]*>?/g, '').split(/\s+/).length;
+      timeEstimate = Math.max(1, Math.ceil((words || 0) / 200)) || 5;
     } else {
       timeEstimate = 10;
     }
   }
 
-  const avatarLetter = session.user.name 
-    ? session.user.name.charAt(0).toUpperCase() 
-    : session.user.email 
-      ? session.user.email.charAt(0).toUpperCase() 
-      : "U";
+  const avatarLetter = (session?.user?.name?.trim().charAt(0) || session?.user?.email?.trim().charAt(0) || "?").toUpperCase();
 
   return (
     <div className="min-h-screen font-sans flex flex-col text-[#1F2937] bg-slate-50">
@@ -109,7 +111,7 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
               </h3>
               <div className="flex items-center text-gray-600 text-sm font-medium">
                 <IconClock size={18} className="mr-2" />
-                5-10 min read
+                {timeEstimate} min read
               </div>
               <div className="text-sm text-gray-600 truncate mt-1 max-w-[500px]">
                 {activeLesson.subtitle}

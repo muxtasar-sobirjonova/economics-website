@@ -7,6 +7,8 @@ import { revalidatePath } from "next/cache";
 import { z } from "zod";
 import { Mistake } from "@/types";
 import { ActionError, ActionResponse, catchActionError } from "@/lib/errors";
+import { getLessonAccessStatus } from "@/lib/lesson-access";
+import { QuizService } from "@/services/quizService";
 import { invalidateUserCache } from "@/lib/data";
 
 const RemoveMistakeSchema = z.string().min(1);
@@ -82,7 +84,7 @@ export async function validateQuizAnswerAction(lessonId: number, questionIndex: 
       throw new ActionError(`Invalid input: ${parsed.error.flatten().formErrors.join(", ")}`);
     }
 
-    const { getLessonAccessStatus } = await import("@/lib/lesson-access");
+    
     const access = await getLessonAccessStatus(userId, parsed.data.lessonId);
     if (!access.isUnlocked) {
       throw new ActionError("Lesson is locked or invalid");
@@ -133,7 +135,7 @@ export async function validateQuizAnswerAction(lessonId: number, questionIndex: 
   }
 }
 
-export async function markQuizDoneAction(quizId: string, score: number, mistakes: Mistake[]): Promise<ActionResponse<any>> {
+export async function markQuizDoneAction(quizId: string, score: number, mistakes: Mistake[]): Promise<ActionResponse<unknown>> {
   try {
     const session = await auth();
     if (!session || !session.user || !session.user.id) {
@@ -152,7 +154,7 @@ export async function markQuizDoneAction(quizId: string, score: number, mistakes
     }
     const actualLessonId = lessonNumber > 100 ? lessonNumber - 100 : lessonNumber;
 
-    const { QuizService } = await import("@/services/quizService");
+    
     
     const result = await QuizService.processQuizAttempt(
       userId,
