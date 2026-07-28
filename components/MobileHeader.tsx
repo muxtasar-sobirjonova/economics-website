@@ -16,13 +16,16 @@ export default async function MobileHeader() {
     where: { id: session.user.id },
     select: { 
       activeTrack: true, 
-      progress: {
-        select: { totalXP: true }
-      }
     }
   });
 
-  const totalXP = userRecord?.progress?.totalXP || 0;
+  const activeTrack = userRecord?.activeTrack;
+  const trackProg = activeTrack ? await prisma.trackProgress.findUnique({
+    where: { userId_track: { userId: session.user.id, track: activeTrack } },
+    select: { xp: true }
+  }) : null;
+
+  const totalXP = trackProg?.xp || 0;
 
   // Simple mapping for track to an emoji icon
   // We're moving away from emojis to a cleaner lucide icon, but keeping this logic 

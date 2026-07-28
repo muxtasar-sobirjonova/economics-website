@@ -65,9 +65,9 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
   const activeTrack = userRecord.activeTrack;
   await ensureUserProgress(userId);
   
-  const userProgress = await prisma.userProgress.findUnique({ where: { userId } });
+  const trackProgress = await prisma.trackProgress.findUnique({ where: { userId_track: { userId, track: activeTrack } } });
 
-  if (!userProgress) {
+  if (!trackProgress) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4">
         <h2 className="text-2xl font-bold mb-2 text-[#362A5C]">Welcome to That&apos;s So Econ!</h2>
@@ -78,8 +78,9 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
     );
   }
 
-  const streak = userProgress.streak || 0;
-  const currentDay = userProgress.currentDay || 1;
+  const streak = trackProgress.streak || 0;
+  const currentDay = trackProgress.currentDay || 1;
+  const xp = trackProgress.xp || 0;
   const {
     recentLessons,
     recentCompletions,
@@ -190,12 +191,6 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
     });
   }
 
-  const trackNames: Record<string, string> = {
-    ENTREPRENEURSHIP_ECONOMICS: "Entrepreneurship Economics",
-    BEHAVIORAL_ECONOMICS: "Behavioral Economics",
-    DEVELOPMENT_ECONOMICS: "Development Economics"
-  };
-  const activeTrackName = trackNames[activeTrack] || "Economics";
 
   return (
     <>
@@ -205,7 +200,6 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
           completedAgendaDates={completedAgendaDates}
           completedDates={completedLessonDates}
           userName={userName} 
-          activeTrackName={activeTrackName}
         />
       </div>
 
@@ -219,9 +213,9 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
           <Suspense fallback={<div className="h-32 w-full bg-slate-100 animate-pulse rounded-xl" />}>
             <DashboardStatsAsync 
               userId={userId} 
-              streak={streak} 
+              streak={streak}
               activeTrack={activeTrack}
-              totalXP={userProgress.totalXP}
+              totalXP={xp}
             />
           </Suspense>
         </div>

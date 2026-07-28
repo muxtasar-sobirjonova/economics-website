@@ -55,8 +55,9 @@ model DailyCompletion {
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   normalizedDate DateTime
   createdAt  DateTime @default(now())
+  track          Track    @default(ENTREPRENEURSHIP_ECONOMICS)
 
-  @@unique([userId, normalizedDate])
+  @@unique([userId, normalizedDate, track])
   @@index([userId])
 }
 
@@ -80,8 +81,11 @@ model TrackProgress {
   id         String   @id @default(cuid())
   userId     String
   track      Track
-  currentDay Int      @default(1)
   xp         Int      @default(0)
+  currentDay Int      @default(1)
+  streak     Int      @default(0)
+  lastActive DateTime?
+  
   createdAt  DateTime @default(now())
   updatedAt  DateTime @default(now()) @updatedAt
 

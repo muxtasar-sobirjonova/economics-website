@@ -102,8 +102,13 @@ export class QuizService {
         } else {
           if (xpToIncrement > 0) {
             await tx.userProgress.update({
-              where: { userId },
               data: { totalXP: { increment: xpToIncrement } }
+            });
+
+            await tx.trackProgress.upsert({
+              where: { userId_track: { userId, track } },
+              update: { xp: { increment: xpToIncrement } },
+              create: { userId, track, xp: xpToIncrement }
             });
           }
         }
@@ -122,9 +127,9 @@ export class QuizService {
         });
 
         await tx.dailyCompletion.upsert({
-          where: { userId_normalizedDate: { userId, normalizedDate: todayDate } },
+          where: { userId_normalizedDate_track: { userId, normalizedDate: todayDate, track } },
           update: {},
-          create: { userId, normalizedDate: todayDate }
+          create: { userId, normalizedDate: todayDate, track }
         });
 
         const itemsToTick = [

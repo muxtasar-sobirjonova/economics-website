@@ -9,12 +9,10 @@ export const DashboardHero = ({
   completedAgendaDates, 
   completedDates,
   userName,
-  activeTrackName = "Entrepreneurship Economics"
 }: { 
   completedAgendaDates: string[], 
   completedDates: string[],
-  userName: string,
-  activeTrackName?: string
+  userName: string
 }) => {
   const days = useMemo(() => ["M", "T", "W", "T", "F", "S", "S"], []);
 
@@ -57,10 +55,6 @@ export const DashboardHero = ({
               <h1 className="text-slate-900 tracking-tight text-3xl lg:text-4xl font-extrabold leading-[1.1] mb-1.5">
                 {userName || 'Student'}
               </h1>
-              <p className="text-gray-600 text-[15px] lg:text-[16px] font-semibold flex items-center gap-1.5">
-                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
-                Studying {activeTrackName}
-              </p>
            </div>
         </div>
 

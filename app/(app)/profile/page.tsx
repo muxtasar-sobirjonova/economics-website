@@ -64,7 +64,7 @@ export default async function ProfilePage() {
               <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center mb-2">
                 <Award size={20} />
               </div>
-              <div className="text-2xl font-black text-gray-900">{user.progress?.totalXP || 0}</div>
+              <div className="text-2xl font-black text-gray-900">{user.progress?.totalXP || 0} (Global)</div>
               <div className="text-xs font-semibold text-gray-500 tracking-wider uppercase mt-1">Total XP</div>
             </div>
             

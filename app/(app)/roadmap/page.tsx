@@ -27,7 +27,7 @@ async function RoadmapContent({ userId }: { userId: string }) {
     monday.setUTCDate(localDate.getUTCDate() - todayIndex);
     monday.setUTCHours(0, 0, 0, 0);
 
-    const [, user, weeklyQuizzesAgg] = await Promise.all([
+    const [, user] = await Promise.all([
       ensureUserProgress(userId),
       prisma.user.findUnique({
         where: { id: userId },
@@ -41,9 +41,8 @@ async function RoadmapContent({ userId }: { userId: string }) {
           },
         },
       }),
-      prisma.quizResult.aggregate({
-        where: { userId, date: { gte: monday } },
-        _sum: { xpEarned: true }
+      prisma.trackProgress.findFirst({
+        where: { userId } // We'll get the specific one after knowing activeTrack
       })
     ]);
 
@@ -51,8 +50,12 @@ async function RoadmapContent({ userId }: { userId: string }) {
       activeTrack = user.activeTrack;
     }
 
+    const trackProgress = await prisma.trackProgress.findUnique({
+      where: { userId_track: { userId, track: activeTrack as import("@prisma/client").Track } }
+    });
+
     progressData = {
-      totalXP: weeklyQuizzesAgg?._sum?.xpEarned || 0,
+      totalXP: trackProgress?.xp || 0,
       completedLessonIds: (user?.completedLessons ?? [])
         .filter(l => l.track === activeTrack)
         .map(l => parseInt(l.lessonId) || 0),

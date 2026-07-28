@@ -40,7 +40,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
       </head>
       <body
-        className={`${inter.className} min-h-screen bg-white text-[#24203F]`}
+        className={`${inter.className} min-h-screen bg-white text-[#24203F] not-italic`}
       >
         <NextTopLoader color="#7B6FE7" height={3} showSpinner={false} shadow="0 0 10px #7B6FE7,0 0 5px #7B6FE7" />
         {children}

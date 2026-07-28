@@ -82,6 +82,19 @@ export async function addXpAction(actionType: XpActionType): Promise<ActionRespo
       }
     });
 
+    const userRecord = await prisma.user.findUnique({
+      where: { id: userId },
+      select: { activeTrack: true }
+    });
+    
+    const activeTrack = userRecord?.activeTrack || Track.ENTREPRENEURSHIP_ECONOMICS;
+
+    await prisma.trackProgress.upsert({
+      where: { userId_track: { userId, track: activeTrack } },
+      update: { xp: { increment: xpToAdd } },
+      create: { userId, track: activeTrack, xp: xpToAdd }
+    });
+
     revalidatePath("/", "layout");
     return { success: true, data: undefined };
   } catch (error) {

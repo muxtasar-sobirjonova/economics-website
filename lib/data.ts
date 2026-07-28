@@ -114,7 +114,7 @@ export const getUserDashboardData = async (userId: string, track: Track, current
       totalLessonsAgg
     ] = await Promise.all([
       prisma.completedLesson.findMany({ where: { userId, track, date: { gte: thirtyDaysAgo } }, select: { date: true, lessonId: true } }),
-      prisma.dailyCompletion.findMany({ where: { userId, normalizedDate: { gte: thirtyDaysAgo } }, select: { normalizedDate: true } }),
+      prisma.dailyCompletion.findMany({ where: { userId, track, normalizedDate: { gte: thirtyDaysAgo } }, select: { normalizedDate: true } }),
       prisma.lesson.findMany({ where: { track, dayOrder: { gte: currentDay - 1 } }, orderBy: { dayOrder: 'asc' }, take: 10 }),
       prisma.quiz.findMany({ where: { track, dayOrder: { gte: currentDay - 1 } }, orderBy: { dayOrder: 'asc' }, take: 10 }),
       prisma.quizResult.aggregate({ where: { userId, track, date: { gte: monday } }, _sum: { xpEarned: true } }),
