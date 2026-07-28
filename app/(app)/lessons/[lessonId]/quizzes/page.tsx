@@ -174,7 +174,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
         <div className="flex flex-col md:flex-row gap-8 md:items-start mb-5">
           <div className="flex-1 flex items-center justify-between">
              <h3 className="text-[13px] font-bold tracking-[0.08em] text-gray-900 uppercase flex items-center gap-1.5 whitespace-nowrap">
-                REVIEW YOUR MISTAKES
+                LESSON MASTERY
              </h3>
           </div>
           <div className="w-full md:w-[340px] flex items-center justify-between">
@@ -208,19 +208,21 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                    </p>
                  </div>
                ) : (
-                  <div className="flex flex-col gap-5 h-full">
-                    <h4 className="font-bold text-[#1F2937] text-lg">Areas to Review</h4>
-                    <div className="flex-1 overflow-y-auto pr-2 max-h-[250px]">
-                      <ul className="flex flex-col gap-3">
-                        {mistakes.map((mistake, i) => (
-                          <li key={i} className="flex gap-4 p-4 rounded-2xl bg-brand-primary/5 border border-brand-primary/20">
-                            <span className="w-6 h-6 rounded-full bg-brand-primary text-white flex items-center justify-center font-bold text-xs shrink-0">!</span>
-                            <span className="text-[#1F2937] text-sm leading-[1.7] font-medium">
-                              {typeof mistake === 'string' ? mistake : (mistake.questionText || 'Question not recorded')}
-                            </span>
-                          </li>
-                        ))}
-                      </ul>
+                  <div className="flex flex-col gap-2 h-full items-center text-center justify-center py-2">
+                    <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mb-1 mx-auto shadow-sm border border-amber-100 shrink-0">
+                      <IconClipboardList size={24} stroke={2} />
+                    </div>
+                    <h4 className="font-bold text-gray-900 text-base mb-1">Room for Improvement</h4>
+                    <p className="text-gray-600 text-[14px] leading-[1.6] max-w-sm mx-auto font-normal mb-3">
+                      You missed a few questions on your last attempt. We recommend reviewing the core material for this lesson before trying again.
+                    </p>
+                    <div className="flex items-center justify-center gap-3 w-full">
+                      <Link href={`/lessons/${lessonId}/concepts`} className="text-brand-primary text-[13px] font-bold bg-brand-primary/10 px-4 py-2 rounded-xl hover:bg-brand-primary/20 transition-colors">
+                        Review Concept
+                      </Link>
+                      <Link href={`/lessons/${lessonId}/articles`} className="text-brand-primary text-[13px] font-bold bg-brand-primary/10 px-4 py-2 rounded-xl hover:bg-brand-primary/20 transition-colors">
+                        Review Article
+                      </Link>
                     </div>
                   </div>
                )}

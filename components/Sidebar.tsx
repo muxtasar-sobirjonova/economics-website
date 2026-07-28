@@ -124,7 +124,7 @@ export default function Sidebar() {
         </button>
       </div>
 
-      <aside className={`w-[240px] text-white flex flex-col h-full shrink-0 group border-r border-[#3A3C56] bg-[#51487F] transition-transform duration-300 md:translate-x-0 fixed md:relative z-40 ${isOpen ? "translate-x-0" : "-translate-x-full"}`} >
+      <aside className={`w-[240px] text-white flex flex-col h-full shrink-0 group border-l md:border-l-0 border-r border-[#3A3C56] bg-[#51487F] transition-transform duration-300 md:translate-x-0 fixed md:relative z-40 right-0 md:right-auto md:left-0 top-0 bottom-0 ${isOpen ? "translate-x-0" : "translate-x-full"}`} >
         {/* Scrollable area */}
         <div className="flex-1 overflow-y-auto overflow-x-hidden py-7 px-5 flex flex-col">
           {/* Logo Header */}

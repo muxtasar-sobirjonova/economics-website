@@ -218,12 +218,31 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
   if (initialNotes.length === 0) {
     return (
-      <div className="flex-1 min-h-screen bg-[#F8F9FC] flex flex-col p-10 relative max-w-[1200px] mx-auto w-full items-center justify-center">
-        <h2 className="text-[28px] font-[900] text-gray-900 mb-2">No notes yet!</h2>
-        <p className="text-base text-gray-500 mb-8">You haven&apos;t saved any notes yet. Complete lessons and save notes to review them here.</p>
-        <Link href="/roadmap" className="bg-[#3D52A0] text-white px-6 py-3 rounded-[12px] font-[700] text-sm shadow-sm hover:opacity-90 transition-opacity inline-flex items-center justify-center">
-          Go to Roadmap
-        </Link>
+      <div className="flex-1 min-h-screen bg-slate-50 flex flex-col p-6 md:p-10 relative max-w-[1200px] mx-auto w-full">
+        <div className="mb-8">
+          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">My Notes</h1>
+          <p className="text-sm md:text-base text-gray-500 mt-1">Review all your saved insights across lessons.</p>
+        </div>
+        
+        <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto">
+          <div className="bg-white border border-[#EBEBEB] shadow-sm rounded-3xl p-8 flex flex-col items-center text-center w-full">
+            <div className="w-16 h-16 bg-brand-primary/10 rounded-2xl flex items-center justify-center mb-5">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-brand-primary">
+                <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
+              </svg>
+            </div>
+            <h2 className="text-2xl font-extrabold text-gray-900 mb-3">No notes yet!</h2>
+            <p className="text-[15px] text-gray-600 mb-8 leading-relaxed">
+              You haven&apos;t saved any notes yet. Complete lessons and save insights to review them here.
+            </p>
+            <Link href="/roadmap" className="bg-brand-primary text-white w-full py-3.5 rounded-2xl font-bold text-[15px] shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+              Go to Roadmap
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
+                 <path d="M5 12h14M12 5l7 7-7 7"/>
+              </svg>
+            </Link>
+          </div>
+        </div>
       </div>
     );
   }
