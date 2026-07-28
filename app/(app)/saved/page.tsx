@@ -77,10 +77,11 @@ export default async function SavedPage({
     console.error("Failed to fetch notes:", error);
   }
 
-  const lessons = await getLessons(activeTrack);
+  const lessonsData = await getLessons(activeTrack);
+  const lessons = JSON.parse(JSON.stringify(lessonsData));
 
   return (
-    <div className="flex flex-col w-full min-h-screen">
+    <div className="flex-1 flex flex-col h-[calc(100vh-64px)] overflow-hidden">
       <NotesReviewClient initialNotes={globalNotes} lessons={lessons} />
       
       {totalNotes > 20 && (

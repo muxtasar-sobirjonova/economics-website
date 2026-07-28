@@ -2,7 +2,7 @@
 
 import React, { useRef } from "react";
 
-import DOMPurify from "isomorphic-dompurify";
+
 
 export default function MagazineArticle({
   title,
@@ -21,7 +21,7 @@ export default function MagazineArticle({
     }
   };
 
-  const cleanContentHtml = DOMPurify.sanitize(contentHtml);
+  const cleanContentHtml = contentHtml;
 
   return (
     <div

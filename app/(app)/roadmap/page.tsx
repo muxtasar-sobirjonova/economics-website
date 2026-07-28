@@ -65,7 +65,8 @@ async function RoadmapContent({ userId }: { userId: string }) {
     // gracefully fall back to initial 0/empty state
   }
 
-  const lessons = await getLessons(activeTrack as import("@prisma/client").Track);
+  const lessonsData = await getLessons(activeTrack as import("@prisma/client").Track);
+  const lessons = JSON.parse(JSON.stringify(lessonsData));
 
   return (
     <div className="flex flex-col-reverse xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden p-4 gap-5">

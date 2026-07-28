@@ -11,7 +11,7 @@ import { NoteData } from "@/types";
 import { getLessons } from "@/lib/data";
 import { MarkReadButton } from "@/components/lessons/MarkReadButton";
 
-import DOMPurify from "isomorphic-dompurify";
+
 
 export default async function ConceptsReadPage({
   params,
@@ -104,7 +104,7 @@ export default async function ConceptsReadPage({
     console.error("Failed to fetch user notes or bookmarks:", error);
   }
 
-  const cleanConceptHtml = DOMPurify.sanitize(activeLesson.conceptText);
+  const cleanConceptHtml = activeLesson.conceptText;
 
   return (
     <div className="content-page min-h-screen w-full font-sans flex flex-col p-0 bg-[#FCF6F0]">
