@@ -10,7 +10,7 @@ import { getLessonAccessStatus } from "@/lib/lesson-access";
 import { IconClock, IconFileText, IconTrendingUp, IconClipboardList, IconCheck, IconArrowRight } from "@tabler/icons-react";
 import { BrainCircuit } from "lucide-react";
 import { LearningPathSlider } from "@/components/lessons/LearningPathSlider";
-import { SanityQuiz, Mistake, SanityQuizSchema } from "@/types";
+import { SanityQuiz, SanityQuizSchema } from "@/types";
 import { z } from "zod";
 
 import { LessonHeader } from "@/components/lessons/LessonHeader";
@@ -68,46 +68,13 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
   }
 
   // Fetch actual quiz completions and mistakes from Prisma
-  let quizResults: { quizId: string }[] = [];
-  let mistakes: Mistake[] = [];
+  let quizResults: { quizId: string, score: number }[] = [];
   try {
     quizResults = await prisma.quizResult.findMany({
       where: { userId },
-      select: { quizId: true }
+      select: { quizId: true, score: true },
+      orderBy: { date: 'desc' } // ensure we get the latest score
     });
-
-    const unreviewedMistakes = await prisma.mistakeReview.findMany({
-      where: {
-        userId,
-        reviewed: false,
-        quizAttempt: {
-          quizId: String(100 + lessonId)
-        }
-      },
-      include: {
-        quizAttempt: true
-      },
-      orderBy: {
-        quizAttempt: {
-          timestamp: 'desc'
-        }
-      }
-    });
-
-    // Deduplicate by questionId so we only show the latest mistake per question
-    const uniqueMistakesMap = new Map();
-    for (const mr of unreviewedMistakes) {
-      if (!uniqueMistakesMap.has(mr.quizAttempt.questionId)) {
-        uniqueMistakesMap.set(mr.quizAttempt.questionId, {
-          questionId: mr.quizAttempt.questionId,
-          userAnswer: mr.quizAttempt.userAnswer,
-          questionText: mr.quizAttempt.questionText || undefined,
-          correctAnswer: mr.quizAttempt.correctAnswer,
-          explanation: mr.quizAttempt.explanation || undefined
-        });
-      }
-    }
-    mistakes = Array.from(uniqueMistakesMap.values());
   } catch (error) {
     console.error("Failed to fetch quiz results or mistakes from Prisma:", error);
   }
@@ -197,14 +164,14 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                       You haven&apos;t completed this quiz yet. Take the quiz to receive personalized feedback and review your mistakes here!
                     </p>
                   </div>
-               ) : mistakes.length === 0 ? (
+               ) : currentQuizResult && currentQuizResult.score >= 6 ? (
                  <div className="flex flex-col items-center justify-center h-full text-center">
                    <div className="w-12 h-12 bg-green-50 text-green-500 rounded-2xl flex items-center justify-center mb-3 shadow-sm border border-green-100">
                      <IconCheck size={24} stroke={3} />
                    </div>
-                   <h4 className="font-bold text-gray-900 text-base mb-1">Flawless Victory!</h4>
-                   <p className="text-gray-600 text-sm leading-[1.6] max-w-md mx-auto font-normal">
-                     You got everything right on your last attempt. Incredible work! Keep up the momentum.
+                   <h4 className="font-bold text-gray-900 text-base mb-1">You&apos;re Doing Great!</h4>
+                   <p className="text-gray-600 text-[14px] leading-[1.6] max-w-sm mx-auto font-normal">
+                     You scored {currentQuizResult.score}/10 on your last attempt. You&apos;ve mastered this lesson&apos;s concepts. Keep up the great work!
                    </p>
                  </div>
                ) : (
@@ -214,7 +181,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                     </div>
                     <h4 className="font-bold text-gray-900 text-base mb-1">Room for Improvement</h4>
                     <p className="text-gray-600 text-[14px] leading-[1.6] max-w-sm mx-auto font-normal mb-3">
-                      You missed a few questions on your last attempt. We recommend reviewing the core material for this lesson before trying again.
+                      You missed a few questions on your last attempt (Score: {currentQuizResult?.score || 0}/10). We recommend reviewing the core material for this lesson before trying again.
                     </p>
                     <div className="flex items-center justify-center gap-3 w-full">
                       <Link href={`/lessons/${lessonId}/concepts`} className="text-brand-primary text-[13px] font-bold bg-brand-primary/10 px-4 py-2 rounded-xl hover:bg-brand-primary/20 transition-colors">

@@ -66,11 +66,18 @@ export const DashboardHero = ({
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 lg:gap-4 mb-6 lg:mb-8 w-full">
-          <Link href="/roadmap" className="flex">
+          <Link href="/roadmap" className="flex-1 flex">
             <button
               className="w-full bg-brand-primary text-white font-medium text-sm lg:text-[15px] tracking-wide py-3 px-6 lg:py-3.5 lg:px-8 rounded-2xl hover:opacity-90 transition-all shadow-lg shadow-brand-primary/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
             >
               Continue Learning
+            </button>
+          </Link>
+          <Link href="/review" className="flex-1 flex">
+            <button
+              className="w-full bg-white text-brand-primary font-medium text-sm lg:text-[15px] tracking-wide py-3 px-6 lg:py-3.5 lg:px-6 rounded-2xl hover:bg-[#F3F0FF] transition-all border-2 border-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+            >
+              Needs Review
             </button>
           </Link>
         </div>

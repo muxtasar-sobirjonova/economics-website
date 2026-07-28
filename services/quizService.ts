@@ -1,12 +1,12 @@
 import { prisma } from "@/lib/prisma";
 import { Mistake } from "@/types";
-import { Prisma, ItemType } from "@prisma/client";
+import { ItemType } from "@prisma/client";
 import { ensureUserProgress } from "@/lib/user-progress";
 import { logQuizAttemptInDb } from "@/lib/db-utils";
 
 export class QuizService {
   static async processQuizAttempt(userId: string, quizId: string, score: number, mistakes: Mistake[], actualLessonId: number) {
-    const xpEarned = score * 2;
+    const xpEarned = score; // 1 XP per correct answer
     
     const todayDate = new Date();
     todayDate.setUTCHours(0,0,0,0);
@@ -48,16 +48,14 @@ export class QuizService {
     const existingResult = await prisma.quizResult.findUnique({
       where: { userId_quizId_track: { userId, quizId, track } }
     });
-    const alreadySolved = existingResult && existingResult.score >= passingScore;
+
+    const maxXpSoFar = existingResult ? existingResult.xpEarned : 0;
+    const xpToIncrement = Math.max(0, xpEarned - maxXpSoFar);
+    const finalXpEarned = Math.max(maxXpSoFar, xpEarned);
+    const finalScore = score; // Always store latest score
+    const finalDate = todayDate;
 
     if (passed) {
-      const finalScore = alreadySolved ? existingResult.score : score;
-      const finalXpEarned = alreadySolved ? existingResult.xpEarned : xpEarned;
-      const finalDate = alreadySolved ? existingResult.date : todayDate;
-      const xpToIncrement = alreadySolved 
-        ? 0 
-        : (existingResult ? finalXpEarned - existingResult.xpEarned : finalXpEarned);
-
       await prisma.$transaction(async (tx) => {
         await tx.quizResult.upsert({
           where: { userId_quizId_track: { userId, quizId, track } },
@@ -65,7 +63,6 @@ export class QuizService {
             score: finalScore,
             date: finalDate,
             xpEarned: finalXpEarned,
-            
           },
           create: {
             userId,
@@ -73,17 +70,18 @@ export class QuizService {
             score: finalScore,
             date: finalDate,
             xpEarned: finalXpEarned,
-            
             track,
           },
         });
 
-        // Increment track-specific XP
-        await tx.trackProgress.upsert({
-          where: { userId_track: { userId, track } },
-          update: { xp: { increment: xpToIncrement } },
-          create: { userId, track, xp: xpToIncrement }
-        });
+        if (xpToIncrement > 0) {
+          // Increment track-specific XP
+          await tx.trackProgress.upsert({
+            where: { userId_track: { userId, track } },
+            update: { xp: { increment: xpToIncrement } },
+            create: { userId, track, xp: xpToIncrement }
+          });
+        }
 
         const userProgress = await tx.userProgress.findUnique({ where: { userId } });
         if (userProgress && actualLessonId === userProgress.currentDay) {
@@ -103,10 +101,12 @@ export class QuizService {
             create: { userId, track, currentDay: nextDay }
           });
         } else {
-          await tx.userProgress.update({
-            where: { userId },
-            data: { totalXP: { increment: xpToIncrement } }
-          });
+          if (xpToIncrement > 0) {
+            await tx.userProgress.update({
+              where: { userId },
+              data: { totalXP: { increment: xpToIncrement } }
+            });
+          }
         }
         
         await tx.completedLesson.upsert({
@@ -151,10 +151,6 @@ export class QuizService {
 
       return { success: true, passed: true };
     } else {
-      const finalScore = alreadySolved ? existingResult.score : score;
-      const finalDate = alreadySolved ? existingResult.date : todayDate;
-      const finalXpEarned = alreadySolved ? existingResult.xpEarned : 0;
-
       await prisma.$transaction(async (tx) => {
         await tx.quizResult.upsert({
           where: { userId_quizId_track: { userId, quizId, track } },
@@ -162,7 +158,6 @@ export class QuizService {
             score: finalScore,
             date: finalDate,
             xpEarned: finalXpEarned,
-            
           },
           create: {
             userId,
@@ -170,7 +165,6 @@ export class QuizService {
             score: finalScore,
             date: finalDate,
             xpEarned: finalXpEarned,
-            
             track,
           },
         });
@@ -179,9 +173,18 @@ export class QuizService {
         const currentHearts = currentProgress?.hearts ?? 5;
         const newDecayTime = currentHearts === 5 ? new Date() : (currentProgress?.lastHeartDecay ?? new Date());
 
+        if (xpToIncrement > 0) {
+          await tx.trackProgress.upsert({
+            where: { userId_track: { userId, track } },
+            update: { xp: { increment: xpToIncrement } },
+            create: { userId, track, xp: xpToIncrement }
+          });
+        }
+
         await tx.userProgress.update({
           where: { userId },
           data: {
+            totalXP: { increment: xpToIncrement },
             hearts: { decrement: 1 },
             lastHeartDecay: newDecayTime
           }
@@ -201,7 +204,7 @@ export class QuizService {
       return { 
         success: true, 
         passed: false, 
-        xpEarned: 0,
+        xpEarned: xpToIncrement,
         redirectUrl: `/lessons/${actualLessonId}` 
       };
     }
