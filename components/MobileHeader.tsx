@@ -38,9 +38,16 @@ export default async function MobileHeader() {
       </Link>
 
       {/* Right side: Rewards */}
-      <div className="flex items-center gap-1.5 bg-white px-3.5 py-1.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-50">
-         <span className="text-amber-400 font-black text-sm tracking-tighter">XP</span>
-         <span className="font-bold text-[#1A1A2E] text-sm tracking-wide">{totalXP}</span>
+      <div className="flex items-center gap-3">
+        <div className="flex items-center gap-1.5 bg-white px-3.5 py-1.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-50">
+           <span className="text-amber-400 font-black text-sm tracking-tighter">XP</span>
+           <span className="font-bold text-[#1A1A2E] text-sm tracking-wide">{totalXP}</span>
+        </div>
+        
+        {/* Avatar circle */}
+        <div className="w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs bg-brand-primary text-white shadow-sm cursor-pointer hover:opacity-90 transition-all">
+          {(session.user?.name?.trim().charAt(0) || session.user?.email?.trim().charAt(0) || "?").toUpperCase()}
+        </div>
       </div>
     </header>
   );

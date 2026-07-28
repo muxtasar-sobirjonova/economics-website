@@ -6,7 +6,7 @@ import { getLessonAccessStatus } from "@/lib/lesson-access";
 import { ReadingTabs } from "@/components/lessons/ReadingTabs";
 import { NoteData, QuizQuestion } from "@/types";
 import QuizClient from "./QuizClient";
-import QuizPageLayout from "./QuizPageLayout";
+
 
 export default async function QuizzesReadPage({
   params,
@@ -91,17 +91,21 @@ export default async function QuizzesReadPage({
         </div>
       </div>
 
-      <QuizPageLayout
-        quizContent={<QuizClient lessonId={lessonId} questions={secureQuestions} />}
-        notesContent={
-          <ReadingTabs
-            lessonId={String(lessonId)}
-            takeawaysText={""}
-            initialNotes={initialNotes}
-            hideTakeaways={true}
-          />
-        }
-      />
+      <div className="flex-1 overflow-visible py-8 w-full">
+        <div className="w-full max-w-[720px] mx-auto px-8 pb-10">
+          <QuizClient lessonId={lessonId} questions={secureQuestions} />
+        </div>
+      </div>
+      
+      {/* Floating Notes Drawer */}
+      <div className="z-50">
+        <ReadingTabs
+          lessonId={String(lessonId)}
+          takeawaysText={""}
+          initialNotes={initialNotes}
+          hideTakeaways={true}
+        />
+      </div>
     </div>
   );
 }

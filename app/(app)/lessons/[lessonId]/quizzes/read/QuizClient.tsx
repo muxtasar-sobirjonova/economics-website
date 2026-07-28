@@ -37,7 +37,6 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
     handleNextQuestion,
     handlePrevQuestion,
     handleFinishQuiz,
-    handleReviewMistakes,
     isSubmitting
   } = useQuiz({ lessonId, displayQuestions });
 
@@ -82,10 +81,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
         <p className="text-xl font-[700] text-gray-900 mb-10">{message}</p>
         
         <div className="flex gap-4">
-           <button onClick={handleReviewMistakes} className="px-6 py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-lg shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
-             Review Mistakes
-           </button>
-           <Link href="/quizzes" className="px-6 py-3 bg-brand-primary hover:bg-brand-primary/90 text-white font-[500] rounded-lg shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+           <Link href={`/lessons/${lessonId}/quizzes`} className="px-6 py-3 bg-brand-primary hover:bg-brand-primary/90 text-white font-[500] rounded-lg shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
              Back to Quizzes
            </Link>
         </div>
@@ -104,7 +100,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
          {/* Top Bar */}
          <div className="w-full flex items-center justify-between mb-6 py-3 shrink-0">
            <div className="flex items-center gap-3">
-             <Link href="/quizzes" className="flex items-center gap-1 text-[#3D52A0] text-[13px] font-[600] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+             <Link href={`/lessons/${lessonId}/quizzes`} className="flex items-center gap-1 text-[#3D52A0] text-[13px] font-[600] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
                <ArrowLeft size={16} /> Back to Quizzes
              </Link>
              <div className="px-2 py-0.5 bg-black/5 text-gray-900 text-[10px] font-bold rounded-md">

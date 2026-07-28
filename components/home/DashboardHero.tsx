@@ -73,13 +73,6 @@ export const DashboardHero = ({
               Continue Learning
             </button>
           </Link>
-          <a href="#review-mistakes" className="flex">
-            <button
-              className="w-full bg-transparent text-brand-primary font-medium text-sm lg:text-[15px] tracking-wide py-3 px-6 lg:py-3.5 lg:px-6 rounded-2xl hover:bg-[#F3F0FF] transition-all border-2 border-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
-            >
-              Review Mistakes
-            </button>
-          </a>
         </div>
 
         {/* Features Row */}

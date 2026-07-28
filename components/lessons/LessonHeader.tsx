@@ -9,7 +9,7 @@ interface LessonHeaderProps {
 
 export function LessonHeader({ lessonId, activeTab, avatarLetter }: LessonHeaderProps) {
   return (
-    <header className="sticky top-0 z-50 bg-white border-b border-gray-100 flex items-center justify-between px-10 py-4">
+    <header className="hidden md:flex sticky top-0 z-50 bg-white border-b border-gray-100 items-center justify-between px-10 py-4">
       <div className="flex items-center gap-6 text-sm font-medium text-gray-500">
         <Link href="/roadmap" className="flex items-center hover:text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
           Roadmap
@@ -55,7 +55,7 @@ export function LessonHeader({ lessonId, activeTab, avatarLetter }: LessonHeader
           My Notes
         </Link>
       </div>
-      <div className="flex items-center gap-6">
+      <div className="hidden md:flex items-center gap-6">
         <div className="w-9 h-9 rounded-full flex items-center justify-center font-bold text-sm bg-brand-primary text-white shadow-sm cursor-pointer hover:opacity-90 transition-all">
           {avatarLetter}
         </div>
