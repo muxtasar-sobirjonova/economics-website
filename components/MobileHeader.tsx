@@ -3,8 +3,10 @@ import Link from 'next/link';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { IconChevronDown } from '@tabler/icons-react';
+import { unstable_noStore as noStore } from 'next/cache';
 
 export default async function MobileHeader() {
+  noStore();
   const session = await auth();
   if (!session?.user?.id) return null;
 
