@@ -104,33 +104,33 @@ async function ArticlesContent({ userId, lessonId }: { userId: string, lessonId:
   }
 
   return (
-    <main className="px-10 pb-16 max-w-[1240px] w-full mt-4">
+    <main className="px-4 md:px-10 pb-8 md:pb-16 max-w-[1240px] w-full mt-4 overflow-hidden md:overflow-visible">
       {/* Hero Banner */}
-      <div className="flex items-center mb-10 px-8 py-4 rounded-3xl bg-white border border-[#EBEBEB] shadow-sm relative overflow-hidden">
-        <div className="flex-1 flex gap-6 items-center w-full relative z-10">
-          <div className="w-[84px] h-[84px] rounded-[20px] flex items-center justify-center shrink-0 ml-2">
-            <FileText size={48} className="text-brand-primary" strokeWidth={1.5} />
+      <div className="flex flex-col md:flex-row items-start md:items-center mb-6 md:mb-10 p-5 md:px-8 md:py-4 rounded-3xl bg-white border border-[#EBEBEB] shadow-sm relative overflow-hidden">
+        <div className="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center w-full relative z-10">
+          <div className="w-[60px] h-[60px] md:w-[84px] md:h-[84px] rounded-[16px] md:rounded-[20px] flex items-center justify-center shrink-0 md:ml-2">
+            <FileText className="text-brand-primary w-10 h-10 md:w-12 md:h-12" strokeWidth={1.5} />
           </div>
           
-          <div className="flex-1 px-3 min-w-0 flex flex-col justify-center">
-            <div className="text-[11px] font-bold tracking-[0.08em] uppercase text-gray-900 mb-1.5 drop-shadow-sm">
+          <div className="flex-1 px-1 md:px-3 min-w-0 flex flex-col justify-center w-full">
+            <div className="text-[10px] md:text-[11px] font-bold tracking-[0.08em] uppercase text-gray-900 mb-1.5 drop-shadow-sm">
               ARTICLE
             </div>
-            <h3 className="text-gray-900 text-[26px] font-bold mb-2 leading-tight md:whitespace-nowrap">
+            <h3 className="text-gray-900 text-xl md:text-[26px] font-bold mb-2 leading-tight md:whitespace-nowrap">
               {articleTitle}
             </h3>
-            <div className="flex items-center text-gray-600 text-sm font-medium">
-                <IconClock size={18} className="mr-2" />
+            <div className="flex items-center text-gray-600 text-[13px] md:text-sm font-medium">
+                <IconClock className="mr-2 w-4 h-4 md:w-[18px] md:h-[18px]" />
                 {timeEstimate} min read
               </div>
-            <div className="text-sm text-gray-600 truncate mt-1 max-w-[500px]">
+            <div className="text-[13px] md:text-sm text-gray-600 truncate mt-1 max-w-[500px]">
               {"Read the core article for this concept."}
             </div>
           </div>
 
-          <div className="shrink-0 flex items-end justify-center mr-4 self-end mb-2">
-             <Link href={`/lessons/${lessonId}/articles/read`}>
-               <button className="bg-brand-primary text-white font-medium text-[13px] tracking-wide py-3 px-7 rounded-[14px] hover:opacity-90 hover:scale-105 transition-transform flex items-center gap-2 group active:scale-95 border border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+          <div className="shrink-0 flex items-start md:items-end justify-start md:justify-center w-full md:w-auto md:mr-4 md:self-end mt-2 md:mt-0 md:mb-2">
+             <Link href={`/lessons/${lessonId}/articles/read`} className="w-full md:w-auto">
+               <button className="w-full md:w-auto bg-brand-primary text-white font-medium text-[14px] md:text-[13px] tracking-wide py-3 px-6 md:px-7 rounded-[14px] hover:opacity-90 hover:scale-105 transition-transform flex items-center justify-center gap-2 group active:scale-95 border border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
                  Continue Article
                  <svg
                    width="14"
@@ -170,7 +170,7 @@ async function ArticlesContent({ userId, lessonId }: { userId: string, lessonId:
         <ArticleSummary text={articleSummary || articleText} />
 
         {/* Quiz Section */}
-        <div className="w-full md:w-[340px] bg-white p-8 flex flex-col relative border border-[#EBEBEB] border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
+        <div className="w-full md:w-[340px] bg-white p-5 md:p-8 flex flex-col relative border border-[#EBEBEB] border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
             <div className="flex gap-4 items-start mb-6">
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center">
                 <IconBrain size={24} stroke={2} className="text-brand-primary" />
@@ -215,7 +215,7 @@ async function ArticlesContent({ userId, lessonId }: { userId: string, lessonId:
 
 function ArticlesSkeleton() {
   return (
-    <main className="px-10 pb-16 max-w-[1240px] w-full mt-4">
+    <main className="px-4 md:px-10 pb-8 md:pb-16 max-w-[1240px] w-full mt-4">
       <div className="w-full h-[120px] bg-slate-100 animate-pulse rounded-3xl mb-10"></div>
       <div className="flex flex-col md:flex-row gap-8 mb-10">
         <div className="flex-1 h-[300px] bg-slate-100 animate-pulse rounded-2xl"></div>
