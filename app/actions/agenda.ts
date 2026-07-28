@@ -7,7 +7,6 @@ import { revalidatePath } from "next/cache";
 import { getLessonAccessStatus } from "@/lib/lesson-access";
 
 import { AgendaService } from "@/services/agendaService";
-import { XpService } from "@/services/xpService";
 import { ActionError, ActionResponse, catchActionError } from "@/lib/errors";
 import { invalidateUserCache } from "@/lib/data";
 import { prisma } from "@/lib/prisma";
@@ -28,10 +27,7 @@ export async function markArticleDoneAction(lessonId: string): Promise<ActionRes
       throw new ActionError("Lesson is locked", "FORBIDDEN");
     }
 
-    const isNew = await AgendaService.markItemDone(userId, lessonId, "ARTICLE");
-    if (isNew) {
-      await XpService.awardXp(userId, 10, "ARTICLE");
-    }
+    await AgendaService.markItemDone(userId, lessonId, "ARTICLE");
 
     const userRecord = await prisma.user.findUnique({
       where: { id: userId },

@@ -3,7 +3,6 @@ import Link from 'next/link';
 import { auth } from '@/auth';
 import { prisma } from '@/lib/prisma';
 import { IconChevronDown } from '@tabler/icons-react';
-import { Star } from 'lucide-react';
 
 export default async function MobileHeader() {
   const session = await auth();
@@ -38,7 +37,7 @@ export default async function MobileHeader() {
 
       {/* Right side: Rewards */}
       <div className="flex items-center gap-1.5 bg-white px-3.5 py-1.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-50">
-         <Star size={18} className="text-amber-400 fill-amber-400" />
+         <span className="text-amber-400 font-black text-sm tracking-tighter">XP</span>
          <span className="font-bold text-[#1A1A2E] text-sm tracking-wide">{totalXP}</span>
       </div>
     </header>

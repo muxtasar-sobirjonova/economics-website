@@ -83,7 +83,7 @@ export function TrackSelectionClient({ currentTrack }: TrackSelectionClientProps
             <div
               key={track.id}
               onClick={() => handleSelectTrack(track.id)}
-              className={`flex flex-col bg-white border-2 rounded-2xl p-6 cursor-pointer transition-all duration-300 relative ${
+              className={`flex flex-col bg-white border-2 rounded-2xl p-4 md:p-6 cursor-pointer transition-all duration-300 relative ${
                 isSelected 
                   ? `${track.accentColor} shadow-md` 
                   : "border-slate-200 hover:border-slate-300 shadow-sm"
@@ -95,17 +95,17 @@ export function TrackSelectionClient({ currentTrack }: TrackSelectionClientProps
                 </div>
               )}
 
-              <div className={`w-12 h-12 rounded-xl flex items-center justify-center mb-6 ${track.iconBg}`}>
-                <Icon className="w-6 h-6" />
+              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center mb-3 md:mb-6 ${track.iconBg}`}>
+                <Icon className="w-5 h-5 md:w-6 md:h-6" />
               </div>
 
-              <h3 className="text-xl font-bold text-slate-800 mb-2 leading-snug">
+              <h3 className="text-lg md:text-xl font-bold text-slate-800 mb-1 md:mb-2 leading-snug">
                 {track.title}
               </h3>
-              <p className="text-sm font-semibold text-slate-500 mb-4">
+              <p className="text-xs md:text-sm font-semibold text-slate-500 mb-2 md:mb-4">
                 {track.subtitle}
               </p>
-              <p className="text-slate-600 text-sm leading-relaxed mt-auto">
+              <p className="hidden md:block text-slate-600 text-sm leading-relaxed mt-auto">
                 {track.description}
               </p>
             </div>
