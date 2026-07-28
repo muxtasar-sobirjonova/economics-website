@@ -49,10 +49,9 @@ export class QuizService {
       where: { userId_quizId_track: { userId, quizId, track } }
     });
 
-    const maxXpSoFar = existingResult ? existingResult.xpEarned : 0;
-    const xpToIncrement = Math.max(0, xpEarned - maxXpSoFar);
-    const finalXpEarned = Math.max(maxXpSoFar, xpEarned);
-    const finalScore = score; // Always store latest score
+    const xpToIncrement = xpEarned; // Grant XP for every attempt!
+    const finalXpEarned = (existingResult ? existingResult.xpEarned : 0) + xpEarned;
+    const finalScore = Math.max(score, existingResult ? existingResult.score : 0); // Keep the highest score
     const finalDate = todayDate;
 
     if (passed) {
