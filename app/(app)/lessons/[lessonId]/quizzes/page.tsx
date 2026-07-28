@@ -149,7 +149,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
 
             <div className="shrink-0 flex items-start md:items-end justify-start md:justify-center w-full md:w-auto md:mr-4 md:self-end mt-2 md:mt-0 md:mb-2">
                <Link href={`/lessons/${lessonId}/quizzes/read`} className="w-full md:w-auto">
-                 <button className="w-full md:w-auto bg-brand-primary text-white font-medium text-[14px] md:text-[13px] tracking-wide py-3 px-6 md:px-7 rounded-[14px] hover:opacity-90 hover:scale-105 transition-transform flex items-center justify-center gap-2 group active:scale-95 border border-transparent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                 <div className="w-full md:w-auto bg-brand-primary text-white font-medium text-[14px] md:text-[13px] tracking-wide py-3 px-6 md:px-7 rounded-[14px] hover:opacity-90 hover:scale-105 transition-transform flex items-center justify-center gap-2 group active:scale-95 border border-transparent cursor-pointer">
                    Continue Quiz
                    <svg
                      width="14"
@@ -164,7 +164,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                    >
                      <path d="M5 12h14M12 5l7 7-7 7" />
                    </svg>
-                 </button>
+                 </div>
                </Link>
             </div>
           </div>
@@ -243,10 +243,10 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
               </div>
               <div className="mt-auto pt-4">
                 <Link href={`/lessons/${lessonId}/quizzes/read`}>
-                  <button className="w-full bg-brand-primary hover:bg-brand-primary/90 text-white font-medium py-3.5 px-6 rounded-2xl transition-transform duration-150 active:scale-95 flex items-center justify-center gap-2 text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                  <div className="w-full bg-brand-primary hover:bg-brand-primary/90 text-white font-medium py-3.5 px-6 rounded-2xl transition-transform duration-150 active:scale-95 flex items-center justify-center gap-2 text-[15px] cursor-pointer">
                     Continue Quiz
                     <IconArrowRight size={18} />
-                  </button>
+                  </div>
                 </Link>
               </div>
             </div>
