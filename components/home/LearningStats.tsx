@@ -1,22 +1,13 @@
 'use client';
 
 import { IconFlame, IconCircleCheck, IconTrophy, IconStar } from '@tabler/icons-react';
-import { motion, useSpring, useTransform } from 'framer-motion';
-import { useEffect, useState } from 'react';
 
 function AnimatedNumber({ value }: { value: number }) {
-  const spring = useSpring(0, { mass: 0.8, stiffness: 75, damping: 15 });
-  const display = useTransform(spring, (current) => Math.round(current).toLocaleString());
-  const [isClient, setIsClient] = useState(false);
-
-  useEffect(() => {
-    setIsClient(true);
-    spring.set(value);
-  }, [value, spring]);
-
-  if (!isClient) return <span>{value.toLocaleString()}</span>;
-
-  return <motion.span>{display}</motion.span>;
+  // Safe fallback to just render the number if framer-motion fails
+  if (value === undefined || value === null || isNaN(value)) {
+    return <span>0</span>;
+  }
+  return <span>{value.toLocaleString()}</span>;
 }
 
 export const LearningStats = ({ 
