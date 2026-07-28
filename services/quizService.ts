@@ -51,7 +51,7 @@ export class QuizService {
 
     const xpToIncrement = xpEarned; // Grant XP for every attempt!
     const finalXpEarned = (existingResult ? existingResult.xpEarned : 0) + xpEarned;
-    const finalScore = Math.max(score, existingResult ? existingResult.score : 0); // Keep the highest score
+    const finalScore = score; // Always keep the latest score as per user request
     const finalDate = todayDate;
 
     if (passed) {
