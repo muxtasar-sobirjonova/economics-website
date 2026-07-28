@@ -1,4 +1,4 @@
-﻿import { PrismaClient } from '@prisma/client';
+import { PrismaClient } from '@prisma/client';
 const prisma = new PrismaClient();
 
 async function main() {
@@ -10,7 +10,7 @@ async function main() {
     const quizResults = await prisma.quizResult.findMany({ where: { userId } });
     
     let totalXp = 0;
-    const trackXpMap = {};
+    const trackXpMap: Record<string, number> = {};
     
     for (const qr of quizResults) {
       totalXp += qr.xpEarned;
