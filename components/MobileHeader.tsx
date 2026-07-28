@@ -11,8 +11,15 @@ export default async function MobileHeader() {
 
   const userRecord = await prisma.user.findUnique({
     where: { id: session.user.id },
-    select: { activeTrack: true, totalXP: true }
+    select: { 
+      activeTrack: true, 
+      progress: {
+        select: { totalXP: true }
+      }
+    }
   });
+
+  const totalXP = userRecord?.progress?.totalXP || 0;
 
   // Simple mapping for track to an emoji icon
   const trackLabels: Record<string, string> = {
@@ -32,7 +39,7 @@ export default async function MobileHeader() {
       {/* Right side: Rewards */}
       <div className="flex items-center gap-1.5 bg-white px-3.5 py-1.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-50">
          <Star size={18} className="text-amber-400 fill-amber-400" />
-         <span className="font-bold text-[#1A1A2E] text-sm tracking-wide">{userRecord?.totalXP || 0}</span>
+         <span className="font-bold text-[#1A1A2E] text-sm tracking-wide">{totalXP}</span>
       </div>
     </header>
   );
