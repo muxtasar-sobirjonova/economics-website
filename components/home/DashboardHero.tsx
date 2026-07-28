@@ -49,15 +49,20 @@ export const DashboardHero = ({
     <div className="flex flex-col lg:flex-row items-center justify-between w-full mx-auto gap-12 max-w-[1200px]">
       {/* Left col */}
       <div className="w-full lg:flex-1 max-w-[600px] flex flex-col justify-start items-start text-left">
-        <h1
-          className="text-slate-900 tracking-tight mb-3 lg:mb-4 text-3xl md:text-4xl lg:text-[48px] font-extrabold leading-[1.1] lg:-tracking-tight"
-        >
-          Welcome back{userName ? `, ${userName}` : '!'}
-        </h1>
-
-        <p className="text-slate-900 text-[15px] lg:text-lg leading-relaxed mb-6 lg:mb-8 max-w-[400px] font-medium">
-          Your Personal {activeTrackName} Teacher.
-        </p>
+        <div className="flex items-center gap-4 mb-5 lg:mb-6">
+           <div className="w-16 h-16 lg:w-20 lg:h-20 rounded-full bg-gradient-to-tr from-brand-primary to-indigo-400 flex items-center justify-center text-white font-extrabold text-2xl lg:text-3xl shadow-lg border-4 border-white shrink-0">
+              {userName ? userName.charAt(0).toUpperCase() : 'U'}
+           </div>
+           <div className="flex flex-col">
+              <h1 className="text-slate-900 tracking-tight text-3xl lg:text-4xl font-extrabold leading-[1.1] mb-1.5">
+                {userName || 'Student'}
+              </h1>
+              <p className="text-gray-600 text-[15px] lg:text-[16px] font-semibold flex items-center gap-1.5">
+                <span className="w-2 h-2 rounded-full bg-green-500 animate-pulse"></span>
+                Studying {activeTrackName}
+              </p>
+           </div>
+        </div>
 
         {/* Action Buttons */}
         <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3 lg:gap-4 mb-6 lg:mb-8 w-full">
