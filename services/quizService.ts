@@ -102,6 +102,7 @@ export class QuizService {
         } else {
           if (xpToIncrement > 0) {
             await tx.userProgress.update({
+              where: { userId },
               data: { totalXP: { increment: xpToIncrement } }
             });
 
