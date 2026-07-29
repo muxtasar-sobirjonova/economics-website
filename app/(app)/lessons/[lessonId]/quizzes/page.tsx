@@ -164,14 +164,24 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                       You haven&apos;t completed this quiz yet. Take the quiz to receive personalized feedback and review your mistakes here!
                     </p>
                   </div>
-               ) : currentQuizResult && currentQuizResult.score >= 6 ? (
+               ) : currentQuizResult && currentQuizResult.score >= 8 ? (
                  <div className="flex flex-col items-center justify-center h-full text-center">
                    <div className="w-12 h-12 bg-green-50 text-green-500 rounded-2xl flex items-center justify-center mb-3 shadow-sm border border-green-100">
                      <IconCheck size={24} stroke={3} />
                    </div>
-                   <h4 className="font-bold text-gray-900 text-base mb-1">You&apos;re Doing Great!</h4>
+                   <h4 className="font-bold text-gray-900 text-base mb-1">Excellent Work!</h4>
                    <p className="text-gray-600 text-[14px] leading-[1.6] max-w-sm mx-auto font-normal">
-                     You scored {currentQuizResult.score}/10 on your last attempt. You&apos;ve mastered this lesson&apos;s concepts. Keep up the great work!
+                     You scored {currentQuizResult.score}/10 on your last attempt. You&apos;re doing fine and have truly mastered this lesson&apos;s concepts!
+                   </p>
+                 </div>
+               ) : currentQuizResult && currentQuizResult.score >= 6 ? (
+                 <div className="flex flex-col items-center justify-center h-full text-center">
+                   <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mb-3 shadow-sm border border-blue-100">
+                     <IconCheck size={24} stroke={3} />
+                   </div>
+                   <h4 className="font-bold text-gray-900 text-base mb-1">Good job!</h4>
+                   <p className="text-gray-600 text-[14px] leading-[1.6] max-w-sm mx-auto font-normal">
+                     You scored {currentQuizResult.score}/10 on your last attempt. You&apos;ve got a solid grasp of this lesson&apos;s concepts.
                    </p>
                  </div>
                ) : (
@@ -179,9 +189,9 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                     <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mb-1 mx-auto shadow-sm border border-amber-100 shrink-0">
                       <IconClipboardList size={24} stroke={2} />
                     </div>
-                    <h4 className="font-bold text-gray-900 text-base mb-1">Room for Improvement</h4>
+                    <h4 className="font-bold text-gray-900 text-base mb-1">Review Recommended</h4>
                     <p className="text-gray-600 text-[14px] leading-[1.6] max-w-sm mx-auto font-normal mb-3">
-                      You missed a few questions on your last attempt (Score: {currentQuizResult?.score || 0}/10). We recommend reviewing the core material for this lesson before trying again.
+                      You missed some questions on your last attempt (Score: {currentQuizResult?.score || 0}/10). We recommend reviewing the core material before trying again.
                     </p>
                     <div className="flex items-center justify-center gap-3 w-full">
                       <Link href={`/lessons/${lessonId}/concepts`} className="text-brand-primary text-[13px] font-bold bg-brand-primary/10 px-4 py-2 rounded-xl hover:bg-brand-primary/20 transition-colors">

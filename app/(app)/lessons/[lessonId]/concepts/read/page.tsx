@@ -90,14 +90,17 @@ export default async function ConceptsReadPage({
       orderBy: { createdAt: 'asc' },
     });
     
-    initialNotes = userNotes.map(n => ({
-      id: n.id,
-      lessonId: n.lessonId || null,
-      content: n.content,
-      color: n.color || undefined,
-      source: n.source || undefined,
-      timestamp: n.timestamp ? n.timestamp.toISOString() : undefined
-    }));
+    initialNotes = userNotes.map(n => {
+      const note: NoteData = {
+        id: n.id,
+        lessonId: n.lessonId || null,
+        content: n.content,
+      };
+      if (n.color) note.color = n.color;
+      if (n.source) note.source = n.source;
+      if (n.timestamp) note.timestamp = n.timestamp.toISOString();
+      return note;
+    });
     
 
   } catch (error) {
