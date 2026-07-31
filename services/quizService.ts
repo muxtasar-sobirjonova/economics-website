@@ -115,6 +115,10 @@ export class QuizService {
           }
         }
         
+        const existingCompletedLesson = await tx.completedLesson.findUnique({
+          where: { userId_lessonId_track: { userId, lessonId: String(actualLessonId), track } }
+        });
+
         await tx.completedLesson.upsert({
           where: { userId_lessonId_track: { userId, lessonId: String(actualLessonId), track } },
           update: { date: todayDate },
@@ -127,6 +131,16 @@ export class QuizService {
             track,
           }
         });
+
+        if (!existingCompletedLesson) {
+          await tx.user.update({
+            where: { id: userId },
+            data: {
+              lessonsCompleted: { increment: 1 },
+              lastLessonCompletedAt: todayDate
+            }
+          });
+        }
 
         await tx.dailyCompletion.upsert({
           where: { userId_normalizedDate_track: { userId, normalizedDate: todayDate, track } },

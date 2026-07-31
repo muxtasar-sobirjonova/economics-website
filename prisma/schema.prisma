@@ -33,6 +33,8 @@ model User {
   isTwoFactorEnabled  Boolean            @default(false)
   lockedUntil         DateTime?
   failedLoginAttempts Int                @default(0)
+  lessonsCompleted    Int                @default(0)
+  lastLessonCompletedAt DateTime?
   
   activeTrack      Track?
   trackProgress    TrackProgress[]
@@ -47,6 +49,9 @@ model User {
   sessions         Session[]
   notes            Note[]
   bookmarks        Bookmark[]
+  leaderboardRank  LeaderboardRank?
+
+  @@index([lessonsCompleted, lastLessonCompletedAt, createdAt])
 }
 
 model DailyCompletion {
@@ -323,4 +328,18 @@ model Bookmark {
   @@unique([userId, slug, track])
   @@index([userId])
   @@index([userId, slug, track])
+}
+
+model LeaderboardRank {
+  userId           String  @id
+  username         String?
+  profileImage     String?
+  lessonsCompleted Int
+  totalXP          Int
+  rank             Int
+
+  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  
+  @@index([rank])
+  @@index([username])
 }

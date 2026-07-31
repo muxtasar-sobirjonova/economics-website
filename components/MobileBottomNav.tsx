@@ -6,29 +6,22 @@ import {
   IconHome,
   IconMap,
   IconBulb,
-  IconArticle,
-  IconBookmark,
-  IconNotes,
+  IconTrophy,
 } from "@tabler/icons-react";
 
 export function MobileBottomNav() {
   const pathname = usePathname() || "";
-  const match = pathname.match(/^\/lessons\/(\d+)/);
-  const currentLessonId = match ? match[1] : "1";
 
   const navItems = [
     { name: "Home", href: "/home", icon: IconHome },
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
-    { name: "Concepts", href: `/lessons/${currentLessonId}/concepts`, matchHref: "/concepts", icon: IconBulb },
-    { name: "Articles", href: `/lessons/${currentLessonId}/articles`, matchHref: "/articles", icon: IconArticle },
-    { name: "Quizzes", href: `/lessons/${currentLessonId}/quizzes`, matchHref: "/quizzes", icon: IconNotes },
-    { name: "Notes", href: "/saved", matchHref: "/saved", icon: IconBookmark },
+    { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
     { name: "Challenges", href: "/challenges", matchHref: "/challenges", icon: IconBulb },
   ];
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50 px-2 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
-      <div className="flex items-center overflow-x-auto [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] py-1.5 gap-1 snap-x">
+      <div className="flex items-center justify-around py-1.5 px-2">
         {navItems.map((item) => {
           const isActive =
             item.href === "/home" || item.href === "/profile"
@@ -43,7 +36,7 @@ export function MobileBottomNav() {
             <Link
               key={item.name}
               href={item.href}
-              className={`flex flex-col items-center justify-center min-w-[72px] px-1 py-1.5 rounded-xl transition-all snap-start ${
+              className={`flex flex-col items-center justify-center flex-1 px-1 py-1.5 rounded-xl transition-all ${
                 isActive 
                   ? "text-brand-primary" 
                   : "text-gray-400 hover:text-gray-600"

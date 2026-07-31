@@ -9,6 +9,7 @@ import {
   IconArticle,
   IconBookmark,
   IconNotes,
+  IconTrophy,
 } from "@tabler/icons-react";
 import { AuthStatus } from "@/components/AuthStatus";
 
@@ -71,6 +72,7 @@ export default function Sidebar() {
   const dashboardItems = [
     { name: "Home", href: "/home", icon: IconHome },
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
+    { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
     { name: "My Challenges", href: "/challenges", matchHref: "/challenges", icon: IconBulb },
   ];
 
