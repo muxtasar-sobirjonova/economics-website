@@ -208,7 +208,7 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
                   </div>
                   <div className="w-full bg-gradient-to-b from-[#94A3B8] to-white rounded-3xl md:rounded-b-none md:rounded-t-3xl pt-8 pb-6 flex flex-col items-center justify-between h-auto md:h-[160px] gap-4 md:gap-0 shadow-sm md:shadow-none">
                     <div className="flex flex-col items-center">
-                      <span className="text-4xl font-extrabold text-white leading-none mb-1 font-serif">2</span>
+                      <span className="text-4xl font-extrabold text-white leading-none mb-1 font-serif">{users[1].lessonsCompleted}</span>
                       <span className="text-[10px] font-bold tracking-widest text-white/90 uppercase">Lessons</span>
                     </div>
                     <span className="text-sm font-bold text-[#94A3B8] mt-4">{users[1].totalXP} XP</span>
@@ -239,7 +239,7 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
                   </div>
                   <div className="w-full bg-gradient-to-b from-[#8c7df0] to-white rounded-3xl md:rounded-b-none md:rounded-t-3xl pt-10 pb-8 flex flex-col items-center justify-between h-auto md:h-[210px] gap-4 md:gap-0 shadow-sm md:shadow-none">
                     <div className="flex flex-col items-center">
-                      <span className="text-5xl font-extrabold text-white leading-none mb-1 font-serif">1</span>
+                      <span className="text-5xl font-extrabold text-white leading-none mb-1 font-serif">{users[0].lessonsCompleted}</span>
                       <span className="text-[11px] font-bold tracking-widest text-white/90 uppercase">Lessons</span>
                     </div>
                     <span className="text-[15px] font-bold text-[#8c7df0] mt-4">{users[0].totalXP} XP</span>
@@ -265,7 +265,7 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
                   </div>
                   <div className="w-full bg-gradient-to-b from-[#f59e0b] to-white rounded-3xl md:rounded-b-none md:rounded-t-3xl pt-8 pb-6 flex flex-col items-center justify-between h-auto md:h-[130px] gap-4 md:gap-0 shadow-sm md:shadow-none">
                     <div className="flex flex-col items-center">
-                      <span className="text-4xl font-extrabold text-white leading-none mb-1 font-serif">3</span>
+                      <span className="text-4xl font-extrabold text-white leading-none mb-1 font-serif">{users[2].lessonsCompleted}</span>
                       <span className="text-[10px] font-bold tracking-widest text-white/90 uppercase">Lessons</span>
                     </div>
                     <span className="text-sm font-bold text-[#f59e0b] mt-4">{users[2].totalXP} XP</span>
