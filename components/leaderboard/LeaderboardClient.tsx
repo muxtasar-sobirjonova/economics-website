@@ -86,12 +86,7 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
       nextUpdate.setUTCSeconds(0);
       nextUpdate.setUTCMinutes(0);
 
-      const currentHour = now.getUTCHours();
-      if (currentHour < 12) {
-        nextUpdate.setUTCHours(12);
-      } else {
-        nextUpdate.setUTCHours(24);
-      }
+      nextUpdate.setUTCHours(24);
 
       const diff = nextUpdate.getTime() - now.getTime();
       const h = Math.floor(diff / (1000 * 60 * 60));
@@ -126,7 +121,7 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
         </h1>
         <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-4 mb-8">
           <p className="text-slate-500 font-medium text-sm max-w-xl">
-            Ranked strictly by lessons completed. XP is just bragging rights. New updates roll out every 12 hours.
+            Ranked strictly by lessons completed. XP is just bragging rights. New updates roll out every 24 hours.
           </p>
 
           {/* Countdown Timer */}
