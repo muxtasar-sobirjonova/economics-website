@@ -1,4 +1,5 @@
 import { auth } from "@/auth";
+// Triggering Vercel rebuild
 import { redirect } from "next/navigation";
 import { LeaderboardClient } from "@/components/leaderboard/LeaderboardClient";
 import { Metadata } from 'next';
