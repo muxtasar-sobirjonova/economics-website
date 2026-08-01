@@ -7,16 +7,25 @@ import {
   IconMap,
   IconBulb,
   IconTrophy,
+  IconArticle,
+  IconBookmark,
+  IconNotes,
 } from "@tabler/icons-react";
 
 export function MobileBottomNav() {
   const pathname = usePathname() || "";
+  const match = pathname.match(/^\/lessons\/(\d+)/);
+  const currentLessonId = match ? match[1] : "1";
 
   const navItems = [
     { name: "Home", href: "/home", icon: IconHome },
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
     { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
     { name: "Challenges", href: "/challenges", matchHref: "/challenges", icon: IconBulb },
+    { name: "Concepts", href: `/lessons/${currentLessonId}/concepts`, matchHref: "/concepts", icon: IconBulb },
+    { name: "Articles", href: `/lessons/${currentLessonId}/articles`, matchHref: "/articles", icon: IconArticle },
+    { name: "Quizzes", href: `/lessons/${currentLessonId}/quizzes`, matchHref: "/quizzes", icon: IconNotes },
+    { name: "Notes", href: "/saved", matchHref: "/saved", icon: IconBookmark },
   ];
 
   return (
@@ -43,7 +52,7 @@ export function MobileBottomNav() {
               }`}
             >
               <div className={`flex items-center justify-center w-12 h-8 rounded-full mb-1 transition-colors ${isActive ? "bg-brand-primary/10" : "bg-transparent"}`}>
-                 <Icon size={22} stroke={isActive ? 2.5 : 1.5} />
+                 <Icon size={22} stroke={isActive ? 2.5 : 1.5} fill={isActive && item.name === "Concepts" ? "currentColor" : "none"} />
               </div>
               <span className={`text-[10px] tracking-wide ${isActive ? "font-bold" : "font-medium"}`}>
                 {item.name}
