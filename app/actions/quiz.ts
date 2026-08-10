@@ -164,7 +164,7 @@ export async function markQuizDoneAction(quizId: string, score: number, mistakes
       actualLessonId
     );
 
-    await invalidateUserCache(userId, "ENTREPRENEURSHIP_ECONOMICS");
+    await invalidateUserCache(userId);
     revalidatePath("/", "layout");
     return { success: true, data: result };
   } catch (error) {

@@ -8,6 +8,7 @@ import { RoadmapSidebar } from "@/components/roadmap/RoadmapSidebar";
 import { RoadmapProgress } from "@/lib/types/roadmap";
 import { ensureUserProgress } from "@/lib/user-progress";
 import { getLessons } from "@/lib/data";
+import { quizIdToDayOrder } from "@/lib/lesson-access";
 
 import { Suspense } from "react";
 
@@ -40,9 +41,6 @@ async function RoadmapContent({ userId }: { userId: string }) {
             select: { quizId: true, track: true }
           },
         },
-      }),
-      prisma.trackProgress.findFirst({
-        where: { userId } // We'll get the specific one after knowing activeTrack
       })
     ]);
 
@@ -59,9 +57,10 @@ async function RoadmapContent({ userId }: { userId: string }) {
       completedLessonIds: (user?.completedLessons ?? [])
         .filter(l => l.track === activeTrack)
         .map(l => parseInt(l.lessonId) || 0),
+      // quizId is stored as `100 + dayOrder`; the roadmap compares day orders.
       completedQuizIds: (user?.quizResults ?? [])
         .filter(q => q.track === activeTrack)
-        .map(q => parseInt(q.quizId) || 0),
+        .map(q => quizIdToDayOrder(q.quizId) ?? 0),
     };
   } catch (error) {
     console.error("Failed to fetch roadmap data:", error);

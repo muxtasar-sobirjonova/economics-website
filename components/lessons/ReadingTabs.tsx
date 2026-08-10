@@ -13,6 +13,8 @@ interface ReadingTabsProps {
   takeawaysText: string;
   initialNotes: NoteData[];
   hideTakeaways?: boolean;
+  /** Where the note was written — shown on the My Notes page. */
+  source?: string;
 }
 
 const noteColors = ["#FFF9C4", "#FFD6D6", "#D6E8FF", "#D6F5E3", "#E8D6FF"];
@@ -22,6 +24,7 @@ export const ReadingTabs = ({
   takeawaysText,
   initialNotes,
   hideTakeaways = false,
+  source = "Concept",
 }: ReadingTabsProps) => {
   const [activePanel, setActivePanel] = useState<"takeaways" | "notes">(
     hideTakeaways ? "notes" : "takeaways"
@@ -33,49 +36,10 @@ export const ReadingTabs = ({
   );
   const [isPending, startTransition] = useTransition();
   const [saveStatus, setSaveStatus] = useState<string>("");
-  const lastSavedNotesRef = React.useRef<string>(JSON.stringify(notes));
+  const [saveFailed, setSaveFailed] = useState(false);
 
-  // Debounced Auto-Save
-  React.useEffect(() => {
-    if (activePanel !== "notes") return;
-    
-    const handler = setTimeout(() => {
-      const currentNotesString = JSON.stringify(notes);
-      if (currentNotesString === lastSavedNotesRef.current) return;
-      
-      const lastSavedNotes = JSON.parse(lastSavedNotesRef.current);
-      let isSaving = false;
-      
-      for (const note of notes) {
-        const lastSavedNote = lastSavedNotes.find((n: NoteData) => n.id === note.id);
-        const hasChanged = !lastSavedNote || lastSavedNote.content !== note.content || lastSavedNote.color !== note.color;
-        
-        if (hasChanged && note.content && note.content.trim().length > 0) {
-          isSaving = true;
-          startTransition(async () => {
-            try {
-              const res = await saveGlobalNoteAction({
-                ...note,
-                source: "Concept",
-              });
-              if (!res.success) throw new Error(res.error || "Auto-save failed");
-              setSaveStatus("Auto-saved");
-              setTimeout(() => setSaveStatus(""), 2000);
-            } catch (error) {
-              console.error(error);
-              setSaveStatus("Auto-save failed");
-            }
-          });
-        }
-      }
-      
-      if (isSaving) {
-        lastSavedNotesRef.current = currentNotesString;
-      }
-    }, 1500);
-
-    return () => clearTimeout(handler);
-  }, [notes, activePanel]);
+  // No auto-save on purpose: notes are only written when the user presses
+  // "Save a note", so there is time to think before anything is persisted.
 
   const addNote = () => {
     setNotes([
@@ -109,15 +73,29 @@ export const ReadingTabs = ({
     setNotes(notes.map((n) => (n.id === id ? { ...n, content } : n)));
   };
 
+  const hasWritableNotes = notes.some(
+    (n) => typeof n.content === "string" && n.content.replace(/<[^>]*>/g, "").trim().length > 0
+  );
+
   const handleSaveNotes = () => {
+    if (!hasWritableNotes) {
+      setSaveFailed(true);
+      setSaveStatus("Write something first.");
+      setTimeout(() => setSaveStatus(""), 2500);
+      return;
+    }
+
+    setSaveFailed(false);
     setSaveStatus("Saving...");
     startTransition(async () => {
       try {
         for (const note of notes) {
-          if (note.content && note.content.trim().length > 0) {
+          const plain = (note.content || "").replace(/<[^>]*>/g, "").trim();
+          if (plain.length > 0) {
             const res = await saveGlobalNoteAction({
               ...note,
-              source: "Concept",
+              lessonId: note.lessonId || lessonId,
+              source,
             });
             if (!res.success) throw new Error(res.error || "Save failed");
           }
@@ -125,6 +103,7 @@ export const ReadingTabs = ({
         setSaveStatus("Saved to My Notes!");
         setTimeout(() => setSaveStatus(""), 3000);
       } catch (error) {
+        setSaveFailed(true);
         setSaveStatus("Failed to save.");
         console.error(error);
       }
@@ -248,12 +227,12 @@ export const ReadingTabs = ({
                   <button
                     onClick={handleSaveNotes}
                     disabled={isPending}
-                    className="bg-brand-primary text-white rounded-lg px-4 py-2 text-xs font-bold w-[calc(100%-32px)] mx-4 hover:bg-[#6859e0] transition-colors shadow-sm disabled:opacity-50"
+                    className="bg-brand-primary text-white rounded-lg px-4 py-2.5 text-xs font-bold w-[calc(100%-32px)] mx-4 hover:bg-[#6859e0] transition-colors shadow-sm disabled:opacity-50"
                   >
-                    {isPending ? "Saving..." : "Save Note"}
+                    {isPending ? "Saving..." : "+ Save a note"}
                   </button>
                   {saveStatus && (
-                    <span className="text-[11px] font-medium text-green-600">
+                    <span className={`text-[11px] font-medium ${saveFailed ? "text-red-600" : "text-green-600"}`}>
                       {saveStatus}
                     </span>
                   )}

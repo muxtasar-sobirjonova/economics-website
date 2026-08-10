@@ -79,21 +79,38 @@ export const getUserRoadmapProgress = async (userId: string, track: Track) => {
     ]);
 
     data = { user, trackProgress };
-    await CacheService.set(cacheKey, data, 300); // cache for 5 minutes
+    await CacheService.set(cacheKey, data, 30); // short TTL: progress must feel live
   }
 
   return data;
 };
 
-export const invalidateUserCache = async (userId: string, track: Track) => {
-  await CacheService.delete(`user_roadmap_progress:${userId}:${track}`);
-  await CacheService.delete(`user_dashboard_data:${userId}:${track}`);
+/**
+ * Clears every per-user cache entry. The track is intentionally ignored: a
+ * caller that guessed the wrong track used to leave the dashboard showing
+ * stale XP / agenda ticks for up to the whole TTL.
+ */
+export const invalidateUserCache = async (userId: string) => {
+  const tracks = Object.values(Track) as Track[];
+  await Promise.all(
+    tracks.flatMap((t) => [
+      CacheService.delete(`user_roadmap_progress:${userId}:${t}`),
+      CacheService.delete(`user_dashboard_data:${userId}:${t}`),
+    ])
+  );
 };
 
 export const getUserDashboardData = async (userId: string, track: Track, currentDay: number) => {
   const cacheKey = `user_dashboard_data:${userId}:${track}`;
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let data = await CacheService.get<any>(cacheKey);
+
+  // `upcomingLessons`/`upcomingQuizzes` are derived from currentDay, so an
+  // entry written for a different day is a miss — kept out of the cache KEY so
+  // invalidation stays a single DELETE instead of a keyspace scan.
+  if (data && data.currentDay !== currentDay) {
+    data = null;
+  }
 
   if (!data) {
     const thirtyDaysAgo = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000);
@@ -137,6 +154,7 @@ export const getUserDashboardData = async (userId: string, track: Track, current
     });
 
     data = {
+      currentDay,
       recentLessons,
       recentCompletions,
       upcomingLessons,
@@ -147,7 +165,7 @@ export const getUserDashboardData = async (userId: string, track: Track, current
       relevantAgendaCompletions
     };
 
-    await CacheService.set(cacheKey, data, 300); // cache for 5 minutes
+    await CacheService.set(cacheKey, data, 30); // short TTL: stats must feel live
   }
 
   return data;

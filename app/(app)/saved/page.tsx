@@ -48,16 +48,12 @@ export default async function SavedPage({
       })
     ]);
     
-    console.log("DEBUG: rawNotes count", rawNotes.length);
-    console.log("DEBUG: rawNotes", JSON.stringify(rawNotes.map(n => ({ id: n.id, source: n.source }))));
-
     // Filter out daily challenges in javascript to avoid Prisma null/NOT bugs
     const notes = rawNotes.filter(n => {
        const isDaily = typeof n.source === 'string' && n.source.startsWith('DailyChallenge-');
        return !isDaily;
     }).slice(0, take);
-    
-    console.log("DEBUG: filtered notes count", notes.length);
+
     totalNotes = count;
     
     // Format to match the client component's expectation if necessary

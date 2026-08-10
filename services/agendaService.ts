@@ -1,5 +1,6 @@
 import { prisma } from "@/lib/prisma";
-import { ItemType } from "@prisma/client";
+import { ItemType, Track } from "@prisma/client";
+import { touchStreak } from "@/lib/streak";
 
 export class AgendaService {
   static async markItemDone(userId: string, lessonId: string, itemType: ItemType) {
@@ -15,7 +16,7 @@ export class AgendaService {
     if (!userRecord) {
       throw new Error("User record not found");
     }
-    const track = userRecord.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
+    const track: Track = userRecord.activeTrack || Track.ENTREPRENEURSHIP_ECONOMICS;
 
     const realLesson = await prisma.lesson.findUnique({
       where: { track_dayOrder: { track, dayOrder: parsedLessonId } }
@@ -30,15 +31,18 @@ export class AgendaService {
         where: { userId, itemType, lessonId: realLesson.id, normalizedDate: todayDate }
       });
 
+      let created = false;
       if (!existing) {
         await tx.agendaCompletion.create({
           data: { userId, itemType, lessonId: realLesson.id, normalizedDate: todayDate }
         });
-        
-        // Return true if newly created
-        return true;
+        created = true;
       }
-      return false;
+
+      // Reading a concept or an article counts as studying today.
+      await touchStreak(tx, userId, track);
+
+      return created;
     });
   }
 }

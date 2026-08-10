@@ -124,8 +124,8 @@ export default async function ArticlesReadPage({
                 </Link>
 
               </div>
-              <div className="flex justify-between items-center mb-8 w-full sticky top-4 z-20 py-3 bg-[#FCF6F0]/95 backdrop-blur-sm rounded-lg border-b border-[#EBEBEB]">
-                <div className="inline-block border border-brand-primary bg-transparent text-brand-primary text-[11px] font-[800] tracking-[0.08em] uppercase px-3.5 py-1.5 rounded-full">
+              <div className="flex justify-between items-center gap-3 mb-8 w-full sticky top-[68px] md:top-4 z-20 py-3 bg-[#FCF6F0]/95 backdrop-blur-sm rounded-lg border-b border-[#EBEBEB]">
+                <div className="inline-block border border-brand-primary bg-transparent text-brand-primary text-[10px] sm:text-[11px] font-[800] tracking-[0.08em] uppercase px-2.5 sm:px-3.5 py-1.5 rounded-full whitespace-nowrap">
                   LESSON {activeLesson.lessonId}
                 </div>
                 <div className="flex-shrink-0">
@@ -153,6 +153,7 @@ export default async function ArticlesReadPage({
             lessonId={String(lessonId)}
             takeawaysText={takeawaysText}
             initialNotes={initialNotes}
+            source="Article"
           />
         </div>
       </div>

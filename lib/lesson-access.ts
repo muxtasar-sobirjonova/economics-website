@@ -1,10 +1,18 @@
 import { prisma } from "@/lib/prisma";
 import { ensureUserProgress } from "@/lib/user-progress";
-import { getLessons } from "@/lib/data";
+import { getLessons, getQuizzes } from "@/lib/data";
 import { cache } from "react";
+
+/** QuizResult.quizId is stored as `100 + dayOrder`. */
+export const quizIdToDayOrder = (quizId: string) => {
+  const parsed = parseInt(quizId, 10);
+  if (isNaN(parsed)) return null;
+  return parsed > 100 ? parsed - 100 : parsed;
+};
 
 export const getLessonAccessStatus = cache(async (userId: string, targetLessonId: number) => {
   let completedLessonIds: number[] = [];
+  let completedQuizDayOrders: number[] = [];
   let isUnlocked = false;
 
   try {
@@ -14,7 +22,7 @@ export const getLessonAccessStatus = cache(async (userId: string, targetLessonId
     });
     const track = userRecord?.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
 
-    const [user, targetLesson] = await Promise.all([
+    const [user, , trackProgress] = await Promise.all([
       prisma.user.findUnique({
         where: { id: userId },
         select: {
@@ -22,35 +30,55 @@ export const getLessonAccessStatus = cache(async (userId: string, targetLessonId
             where: { track },
             select: { lessonId: true }
           },
+          quizResults: {
+            where: { track },
+            select: { quizId: true }
+          },
         },
       }),
-      prisma.lesson.findUnique({
-        where: { track_dayOrder: { track, dayOrder: targetLessonId } },
-        select: { dayOrder: true },
-      }),
-      ensureUserProgress(userId)
+      ensureUserProgress(userId),
+      prisma.trackProgress.findUnique({ where: { userId_track: { userId, track } } })
     ]);
 
     completedLessonIds = (user?.completedLessons ?? []).map((l) => {
       const id = parseInt(l.lessonId, 10) || 0;
       return id > 100 ? id - 100 : id;
     });
-    
-    const trackLessons = await getLessons(track);
-    const targetIndex = trackLessons.findIndex(l => l.dayOrder === targetLessonId);
 
-    // Strict sequential unlocking based on actual ordered lessons
-    let hasCompletedPreviousLesson = false;
+    completedQuizDayOrders = (user?.quizResults ?? [])
+      .map((q) => quizIdToDayOrder(q.quizId))
+      .filter((d): d is number => d !== null);
+
+    const [trackLessons, trackQuizzes] = await Promise.all([
+      getLessons(track),
+      getQuizzes(track)
+    ]);
+
+    const lessonDays = trackLessons.map((l) => l.dayOrder);
+    const quizDays = trackQuizzes.map((q) => q.dayOrder);
+
+    // Chapter-review days (7, 14, 21…) have a Quiz but no Lesson, so the
+    // ordered curriculum is the union of both.
+    const allDays = Array.from(new Set([...lessonDays, ...quizDays])).sort((a, b) => a - b);
+    const targetIndex = allDays.indexOf(targetLessonId);
+
+    const isDayCompleted = (day: number) =>
+      lessonDays.includes(day)
+        ? completedLessonIds.includes(day)
+        : completedQuizDayOrders.includes(day);
+
+    let hasCompletedPreviousDay = false;
     if (targetIndex > 0) {
-      const previousLessonDayOrder = trackLessons[targetIndex - 1].dayOrder;
-      // Also account for the > 100 magic number logic if it applies
-      hasCompletedPreviousLesson = completedLessonIds.includes(previousLessonDayOrder) || 
-                                   completedLessonIds.includes(previousLessonDayOrder > 100 ? previousLessonDayOrder - 100 : previousLessonDayOrder);
+      hasCompletedPreviousDay = isDayCompleted(allDays[targetIndex - 1]);
     }
 
-    isUnlocked = Boolean(targetLesson) && (
-      targetIndex === 0 || 
-      hasCompletedPreviousLesson
+    isUnlocked = targetIndex >= 0 && (
+      targetIndex === 0 ||
+      hasCompletedPreviousDay ||
+      // Already-finished days stay open for review, and anyone who has already
+      // progressed past this day keeps their access.
+      isDayCompleted(targetLessonId) ||
+      targetLessonId <= (trackProgress?.currentDay ?? 1)
     );
   } catch (error) {
     console.error("Failed to fetch lesson access status:", error);
@@ -60,5 +88,6 @@ export const getLessonAccessStatus = cache(async (userId: string, targetLessonId
   return {
     isUnlocked,
     completedLessonIds,
+    completedQuizDayOrders,
   };
 });

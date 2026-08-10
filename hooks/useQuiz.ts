@@ -1,12 +1,30 @@
 import { useState, useCallback, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { validateQuizAnswerAction, markQuizDoneAction } from "@/app/actions/quiz";
+import type { Mistake } from "@/types";
+
+export interface QuizQuestionLike {
+  _key?: string;
+  id?: string;
+  questionText?: string;
+  question?: string;
+  options: string[];
+}
+
+interface Particle {
+  id: number;
+  color: string;
+  tx: string;
+  ty: string;
+}
 
 export interface QuizStateOptions {
   lessonId: number;
-  displayQuestions: any[];
+  displayQuestions: QuizQuestionLike[];
 }
 
 export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
+  const router = useRouter();
   // Quiz State
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<(number | null)[]>(new Array(displayQuestions.length).fill(null));
@@ -14,14 +32,14 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
   const [answers, setAnswers] = useState<number[]>(new Array(displayQuestions.length).fill(-1));
   const [score, setScore] = useState(0);
   const [isFinished, setIsFinished] = useState(false);
-  const [mistakesList, setMistakesList] = useState<{questionId: string, userAnswer: string}[]>([]);
+  const [mistakesList, setMistakesList] = useState<Mistake[]>([]);
   const [isHydrated, setIsHydrated] = useState(false);
   
   // Animation States
   const [animState, setAnimState] = useState<'idle'|'exiting'|'entering'>('idle');
   const [showFlash, setShowFlash] = useState(false);
   const [showShake, setShowShake] = useState(false);
-  const [particles, setParticles] = useState<any[]>([]);
+  const [particles, setParticles] = useState<Particle[]>([]);
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Load state from local storage on mount
@@ -172,13 +190,25 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
     }, 450);
   }, [currentQuestionIndex]);
 
+  const [saveError, setSaveError] = useState<string | null>(null);
+
   const handleFinishQuiz = useCallback(async () => {
     setIsFinished(true);
-    const res = await markQuizDoneAction((100 + lessonId).toString(), score, mistakesList);
-    if (!res.success) {
-      console.error("Failed to mark quiz done:", res.error);
+    setSaveError(null);
+    try {
+      const res = await markQuizDoneAction((100 + lessonId).toString(), score, mistakesList);
+      if (!res.success) {
+        console.error("Failed to mark quiz done:", res.error);
+        setSaveError(res.error || "Your result could not be saved.");
+        return;
+      }
+      // Pull fresh XP / agenda / roadmap state into the router cache.
+      router.refresh();
+    } catch (e) {
+      console.error("Failed to mark quiz done:", e);
+      setSaveError("Your result could not be saved.");
     }
-  }, [lessonId, score, mistakesList]);
+  }, [lessonId, score, mistakesList, router]);
 
   const handleReviewMistakes = useCallback(() => {
     setIsFinished(false);
@@ -211,6 +241,8 @@ export function useQuiz({ lessonId, displayQuestions }: QuizStateOptions) {
     handlePrevQuestion,
     handleFinishQuiz,
     handleReviewMistakes,
-    isSubmitting
+    isSubmitting,
+    saveError,
+    totalQuestions: displayQuestions.length
   };
 }

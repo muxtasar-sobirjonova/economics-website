@@ -2,31 +2,31 @@
 
 import { useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { markArticleDoneAction } from "@/app/actions/agenda";
+import { markArticleDoneAction, markConceptDoneAction } from "@/app/actions/agenda";
 
 /**
- * Wraps the "Next: Articles →" link.
- * Fires markArticleDoneAction ONLY when the user intentionally clicks,
- * not as a server-render side-effect.
+ * Wraps the "Next: …" link at the bottom of a Concepts / Articles page.
+ * Ticks the matching row of Today's Agenda ONLY when the user intentionally
+ * clicks — not as a server-render side-effect.
  */
 export function MarkReadButton({ lessonId, isArticle }: { lessonId: string, isArticle?: boolean }) {
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
   const handleClick = () => {
-    // Optimistic Navigation: Immediately go to next page
-    router.push(`/lessons/${lessonId}/${isArticle ? 'quizzes' : 'articles'}`);
-    
-    // Background the save action
     startTransition(async () => {
       try {
-        const res = await markArticleDoneAction(lessonId);
+        const res = isArticle
+          ? await markArticleDoneAction(lessonId)
+          : await markConceptDoneAction(lessonId);
         if (!res.success) {
           console.error("Failed to mark done:", res.error);
         }
       } catch {
-        // Non-critical — don't block navigation on failure
+        // Non-critical — never block navigation on a failed tick.
       }
+      router.push(`/lessons/${lessonId}/${isArticle ? 'quizzes' : 'articles'}`);
+      router.refresh();
     });
   };
 

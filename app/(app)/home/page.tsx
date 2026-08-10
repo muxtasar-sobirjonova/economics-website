@@ -11,7 +11,7 @@ import { LearningStats } from "@/components/home/LearningStats";
 import { ensureUserProgress } from "@/lib/user-progress";
 import { Suspense } from "react";
 import { Metadata } from 'next';
-import { getUserDashboardData, getUserRoadmapProgress } from "@/lib/data";
+import { getUserDashboardData } from "@/lib/data";
 
 export const metadata: Metadata = {
   title: "Dashboard | That's So Econ",
@@ -19,24 +19,16 @@ export const metadata: Metadata = {
 };
 
 
-async function DashboardStatsAsync({ userId, streak, activeTrack = Track.ENTREPRENEURSHIP_ECONOMICS, totalXP }: { userId: string, streak: number, activeTrack?: Track, totalXP: number }) {
-  const localDate = new Date();
-  const jsDay = localDate.getUTCDay();
-  const todayIndex = jsDay === 0 ? 6 : jsDay - 1;
-  const monday = new Date(localDate);
-  monday.setUTCDate(localDate.getUTCDate() - todayIndex);
-  monday.setUTCHours(0, 0, 0, 0);
-
+async function DashboardStatsAsync({ userId, streak, activeTrack = Track.ENTREPRENEURSHIP_ECONOMICS, totalXP, currentDay }: { userId: string, streak: number, activeTrack?: Track, totalXP: number, currentDay: number }) {
   const {
     weeklyQuizzesAgg,
     quizAgg,
     totalLessonsAgg,
-  } = await getUserDashboardData(userId, activeTrack as Track, 1);
-  await getUserRoadmapProgress(userId, activeTrack);
+  } = await getUserDashboardData(userId, activeTrack as Track, currentDay);
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const xpThisWeek = (weeklyQuizzesAgg as any)?._sum?.xpEarned || 0;
-  
+
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let avgQuizScore = (quizAgg as any)?._avg?.score ? Math.round((quizAgg as any)._avg.score * 10) : 0;
   if (avgQuizScore > 100) avgQuizScore = 100;
@@ -211,11 +203,12 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
         
         <div className="mt-6 w-full mx-auto max-w-[1200px]">
           <Suspense fallback={<div className="h-32 w-full bg-slate-100 animate-pulse rounded-xl" />}>
-            <DashboardStatsAsync 
-              userId={userId} 
+            <DashboardStatsAsync
+              userId={userId}
               streak={streak}
               activeTrack={activeTrack}
               totalXP={xp}
+              currentDay={currentDay}
             />
           </Suspense>
         </div>

@@ -67,7 +67,7 @@ export default async function QuizzesReadPage({
   let initialNotes: NoteData[] = [];
   try {
     const userNotes = await prisma.note.findMany({
-      where: { userId, lessonId: String(lessonId) },
+      where: { userId, lessonId: String(lessonId), track: activeTrack },
       orderBy: { createdAt: 'asc' },
     });
     
@@ -104,6 +104,7 @@ export default async function QuizzesReadPage({
           takeawaysText={""}
           initialNotes={initialNotes}
           hideTakeaways={true}
+          source="Quiz"
         />
       </div>
     </div>

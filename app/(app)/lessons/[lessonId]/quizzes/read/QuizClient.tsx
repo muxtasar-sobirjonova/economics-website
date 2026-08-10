@@ -37,7 +37,9 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
     handleNextQuestion,
     handlePrevQuestion,
     handleFinishQuiz,
-    isSubmitting
+    isSubmitting,
+    saveError,
+    totalQuestions
   } = useQuiz({ lessonId, displayQuestions });
 
   if (displayQuestions.length === 0) return <div className="p-8">No questions found.</div>;
@@ -46,15 +48,18 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
     return <div className="p-16 flex justify-center items-center h-[50vh]"><div className="w-8 h-8 border-4 border-[#7B6FE7] border-t-transparent rounded-full animate-spin"></div></div>;
   }
 
+  // Same rule the server uses to decide whether the day counts as cleared.
+  const passingScore = Math.max(1, Math.ceil(totalQuestions * 0.8));
+
   if (isFinished) {
     let message = "📚 Keep Studying";
-    if (score === 10) message = "🏆 Perfect Score!";
-    else if (score >= 8) message = "⭐ Excellent!";
-    else if (score >= 6) message = "👍 Good Job!";
-    
+    if (score === totalQuestions) message = "🏆 Perfect Score!";
+    else if (score >= passingScore) message = "⭐ Excellent!";
+    else if (score >= Math.ceil(totalQuestions * 0.6)) message = "👍 Good Job!";
+
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white rounded-3xl shadow-sm border border-[#EBEBEB] relative overflow-hidden h-full min-h-[600px] transition-all duration-300">
-        {score >= 8 && (
+        {score >= passingScore && (
           <div className="absolute inset-0 pointer-events-none">
             {Array.from({length: 40}).map((_, i) => {
               const colors = ['#3D52A0', '#22C55E', '#FCD34D', '#F9A8D4'];
@@ -77,12 +82,27 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
           </div>
         )}
         
-        <h2 className="text-[64px] font-[900] text-[#3D52A0] mb-2">{score} / 10</h2>
-        <p className="text-xl font-[700] text-gray-900 mb-10">{message}</p>
-        
-        <div className="flex gap-4">
+        <h2 className="text-[64px] font-[900] text-[#3D52A0] mb-2">{score} / {totalQuestions}</h2>
+        <p className="text-xl font-[700] text-gray-900 mb-4">{message}</p>
+
+        {score < passingScore && (
+          <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
+            You need {passingScore} / {totalQuestions} to unlock the next topic. Review the lesson and try again.
+          </p>
+        )}
+
+        {saveError && (
+          <p className="text-sm font-semibold text-red-600 mb-6 text-center max-w-sm">
+            {saveError} Please check your connection and take the quiz again.
+          </p>
+        )}
+
+        <div className="flex gap-4 mt-4">
            <Link href={`/lessons/${lessonId}/quizzes`} className="px-6 py-3 bg-brand-primary hover:bg-brand-primary/90 text-white font-[500] rounded-lg shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
              Back to Quizzes
+           </Link>
+           <Link href="/roadmap" className="px-6 py-3 bg-white border border-[#EBEBEB] hover:bg-gray-50 text-[#3D52A0] font-[500] rounded-lg shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+             Back to Roadmap
            </Link>
         </div>
       </div>
@@ -108,10 +128,10 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
              </div>
            </div>
            <div className="text-[13px] font-[700] text-gray-900">
-             Question {currentQuestionIndex + 1} of 10
+             Question {currentQuestionIndex + 1} of {totalQuestions}
            </div>
            <div className="text-[13px] font-[700] text-[#3D52A0]">
-             ⭐ {score} / 10
+             ⭐ {score} / {totalQuestions}
            </div>
          </div>
 
@@ -147,7 +167,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                <div className="bg-[linear-gradient(135deg,#EEF3FF,#F8F9FC)] border border-[#C7D7FF] rounded-[20px] px-8 py-6 shadow-[0_4px_20px_rgba(61,82,160,0.08)] shrink-0">
                  <div className="flex justify-between items-center">
                     <div className="bg-[#3D52A0] text-white text-[10px] font-[700] px-3 py-1 rounded-[20px]">
-                       QUESTION {currentQuestionIndex + 1} OF 10
+                       QUESTION {currentQuestionIndex + 1} OF {totalQuestions}
                     </div>
                     <div className="text-[11px] text-gray-400">
                        ⚡ Medium

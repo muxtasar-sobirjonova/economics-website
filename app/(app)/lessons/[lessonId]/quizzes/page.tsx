@@ -6,7 +6,7 @@ import { prisma } from "@/lib/prisma";
 import { client } from "@/sanity/client";
 import { QUIZZES_QUERY } from "@/sanity/queries";
 import { getLessons } from "@/lib/data";
-import { getLessonAccessStatus } from "@/lib/lesson-access";
+import { getLessonAccessStatus, quizIdToDayOrder } from "@/lib/lesson-access";
 import { IconClock, IconFileText, IconTrendingUp, IconClipboardList, IconCheck, IconArrowRight } from "@tabler/icons-react";
 import { BrainCircuit } from "lucide-react";
 import { LearningPathSlider } from "@/components/lessons/LearningPathSlider";
@@ -14,6 +14,7 @@ import { SanityQuiz, SanityQuizSchema } from "@/types";
 import { z } from "zod";
 
 import { LessonHeader } from "@/components/lessons/LessonHeader";
+import { MAX_SERVED_QUESTIONS } from "@/services/quizService";
 
 export default async function QuizzesPage({ params }: { params: { lessonId: string } }) {
   const session = await auth();
@@ -38,7 +39,10 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
   const activeTrack = userRecord?.activeTrack || "ENTREPRENEURSHIP_ECONOMICS";
 
   const lessons = await getLessons(activeTrack);
-  const baseLesson = lessons.find((l) => Number(l.dayOrder) === lessonId) || lessons[0];
+  // Chapter-review days (7, 14, 21…) have a quiz but no lesson.
+  const matchedLesson = lessons.find((l) => Number(l.dayOrder) === lessonId);
+  const hasLesson = Boolean(matchedLesson);
+  const baseLesson = matchedLesson || lessons[0];
 
   let sanityQuiz: SanityQuiz | undefined = undefined;
   try {
@@ -59,6 +63,10 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
   });
 
   const quizTitle = sanityQuiz?.title || localQuiz?.title || baseLesson.title;
+
+  // The quiz player only ever serves the first 10 questions.
+  const servedQuestions = Math.min(localQuiz?.questions?.length || MAX_SERVED_QUESTIONS, MAX_SERVED_QUESTIONS);
+  const passingScore = Math.max(1, Math.ceil(servedQuestions * 0.8));
   
   // Dynamic Time Estimate based on question count
   let timeEstimate = baseLesson.timeEstimate;
@@ -71,7 +79,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
   let quizResults: { quizId: string, score: number }[] = [];
   try {
     quizResults = await prisma.quizResult.findMany({
-      where: { userId },
+      where: { userId, track: activeTrack },
       select: { quizId: true, score: true },
       orderBy: { date: 'desc' } // ensure we get the latest score
     });
@@ -79,16 +87,18 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
     console.error("Failed to fetch quiz results or mistakes from Prisma:", error);
   }
 
-  const currentQuizResult = quizResults.find(q => q.quizId === String(100 + lessonId));
+  const currentQuizResult = quizResults.find(q => quizIdToDayOrder(q.quizId) === lessonId);
   const hasCompleted = !!currentQuizResult;
 
-  const completedQuizLessonIds = quizResults.map(q => parseInt(q.quizId) - 100);
+  const completedQuizLessonIds = quizResults
+    .map(q => quizIdToDayOrder(q.quizId))
+    .filter((d): d is number => d !== null);
 
   const avatarLetter = (session?.user?.name?.trim().charAt(0) || session?.user?.email?.trim().charAt(0) || "?").toUpperCase();
 
   return (
     <div className="min-h-screen font-sans flex flex-col text-[#1F2937] bg-slate-50">
-      <LessonHeader lessonId={lessonId} activeTab="quizzes" avatarLetter={avatarLetter} />
+      <LessonHeader lessonId={lessonId} activeTab="quizzes" avatarLetter={avatarLetter} hasLesson={hasLesson} />
 
       <main className="px-4 md:px-10 pb-8 md:pb-16 max-w-[1240px] w-full mx-auto mt-4 overflow-hidden md:overflow-visible">
         {/* Hero Banner */}
@@ -164,24 +174,24 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                       You haven&apos;t completed this quiz yet. Take the quiz to receive personalized feedback and review your mistakes here!
                     </p>
                   </div>
-               ) : currentQuizResult && currentQuizResult.score >= 8 ? (
+               ) : currentQuizResult && currentQuizResult.score >= passingScore ? (
                  <div className="flex flex-col items-center justify-center h-full text-center">
                    <div className="w-12 h-12 bg-green-50 text-green-500 rounded-2xl flex items-center justify-center mb-3 shadow-sm border border-green-100">
                      <IconCheck size={24} stroke={3} />
                    </div>
                    <h4 className="font-bold text-gray-900 text-base mb-1">Excellent Work!</h4>
                    <p className="text-gray-600 text-[14px] leading-[1.6] max-w-sm mx-auto font-normal">
-                     You scored {currentQuizResult.score}/10 on your last attempt. You&apos;re doing fine and have truly mastered this lesson&apos;s concepts!
+                     You scored {currentQuizResult.score}/{servedQuestions} on your last attempt. You&apos;re doing fine and have truly mastered this lesson&apos;s concepts!
                    </p>
                  </div>
-               ) : currentQuizResult && currentQuizResult.score >= 6 ? (
+               ) : currentQuizResult && currentQuizResult.score >= Math.ceil(servedQuestions * 0.6) ? (
                  <div className="flex flex-col items-center justify-center h-full text-center">
                    <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mb-3 shadow-sm border border-blue-100">
                      <IconCheck size={24} stroke={3} />
                    </div>
                    <h4 className="font-bold text-gray-900 text-base mb-1">Good job!</h4>
                    <p className="text-gray-600 text-[14px] leading-[1.6] max-w-sm mx-auto font-normal">
-                     You scored {currentQuizResult.score}/10 on your last attempt. You&apos;ve got a solid grasp of this lesson&apos;s concepts.
+                     You scored {currentQuizResult.score}/{servedQuestions} on your last attempt. You&apos;ve got a solid grasp of this lesson&apos;s concepts.
                    </p>
                  </div>
                ) : (
@@ -191,16 +201,18 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                     </div>
                     <h4 className="font-bold text-gray-900 text-base mb-1">Review Recommended</h4>
                     <p className="text-gray-600 text-[14px] leading-[1.6] max-w-sm mx-auto font-normal mb-3">
-                      You missed some questions on your last attempt (Score: {currentQuizResult?.score || 0}/10). We recommend reviewing the core material before trying again.
+                      You missed some questions on your last attempt (Score: {currentQuizResult?.score || 0}/{servedQuestions}). You need {passingScore}/{servedQuestions} to unlock the next topic — we recommend reviewing the core material before trying again.
                     </p>
-                    <div className="flex items-center justify-center gap-3 w-full">
-                      <Link href={`/lessons/${lessonId}/concepts`} className="text-brand-primary text-[13px] font-bold bg-brand-primary/10 px-4 py-2 rounded-xl hover:bg-brand-primary/20 transition-colors">
-                        Review Concept
-                      </Link>
-                      <Link href={`/lessons/${lessonId}/articles`} className="text-brand-primary text-[13px] font-bold bg-brand-primary/10 px-4 py-2 rounded-xl hover:bg-brand-primary/20 transition-colors">
-                        Review Article
-                      </Link>
-                    </div>
+                    {hasLesson && (
+                      <div className="flex items-center justify-center gap-3 w-full">
+                        <Link href={`/lessons/${lessonId}/concepts`} className="text-brand-primary text-[13px] font-bold bg-brand-primary/10 px-4 py-2 rounded-xl hover:bg-brand-primary/20 transition-colors">
+                          Review Concept
+                        </Link>
+                        <Link href={`/lessons/${lessonId}/articles`} className="text-brand-primary text-[13px] font-bold bg-brand-primary/10 px-4 py-2 rounded-xl hover:bg-brand-primary/20 transition-colors">
+                          Review Article
+                        </Link>
+                      </div>
+                    )}
                   </div>
                )}
           </div>

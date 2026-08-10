@@ -131,25 +131,29 @@ export default async function ConceptsReadPage({
                 </Link>
 
               </div>
-              <div className="flex justify-between items-center mb-8 w-full sticky top-4 z-20 py-3 bg-[#FCF6F0]/95 backdrop-blur-sm rounded-lg border-b border-[#EBEBEB]">
-                <div className="inline-block border border-brand-primary bg-transparent text-brand-primary text-[11px] font-[800] tracking-[0.08em] uppercase px-3.5 py-1.5 rounded-full">
+              <div className="flex justify-between items-center gap-3 mb-8 w-full sticky top-[68px] md:top-4 z-20 py-3 bg-[#FCF6F0]/95 backdrop-blur-sm rounded-lg border-b border-[#EBEBEB]">
+                <div className="inline-block border border-brand-primary bg-transparent text-brand-primary text-[10px] sm:text-[11px] font-[800] tracking-[0.08em] uppercase px-2.5 sm:px-3.5 py-1.5 rounded-full whitespace-nowrap">
                   LESSON {activeLesson.lessonId}
                 </div>
                 <div className="flex-shrink-0">
                   <ReadingActions />
                 </div>
               </div>
-              <div className="relative z-10 text-center mb-16 pt-8" id="main-content">
-                  <h1 className={`text-[44px] md:text-[52px] font-black text-[#1A1A2E] leading-[1.1] uppercase tracking-tight`}>
-                    {activeLesson.title}
-                  </h1>
-                  <div className="text-center text-gray-400 font-sans font-[500] text-[13px] mt-6 tracking-wide uppercase">
-                    ESTIMATED READING TIME (10-20 MIN) • DAY 0{lessonId || 1}
+              {/* #main-content is the highlightable region — it must wrap the
+                  body copy, not just the heading. */}
+              <div className="relative z-10" id="main-content">
+                <div className="text-center mb-16 pt-8">
+                    <h1 className={`text-[32px] sm:text-[44px] md:text-[52px] font-black text-[#1A1A2E] leading-[1.1] uppercase tracking-tight`}>
+                      {activeLesson.title}
+                    </h1>
+                    <div className="text-center text-gray-400 font-sans font-[500] text-[13px] mt-6 tracking-wide uppercase">
+                      ESTIMATED READING TIME (10-20 MIN) • DAY 0{lessonId || 1}
+                    </div>
+                </div>
+                <div className="flex flex-col">
+                  <div className="prose prose-lg max-w-[800px] mx-auto w-full prose-h2:text-[#1A1A2E] prose-h2:uppercase prose-h2:tracking-tight prose-h2:font-bold prose-h2:mt-12 prose-p:text-[18px] prose-p:leading-[1.8] prose-p:text-gray-800">
+                    <div dangerouslySetInnerHTML={{ __html: cleanConceptHtml }} />
                   </div>
-              </div>
-              <div className="flex flex-col">
-                <div className="prose prose-lg max-w-[800px] mx-auto w-full prose-h2:text-[#1A1A2E] prose-h2:uppercase prose-h2:tracking-tight prose-h2:font-bold prose-h2:mt-12 prose-p:text-[18px] prose-p:leading-[1.8] prose-p:text-gray-800">
-                  <div dangerouslySetInnerHTML={{ __html: cleanConceptHtml }} />
                 </div>
               </div>
               <div className="relative z-10 flex items-center justify-end mt-12">
@@ -165,6 +169,7 @@ export default async function ConceptsReadPage({
             lessonId={String(lessonId)}
             takeawaysText={takeawaysText}
             initialNotes={initialNotes}
+            source="Concept"
           />
         </div>
       </div>

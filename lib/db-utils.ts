@@ -4,7 +4,8 @@ import { prisma } from "./prisma";
 export async function logQuizAttemptInDb(
   userId: string,
   quizId: string,
-  mistakes: { questionId?: string; questionText?: string; userAnswer?: string; correctAnswer?: string }[]
+  mistakes: { questionId?: string; questionText?: string; userAnswer?: string; correctAnswer?: string }[],
+  track: Track = Track.ENTREPRENEURSHIP_ECONOMICS
 ) {
   // Use a transaction to ensure atomic inserts for attempts and reviews
   return prisma.$transaction(async (tx) => {
@@ -25,7 +26,7 @@ export async function logQuizAttemptInDb(
         data: {
           userId,
           quizAttemptId: attempt.id,
-          reviewed: false, track: Track.ENTREPRENEURSHIP_ECONOMICS,
+          reviewed: false, track,
         },
       });
       createdAttempts.push(attempt);
@@ -34,11 +35,11 @@ export async function logQuizAttemptInDb(
   });
 }
 
-export async function getUnreviewedMistakesFromDb(userId: string, sinceDate: Date) {
+export async function getUnreviewedMistakesFromDb(userId: string, sinceDate: Date, track: Track = Track.ENTREPRENEURSHIP_ECONOMICS) {
   return prisma.mistakeReview.findMany({
     where: {
       userId,
-      reviewed: false, track: Track.ENTREPRENEURSHIP_ECONOMICS,
+      reviewed: false, track,
       quizAttempt: {
         timestamp: {
           gte: sinceDate,
