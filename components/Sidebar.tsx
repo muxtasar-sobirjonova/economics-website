@@ -112,8 +112,8 @@ export default function Sidebar() {
             <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div className="flex flex-col justify-center">
-            <span className="text-[10px] font-bold tracking-[0.2em] text-brand-200 leading-none mb-0.5">That&apos;s So</span>
-            <span className="text-2xl font-black text-white leading-none">Econ<span className="text-brand-300">!</span></span>
+            <span className="text-[10px] font-bold tracking-[0.2em] text-white/90 leading-none mb-0.5">That&apos;s So</span>
+            <span className="text-2xl font-black text-white leading-none">Econ<span className="text-white">!</span></span>
           </div>
         </div>
 
