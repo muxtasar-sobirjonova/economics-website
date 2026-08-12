@@ -111,7 +111,7 @@ export default function Sidebar() {
           <div className="bg-brand-primary text-white font-black text-[22px] shrink-0 flex items-center justify-center w-11 h-11 rounded-xl shadow-sm overflow-hidden">
              <img src="/favicon.png" alt="Logo" className="w-full h-full object-cover" />
           </div>
-          <span className="font-bold text-white text-[22px] tracking-wide">
+          <span className="font-bold text-white text-lg tracking-wide whitespace-nowrap">
             That&apos;s So Econ.
           </span>
         </div>
