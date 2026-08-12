@@ -18,7 +18,7 @@ export function ReviewCompletion({
   setActiveLessonId: (id: number | null) => void;
 }) {
   return (
-    <div className="flex-1 min-h-screen bg-[#F8F9FC] flex flex-col p-10 relative max-w-[1200px] mx-auto w-full">
+    <div className="flex-1 min-h-screen bg-slate-50 flex flex-col p-10 relative max-w-[1200px] mx-auto w-full">
       <div className="mb-2 shrink-0">
         <h1 className="text-[13px] font-[700] text-gray-900 uppercase tracking-[0.08em] mb-1">My Notes</h1>
         <p className="text-sm text-gray-500">Card Review Complete</p>

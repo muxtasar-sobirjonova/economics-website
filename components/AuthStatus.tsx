@@ -9,10 +9,10 @@ export function AuthStatus() {
   if (status === 'loading') {
     return (
       <div className="flex items-center px-3 py-2.5 gap-3">
-        <div className="w-9 h-9 rounded-full bg-[#362A5C] animate-pulse"></div>
+        <div className="w-9 h-9 rounded-full bg-brand-800 animate-pulse"></div>
         <div className="flex flex-col gap-2 w-full">
-          <div className="h-3 bg-[#362A5C] rounded animate-pulse w-24"></div>
-          <div className="h-2 bg-[#362A5C] rounded animate-pulse w-16"></div>
+          <div className="h-3 bg-brand-800 rounded animate-pulse w-24"></div>
+          <div className="h-2 bg-brand-800 rounded animate-pulse w-16"></div>
         </div>
       </div>
     );

@@ -151,11 +151,11 @@ export const ReadingTabs = ({
 
       {/* Sliding Drawer */}
       <div 
-        className={`fixed top-0 right-0 h-screen w-[308px] max-w-[100vw] bg-[#F8F9FC] border-l border-gray-200 shadow-2xl z-[50] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 h-screen w-[308px] max-w-[100vw] bg-slate-50 border-l border-gray-200 shadow-2xl z-[50] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="h-full flex flex-col overflow-hidden">
           {/* Fixed Header */}
-          <div className="px-6 pt-5 pb-3 shrink-0 bg-[#F8F9FC] border-b border-gray-100 relative z-10">
+          <div className="px-6 pt-5 pb-3 shrink-0 bg-slate-50 border-b border-gray-100 relative z-10">
             <div className="flex justify-between items-center mb-4">
               <h3 className="text-lg font-bold text-gray-900">Notes & Takeaways</h3>
               <button onClick={() => setIsOpen(false)} aria-label="Close notes drawer" className="text-gray-400 hover:text-gray-700 bg-gray-100 p-2 rounded-full">
@@ -163,7 +163,7 @@ export const ReadingTabs = ({
               </button>
             </div>
             {!hideTakeaways && (
-              <div className="flex bg-[#F8F9FC] p-1 rounded-xl shadow-sm border border-gray-100">
+              <div className="flex bg-slate-50 p-1 rounded-xl shadow-sm border border-gray-100">
                 <button
                   onClick={() => setActivePanel("takeaways")}
                   className={`flex-1 text-center py-2 text-[13px] font-semibold rounded-lg cursor-pointer transition-all ${

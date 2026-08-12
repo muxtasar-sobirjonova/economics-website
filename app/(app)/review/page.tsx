@@ -65,7 +65,7 @@ export default async function ReviewPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] flex flex-col font-sans">
+    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
       <header className="bg-white border-b border-gray-100 px-6 py-4 flex items-center shrink-0">
         <Link href="/" className="mr-4 p-2 -ml-2 rounded-full hover:bg-gray-50 transition-colors">
           <ArrowLeft size={20} className="text-gray-600" />

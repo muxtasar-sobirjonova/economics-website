@@ -57,8 +57,8 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
   } catch (error) {
     console.error("Failed to fetch quizzes from Sanity:", error);
   }
-  const localQuiz = await prisma.quiz.findUnique({
-    where: { track_dayOrder: { track: activeTrack, dayOrder: lessonId } },
+  const localQuiz = await prisma.quiz.findFirst({
+    where: { track: activeTrack, dayOrder: lessonId },
     include: { questions: true }
   });
 
@@ -97,12 +97,12 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
   const avatarLetter = (session?.user?.name?.trim().charAt(0) || session?.user?.email?.trim().charAt(0) || "?").toUpperCase();
 
   return (
-    <div className="min-h-screen font-sans flex flex-col text-[#1F2937] bg-slate-50">
+    <div className="min-h-screen font-sans flex flex-col text-slate-800 bg-slate-50">
       <LessonHeader lessonId={lessonId} activeTab="quizzes" avatarLetter={avatarLetter} hasLesson={hasLesson} />
 
       <main className="px-4 md:px-10 pb-8 md:pb-16 max-w-[1240px] w-full mx-auto mt-4 overflow-hidden md:overflow-visible">
         {/* Hero Banner */}
-        <div className="flex flex-col md:flex-row items-start md:items-center mb-6 md:mb-10 p-5 md:px-8 md:py-4 rounded-3xl bg-white border border-[#EBEBEB] shadow-sm relative overflow-hidden">
+        <div className="flex flex-col md:flex-row items-start md:items-center mb-6 md:mb-10 p-5 md:px-8 md:py-4 rounded-3xl bg-white border border-gray-200 shadow-sm relative overflow-hidden">
           <div className="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center w-full relative z-10">
             <div className="w-[60px] h-[60px] md:w-[84px] md:h-[84px] rounded-[16px] md:rounded-[20px] flex items-center justify-center shrink-0 md:ml-2">
               <BrainCircuit className="text-emerald-400 w-10 h-10 md:w-12 md:h-12" strokeWidth={1.5} />
@@ -163,7 +163,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
 
         <div className="flex flex-col md:flex-row gap-8 md:items-stretch mb-10">
           {/* Mistakes Section */}
-          <div className="flex-1 bg-white p-5 md:p-8 flex flex-col border border-[#EBEBEB] border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
+          <div className="flex-1 bg-white p-5 md:p-8 flex flex-col border border-gray-200 border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
                {!hasCompleted ? (
                  <div className="flex flex-col items-center justify-center h-full text-center">
                    <div className="w-12 h-12 bg-gray-100 text-gray-400 rounded-full flex items-center justify-center mb-3">
@@ -218,7 +218,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
           </div>
 
           {/* Action Section */}
-          <div className="w-full md:w-[340px] bg-white p-5 md:p-8 flex flex-col relative border border-[#EBEBEB] border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
+          <div className="w-full md:w-[340px] bg-white p-5 md:p-8 flex flex-col relative border border-gray-200 border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
               <div className="flex gap-4 items-start mb-6">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center">
                   <IconFileText size={24} stroke={2} className="text-brand-primary" />
@@ -245,7 +245,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
         <div>
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-[13px] font-bold tracking-[0.08em] text-gray-900 uppercase flex items-center gap-1.5">
-              LEARNING PATH <IconTrendingUp size={16} className="text-[#1F2937]" stroke={2.5} />
+              LEARNING PATH <IconTrendingUp size={16} className="text-slate-800" stroke={2.5} />
             </h3>
           </div>
           

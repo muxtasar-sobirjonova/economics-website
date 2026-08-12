@@ -32,7 +32,7 @@ export const LeaderboardRow: React.FC<LeaderboardRowProps> = ({ user, isCurrentU
       initial={{ opacity: 0, y: 5 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2 }}
-      className={`flex items-center py-4 px-2 sm:px-6 relative group transition-colors rounded-xl ${isCurrentUser ? "bg-[#f5f3ff] ring-1 ring-[#8c7df0]" : "bg-white"}`}
+      className={`flex items-center py-4 px-2 sm:px-6 relative group transition-colors rounded-xl ${isCurrentUser ? "bg-brand-50 ring-1 ring-[#8c7df0]" : "bg-white"}`}
     >
       {/* Rank */}
       <div className="w-12 shrink-0 font-bold text-lg text-[#c2c4d6]">

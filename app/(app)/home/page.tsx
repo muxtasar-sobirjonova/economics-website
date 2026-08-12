@@ -4,7 +4,7 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import TodayAgendaCard from "@/components/TodayAgendaCard";
 import { DailyQuote } from "@/components/home/DailyQuote";
-import { DailyChallengeCard } from "@/components/home/DailyChallengeCard";
+
 import { DashboardHero } from "@/components/home/DashboardHero";
 import { LearningStats } from "@/components/home/LearningStats";
 
@@ -62,7 +62,7 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
   if (!trackProgress) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4">
-        <h2 className="text-2xl font-bold mb-2 text-[#362A5C]">Welcome to That&apos;s So Econ!</h2>
+        <h2 className="text-2xl font-bold mb-2 text-brand-800">Welcome to That&apos;s So Econ!</h2>
         <p className="text-gray-600 mb-6 max-w-md mx-auto">
           We&apos;re setting up your learning profile. Please complete your onboarding or check back in a moment to view your dashboard.
         </p>
@@ -198,7 +198,6 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
       <div className="flex flex-col justify-start py-4 px-4 md:px-12">
         <div className="flex flex-col lg:flex-row w-full mx-auto gap-6 max-w-[1200px]">
           <TodayAgendaCard initialItems={agendaItems} />
-          <DailyChallengeCard userId={userId} />
         </div>
         
         <div className="mt-6 w-full mx-auto max-w-[1200px]">
@@ -227,7 +226,7 @@ export default async function DashboardPage() {
   const userName = session.user.name || "";
 
   return (
-    <div className="w-full bg-[#F8F9FC]">
+    <div className="w-full bg-slate-50">
       <Suspense fallback={
         <div className="flex flex-col items-center justify-center min-h-[70vh] w-full px-4">
           <div className="w-12 h-12 border-4 border-slate-200 border-t-brand-primary rounded-full animate-spin mb-4"></div>

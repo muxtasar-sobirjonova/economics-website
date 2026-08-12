@@ -45,7 +45,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
   if (displayQuestions.length === 0) return <div className="p-8">No questions found.</div>;
 
   if (!isHydrated) {
-    return <div className="p-16 flex justify-center items-center h-[50vh]"><div className="w-8 h-8 border-4 border-[#7B6FE7] border-t-transparent rounded-full animate-spin"></div></div>;
+    return <div className="p-16 flex justify-center items-center h-[50vh]"><div className="w-8 h-8 border-4 border-brand-500 border-t-transparent rounded-full animate-spin"></div></div>;
   }
 
   // Same rule the server uses to decide whether the day counts as cleared.
@@ -58,7 +58,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
     else if (score >= Math.ceil(totalQuestions * 0.6)) message = "👍 Good Job!";
 
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white rounded-3xl shadow-sm border border-[#EBEBEB] relative overflow-hidden h-full min-h-[600px] transition-all duration-300">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white rounded-3xl shadow-sm border border-gray-200 relative overflow-hidden h-full min-h-[600px] transition-all duration-300">
         {score >= passingScore && (
           <div className="absolute inset-0 pointer-events-none">
             {Array.from({length: 40}).map((_, i) => {
@@ -101,7 +101,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
            <Link href={`/lessons/${lessonId}/quizzes`} className="px-6 py-3 bg-brand-primary hover:bg-brand-primary/90 text-white font-[500] rounded-lg shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
              Back to Quizzes
            </Link>
-           <Link href="/roadmap" className="px-6 py-3 bg-white border border-[#EBEBEB] hover:bg-gray-50 text-[#3D52A0] font-[500] rounded-lg shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+           <Link href="/roadmap" className="px-6 py-3 bg-white border border-gray-200 hover:bg-gray-50 text-[#3D52A0] font-[500] rounded-lg shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
              Back to Roadmap
            </Link>
         </div>

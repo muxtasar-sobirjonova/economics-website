@@ -22,7 +22,7 @@ export function LessonHeader({ lessonId, activeTab, avatarLetter, hasLesson = tr
             <div className="relative flex flex-col items-center">
               <Link
                 href={`/lessons/${lessonId}/concepts`}
-                className={`transition-colors pb-2 ${activeTab === 'concepts' ? 'text-[#1F2937] font-bold' : 'hover:text-black'}`}
+                className={`transition-colors pb-2 ${activeTab === 'concepts' ? 'text-slate-800 font-bold' : 'hover:text-black'}`}
               >
                 Concepts
               </Link>
@@ -34,7 +34,7 @@ export function LessonHeader({ lessonId, activeTab, avatarLetter, hasLesson = tr
             <div className="relative flex flex-col items-center">
               <Link
                 href={`/lessons/${lessonId}/articles`}
-                className={`transition-colors pb-2 ${activeTab === 'articles' ? 'text-[#1F2937] font-bold' : 'hover:text-black'}`}
+                className={`transition-colors pb-2 ${activeTab === 'articles' ? 'text-slate-800 font-bold' : 'hover:text-black'}`}
               >
                 Articles
               </Link>
@@ -48,7 +48,7 @@ export function LessonHeader({ lessonId, activeTab, avatarLetter, hasLesson = tr
         <div className="relative flex flex-col items-center">
           <Link 
             href={`/lessons/${lessonId}/quizzes`} 
-            className={`transition-colors pb-2 ${activeTab === 'quizzes' ? 'text-[#1F2937] font-bold' : 'hover:text-black'}`}
+            className={`transition-colors pb-2 ${activeTab === 'quizzes' ? 'text-slate-800 font-bold' : 'hover:text-black'}`}
           >
             Quizzes
           </Link>

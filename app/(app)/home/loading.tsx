@@ -2,7 +2,7 @@ import React from "react";
 
 export default function HomeLoading() {
   return (
-    <div className="min-h-screen bg-[#F8F9FC] flex justify-center p-4">
+    <div className="min-h-screen bg-slate-50 flex justify-center p-4">
       <div className="w-full max-w-[1200px] mt-8 flex flex-col md:flex-row gap-6">
         
         {/* Left column Skeleton */}

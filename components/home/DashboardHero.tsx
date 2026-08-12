@@ -144,7 +144,7 @@ export const DashboardHero = ({
                     {(isCompleted || isToday) && (
                       <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 mb-2 w-max px-3 py-1.5 bg-slate-900 text-white text-[11px] font-bold rounded-lg opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none z-10 shadow-lg" aria-hidden="true">
                         {isToday && !isCompleted ? "Study today!" : `${isCompleted ? "Completed lessons" : "On track"}`}
-                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-[#1A1A3E]"></div>
+                        <div className="absolute top-full left-1/2 transform -translate-x-1/2 border-4 border-transparent border-t-brand-950"></div>
                       </div>
                     )}
                   </div>

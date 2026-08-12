@@ -91,12 +91,12 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
   const avatarLetter = (session?.user?.name?.trim().charAt(0) || session?.user?.email?.trim().charAt(0) || "?").toUpperCase();
 
   return (
-    <div className="min-h-screen font-sans flex flex-col text-[#1F2937] bg-slate-50">
+    <div className="min-h-screen font-sans flex flex-col text-slate-800 bg-slate-50">
       <LessonHeader lessonId={lessonId} activeTab="concepts" avatarLetter={avatarLetter} />
 
       <main className="px-4 md:px-10 pb-8 md:pb-16 max-w-[1240px] w-full mx-auto mt-4 overflow-hidden md:overflow-visible">
         {/* Clean Header (No Background) */}
-        <div className="flex flex-col md:flex-row items-start md:items-center mb-6 md:mb-10 p-5 md:px-8 md:py-4 rounded-3xl bg-white border border-[#EBEBEB] shadow-sm relative overflow-hidden">
+        <div className="flex flex-col md:flex-row items-start md:items-center mb-6 md:mb-10 p-5 md:px-8 md:py-4 rounded-3xl bg-white border border-gray-200 shadow-sm relative overflow-hidden">
           <div className="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center w-full relative z-10">
             <div className="w-[60px] h-[60px] md:w-[84px] md:h-[84px] rounded-[16px] md:rounded-[20px] flex items-center justify-center shrink-0 md:ml-2">
               <BookOpen className="text-[#4ebdd5] w-10 h-10 md:w-12 md:h-12" strokeWidth={1.5} />
@@ -157,14 +157,14 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
 
         <div className="flex flex-col md:flex-row gap-8 md:items-stretch mb-10">
           {/* Concept Summary Section */}
-          <div className="flex-1 bg-white p-5 md:p-8 flex flex-col gap-4 border border-[#EBEBEB] border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
+          <div className="flex-1 bg-white p-5 md:p-8 flex flex-col gap-4 border border-gray-200 border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
              <p className="text-gray-900 text-[15px] leading-[1.7] font-normal">
                {activeLesson.conceptSummary || activeLesson.description || "Master the fundamental principles of entrepreneurship."}
              </p>
           </div>
 
           {/* Article Section */}
-          <div className="w-full md:w-[340px] bg-white p-5 md:p-8 flex flex-col relative border border-[#EBEBEB] border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
+          <div className="w-full md:w-[340px] bg-white p-5 md:p-8 flex flex-col relative border border-gray-200 border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
               <div className="flex gap-4 items-start mb-6">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center">
                   <IconCompass size={24} stroke={2} className="text-brand-primary" />
@@ -191,12 +191,12 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
         <div>
           <div className="flex items-center justify-between mb-5">
             <h3 className="text-[13px] font-bold tracking-[0.08em] text-gray-900 uppercase flex items-center gap-1.5">
-              LEARNING PATH <IconTrendingUp size={16} className="text-[#1F2937]" stroke={2.5} />
+              LEARNING PATH <IconTrendingUp size={16} className="text-slate-800" stroke={2.5} />
             </h3>
           </div>
           
           <Suspense fallback={
-            <div className="flex items-center justify-center py-10 bg-white border border-[#EBEBEB] rounded-3xl">
+            <div className="flex items-center justify-center py-10 bg-white border border-gray-200 rounded-3xl">
               <IconLoader className="animate-spin text-brand-primary" size={32} />
             </div>
           }>

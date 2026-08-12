@@ -131,7 +131,7 @@ export default async function ConceptsReadPage({
                 </Link>
 
               </div>
-              <div className="flex justify-between items-center gap-3 mb-8 w-full sticky top-[68px] md:top-4 z-20 py-3 bg-[#FCF6F0]/95 backdrop-blur-sm rounded-lg border-b border-[#EBEBEB]">
+              <div className="flex justify-between items-center gap-3 mb-8 w-full sticky top-[68px] md:top-4 z-20 py-3 bg-[#FCF6F0]/95 backdrop-blur-sm rounded-lg border-b border-gray-200">
                 <div className="inline-block border border-brand-primary bg-transparent text-brand-primary text-[10px] sm:text-[11px] font-[800] tracking-[0.08em] uppercase px-2.5 sm:px-3.5 py-1.5 rounded-full whitespace-nowrap">
                   LESSON {activeLesson.lessonId}
                 </div>

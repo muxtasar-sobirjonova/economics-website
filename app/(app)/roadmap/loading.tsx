@@ -2,7 +2,7 @@ import React from "react";
 
 export default function RoadmapLoading() {
   return (
-    <div className="roadmap-page min-h-screen w-full font-sans flex flex-col p-0 bg-[#F8F9FC]">
+    <div className="roadmap-page min-h-screen w-full font-sans flex flex-col p-0 bg-slate-50">
       {/* Page Header Skeleton */}
       <div className="w-full bg-white flex justify-between items-center shrink-0 border-b border-slate-100 px-8 h-[52px]">
         <div className="h-6 w-24 bg-gray-200 rounded animate-pulse"></div>

@@ -109,7 +109,7 @@ export default function QuizSection({
       {questions.map((q, idx) => (
         <div
           key={q._key}
-          className="bg-gradient-to-br from-[#EEF3FF] to-[#F8F9FC] rounded-2xl p-4 sm:p-6 mb-4 border border-[#C7D7FF]"
+          className="bg-gradient-to-br from-[#EEF3FF] to-slate-50 rounded-2xl p-4 sm:p-6 mb-4 border border-[#C7D7FF]"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '14px' }}>
             <div style={{ background: '#7B6FE7', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '4px 10px', borderRadius: '20px', letterSpacing: '0.06em' }}>
@@ -238,7 +238,7 @@ export default function QuizSection({
             <div className="mt-4 flex flex-col items-end">
               <button
                 onClick={() => setShowExplanation(prev => ({ ...prev, [q._key]: !prev[q._key] }))}
-                className="text-xs font-semibold text-[#7B6FE7] hover:underline mb-2"
+                className="text-xs font-semibold text-brand-500 hover:underline mb-2"
                 aria-expanded={!!showExplanation[q._key]}
                 aria-controls={`explanation-${q._key}`}
               >
@@ -246,7 +246,7 @@ export default function QuizSection({
               </button>
               {showExplanation[q._key] && (
                 <div id={`explanation-${q._key}`} className="w-full p-4 bg-[#EEF3FF] rounded-lg text-sm text-[#1A1A2E] border border-[#C7D7FF] text-left" aria-live="polite">
-                  <span className="font-semibold text-[#7B6FE7] block mb-1">
+                  <span className="font-semibold text-brand-500 block mb-1">
                     Explanation:
                   </span>
                   {q.explanation}
@@ -269,8 +269,8 @@ export default function QuizSection({
       ) : (
         <div className="mt-8 text-center bg-white rounded-xl border border-gray-200 p-8 shadow-sm" aria-live="assertive" tabIndex={-1} ref={(el) => { if (el && submitted) el.focus(); }}>
           <div className="flex justify-between items-center mb-6">
-            <h3 className="text-xl font-bold text-[#1F2937]">Quiz Complete!</h3>
-            <div className="bg-[#7B6FE7] text-white text-sm font-bold px-4 py-1.5 rounded-full">
+            <h3 className="text-xl font-bold text-slate-800">Quiz Complete!</h3>
+            <div className="bg-brand-500 text-white text-sm font-bold px-4 py-1.5 rounded-full">
               {questions.length - Object.keys(eliminated).length} / {questions.length} Correct
             </div>
           </div>

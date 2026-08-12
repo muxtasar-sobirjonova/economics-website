@@ -75,7 +75,7 @@ export const LearningStats = ({
 
         <div className="bg-white rounded-3xl p-4 flex flex-col gap-3 hover:-translate-y-1 transition-all duration-300 active:scale-[0.97] active:translate-y-0 cursor-pointer shadow-sm">
           <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-[#F5F3FF] flex items-center justify-center shrink-0">
+            <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center shrink-0">
               <IconStar size={18} className="text-[#8B5CF6]" stroke={2.5} />
             </div>
             <span className="font-bold text-slate-900 text-xs lg:text-[13px] whitespace-normal leading-tight">XP This Week</span>

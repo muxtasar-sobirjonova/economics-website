@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 
 export const ArticlesMockup = () => (
-  <div className="bg-[#F8F9FC] rounded-3xl border border-gray-200 shadow-xl overflow-hidden text-left flex flex-col h-[400px] w-full shrink-0 relative">
+  <div className="bg-slate-50 rounded-3xl border border-gray-200 shadow-xl overflow-hidden text-left flex flex-col h-[400px] w-full shrink-0 relative">
     <div className="bg-gray-100 border-b border-gray-200 px-4 py-2 flex items-center gap-2 w-full shrink-0 h-6"></div>
     <div className="p-6 flex-1 flex items-center justify-center bg-gray-50 flex-nowrap overflow-x-auto snap-x px-6 gap-4">
        <motion.div 

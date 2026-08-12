@@ -50,7 +50,7 @@ export default async function QuizzesReadPage({
 
   if (questions.length === 0) {
     return (
-      <div className="p-8 text-center text-brand-primary bg-[#F8F9FC] min-h-screen">
+      <div className="p-8 text-center text-brand-primary bg-slate-50 min-h-screen">
         Content coming soon for this quiz.
       </div>
     );
@@ -84,7 +84,7 @@ export default async function QuizzesReadPage({
   }
 
   return (
-    <div className="content-page min-h-screen w-full font-sans flex flex-col p-0 bg-[#F8F9FC]">
+    <div className="content-page min-h-screen w-full font-sans flex flex-col p-0 bg-slate-50">
       <div className="w-full bg-white border-b border-gray-100 h-[56px] px-8 flex items-center shrink-0">
         <div className="text-[13px] font-[700] tracking-[0.08em] text-gray-900 uppercase">
           QUIZZES

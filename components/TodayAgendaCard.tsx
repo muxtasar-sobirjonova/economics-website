@@ -49,7 +49,7 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
           <span>Progress</span>
           <span>{completedCount} of {totalCount} done</span>
         </div>
-        <div className="w-full h-1.5 bg-[#F8F9FC] rounded-full overflow-hidden">
+        <div className="w-full h-1.5 bg-slate-50 rounded-full overflow-hidden">
            <div className="h-full bg-brand-primary rounded-full transition-all duration-500" style={{ width: `${progressPercent}%` }}></div>
         </div>
       </div>

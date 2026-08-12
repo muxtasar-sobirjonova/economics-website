@@ -170,7 +170,7 @@ const TRACK_CHAPTERS: Record<string, {
       chapterNumber: 6,
       title: "Connecting to the Global Economy",
       description: "Understand how countries use trade, investment, specialization, and global connections to accelerate economic development and create new opportunities.",
-      bgClass: "bg-gradient-to-b from-[#A78BFA] to-[#F5F3FF]",
+      bgClass: "bg-gradient-to-b from-[#A78BFA] to-brand-50",
       btnClass: "bg-[#7C3AED] hover:bg-[#6D28D9] text-white",
     },
     {

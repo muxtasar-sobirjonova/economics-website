@@ -141,7 +141,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
   if (isComplete) {
      const isPerfect = knewIt.length === totalInSession;
      return (
-       <div className="flex-1 min-h-screen bg-[#F8F9FC] flex flex-col p-10 relative max-w-[1200px] mx-auto w-full">
+       <div className="flex-1 min-h-screen bg-slate-50 flex flex-col p-10 relative max-w-[1200px] mx-auto w-full">
          <div className="mb-2 shrink-0">
            <h1 className="text-[13px] font-[700] text-gray-900 uppercase tracking-[0.08em] mb-1">{title}</h1>
            <p className="text-sm text-gray-500">Card Review Complete</p>
@@ -225,7 +225,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
         </div>
         
         <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto">
-          <div className="bg-white border border-[#EBEBEB] shadow-sm rounded-3xl p-8 flex flex-col items-center text-center w-full">
+          <div className="bg-white border border-gray-200 shadow-sm rounded-3xl p-8 flex flex-col items-center text-center w-full">
             <div className="w-16 h-16 bg-brand-primary/10 rounded-2xl flex items-center justify-center mb-5">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-brand-primary">
                 <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
@@ -251,7 +251,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
   const cardMinHeightClass = size === 'large' ? 'min-h-[360px]' : 'min-h-[240px]';
 
   return (
-    <div className="flex-1 min-h-screen bg-[#F8F9FC] relative overflow-hidden flex flex-col p-10 max-w-[1200px] mx-auto w-full select-none">
+    <div className="flex-1 min-h-screen bg-slate-50 relative overflow-hidden flex flex-col p-10 max-w-[1200px] mx-auto w-full select-none">
       {/* Flash overlay */}
       {showFlash && (
         <div className="fixed inset-0 z-[300] pointer-events-none bg-[rgba(34,197,94,0.06)] animate-flash" />
@@ -323,15 +323,15 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
            {/* 3 Steps */}
            <div className="flex gap-2.5 justify-center mb-4">
-              <div className="bg-white border border-[#EBEBEB] rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600">
+              <div className="bg-white border border-gray-200 rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">1</div>
                  Pick a day
               </div>
-              <div className="bg-white border border-[#EBEBEB] rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600">
+              <div className="bg-white border border-gray-200 rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">2</div>
                  Read each card
               </div>
-              <div className="bg-white border border-[#EBEBEB] rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600">
+              <div className="bg-white border border-gray-200 rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">3</div>
                  Sort by memory
               </div>
@@ -340,7 +340,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
            {/* Swipe Hint */}
            <div className="flex items-center gap-5 justify-center">
                <div className="text-[13px] font-[700] text-green-500">← Memorized</div>
-               <div className="w-[1px] h-6 bg-[#EBEBEB]" />
+               <div className="w-[1px] h-6 bg-gray-200" />
                <div className="text-[13px] font-[700] text-red-500">Review Again →</div>
            </div>
         </div>

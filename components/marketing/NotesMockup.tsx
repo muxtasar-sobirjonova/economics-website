@@ -29,15 +29,15 @@ export const NotesMockup = () => (
 
        {/* 3 Steps */}
        <div className="flex gap-2.5 justify-center mb-4 scale-90">
-          <div className="bg-white border border-[#EBEBEB] rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600 shadow-sm">
+          <div className="bg-white border border-gray-200 rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600 shadow-sm">
              <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">1</div>
              Pick a day
           </div>
-          <div className="bg-white border border-[#EBEBEB] rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600 shadow-sm">
+          <div className="bg-white border border-gray-200 rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600 shadow-sm">
              <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">2</div>
              Read each card
           </div>
-          <div className="bg-white border border-[#EBEBEB] rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600 shadow-sm">
+          <div className="bg-white border border-gray-200 rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600 shadow-sm">
              <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">3</div>
              Sort by memory
           </div>
@@ -46,7 +46,7 @@ export const NotesMockup = () => (
        {/* Swipe Hint */}
        <div className="flex items-center gap-5 justify-center scale-90">
            <div className="text-[13px] font-[700] text-green-500">← Memorized</div>
-           <div className="w-[1px] h-6 bg-[#EBEBEB]" />
+           <div className="w-[1px] h-6 bg-gray-200" />
            <div className="text-[13px] font-[700] text-red-500">Review Again →</div>
        </div>
     </div>

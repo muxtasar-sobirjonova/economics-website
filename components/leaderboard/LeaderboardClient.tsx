@@ -131,15 +131,15 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
                 <Clock className="w-3.5 h-3.5" /> Next Update In
               </div>
               <div className="flex items-center gap-1.5 font-mono">
-                <div className="bg-[#f5f3ff] text-[#2b1f5e] font-bold px-2 py-1 rounded-lg text-sm ring-1 ring-[#ebe6ff] w-8 text-center shadow-inner">
+                <div className="bg-brand-50 text-[#2b1f5e] font-bold px-2 py-1 rounded-lg text-sm ring-1 ring-[#ebe6ff] w-8 text-center shadow-inner">
                   {timeLeft.h.toString().padStart(2, '0')}
                 </div>
                 <span className="text-[#8c7df0] font-bold pb-0.5">:</span>
-                <div className="bg-[#f5f3ff] text-[#2b1f5e] font-bold px-2 py-1 rounded-lg text-sm ring-1 ring-[#ebe6ff] w-8 text-center shadow-inner">
+                <div className="bg-brand-50 text-[#2b1f5e] font-bold px-2 py-1 rounded-lg text-sm ring-1 ring-[#ebe6ff] w-8 text-center shadow-inner">
                   {timeLeft.m.toString().padStart(2, '0')}
                 </div>
                 <span className="text-[#8c7df0] font-bold pb-0.5">:</span>
-                <div className="bg-[#f5f3ff] text-[#2b1f5e] font-bold px-2 py-1 rounded-lg text-sm ring-1 ring-[#ebe6ff] w-8 text-center shadow-inner">
+                <div className="bg-brand-50 text-[#2b1f5e] font-bold px-2 py-1 rounded-lg text-sm ring-1 ring-[#ebe6ff] w-8 text-center shadow-inner">
                   {timeLeft.s.toString().padStart(2, '0')}
                 </div>
               </div>
@@ -317,7 +317,7 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
           <button
             onClick={() => setPage(p => Math.max(1, p - 1))}
             disabled={page === 1}
-            className="p-3 rounded-full border border-[#ebe6ff] bg-white text-[#8c7df0] hover:bg-[#f5f3ff] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+            className="p-3 rounded-full border border-[#ebe6ff] bg-white text-[#8c7df0] hover:bg-brand-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
             <ChevronLeft className="w-5 h-5" />
           </button>
@@ -327,7 +327,7 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
           <button
             onClick={() => setPage(p => Math.min(pagination.totalPages, p + 1))}
             disabled={page === pagination.totalPages}
-            className="p-3 rounded-full border border-[#ebe6ff] bg-white text-[#8c7df0] hover:bg-[#f5f3ff] disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
+            className="p-3 rounded-full border border-[#ebe6ff] bg-white text-[#8c7df0] hover:bg-brand-50 disabled:opacity-50 disabled:cursor-not-allowed transition-colors shadow-sm"
           >
             <ChevronRight className="w-5 h-5" />
           </button>

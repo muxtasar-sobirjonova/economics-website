@@ -10,7 +10,7 @@ interface FeatureCardProps {
   bgClass?: string;
 }
 
-export const FeatureCard = ({ icon, title, description, colorClass = "text-brand-primary", bgClass = "bg-[#F5F3FF]" }: FeatureCardProps) => {
+export const FeatureCard = ({ icon, title, description, colorClass = "text-brand-primary", bgClass = "bg-brand-50" }: FeatureCardProps) => {
   const mouseX = useMotionValue(0);
   const mouseY = useMotionValue(0);
 

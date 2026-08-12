@@ -25,7 +25,7 @@ export default function QuizPageLayout({ quizContent, notesContent }: QuizPageLa
 
       {/* Collapsible Notes Panel */}
       <div 
-        className="absolute right-0 top-0 bottom-0 w-[340px] bg-[#F8F9FC] border-l border-[#EBEBEB] shadow-[-4px_0_12px_rgba(0,0,0,0.06)] z-[40] transition-transform duration-300 ease-in-out"
+        className="absolute right-0 top-0 bottom-0 w-[340px] bg-slate-50 border-l border-gray-200 shadow-[-4px_0_12px_rgba(0,0,0,0.06)] z-[40] transition-transform duration-300 ease-in-out"
         style={{ transform: marginOpen ? 'translateX(0)' : 'translateX(340px)' }}
       >
         <button 
