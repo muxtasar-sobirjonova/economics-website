@@ -73,7 +73,6 @@ export default function Sidebar() {
     { name: "Home", href: "/home", icon: IconHome },
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
     { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
-    { name: "My Challenges", href: "/challenges", matchHref: "/challenges", icon: IconBulb },
   ];
 
   const learnItems = [
@@ -109,8 +108,8 @@ export default function Sidebar() {
       <div className="flex-1 overflow-y-auto overflow-x-hidden py-7 px-5 flex flex-col">
         {/* Logo Header */}
         <div className="flex items-center gap-3 mb-6 relative px-1">
-          <div className="bg-brand-primary text-white font-black text-[22px] shrink-0 flex items-center justify-center w-11 h-11 rounded-xl shadow-sm">
-             T
+          <div className="bg-brand-primary text-white font-black text-[22px] shrink-0 flex items-center justify-center w-11 h-11 rounded-xl shadow-sm overflow-hidden">
+             <img src="/favicon.png" alt="Logo" className="w-full h-full object-cover" />
           </div>
           <span className="font-bold text-white text-[22px] tracking-wide">
             That&apos;s So Econ.

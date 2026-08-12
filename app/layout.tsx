@@ -16,6 +16,9 @@ export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_APP_URL || 'http://localhost:3000'),
   title: "That's So Econ | Entrepreneurial Economics",
   description: "Learn economics through real entrepreneurship stories.",
+  icons: {
+    icon: "/favicon.png",
+  },
   openGraph: {
     title: "That's So Econ",
     description: "Learn economics through real entrepreneurship stories.",
