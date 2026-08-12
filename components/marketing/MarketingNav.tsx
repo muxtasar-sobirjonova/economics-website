@@ -8,9 +8,10 @@ export const MarketingNav = () => (
           <div className="bg-white text-white font-black text-2xl flex items-center justify-center w-10 h-10 rounded-xl shadow-sm p-1">
              <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="font-bold text-slate-900 text-xl tracking-tight">
-            That&apos;s So Econ!
-          </span>
+          <div className="flex flex-col justify-center mt-1">
+            <span className="text-[10px] font-bold tracking-[0.22em] text-[#5E1451] leading-none mb-0.5">THAT&apos;S SO</span>
+            <span className="text-2xl font-black text-slate-900 leading-none">ECON<span className="text-[#5E1451]">!</span></span>
+          </div>
         </Link>
       </div>
       

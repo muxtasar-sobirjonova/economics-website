@@ -109,11 +109,12 @@ export default function Sidebar() {
         {/* Logo Header */}
         <div className="flex items-center gap-4 mb-8 relative px-1">
           <div className="bg-white text-white font-black text-[22px] shrink-0 flex items-center justify-center w-11 h-11 rounded-xl shadow-sm overflow-hidden p-1">
-             <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain" />
+            <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="font-bold text-white text-lg tracking-wide whitespace-nowrap">
-            That&apos;s So Econ!
-          </span>
+          <div className="flex flex-col justify-center">
+            <span className="text-[10px] font-bold tracking-[0.2em] text-brand-200 leading-none mb-0.5">THAT&apos;S SO</span>
+            <span className="text-2xl font-black text-white leading-none">ECON<span className="text-brand-300">!</span></span>
+          </div>
         </div>
 
         {/* Dashboard Section */}
