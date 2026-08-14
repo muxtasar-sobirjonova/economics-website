@@ -54,7 +54,7 @@ export const LearningPathSlider = ({
                   ? "bg-gradient-to-br from-[#E2D4FD] to-[#C6D2FE] border-[2px] border-transparent shadow-[0_8px_20px_rgba(123,104,238,0.2)] hover:-translate-y-0.5"
                   : status === "Completed"
                   ? "bg-gradient-to-br from-[#DBEAFE] to-[#BFDBFE] border-[2px] border-white shadow-sm hover:-translate-y-0.5"
-                  : "bg-gradient-to-br from-[#EBEBEB] to-[#F5F5F5] border-[2px] border-white shadow-sm"
+                  : "bg-gradient-to-br from-gray-200 to-[#F5F5F5] border-[2px] border-white shadow-sm"
               }`}
             >
               {/* Background Icon */}

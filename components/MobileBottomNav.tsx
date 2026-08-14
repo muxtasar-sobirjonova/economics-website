@@ -35,7 +35,6 @@ export function MobileBottomNav() {
   const footLinks = [
     { name: "My notes", href: "/saved" },
     { name: "Mistakes", href: "/review" },
-    { name: "Challenges", href: "/challenges" },
   ];
 
   return (

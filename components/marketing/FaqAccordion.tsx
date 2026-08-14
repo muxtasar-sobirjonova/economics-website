@@ -10,12 +10,12 @@ type FaqItem = {
 
 const faqs: FaqItem[] = [
   {
-    question: "Is That's So Econ. free to use?",
+    question: "Is That's So Econ! free to use?",
     answer: "Yes! Core concepts, articles, and quizzes are entirely free. We believe everyone should have access to fundamental economic knowledge for building businesses.",
   },
   {
     question: "Do I need an economics background to start?",
-    answer: "Not at all. That's So Econ. is designed specifically for founders, builders, and curious minds without a formal economics degree. We break down complex theories into practical, easy-to-understand lessons.",
+    answer: "Not at all. That's So Econ! is designed specifically for founders, builders, and curious minds without a formal economics degree. We break down complex theories into practical, easy-to-understand lessons.",
   },
   {
     question: "How do streaks and XP work?",

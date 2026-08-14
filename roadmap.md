@@ -112,42 +112,49 @@ _This chapter is beginner‑friendly, entrepreneurship‑focused, and designed t
 ## Lessons
 
 ### 15. Knightian Risk vs. Uncertainty
+
 - **Concept:** _Core explanation of risk vs. uncertainty._
 - **Real-World Example:** _Founder dealing with unpredictable markets._
 - **5‑Minute Article:** _Deeper reading on Knightian uncertainty._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 16. Barriers to Entry
+
 - **Concept:** _Understanding what prevents competitors from entering a market._
 - **Real-World Example:** _Case study of overcoming or building a barrier._
 - **5‑Minute Article:** _Further reading on market defensibility._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 17. Information Asymmetry
+
 - **Concept:** _How unequal information affects markets and opportunities._
 - **Real-World Example:** _Startup that solved an information gap._
 - **5‑Minute Article:** _Article on the market for lemons._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 18. Arbitrage
+
 - **Concept:** _Profiting from price differences across markets._
 - **Real-World Example:** _Company built on an arbitrage model._
 - **5‑Minute Article:** _Deeper dive into modern arbitrage._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 19. Market Gaps & Unmet Needs
+
 - **Concept:** _Identifying structural gaps in existing markets._
 - **Real-World Example:** _Founder story of discovering a hidden need._
 - **5‑Minute Article:** _Read about finding whitespace._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 20. First-Mover Advantage
+
 - **Concept:** _The pros and cons of being first to market._
 - **Real-World Example:** _Comparison of first-movers vs. fast-followers._
 - **5‑Minute Article:** _Insights into competitive timing._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 21. Quiz & Review
+
 - **Concept:** _Comprehensive review of Chapter 3 concepts._
 - **Quiz:** _Chapter assessment test._
 
@@ -160,42 +167,49 @@ _This chapter is beginner‑friendly, entrepreneurship‑focused, and designed t
 ## Lessons
 
 ### 22. Network Effects as Opportunity
+
 - **Concept:** _How products become more valuable as more people use them._
 - **Real-World Example:** _Classic platform scaling story._
 - **5‑Minute Article:** _Deeper reading on network effects._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 23. Value Proposition Design
+
 - **Concept:** _Crafting a compelling reason for customers to buy._
 - **Real-World Example:** _Company with a uniquely strong value prop._
 - **5‑Minute Article:** _Further reading on value proposition design._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 24. Cost-Plus vs. Value-Based Pricing
+
 - **Concept:** _Different strategies for setting prices._
 - **Real-World Example:** _Case study on pricing optimization._
 - **5‑Minute Article:** _Article on the psychology and economics of pricing._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 25. Fixed vs. Variable Costs
+
 - **Concept:** _Understanding the nature of startup expenses._
 - **Real-World Example:** _Software vs. hardware cost structure comparison._
 - **5‑Minute Article:** _Deeper dive into cost structures._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 26. Unit Economics
+
 - **Concept:** _Measuring profitability on a per-customer basis._
 - **Real-World Example:** _Story of a company fixing its unit economics._
 - **5‑Minute Article:** _Read about LTV and CAC._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 27. Break-Even Analysis
+
 - **Concept:** _Calculating when a business becomes profitable._
 - **Real-World Example:** _Startup's path to break-even._
 - **5‑Minute Article:** _Insights into financial planning._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 28. Quiz & Review
+
 - **Concept:** _Comprehensive review of Chapter 4 concepts._
 - **Quiz:** _Chapter assessment test._
 
@@ -208,42 +222,49 @@ _This chapter is beginner‑friendly, entrepreneurship‑focused, and designed t
 ## Lessons
 
 ### 29. Platform Business Models
+
 - **Concept:** _Building multi-sided marketplaces._
 - **Real-World Example:** _Case study of a successful platform._
 - **5‑Minute Article:** _Deeper reading on platform economics._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 30. Bootstrapping
+
 - **Concept:** _Growing a business without external funding._
 - **Real-World Example:** _Founder story of successful bootstrapping._
 - **5‑Minute Article:** _Further reading on self-funding._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 31. Debt vs. Equity Financing
+
 - **Concept:** _The trade-offs between borrowing money and selling ownership._
 - **Real-World Example:** _Company choosing between loans and VC._
 - **5‑Minute Article:** _Article on capital structures._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 32. Venture Capital Model
+
 - **Concept:** _How the VC industry works and what they look for._
 - **Real-World Example:** _The economics of a VC fund._
 - **5‑Minute Article:** _Deeper dive into venture scale._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 33. Angel Investing
+
 - **Concept:** _Early-stage funding from wealthy individuals._
 - **Real-World Example:** _Story of an angel investment that paid off._
 - **5‑Minute Article:** _Read about seed funding dynamics._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 34. Valuation & Overvaluation Risk
+
 - **Concept:** _How startups are priced and the dangers of raising too high._
 - **Real-World Example:** _Case study of a down-round or overvaluation crash._
 - **5‑Minute Article:** _Insights into startup valuation._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 35. Quiz & Review
+
 - **Concept:** _Comprehensive review of Chapter 5 concepts._
 - **Quiz:** _Chapter assessment test._
 
@@ -256,42 +277,49 @@ _This chapter is beginner‑friendly, entrepreneurship‑focused, and designed t
 ## Lessons
 
 ### 36. Expected Value in Founder Decisions
+
 - **Concept:** _Core explanation of expected value and decision-making._
 - **Real-World Example:** _Founder making a probabilistic decision._
 - **5‑Minute Article:** _Deeper reading on expected value._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 37. Pivoting
+
 - **Concept:** _Understanding when and how to change direction._
 - **Real-World Example:** _Case study of a successful pivot._
 - **5‑Minute Article:** _Further reading on startup pivots._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 38. Learning from Failure
+
 - **Concept:** _Extracting value from failed experiments._
 - **Real-World Example:** _Startup that failed but led to a success._
 - **5‑Minute Article:** _Article on the economics of failure._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 39. Staged Investment & Reversibility
+
 - **Concept:** _How to mitigate risk through sequential investments._
 - **Real-World Example:** _Company using staged capital allocation._
 - **5‑Minute Article:** _Deeper dive into real options._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 40. Disruptive vs. Sustaining Innovation
+
 - **Concept:** _The difference between creating new markets and improving old ones._
 - **Real-World Example:** _Story of a disruptive startup overtaking an incumbent._
 - **5‑Minute Article:** _Read about Clayton Christensen's disruption theory._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 41. Innovation Ecosystems
+
 - **Concept:** _The role of networks, universities, and capital in fostering innovation._
 - **Real-World Example:** _Case study of Silicon Valley or another hub._
 - **5‑Minute Article:** _Insights into ecosystem economics._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 42. Quiz & Review
+
 - **Concept:** _Comprehensive review of Chapter 6 concepts._
 - **Quiz:** _Chapter assessment test._
 
@@ -304,42 +332,49 @@ _This chapter is beginner‑friendly, entrepreneurship‑focused, and designed t
 ## Lessons
 
 ### 43. Diffusion of Innovation
+
 - **Concept:** _How new products and ideas spread through markets._
 - **Real-World Example:** _Case study on crossing the chasm._
 - **5‑Minute Article:** _Deeper reading on technology adoption._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 44. Economies of Scale
+
 - **Concept:** _How unit costs change as production volume increases._
 - **Real-World Example:** _Startup leveraging economies of scale._
 - **5‑Minute Article:** _Further reading on scaling efficiency._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 45. Organizational Scaling & Hiring Economics
+
 - **Concept:** _The economic challenge of growing teams and management layers._
 - **Real-World Example:** _Company successfully scaling culture and hierarchy._
 - **5‑Minute Article:** _Article on the economics of organizational structure._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 46. Supply Chain Economics at Scale
+
 - **Concept:** _Managing complex dependencies and scaling operations._
 - **Real-World Example:** _Startup transforming its supply chain._
 - **5‑Minute Article:** _Deeper dive into operational bottlenecks._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 47. Growth vs. Profitability Tradeoff
+
 - **Concept:** _Balancing rapid expansion with sustainable margins._
 - **Real-World Example:** _Case study of shifting from growth at all costs to profitability._
 - **5‑Minute Article:** _Insights into growth metrics and margin profiles._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 48. Internationalization Strategy
+
 - **Concept:** _The economics of entering foreign markets._
 - **Real-World Example:** _A successful and an unsuccessful global expansion._
 - **5‑Minute Article:** _Read about market entry strategies._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 49. Quiz & Review
+
 - **Concept:** _Comprehensive review of Chapter 7 concepts._
 - **Quiz:** _Chapter assessment test._
 
@@ -352,41 +387,48 @@ _This chapter is beginner‑friendly, entrepreneurship‑focused, and designed t
 ## Lessons
 
 ### 50. Institutions & Entrepreneurship Rates
+
 - **Concept:** _How rule of law, property rights, and institutions encourage startups._
 - **Real-World Example:** _Comparing business formation rates across countries._
 - **5‑Minute Article:** _Deeper reading on institutional economics._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 51. Ease of Doing Business & Regulation
+
 - **Concept:** _The impact of regulatory friction on early-stage companies._
 - **Real-World Example:** _Story of regulatory moats or barriers._
 - **5‑Minute Article:** _Further reading on startup policy._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 52. Access to Capital & Ecosystem Density
+
 - **Concept:** _Why startups cluster in specific geographic areas._
 - **Real-World Example:** _The role of venture density in tech hubs._
 - **5‑Minute Article:** _Article on network density and funding._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 53. Government-Backed Innovation Zones
+
 - **Concept:** _The economics of special economic zones and state incentives._
 - **Real-World Example:** _A successful government innovation hub._
 - **5‑Minute Article:** _Deeper dive into public-private innovation._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 54. Regional Ecosystem Building
+
 - **Concept:** _Creating startup hubs outside major global centers._
 - **Real-World Example:** _Case study of an emerging startup ecosystem._
 - **5‑Minute Article:** _Read about decentralized innovation._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 55. Comparing Entrepreneurial Ecosystems
+
 - **Concept:** _Analyzing structural advantages of different global hubs._
 - **Real-World Example:** _Silicon Valley vs. London vs. Singapore vs. Bangalore._
 - **5‑Minute Article:** _Insights into comparative ecosystem economics._
 - **Quiz:** _Knowledge‑check question(s)._
 
 ### 56. Final Quiz & Capstone Review
+
 - **Concept:** _Comprehensive review of the entire course curriculum._
 - **Quiz:** _Final assessment test._

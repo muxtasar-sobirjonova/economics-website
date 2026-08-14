@@ -4,7 +4,6 @@ import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
 import TodayAgendaCard from "@/components/TodayAgendaCard";
 import { DailyQuote } from "@/components/home/DailyQuote";
-import { DailyChallengeCard } from "@/components/home/DailyChallengeCard";
 import { DashboardHero } from "@/components/home/DashboardHero";
 import { LearningStats } from "@/components/home/LearningStats";
 
@@ -198,9 +197,8 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
       </div>
 
       <div className="px-s4 md:px-s6 lg:px-s7 pb-s7">
-        <div className="flex flex-col lg:flex-row w-full mx-auto gap-s4 max-w-[1200px]">
+        <div className="flex flex-col w-full mx-auto gap-s4 max-w-[1200px]">
           <TodayAgendaCard initialItems={agendaItems} />
-          <DailyChallengeCard userId={userId} />
         </div>
         
         <div className="w-full mx-auto max-w-[1200px]">

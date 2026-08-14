@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import Image from "next/image";
 import {
   IconHome,
   IconMap,
-  IconBulb,
   IconTrophy,
 } from "@tabler/icons-react";
 import { AuthStatus } from "@/components/AuthStatus";
@@ -65,7 +65,6 @@ export default function Sidebar() {
     { name: "Home", href: "/home", icon: IconHome },
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
     { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
-    { name: "My Challenges", href: "/challenges", matchHref: "/challenges", icon: IconBulb },
   ];
 
   const learnItems = [
@@ -79,12 +78,13 @@ export default function Sidebar() {
     <aside className="hidden md:flex w-[232px] flex-col h-full shrink-0 bg-bg-sunk border-r border-line relative z-40">
       <div className="flex-1 overflow-y-auto overflow-x-hidden py-s5 px-[14px] flex flex-col gap-s5">
         {/* Wordmark */}
-        <Link href="/home" className="flex items-center gap-[9px] px-[6px] rounded-md">
-          <span className="w-[26px] h-[26px] rounded-[7px] bg-accent text-on-accent grid place-items-center font-semibold text-[13px] shrink-0">
-            E
+        <Link href="/home" className="flex items-center gap-s3 px-[6px] rounded-md">
+          <span className="w-9 h-9 rounded-md bg-surface border border-line grid place-items-center shrink-0 overflow-hidden p-1">
+            <Image src="/favicon.png" alt="" width={28} height={28} className="w-full h-full object-contain" />
           </span>
-          <span className="font-semibold text-[14.5px] text-ink tracking-[-.01em]">
-            That&apos;s So Econ
+          <span className="flex flex-col leading-none">
+            <span className="text-label uppercase text-faint">That&apos;s So</span>
+            <span className="text-h3 font-semibold text-ink tracking-[-.02em] mt-[3px]">Econ</span>
           </span>
         </Link>
 

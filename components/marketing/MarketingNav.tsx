@@ -4,13 +4,14 @@ export const MarketingNav = () => (
   <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-200 w-full transition-all duration-300" aria-label="Main Navigation">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
       <div className="flex items-center gap-3 relative z-50">
-        <Link href="/" aria-label="That's So Econ Home" className="flex items-center gap-3 focus:outline-none focus:ring-4 focus:ring-brand-primary/50 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
-          <div className="bg-brand-primary text-white font-black text-2xl flex items-center justify-center w-10 h-10 rounded-xl shadow-sm">
-            T
+        <Link href="/" aria-label="That's So Econ Home" className="flex items-center gap-4 focus:outline-none focus:ring-4 focus:ring-brand-primary/50 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+          <div className="bg-white text-white font-black text-2xl flex items-center justify-center w-10 h-10 rounded-xl shadow-sm p-1">
+             <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
-          <span className="font-bold text-slate-900 text-xl tracking-tight">
-            That&apos;s So Econ.
-          </span>
+          <div className="flex flex-col justify-center mt-1">
+            <span className="text-[10px] font-bold tracking-[0.22em] text-[#5E1451] leading-none mb-0.5">That&apos;s So</span>
+            <span className="text-2xl font-black text-slate-900 leading-none">Econ<span className="text-[#5E1451]">!</span></span>
+          </div>
         </Link>
       </div>
       
