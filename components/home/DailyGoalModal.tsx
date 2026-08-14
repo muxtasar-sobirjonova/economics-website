@@ -48,9 +48,9 @@ export const DailyGoalModal = ({ currentGoal }: { currentGoal: number }) => {
 
   return (
     <div className="fixed inset-0 bg-black/40 flex items-center justify-center z-50">
-      <div className="bg-white rounded-3xl shadow-xl p-10 max-w-[500px] w-full mx-4">
+      <div className="bg-surface rounded-3xl shadow-xl p-10 max-w-[500px] w-full mx-4">
         <div className="flex justify-between items-start mb-2">
-          <h1 className="text-[32px] font-black text-slate-900 tracking-tight leading-tight">
+          <h1 className="text-[32px] font-black text-ink tracking-tight leading-tight">
             Your Personal Entrepreneurship Economics Teacher
           </h1>
           <button 
@@ -58,12 +58,12 @@ export const DailyGoalModal = ({ currentGoal }: { currentGoal: number }) => {
               localStorage.setItem('hasSeenDailyGoalModal', 'true');
               setShowDailyGoalModal(false);
             }}
-            className="text-gray-400 hover:text-gray-600 text-xl font-bold p-2"
+            className="text-faint hover:text-muted text-xl font-bold p-2"
           >
             ✕
           </button>
         </div>
-        <p className="text-slate-900/70 text-[15px] mb-8 leading-relaxed">
+        <p className="text-ink/70 text-[15px] mb-8 leading-relaxed">
           How much time can you commit to learning each day? We&apos;ll build
           your daily agenda around your goal.
         </p>
@@ -83,7 +83,7 @@ export const DailyGoalModal = ({ currentGoal }: { currentGoal: number }) => {
                 key={mins}
                 disabled={isPending}
                 onClick={() => handleSetDailyGoal(mins)}
-                className={`p-6 border-2 rounded-2xl font-bold text-base transition-all ${selectedGoal === mins ? 'border-[#6B5FE4] bg-[#6B5FE4]/10 text-[#6B5FE4]' : 'border-black/5 bg-white text-slate-900'} ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
+                className={`p-6 border-2 rounded-2xl font-bold text-base transition-all ${selectedGoal === mins ? 'border-[#6B5FE4] bg-[#6B5FE4]/10 text-[#6B5FE4]' : 'border-black/5 bg-surface text-ink'} ${isPending ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 {label}
               </button>
@@ -91,7 +91,7 @@ export const DailyGoalModal = ({ currentGoal }: { currentGoal: number }) => {
           })}
         </div>
 
-        <p className="text-slate-900/50 text-[13px] text-center">
+        <p className="text-ink/50 text-[13px] text-center">
           You can change this anytime in Settings
         </p>
       </div>

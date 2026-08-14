@@ -310,9 +310,9 @@ export default function ReadingActions() {
 
   return (
     <>
-      <div className="text-[11px] sm:text-[12px] text-gray-400 font-medium flex items-center gap-1.5 italic bg-white/50 px-2.5 sm:px-3 py-1.5 rounded-full border border-gray-100 shadow-sm pointer-events-none select-none">
+      <div className="text-label uppercase text-faint flex items-center gap-1.5 px-s2 py-1.5 rounded-sm border border-line pointer-events-none select-none whitespace-nowrap">
         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
-        Select text to highlight
+        Select to highlight
       </div>
       {popupVisible && typeof document !== 'undefined' && createPortal(
         <div
@@ -324,15 +324,15 @@ export default function ReadingActions() {
             left: popupPos.left,
             width: POPUP_WIDTH,
             zIndex: 9999,
-            background: '#ffffff',
-            border: '1px solid #E0E0E0',
-            borderRadius: '10px',
+            background: 'var(--surface)',
+            border: '1px solid var(--border-strong)',
+            borderRadius: '8px',
             padding: '8px 12px',
             display: 'flex',
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: '6px',
-            boxShadow: '0 4px 12px rgba(0,0,0,0.15)',
+            boxShadow: 'var(--sh3)',
             touchAction: 'manipulation'
           }}
         >
@@ -341,17 +341,18 @@ export default function ReadingActions() {
           {swatch('#F9A8D4', 'Highlight Pink')}
           {swatch('#6EE7B7', 'Highlight Green')}
 
-          <div style={{ width: '1px', height: '18px', background: '#EBEBEB' }}></div>
+          <div style={{ width: '1px', height: '18px', background: 'var(--border)' }}></div>
 
           <button
             type="button"
             aria-label="Remove highlight"
             onMouseDown={(e) => e.preventDefault()}
             onClick={eraseFromPopup}
-            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', padding: '2px', borderRadius: '4px', border: 'none' }}
+            className="text-muted hover:text-danger transition-colors"
+            style={{ cursor: 'pointer', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', padding: '4px', borderRadius: '4px', border: 'none' }}
             title="Remove highlight"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#555555" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 6h18"/><path d="M19 6v14c0 1-1 2-2 2H7c-1 0-2-1-2-2V6"/><path d="M8 6V4c0-1 1-2 2-2h4c1 0 2 1 2 2v2"/><line x1="10" y1="11" x2="10" y2="17"/><line x1="14" y1="11" x2="14" y2="17"/></svg>
           </button>
         </div>,
         document.body

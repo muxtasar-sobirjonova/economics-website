@@ -83,10 +83,10 @@ export function TrackSelectionClient({ currentTrack }: TrackSelectionClientProps
             <div
               key={track.id}
               onClick={() => handleSelectTrack(track.id)}
-              className={`flex flex-col bg-white border-2 rounded-2xl p-4 md:p-6 cursor-pointer transition-all duration-300 relative ${
+              className={`flex flex-col bg-surface border-2 rounded-2xl p-4 md:p-6 cursor-pointer transition-all duration-300 relative ${
                 isSelected 
                   ? `${track.accentColor} shadow-md` 
-                  : "border-slate-200 hover:border-slate-300 shadow-sm"
+                  : "border-line hover:border-slate-300 shadow-sm"
               } ${track.glowColor}`}
             >
               {isSelected && (
@@ -99,13 +99,13 @@ export function TrackSelectionClient({ currentTrack }: TrackSelectionClientProps
                 <Icon className="w-5 h-5 md:w-6 md:h-6" />
               </div>
 
-              <h3 className="text-lg md:text-xl font-bold text-slate-800 mb-1 md:mb-2 leading-snug">
+              <h3 className="text-lg md:text-xl font-bold text-ink mb-1 md:mb-2 leading-snug">
                 {track.title}
               </h3>
-              <p className="text-xs md:text-sm font-semibold text-slate-500 mb-2 md:mb-4">
+              <p className="text-xs md:text-sm font-semibold text-muted mb-2 md:mb-4">
                 {track.subtitle}
               </p>
-              <p className="hidden md:block text-slate-600 text-sm leading-relaxed mt-auto">
+              <p className="hidden md:block text-muted text-sm leading-relaxed mt-auto">
                 {track.description}
               </p>
             </div>

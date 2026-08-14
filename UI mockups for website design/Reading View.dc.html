@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/nocturne-79ecf8f9-ac3b-40b6-8be0-e29005245525/styles.css">
+<script src="_ds/nocturne-79ecf8f9-ac3b-40b6-8be0-e29005245525/_ds_bundle.js"></script>
+<link href="fonts/fonts.css" rel="stylesheet">
+<link href="tokens.css" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0}
+body{background:#DCDEE8;font-family:'Literata',Georgia,serif;-webkit-font-smoothing:antialiased}
+a{color:#6E5FC4;text-decoration:none}
+a:hover{color:#554896}
+</style>
+</helmet>
+
+<section style="padding:40px 44px 34px">
+  <div style="display:flex;align-items:baseline;gap:11px;margin-bottom:8px">
+    <span style="font:600 10px/1 'JetBrains Mono',monospace;letter-spacing:.14em;padding:4px 8px;background:#1B1D2A;color:#fff;border-radius:4px">5a</span>
+    <span style="font:600 13px/1.2 Literata,Georgia,serif;color:#1B1D2A">/lessons/17/articles/read — the reading view</span>
+    <span style="font:400 12.5px/1.4 Literata,Georgia,serif;color:rgba(27,29,42,.5)">Warm paper, one column, 62ch measure. Highlighter and notes drawer intact. <a href="Home.dc.html">Home</a> · <a href="Quiz Player.dc.html">Quiz</a></span>
+  </div>
+  <p style="margin:0 0 22px;font:400 12.5px/1.6 Literata,Georgia,serif;color:rgba(27,29,42,.55);max-width:82ch">Literata at 18/1.72 on <code style="font:500 12px 'JetBrains Mono',monospace">--read-bg</code>. The 44px title drops to 27px on mobile. Selection stays native inside <code style="font:500 12px 'JetBrains Mono',monospace">#main-content</code> — no user-select rules anywhere near body copy.</p>
+
+  <div style="display:flex;flex-wrap:wrap;gap:28px;align-items:flex-start">
+
+    <div data-m="light" data-screen-label="Reading view desktop" style="width:1180px;max-width:100%;border-radius:14px;overflow:hidden;box-shadow:0 22px 50px rgba(27,29,42,.22);background:var(--read-bg);border:1px solid var(--border);position:relative">
+      <div style="display:flex;align-items:center;gap:12px;padding:11px 22px;background:var(--surface);border-bottom:1px solid var(--border)">
+        <span style="font:600 10.5px Literata,Georgia,serif;letter-spacing:.16em;color:var(--article)">ARTICLES</span>
+        <a href="Home.dc.html" style="font:500 12.5px Literata,Georgia,serif;color:var(--muted);text-decoration:none;min-height:44px;display:inline-flex;align-items:center" style-hover="color:var(--text)">← Back to Articles</a>
+        <div style="margin-left:auto;display:flex;gap:16px;align-items:center">
+          <span style="font:500 12px Literata,Georgia,serif;color:var(--faint)">Concepts</span>
+          <span style="font:600 12px Literata,Georgia,serif;color:var(--article);box-shadow:0 8px 0 -6px var(--article)">Articles</span>
+          <span style="font:500 12px Literata,Georgia,serif;color:var(--faint)">Quizzes</span>
+          <span style="font:500 12px Literata,Georgia,serif;color:var(--faint)">My Notes</span>
+        </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:12px;padding:9px 22px;background:color-mix(in srgb, var(--read-bg) 70%, var(--surface));border-bottom:1px solid var(--border);position:relative;z-index:3">
+        <span style="font:600 10.5px Literata,Georgia,serif;letter-spacing:.12em;padding:5px 9px;border-radius:4px;background:var(--article-soft);color:var(--article)">LESSON 17</span>
+        <div style="flex:1;height:4px;border-radius:2px;background:var(--bg-sunk);max-width:340px;overflow:hidden"><div style="width:64%;height:100%;background:var(--article)"></div></div>
+        <span style="font:500 11.5px Literata,Georgia,serif;color:var(--muted)">64% · 4 min left</span>
+        <span style="margin-left:auto;font:400 11.5px Literata,Georgia,serif;color:var(--faint)">Select text to highlight</span>
+      </div>
+
+      <div style="display:grid;grid-template-columns:minmax(0,1fr) 308px">
+        <div id="main-content" style="padding:34px 44px 40px;position:relative">
+          <div style="max-width:700px">
+            <div style="font:600 10.5px Literata,Georgia,serif;letter-spacing:.18em;color:var(--article)">CASE STUDY · AIRBNB, 2008</div>
+            <h1 style="margin:12px 0 10px;font:600 44px/1.06 Literata,Georgia,serif;letter-spacing:-.03em;color:var(--read-text);text-wrap:balance">The bed that cost nothing to make</h1>
+            <div style="font:500 11px Literata,Georgia,serif;letter-spacing:.12em;color:var(--faint);padding-bottom:20px;border-bottom:1px solid var(--border)">ESTIMATED READING TIME 12 MIN · DAY 17 · PRICING POWER</div>
+
+            <p style="margin:22px 0 14px;font:400 18px/1.72 Literata,Georgia,serif;color:var(--read-text);text-wrap:pretty">Three founders in San Francisco had a loft, two air mattresses and a design conference arriving in a city with no hotel rooms left. The first listing went up at eighty dollars a night. It was not a considered number — it was a guess, and it sold out.</p>
+            <p style="margin:0 0 14px;font:400 18px/1.72 Literata,Georgia,serif;color:var(--read-text);text-wrap:pretty">What made the guess interesting was the cost behind it. <span style="background:#FCD34D;border-radius:3px;padding:1px 3px;box-shadow:0 0 0 1px rgba(0,0,0,.04)">Adding one guest to a room you already heat costs almost nothing</span> — a set of sheets, some hot water, an hour of your evening. In the language of the chapter, marginal cost was near zero.</p>
+            <p style="margin:0 0 14px;font:400 18px/1.72 Literata,Georgia,serif;color:var(--read-text);text-wrap:pretty">A hotel cannot say that. Its cost per room carries the building, the front desk, the cleaning contract and the loan. So a hotel prices from cost upward, and a host with a spare room can price from <em style="font-style:italic">value downward</em> — starting from what the night is worth to someone who has nowhere else to sleep.</p>
+
+            <div style="margin:22px 0;padding:18px 22px;border-left:3px solid var(--article);background:var(--article-soft);border-radius:0 8px 8px 0">
+              <p style="margin:0;font:500 19px/1.55 Literata,Georgia,serif;color:var(--read-text);text-wrap:pretty">When the cost of one more customer approaches zero, price stops being a fact about production and becomes a question about the buyer.</p>
+            </div>
+
+            <p style="margin:0 0 14px;font:400 18px/1.72 Literata,Georgia,serif;color:var(--read-text);text-wrap:pretty">This is why the company's own pricing tools eventually stopped asking hosts what their room cost them and started showing what similar rooms sold for that weekend. <span style="background:#93C5FD;border-radius:3px;padding:1px 3px">The signal moved from the supply side to the demand side</span>, and the platform's job became reading it faster than any individual host could.</p>
+            <p style="margin:0 0 14px;font:400 18px/1.72 Literata,Georgia,serif;color:var(--read-text);text-wrap:pretty">There is a limit, and it is worth naming before the quiz. Willingness to pay is not infinite patience: price above what the guest believes the night is worth and the booking does not happen at all. Near-zero marginal cost widens the range you can charge inside. It does not remove the ceiling.</p>
+
+            <div style="display:flex;align-items:center;gap:12px;margin-top:30px;padding-top:20px;border-top:1px solid var(--border)">
+              <span style="font:400 12.5px Literata,Georgia,serif;color:var(--muted)">Next up · 10 questions, pass at 8</span>
+              <a href="Quiz Player.dc.html" style="margin-left:auto;font:600 14px Literata,Georgia,serif;padding:13px 20px;border-radius:8px;border:1px solid var(--accent);background:var(--accent);color:var(--on-accent);text-decoration:none;min-height:48px;display:inline-flex;align-items:center" style-hover="background:var(--accent-strong)">Next: Quizzes →</a>
+            </div>
+          </div>
+
+          <div style="position:absolute;left:300px;top:274px;display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:8px;background:var(--text);box-shadow:var(--sh3)">
+            <span style="width:24px;height:24px;border-radius:999px;background:#FCD34D;box-shadow:0 0 0 2px rgba(255,255,255,.9);cursor:pointer"></span>
+            <span style="width:24px;height:24px;border-radius:999px;background:#93C5FD;cursor:pointer"></span>
+            <span style="width:24px;height:24px;border-radius:999px;background:#F9A8D4;cursor:pointer"></span>
+            <span style="width:24px;height:24px;border-radius:999px;background:#6EE7B7;cursor:pointer"></span>
+            <span style="width:1px;height:22px;background:rgba(255,255,255,.2)"></span>
+            <button aria-label="Save as note" style="min-height:28px;padding:0 8px;border-radius:6px;border:0;background:transparent;color:#fff;font:600 11.5px Literata,Georgia,serif;cursor:pointer;display:inline-flex;align-items:center;gap:5px"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>Save a note</button>
+            <button aria-label="Remove highlight" style="width:26px;height:26px;border-radius:6px;border:0;background:transparent;color:rgba(255,255,255,.6);cursor:pointer;display:grid;place-items:center"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M3 6h18M8 6V4h8v2M6 6l1 14h10l1-14"/></svg></button>
+          </div>
+        </div>
+
+        <aside style="border-left:1px solid var(--border);background:var(--surface);display:flex;flex-direction:column">
+          <div style="display:flex;padding:12px 14px 0;gap:4px">
+            <button style="flex:1;min-height:40px;font:600 12px Literata,Georgia,serif;border-radius:8px 8px 0 0;border:1px solid var(--border);border-bottom:0;background:var(--raised);color:var(--text);cursor:pointer">Takeaways</button>
+            <button style="flex:1;min-height:40px;font:500 12px Literata,Georgia,serif;border-radius:8px 8px 0 0;border:1px solid transparent;background:transparent;color:var(--muted);cursor:pointer" style-hover="color:var(--text)">My Notes · 4</button>
+          </div>
+          <div style="padding:16px 16px 20px;border-top:1px solid var(--border);display:grid;gap:12px;align-content:start">
+            <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint)">KEY TAKEAWAYS</div>
+            <div style="display:flex;gap:10px"><span style="width:20px;height:20px;border-radius:5px;background:var(--article-soft);color:var(--article);font:600 11px 'JetBrains Mono',monospace;display:grid;place-items:center;flex:none">1</span><p style="margin:0;font:400 13.5px/1.55 Literata,Georgia,serif;color:var(--text)">Marginal cost near zero widens the price range, it does not remove the ceiling.</p></div>
+            <div style="display:flex;gap:10px"><span style="width:20px;height:20px;border-radius:5px;background:var(--article-soft);color:var(--article);font:600 11px 'JetBrains Mono',monospace;display:grid;place-items:center;flex:none">2</span><p style="margin:0;font:400 13.5px/1.55 Literata,Georgia,serif;color:var(--text)">Hotels price from cost upward; hosts price from value downward.</p></div>
+            <div style="display:flex;gap:10px"><span style="width:20px;height:20px;border-radius:5px;background:var(--article-soft);color:var(--article);font:600 11px 'JetBrains Mono',monospace;display:grid;place-items:center;flex:none">3</span><p style="margin:0;font:400 13.5px/1.55 Literata,Georgia,serif;color:var(--text)">Scarcity in the city, not generosity in the host, set the eighty-dollar night.</p></div>
+
+            <div style="margin-top:6px;padding-top:14px;border-top:1px solid var(--border);display:grid;gap:9px">
+              <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint)">SAVED FROM THIS ARTICLE</div>
+              <div style="background:#FFF9C4;border-radius:8px;padding:11px 12px;box-shadow:var(--sh1)"><p style="margin:0;font:400 13px/1.5 Literata,Georgia,serif;color:#3A3320">"Adding one guest to a room you already heat costs almost nothing."</p><div style="font:500 10.5px Literata,Georgia,serif;color:rgba(58,51,32,.55);margin-top:6px">highlighted · 2 min ago</div></div>
+              <div style="background:#D6E8FF;border-radius:8px;padding:11px 12px;box-shadow:var(--sh1)"><p style="margin:0;font:400 13px/1.5 Literata,Georgia,serif;color:#1F2C3D">Ask in the quiz: is this the same as price discrimination? <b style="font-weight:600">Check ch. 3 day 19.</b></p><div style="font:500 10.5px Literata,Georgia,serif;color:rgba(31,44,61,.55);margin-top:6px">my note</div></div>
+              <div style="display:flex;gap:6px;align-items:center;padding-top:2px">
+                <span style="width:20px;height:20px;border-radius:999px;background:#FFF9C4;border:1px solid rgba(0,0,0,.08)"></span>
+                <span style="width:20px;height:20px;border-radius:999px;background:#FFD6D6;border:1px solid rgba(0,0,0,.08)"></span>
+                <span style="width:20px;height:20px;border-radius:999px;background:#D6E8FF;border:1px solid rgba(0,0,0,.08)"></span>
+                <span style="width:20px;height:20px;border-radius:999px;background:#D6F5E3;border:1px solid rgba(0,0,0,.08)"></span>
+                <span style="width:20px;height:20px;border-radius:999px;background:#E8D6FF;border:1px solid rgba(0,0,0,.08)"></span>
+                <button style="margin-left:auto;font:600 12px Literata,Georgia,serif;padding:8px 11px;border-radius:8px;border:1px dashed var(--border-strong);background:transparent;color:var(--muted);cursor:pointer;min-height:40px" style-hover="border-color:var(--accent);color:var(--accent)">+ Add note</button>
+              </div>
+            </div>
+          </div>
+        </aside>
+      </div>
+    </div>
+
+    <div data-m="light" data-screen-label="Reading view mobile" style="width:375px;height:812px;border-radius:24px;overflow:hidden;position:relative;background:var(--read-bg);box-shadow:0 22px 50px rgba(27,29,42,.22);border:1px solid var(--border)">
+      <div style="height:52px;display:flex;align-items:center;gap:10px;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--border)">
+        <button aria-label="Back" style="width:40px;height:40px;border-radius:8px;border:0;background:transparent;color:var(--muted);cursor:pointer;display:grid;place-items:center"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 18l-6-6 6-6"/></svg></button>
+        <span style="font:600 10.5px Literata,Georgia,serif;letter-spacing:.14em;color:var(--article)">ARTICLE · LESSON 17</span>
+        <button aria-label="Notes" style="margin-left:auto;min-height:40px;padding:0 11px;border-radius:8px;border:1px solid var(--border);background:transparent;color:var(--text);font:600 11.5px Literata,Georgia,serif;cursor:pointer;display:inline-flex;align-items:center;gap:6px"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21l-7-5-7 5V5a2 2 0 012-2h10a2 2 0 012 2z"/></svg>4</button>
+      </div>
+      <div style="height:3px;background:var(--bg-sunk)"><div style="width:64%;height:100%;background:var(--article)"></div></div>
+      <div style="padding:20px 18px 90px;overflow:hidden;height:calc(812px - 52px - 3px)">
+        <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.18em;color:var(--article)">CASE STUDY · AIRBNB, 2008</div>
+        <h1 style="margin:9px 0 8px;font:600 27px/1.1 Literata,Georgia,serif;letter-spacing:-.028em;color:var(--read-text);text-wrap:balance">The bed that cost nothing to make</h1>
+        <div style="font:500 10.5px Literata,Georgia,serif;letter-spacing:.1em;color:var(--faint);padding-bottom:14px;border-bottom:1px solid var(--border)">12 MIN · DAY 17</div>
+        <p style="margin:16px 0 12px;font:400 17px/1.7 Literata,Georgia,serif;color:var(--read-text);text-wrap:pretty">Three founders in San Francisco had a loft, two air mattresses and a design conference arriving in a city with no hotel rooms left. The first listing went up at eighty dollars a night.</p>
+        <p style="margin:0 0 12px;font:400 17px/1.7 Literata,Georgia,serif;color:var(--read-text);text-wrap:pretty">What made the guess interesting was the cost behind it. <span style="background:#FCD34D;border-radius:3px;padding:1px 3px">Adding one guest to a room you already heat costs almost nothing</span> — a set of sheets, some hot water, an hour of your evening.</p>
+        <p style="margin:0;font:400 17px/1.7 Literata,Georgia,serif;color:var(--read-text);text-wrap:pretty">A hotel cannot say that. Its cost per room carries the building, the front desk and the loan. So a hotel prices from cost upward, and a host prices from value downward.</p>
+      </div>
+      <div style="position:absolute;left:14px;right:14px;bottom:76px;display:flex;align-items:center;justify-content:center;gap:8px;padding:9px 12px;border-radius:10px;background:var(--text);box-shadow:var(--sh3)">
+        <span style="width:30px;height:30px;border-radius:999px;background:#FCD34D;box-shadow:0 0 0 2px rgba(255,255,255,.9)"></span>
+        <span style="width:30px;height:30px;border-radius:999px;background:#93C5FD"></span>
+        <span style="width:30px;height:30px;border-radius:999px;background:#F9A8D4"></span>
+        <span style="width:30px;height:30px;border-radius:999px;background:#6EE7B7"></span>
+        <span style="width:1px;height:24px;background:rgba(255,255,255,.2)"></span>
+        <button style="min-height:44px;padding:0 12px;border-radius:8px;border:0;background:transparent;color:#fff;font:600 12.5px Literata,Georgia,serif;cursor:pointer">Save a note</button>
+      </div>
+      <div style="position:absolute;left:0;right:0;bottom:0;padding:12px 14px 16px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:center;gap:10px">
+        <span style="font:400 11.5px Literata,Georgia,serif;color:var(--muted);flex:1">4 min left</span>
+        <a href="Quiz Player.dc.html" style="min-height:44px;padding:0 18px;border-radius:8px;background:var(--accent);color:var(--on-accent);font:600 13.5px Literata,Georgia,serif;text-decoration:none;display:inline-flex;align-items:center">Next: Quizzes →</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440}}"></script>
+</body>
+</html>

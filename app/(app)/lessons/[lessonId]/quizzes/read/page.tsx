@@ -50,8 +50,11 @@ export default async function QuizzesReadPage({
 
   if (questions.length === 0) {
     return (
-      <div className="p-8 text-center text-brand-primary bg-[#F8F9FC] min-h-screen">
-        Content coming soon for this quiz.
+      <div className="min-h-screen bg-bg flex flex-col items-center justify-center text-center px-s4">
+        <h1 className="text-h2 font-semibold text-ink">Not written yet</h1>
+        <p className="text-ui text-muted mt-s2 max-w-[42ch]">
+          This quiz is still being written. Check the roadmap for what&apos;s ready.
+        </p>
       </div>
     );
   }
@@ -84,29 +87,23 @@ export default async function QuizzesReadPage({
   }
 
   return (
-    <div className="content-page min-h-screen w-full font-sans flex flex-col p-0 bg-[#F8F9FC]">
-      <div className="w-full bg-white border-b border-gray-100 h-[56px] px-8 flex items-center shrink-0">
-        <div className="text-[13px] font-[700] tracking-[0.08em] text-gray-900 uppercase">
-          QUIZZES
-        </div>
+    /* The quiz is a stage: the app chrome steps back and the ground goes dark,
+       one question at a time. */
+    <div
+      data-theme="dark"
+      className="content-page fixed inset-0 z-[80] bg-bg text-ink overflow-y-auto"
+    >
+      <div className="w-full max-w-[720px] mx-auto px-s4 md:px-s5 py-s5 md:py-s6 min-h-full flex flex-col">
+        <QuizClient lessonId={lessonId} questions={secureQuestions} />
       </div>
 
-      <div className="flex-1 overflow-visible py-8 w-full">
-        <div className="w-full max-w-[720px] mx-auto px-8 pb-10">
-          <QuizClient lessonId={lessonId} questions={secureQuestions} />
-        </div>
-      </div>
-      
-      {/* Floating Notes Drawer */}
-      <div className="z-50">
-        <ReadingTabs
-          lessonId={String(lessonId)}
-          takeawaysText={""}
-          initialNotes={initialNotes}
-          hideTakeaways={true}
-          source="Quiz"
-        />
-      </div>
+      <ReadingTabs
+        lessonId={String(lessonId)}
+        takeawaysText={""}
+        initialNotes={initialNotes}
+        hideTakeaways={true}
+        source="Quiz"
+      />
     </div>
   );
 }

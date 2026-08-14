@@ -45,11 +45,11 @@ export default async function ChallengesPage() {
     const formattedContent = `
 <div class="mb-4">
   <div class="text-xs font-bold text-purple-600 mb-1 uppercase tracking-wider">Challenge</div>
-  <div class="text-gray-800 font-medium italic border-l-2 border-purple-300 pl-3">${challenge.prompt}</div>
+  <div class="text-ink font-medium italic border-l-2 border-purple-300 pl-3">${challenge.prompt}</div>
 </div>
 <div>
-  <div class="text-xs font-bold text-gray-500 mb-1 uppercase tracking-wider">Your Reflection</div>
-  <div class="text-gray-900">${n.content}</div>
+  <div class="text-xs font-bold text-muted mb-1 uppercase tracking-wider">Your Reflection</div>
+  <div class="text-ink">${n.content}</div>
 </div>
     `.trim();
 

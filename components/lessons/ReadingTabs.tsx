@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import { useState, useTransition } from "react";
 import { StickyNote } from "./StickyNote";
 import type { NoteData } from "@/types";
 import {
@@ -112,136 +112,130 @@ export const ReadingTabs = ({
 
   const [isOpen, setIsOpen] = useState(false);
 
-  React.useEffect(() => {
-    const mainElement = document.querySelector('.content-page') as HTMLElement;
-    if (mainElement) {
-      if (isOpen && window.innerWidth >= 1024) {
-        mainElement.style.paddingRight = '308px';
-        mainElement.style.transition = 'padding-right 0.3s ease-in-out';
-      } else {
-        mainElement.style.paddingRight = '0px';
-      }
-    }
-    return () => {
-      if (mainElement) mainElement.style.paddingRight = '0px';
-    };
-  }, [isOpen]);
-
   return (
     <>
-      {/* Floating Toggle Button */}
+      {/* Drawer handle — a tab on the right edge on desktop, a pill above the
+          bottom nav on mobile. */}
       <button
-        onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-1/2 right-0 -translate-y-1/2 bg-[#5A4FBD] text-white p-2 rounded-l-md shadow-lg hover:bg-[#483d99] transition-all z-[60] flex flex-col items-center gap-2 border border-r-0 border-[#483d99]"
-        style={{ transform: `translateY(-50%) translateX(${isOpen ? '-308px' : '0'})` }}
+        onClick={() => setIsOpen(true)}
+        aria-expanded={isOpen}
+        className={`fixed z-[55] transition-opacity ${isOpen ? "opacity-0 pointer-events-none" : "opacity-100"}
+          bottom-[84px] right-s4 md:bottom-auto md:top-1/2 md:right-0 md:-translate-y-1/2
+          bg-surface border border-line shadow-sh2 text-ink
+          rounded-md md:rounded-l-md md:rounded-r-none
+          px-s4 py-s3 md:px-s2 md:py-s5
+          flex items-center gap-s2 min-h-[44px]`}
       >
-        <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
-        <span className="text-[11px] font-bold tracking-widest uppercase rotate-180 mt-1" style={{ writingMode: 'vertical-rl' }}>
-          KEY TAKEAWAYS & MY NOTES
+        <span className="text-ui font-medium md:hidden">Notes</span>
+        <span
+          className="hidden md:block text-label uppercase"
+          style={{ writingMode: "vertical-rl" }}
+        >
+          Takeaways &amp; notes
         </span>
       </button>
 
-      {/* Overlay for mobile (optional) */}
       {isOpen && (
-        <div 
-          className="fixed inset-0 bg-black/20 z-[40] lg:hidden"
+        <div
+          className="fixed inset-0 bg-black/30 z-[60]"
           onClick={() => setIsOpen(false)}
+          aria-hidden
         />
       )}
 
-      {/* Sliding Drawer */}
-      <div 
-        className={`fixed top-0 right-0 h-screen w-[308px] max-w-[100vw] bg-[#F8F9FC] border-l border-gray-200 shadow-2xl z-[50] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+      {/* Bottom sheet on mobile, right drawer on desktop */}
+      <aside
+        aria-hidden={!isOpen}
+        className={`fixed z-[70] bg-surface border-line shadow-sh3 flex flex-col transition-transform duration-300 ease-out
+          left-0 right-0 bottom-0 max-h-[82vh] rounded-t-xl border-t
+          md:left-auto md:top-0 md:bottom-0 md:h-full md:max-h-none md:w-[340px] md:rounded-none md:border-l md:border-t-0
+          ${isOpen ? "translate-y-0 md:translate-x-0" : "translate-y-full md:translate-y-0 md:translate-x-full"}`}
       >
-        <div className="h-full flex flex-col overflow-hidden">
-          {/* Fixed Header */}
-          <div className="px-6 pt-5 pb-3 shrink-0 bg-[#F8F9FC] border-b border-gray-100 relative z-10">
-            <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Notes & Takeaways</h3>
-              <button onClick={() => setIsOpen(false)} aria-label="Close notes drawer" className="text-gray-400 hover:text-gray-700 bg-gray-100 p-2 rounded-full">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
+        <div className="px-s5 pt-s4 pb-s3 shrink-0 border-b border-line">
+          <div className="flex items-center justify-between mb-s3">
+            <h3 className="text-h3 font-semibold text-ink">Notes &amp; takeaways</h3>
+            <button
+              onClick={() => setIsOpen(false)}
+              aria-label="Close notes"
+              className="w-9 h-9 grid place-items-center rounded-md border border-line text-faint hover:text-ink transition-colors"
+            >
+              <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round"><path d="M18 6 6 18M6 6l12 12"/></svg>
+            </button>
+          </div>
+
+          {!hideTakeaways && (
+            <div className="flex gap-s1 p-1 rounded-md bg-bg-sunk">
+              <button
+                onClick={() => setActivePanel("takeaways")}
+                className={`flex-1 py-s2 rounded-sm text-meta font-medium transition-colors ${
+                  activePanel === "takeaways" ? "bg-surface text-ink shadow-sh1" : "text-muted hover:text-ink"
+                }`}
+              >
+                Takeaways
+              </button>
+              <button
+                onClick={() => setActivePanel("notes")}
+                className={`flex-1 py-s2 rounded-sm text-meta font-medium transition-colors ${
+                  activePanel === "notes" ? "bg-surface text-ink shadow-sh1" : "text-muted hover:text-ink"
+                }`}
+              >
+                My notes
               </button>
             </div>
-            {!hideTakeaways && (
-              <div className="flex bg-[#F8F9FC] p-1 rounded-xl shadow-sm border border-gray-100">
-                <button
-                  onClick={() => setActivePanel("takeaways")}
-                  className={`flex-1 text-center py-2 text-[13px] font-semibold rounded-lg cursor-pointer transition-all ${
-                    activePanel === "takeaways"
-                      ? "bg-white text-brand-primary shadow-sm border border-gray-100"
-                      : "text-gray-500 bg-transparent border border-transparent hover:text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  💡 Takeaways
-                </button>
-                <button
-                  onClick={() => setActivePanel("notes")}
-                  className={`flex-1 text-center py-2 text-[13px] font-semibold rounded-lg cursor-pointer transition-all ${
-                    activePanel === "notes"
-                      ? "bg-white text-brand-primary shadow-sm border border-gray-100"
-                      : "text-gray-500 bg-transparent border border-transparent hover:text-gray-700 hover:bg-gray-50"
-                  }`}
-                >
-                  🗒️ My Notes
-                </button>
-              </div>
-            )}
-          </div>
-
-          {/* Scrollable Content */}
-          <div className="flex-1 overflow-y-auto px-6 py-4">
-            {activePanel === "takeaways" && (
-              <div className="bg-brand-primary/5 rounded-2xl border border-brand-primary/20 p-5 shadow-sm">
-                <div className="text-[11px] font-bold tracking-widest text-brand-primary uppercase mb-4 opacity-80">
-                  KEY TAKEAWAYS
-                </div>
-                <div 
-                  className="text-[#333333] text-[13px] leading-relaxed font-medium prose prose-sm prose-li:marker:text-brand-primary"
-                  dangerouslySetInnerHTML={{ __html: takeawaysText || "<p>No takeaways available for this lesson.</p>" }}
-                />
-              </div>
-            )}
-
-            {activePanel === "notes" && (
-              <div className="flex flex-col h-full">
-                <div className="flex-1">
-                  {notes.map((note) => (
-                    <StickyNote
-                      key={note.id}
-                      note={note}
-                      updateNoteColor={updateNoteColor}
-                      deleteNote={deleteNote}
-                      updateNoteText={updateNoteText}
-                      canDelete={notes.length > 1}
-                    />
-                  ))}
-                </div>
-
-                <div className="flex flex-col items-center mt-3 gap-3 pb-6 shrink-0">
-                  <button
-                    onClick={addNote}
-                    className="text-xs font-semibold text-brand-primary bg-transparent border-none cursor-pointer mt-2 text-left px-4 hover:opacity-80 transition-opacity"
-                  >
-                    + Add Note
-                  </button>
-                  <button
-                    onClick={handleSaveNotes}
-                    disabled={isPending}
-                    className="bg-brand-primary text-white rounded-lg px-4 py-2.5 text-xs font-bold w-[calc(100%-32px)] mx-4 hover:bg-[#6859e0] transition-colors shadow-sm disabled:opacity-50"
-                  >
-                    {isPending ? "Saving..." : "+ Save a note"}
-                  </button>
-                  {saveStatus && (
-                    <span className={`text-[11px] font-medium ${saveFailed ? "text-red-600" : "text-green-600"}`}>
-                      {saveStatus}
-                    </span>
-                  )}
-                </div>
-              </div>
-            )}
-          </div>
+          )}
         </div>
-      </div>
+
+        <div className="flex-1 overflow-y-auto px-s5 py-s4">
+          {activePanel === "takeaways" && (
+            <div className="rounded-md border border-line bg-raised p-s4">
+              <div className="text-label uppercase text-accent mb-s3">Key takeaways</div>
+              <div
+                className="text-ui text-ink [&_ol]:pl-4 [&_li]:mb-s2"
+                dangerouslySetInnerHTML={{ __html: takeawaysText || "<p>No takeaways for this lesson yet.</p>" }}
+              />
+            </div>
+          )}
+
+          {activePanel === "notes" && (
+            <div className="flex flex-col gap-s3">
+              {notes.map((note) => (
+                <StickyNote
+                  key={note.id}
+                  note={note}
+                  updateNoteColor={updateNoteColor}
+                  deleteNote={deleteNote}
+                  updateNoteText={updateNoteText}
+                  canDelete={notes.length > 1}
+                />
+              ))}
+
+              <button
+                onClick={addNote}
+                className="text-meta text-muted hover:text-ink transition-colors py-s2 min-h-[44px]"
+              >
+                + Add another note
+              </button>
+            </div>
+          )}
+        </div>
+
+        {activePanel === "notes" && (
+          <div className="shrink-0 px-s5 py-s4 border-t border-line bg-surface">
+            <button
+              onClick={handleSaveNotes}
+              disabled={isPending}
+              className="w-full py-s3 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors disabled:opacity-50 min-h-[44px]"
+            >
+              {isPending ? "Saving…" : "+ Save a note"}
+            </button>
+            {saveStatus && (
+              <p className={`text-meta mt-s2 text-center ${saveFailed ? "text-danger" : "text-success"}`}>
+                {saveStatus}
+              </p>
+            )}
+          </div>
+        )}
+      </aside>
     </>
   );
 };

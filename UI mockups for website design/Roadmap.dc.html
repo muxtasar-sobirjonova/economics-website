@@ -1,0 +1,636 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<meta name="design_doc_mode" content="canvas">
+<link rel="stylesheet" href="_ds/nocturne-79ecf8f9-ac3b-40b6-8be0-e29005245525/styles.css">
+<script src="_ds/nocturne-79ecf8f9-ac3b-40b6-8be0-e29005245525/_ds_bundle.js"></script>
+<link href="fonts/fonts.css" rel="stylesheet">
+<style>
+html,body{margin:0;padding:0}
+body{background:#DCDEE8;font-family:'Literata',Georgia,serif;-webkit-font-smoothing:antialiased}
+a{color:#6E5FC4;text-decoration:none}
+a:hover{color:#554896}
+[data-m="light"]{
+  --bg:#EEEFF5; --bg-sunk:#E4E6EF; --surface:#FAFAFE; --raised:#FDFDFF;
+  --border:rgba(27,29,42,.10); --border-strong:rgba(27,29,42,.20);
+  --text:#1B1D2A; --muted:#5C6072; --faint:#8A8FA3;
+  --accent:#6E5FC4; --accent-strong:#554896; --accent-soft:#EAE7FB;
+  --concept:#B0552A; --concept-soft:#F7E4DA;
+  --article:#1F6E7C; --article-soft:#DCEEF1;
+  --quiz:#6E5FC4; --quiz-soft:#EAE7FB;
+  --success:#24774F; --success-soft:#DCEFE4;
+  --danger:#B23A2E; --danger-soft:#F7E2DE;
+  --reward:#A97711; --reward-soft:#F7ECD2;
+  --sh1:0 1px 2px rgba(27,29,42,.06);
+  --sh2:0 4px 14px rgba(27,29,42,.09);
+  --sh3:0 18px 40px rgba(27,29,42,.14);
+  --ground:#E1E3EE; --ground-edge:rgba(27,29,42,.13); --road:#D2D5E3; --road-line:rgba(27,29,42,.22);
+  --iso-top:#FFFFFF; --iso-left:#DDE0EC; --iso-right:#C6CADB; --iso-shadow:rgba(27,29,42,.13);
+  --iso-top-done:#EFECFD; --iso-left-done:#CFC8F2; --iso-right-done:#B4ABE4;
+  --lamp:#C98A2E; --lamp-2:#6E5FC4;
+  --sky-1:#F4F5FA; --sky-2:#E7E9F3;
+}
+[data-m="dark"]{
+  --bg:#161826; --bg-sunk:#101120; --surface:#1E2130; --raised:#262A3B;
+  --border:rgba(233,233,237,.12); --border-strong:rgba(233,233,237,.24);
+  --text:#E9E9ED; --muted:#9397AB; --faint:#75798C;
+  --accent:#9184D9; --accent-strong:#B5ABFC; --accent-soft:rgba(145,132,217,.18);
+  --concept:#E89A6B; --concept-soft:rgba(232,154,107,.16);
+  --article:#6FC6D3; --article-soft:rgba(111,198,211,.16);
+  --quiz:#B5ABFC; --quiz-soft:rgba(181,171,252,.16);
+  --success:#63D19A; --success-soft:rgba(99,209,154,.16);
+  --danger:#F08A80; --danger-soft:rgba(240,138,128,.16);
+  --reward:#F2C264; --reward-soft:rgba(242,194,100,.16);
+  --sh1:0 0 0 1px rgba(233,233,237,.08);
+  --sh2:0 0 0 1px rgba(233,233,237,.10), 0 6px 18px rgba(0,0,0,.55);
+  --sh3:0 0 0 1px rgba(233,233,237,.14), 0 18px 44px rgba(0,0,0,.65);
+  --ground:#1B1E2E; --ground-edge:rgba(233,233,237,.11); --road:#202435; --road-line:rgba(233,233,237,.16);
+  --iso-top:#4A4F6E; --iso-left:#2B2F44; --iso-right:#1E2131; --iso-shadow:rgba(8,9,16,.6);
+  --iso-top-done:#6B6AA8; --iso-left-done:#3A3660; --iso-right-done:#272341;
+  --lamp:#E3B057; --lamp-2:#B5ABFC;
+  --sky-1:#1C2032; --sky-2:#101120;
+}
+@keyframes ringpulse{0%{transform:scale(1);opacity:.8}75%{transform:scale(1.45);opacity:0}100%{opacity:0}}
+@keyframes roadflow{to{stroke-dashoffset:-56}}
+@keyframes lamp{0%,100%{opacity:.85}50%{opacity:.55}}
+@keyframes bob{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+@media (prefers-reduced-motion: reduce){*{animation:none!important}}
+</style>
+</helmet>
+
+
+
+<section style="padding:40px 44px 34px;border-bottom:1px solid rgba(0,0,0,.09)">
+  <div style="display:flex;align-items:baseline;gap:11px;margin-bottom:20px">
+    <a href="#t2" style="font:600 10px/1 'JetBrains Mono',monospace;letter-spacing:.14em;padding:4px 8px;background:#1B1D2A;color:#fff;border-radius:4px;text-decoration:none">2</a>
+    <span style="font:600 13px/1.2 Literata,Georgia,serif;color:#1B1D2A">/roadmap — the plot you build on</span>
+    <span style="font:400 12.5px/1.4 Literata,Georgia,serif;color:rgba(27,29,42,.5)">Tokens from round 1. Chapter 3 of the Entrepreneurship Economics track, day 17 in progress.</span>
+  </div>
+
+  <div style="display:flex;flex-wrap:wrap;gap:34px;align-items:flex-start">
+
+    <div id="2a" style="display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px">
+      <div style="display:flex;align-items:baseline;gap:9px;font:400 11.5px/1.3 Literata,Georgia,serif;color:rgba(27,29,42,.55)"><a href="#2a" style="font:600 10.5px 'JetBrains Mono',monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1B1D2A;border-radius:5px;text-decoration:none">2a</a>Desktop 1440 · dark</div>
+      <div data-m="dark" data-screen-label="Roadmap desktop dark" style="width:1320px;max-width:100%;border-radius:14px;overflow:hidden;box-shadow:0 22px 50px rgba(27,29,42,.22);background:var(--bg);display:grid;grid-template-columns:232px minmax(0,1fr)">
+
+        <aside style="background:var(--bg-sunk);border-right:1px solid var(--border);padding:20px 14px;display:flex;flex-direction:column;gap:22px">
+          <div style="display:flex;align-items:center;gap:9px;padding:0 6px">
+            <span style="width:26px;height:26px;border-radius:7px;background:var(--accent);display:grid;place-items:center;color:#161826;font:600 13px Literata,Georgia,serif">E</span>
+            <span style="font:600 14.5px Literata,Georgia,serif;color:var(--text);letter-spacing:-.01em">That's So Econ</span>
+          </div>
+          <div>
+            <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint);padding:0 8px 8px">DASHBOARD</div>
+            <div style="display:grid;gap:2px">
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Home</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;background:var(--accent-soft);color:var(--accent-strong);font:600 13.5px Literata,Georgia,serif;box-shadow:inset 2px 0 0 var(--accent)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V8l6-4 6 4 4-2v12l-4 2-6-4-6 4z"/></svg>Roadmap</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M6 4h12v5a6 6 0 01-12 0z"/></svg>Leaderboard</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M3 20h3M4 4h16v10H8l-4 4z"/></svg>My Challenges</div>
+            </div>
+          </div>
+          <div>
+            <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint);padding:0 8px 8px">LEARN</div>
+            <div style="display:grid;gap:2px">
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--concept)"></span>Concepts</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--article)"></span>Articles</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--quiz)"></span>Quizzes</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--faint)"></span>My Notes</div>
+            </div>
+          </div>
+          <div style="margin-top:auto;padding:11px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;gap:9px;align-items:center">
+            <span style="width:28px;height:28px;border-radius:999px;background:var(--accent-soft);color:var(--accent-strong);display:grid;place-items:center;font:600 13px Literata,Georgia,serif">A</span>
+            <div style="min-width:0"><div style="font:500 12.5px Literata,Georgia,serif;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Aziza R.</div><div style="font:400 11px Literata,Georgia,serif;color:var(--faint)">Gold · 1 480 XP</div></div>
+          </div>
+        </aside>
+
+        <div style="min-width:0;background:linear-gradient(180deg,var(--sky-1) 0%,var(--bg) 220px)">
+          <header style="display:flex;align-items:center;gap:14px;padding:16px 26px;border-bottom:1px solid var(--border)">
+            <div style="flex:1">
+              <div style="font:600 10.5px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint)">ENTREPRENEURSHIP ECONOMICS · 56-DAY BUILD</div>
+              <h1 style="margin:4px 0 0;font:600 25px/1.1 Literata,Georgia,serif;letter-spacing:-.02em;color:var(--text)">Your plot</h1>
+            </div>
+            <span style="font:600 12.5px Literata,Georgia,serif;padding:7px 11px;border-radius:999px;background:var(--danger-soft);color:var(--danger)">♥ 4/5 <span style="color:var(--faint);font-weight:400">· +1 in 2h</span></span>
+            <span style="font:600 12.5px Literata,Georgia,serif;padding:7px 11px;border-radius:999px;background:var(--reward-soft);color:var(--reward);display:inline-flex;gap:6px;align-items:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5 4.8 1.3 6.9L12 17.6 5.9 20.8 7.2 13.9l-5-4.8 6.9-.8z"/></svg>1 480 XP</span>
+            <span style="font:600 12.5px Literata,Georgia,serif;padding:7px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--border);color:var(--text)">🔥 23</span>
+          </header>
+
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 286px;gap:22px;padding:22px 26px 30px">
+            <div style="min-width:0;display:grid;gap:14px">
+
+              <div style="border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:16px 18px;display:flex;gap:16px;align-items:center;box-shadow:var(--sh1);opacity:.86">
+                <svg viewBox="0 0 150 62" width="106" style="flex:none"><g transform="translate(38,44) scale(.42)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(8,9,16,.6)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#3A3660"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#272341"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#6B6AA8"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#E3B057" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#E3B057" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#B5ABFC" opacity=".45"/>
+  </g></g><g transform="translate(76,52) scale(.42)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/></g><g>
+    <polygon points="44,16 100,48 6,48 -22,32" fill="rgba(8,9,16,.6)"/>
+    <polygon points="-44,-20 -8,1 -8,25 -44,4" fill="#3A3660"/>
+    <polygon points="-8,1 28,-20 28,4 -8,25" fill="#272341"/>
+    <polygon points="-44,-20 -8,-41 28,-20 -8,1" fill="#6B6AA8" opacity=".8"/>
+    <polygon points="-4,-46 30,-26 30,10 -4,-10" fill="#3A3660"/>
+    <polygon points="30,-26 46,-35 46,1 30,10" fill="#272341"/>
+    <polygon points="-4,-46 30,-66 46,-57 30,-26" fill="#6B6AA8"/>
+    <polygon points="18,-78 26,-74 26,-58 18,-62" fill="#3A3660"/>
+    <polygon points="26,-74 34,-78 34,-62 26,-58" fill="#272341"/>
+    <polygon points="18,-78 26,-82 34,-78 26,-74" fill="#6B6AA8"/>
+    <ellipse cx="26" cy="-94" rx="13" ry="6" fill="#B5ABFC" opacity=".2"/>
+    <polygon points="4,-34 14,-28 14,-17 4,-23" fill="#E3B057" opacity=".9"/>
+    <polygon points="18,-22 28,-28 28,-17 18,-11" fill="#B5ABFC" opacity=".5"/>
+  </g></g><g transform="translate(114,44) scale(.42)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(8,9,16,.6)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#3A3660"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#272341"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#6B6AA8"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#E3B057" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#E3B057" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#B5ABFC" opacity=".45"/>
+  </g></g></svg>
+                <div style="flex:1;min-width:0">
+                  <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--success)">CHAPTER 2 · CLOSED</div>
+                  <div style="font:600 15.5px Literata,Georgia,serif;color:var(--text);margin-top:3px">Supply, Demand &amp; the Price Signal</div>
+                  <div style="font:400 12px Literata,Georgia,serif;color:var(--muted);margin-top:2px">7 of 7 days · review quiz 9/10 · +840 XP</div>
+                </div>
+                <button style="font:500 12.5px Literata,Georgia,serif;padding:9px 13px;border-radius:8px;border:1px solid var(--border-strong);background:transparent;color:var(--muted);cursor:pointer;min-height:40px" style-hover="border-color:var(--accent);color:var(--accent-strong)">Revisit</button>
+              </div>
+
+              <div style="border:1px solid var(--border);border-radius:14px;background:var(--surface);overflow:hidden;box-shadow:var(--sh2)">
+                <div style="display:flex;gap:16px;align-items:flex-start;padding:20px 22px 18px;background:linear-gradient(115deg,var(--accent-soft) 0%,transparent 62%);border-bottom:1px solid var(--border)">
+                  <div style="flex:none;width:46px;height:46px;border-radius:12px;background:var(--accent);color:#161826;display:grid;place-items:center;font:600 20px 'JetBrains Mono',monospace;box-shadow:0 0 26px rgba(145,132,217,.35)">03</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font:600 10.5px Literata,Georgia,serif;letter-spacing:.14em;color:var(--accent-strong)">CURRENT CHAPTER · DAYS 15–21</div>
+                    <h2 style="margin:5px 0 5px;font:600 27px/1.08 Literata,Georgia,serif;letter-spacing:-.022em;color:var(--text)">Pricing Power</h2>
+                    <p style="margin:0;font:400 13.5px/1.55 Literata,Georgia,serif;color:var(--muted);max-width:56ch;text-wrap:pretty">What a price is actually saying, and why the founders who understand it stop competing on cost. Six lessons, then the chapter review.</p>
+                  </div>
+                  <div style="flex:none;width:176px">
+                    <div style="display:flex;justify-content:space-between;font:500 11.5px Literata,Georgia,serif;color:var(--muted)"><span>2 of 7 days</span><span style="color:var(--text)">29%</span></div>
+                    <div style="height:6px;border-radius:3px;background:var(--bg-sunk);margin-top:7px;overflow:hidden"><div style="width:29%;height:100%;background:var(--accent)"></div></div>
+                    <button style="width:100%;margin-top:11px;font:600 13px Literata,Georgia,serif;padding:11px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent-strong);cursor:pointer;min-height:44px" style-hover="background:rgba(145,132,217,.3)">Continue day 17 →</button>
+                  </div>
+                </div>
+
+                <div style="position:relative;background:radial-gradient(120% 80% at 50% 0%,var(--sky-1) 0%,var(--bg-sunk) 100%)">
+                  <svg viewBox="0 0 860 700" width="100%" style="display:block" role="img" aria-label="Isometric chapter plot: days 15 to 21">
+                    <polyline points="300,120 424,192 548,264 424,336 300,408 424,480 548,552" fill="none" stroke="var(--road)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="300,120 424,192 548,264 424,336 300,408 424,480 548,552" fill="none" stroke="var(--road-line)" stroke-width="1.6" stroke-dasharray="12 16" stroke-linecap="round" style="animation:roadflow 3s linear infinite"/>
+
+                    <g transform="translate(300,120)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(8,9,16,.6)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#3A3660"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#272341"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#6B6AA8"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#E3B057" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#E3B057" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#B5ABFC" opacity=".45"/>
+  </g></g>
+                    <g transform="translate(424,192)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(8,9,16,.6)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#3A3660"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#272341"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#6B6AA8"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#E3B057" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#E3B057" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#B5ABFC" opacity=".45"/>
+  </g></g>
+
+                    <g transform="translate(548,264)">
+                      <g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(8,9,16,.6)" opacity=".7"/>
+    <polygon points="-44,-18 0,7 0,25 -44,0" fill="#2B2F44"/>
+    <polygon points="0,7 44,-18 44,0 0,25" fill="#1E2131"/>
+    <polygon points="0,-43 44,-18 0,7 -44,-18" fill="#4A4F6E"/>
+    <polygon points="-44,0 -44,-44 0,-69 44,-44 44,0 0,25" fill="none" stroke="#9184D9" stroke-width="1.6" stroke-dasharray="6 6" opacity=".85"/>
+    <line x1="-44" y1="-44" x2="0" y2="-19" stroke="#9184D9" stroke-width="1.4" stroke-dasharray="5 6" opacity=".6"/>
+    <line x1="0" y1="-19" x2="44" y2="-44" stroke="#9184D9" stroke-width="1.4" stroke-dasharray="5 6" opacity=".6"/>
+    <line x1="0" y1="-19" x2="0" y2="25" stroke="#9184D9" stroke-width="1.4" stroke-dasharray="5 6" opacity=".6"/>
+  </g>
+                    </g>
+                    <g transform="translate(300,408)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(233,233,237,.11)" stroke-width="1.2" stroke-dasharray="5 7"/></g><g transform="translate(0,-6)"><g><circle r="17" fill="#1E2130" stroke="rgba(233,233,237,.24)" stroke-width="1.2"/><rect x="-6" y="-3" width="12" height="10" rx="2.5" fill="#75798C"/><path d="M-3.5 -3 v-4 a3.5 3.5 0 0 1 7 0 V-3" fill="none" stroke="#75798C" stroke-width="2"/></g></g></g>
+                    <g transform="translate(424,336)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(233,233,237,.11)" stroke-width="1.2" stroke-dasharray="5 7"/></g><g transform="translate(0,-6)"><g><circle r="17" fill="#1E2130" stroke="rgba(233,233,237,.24)" stroke-width="1.2"/><rect x="-6" y="-3" width="12" height="10" rx="2.5" fill="#75798C"/><path d="M-3.5 -3 v-4 a3.5 3.5 0 0 1 7 0 V-3" fill="none" stroke="#75798C" stroke-width="2"/></g></g></g>
+                    <g transform="translate(424,480)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(233,233,237,.11)" stroke-width="1.2" stroke-dasharray="5 7"/></g><g transform="translate(0,-6)"><g><circle r="17" fill="#1E2130" stroke="rgba(233,233,237,.24)" stroke-width="1.2"/><rect x="-6" y="-3" width="12" height="10" rx="2.5" fill="#75798C"/><path d="M-3.5 -3 v-4 a3.5 3.5 0 0 1 7 0 V-3" fill="none" stroke="#75798C" stroke-width="2"/></g></g></g>
+                    <g transform="translate(548,552)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(233,233,237,.11)" stroke-width="1.2" stroke-dasharray="5 7"/></g><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="var(--reward)" stroke-width="1.4" stroke-dasharray="6 7" opacity=".55"/><g transform="translate(0,-6)"><g><circle r="17" fill="#1E2130" stroke="rgba(233,233,237,.24)" stroke-width="1.2"/><rect x="-6" y="-3" width="12" height="10" rx="2.5" fill="#75798C"/><path d="M-3.5 -3 v-4 a3.5 3.5 0 0 1 7 0 V-3" fill="none" stroke="#75798C" stroke-width="2"/></g></g></g>
+
+                    <g transform="translate(214,84)"><rect x="-44" y="-15" width="88" height="30" rx="8" fill="var(--surface)" stroke="var(--border)"/><text x="0" y="-1" text-anchor="middle" style="font:600 10px 'JetBrains Mono',monospace;fill:var(--success)">DAY 15</text><text x="0" y="10" text-anchor="middle" style="font:500 9.5px Literata,Georgia,serif;fill:var(--muted)">10/10 · +140 XP</text></g>
+                    <g transform="translate(338,156)"><rect x="-44" y="-15" width="88" height="30" rx="8" fill="var(--surface)" stroke="var(--border)"/><text x="0" y="-1" text-anchor="middle" style="font:600 10px 'JetBrains Mono',monospace;fill:var(--success)">DAY 16</text><text x="0" y="10" text-anchor="middle" style="font:500 9.5px Literata,Georgia,serif;fill:var(--muted)">8/10 · +120 XP</text></g>
+
+                    <g transform="translate(548,132)">
+                      <rect x="-92" y="-26" width="184" height="52" rx="10" fill="var(--accent)" opacity=".14"/>
+                      <rect x="-92" y="-26" width="184" height="52" rx="10" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+                      <text x="0" y="-7" text-anchor="middle" style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;fill:var(--accent-strong)">DAY 17 · BUILD IT</text>
+                      <text x="0" y="9" text-anchor="middle" style="font:600 12.5px Literata,Georgia,serif;fill:var(--text)">Why Airbnb priced</text>
+                      <text x="0" y="22" text-anchor="middle" style="font:600 12.5px Literata,Georgia,serif;fill:var(--text)">beds like hotels</text>
+                      <path d="M0 26 l0 14" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="4 4"/>
+                    </g>
+                    <g transform="translate(548,264)"><circle r="52" fill="none" stroke="var(--accent)" stroke-width="2" opacity=".5" style="animation:ringpulse 2.2s ease-out infinite;transform-origin:center"/></g>
+
+                    <g transform="translate(548,300)">
+                      <rect x="-58" y="0" width="116" height="24" rx="12" fill="var(--accent)"/>
+                      <text x="0" y="16" text-anchor="middle" style="font:600 11px Literata,Georgia,serif;letter-spacing:.06em;fill:#161826">3 ACTIVITIES LEFT</text>
+                    </g>
+
+                    <g transform="translate(510,438)"><rect x="-46" y="-14" width="92" height="28" rx="8" fill="var(--bg-sunk)" stroke="var(--border)"/><text x="0" y="4" text-anchor="middle" style="font:500 10.5px Literata,Georgia,serif;fill:var(--faint)">DAYS 18–20 LOCKED</text></g>
+                    <g transform="translate(664,556)"><rect x="-58" y="-16" width="116" height="32" rx="8" fill="var(--reward-soft)" stroke="var(--reward)" stroke-width="1.2"/><text x="0" y="-1" text-anchor="middle" style="font:600 10px Literata,Georgia,serif;letter-spacing:.1em;fill:var(--reward)">DAY 21 · REVIEW</text><text x="0" y="10" text-anchor="middle" style="font:500 9.5px Literata,Georgia,serif;fill:var(--muted)">unlocks the HQ floor</text></g>
+                    <g transform="translate(120,600)"><text x="0" y="0" style="font:500 11px Literata,Georgia,serif;fill:var(--faint)">Drag to pan · scroll to zoom · ← → to walk the plot</text></g>
+                  </svg>
+                </div>
+              </div>
+
+              <div style="border:1px dashed var(--border-strong);border-radius:14px;background:var(--surface);padding:16px 18px;display:flex;gap:14px;align-items:center;opacity:.8">
+                <svg viewBox="0 0 90 54" width="72" style="flex:none"><g transform="translate(45,40) scale(.4)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(233,233,237,.11)" stroke-width="1.2" stroke-dasharray="5 7"/></g></g></svg>
+                <div style="flex:1"><div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint)">CHAPTER 4 · LOCKED</div><div style="font:600 15.5px Literata,Georgia,serif;color:var(--muted);margin-top:3px">Costs, Scale &amp; the Margin</div><div style="font:400 12px Literata,Georgia,serif;color:var(--faint);margin-top:2px">Clear day 21 to break ground on days 22–28.</div></div>
+              </div>
+            </div>
+
+            <div style="display:grid;gap:14px;align-content:start">
+              <div style="border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:15px 16px;box-shadow:var(--sh1)">
+                <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint);margin-bottom:10px">YOUR TRACK</div>
+                <div style="display:grid;gap:7px">
+                  <div style="display:flex;gap:10px;align-items:center;padding:10px 11px;border-radius:8px;border:1px solid var(--accent);background:var(--accent-soft)"><svg viewBox="0 0 40 26" width="34" style="flex:none"><g transform="translate(20,20) scale(.26)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(8,9,16,.6)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#3A3660"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#272341"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#6B6AA8"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#E3B057" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#E3B057" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#B5ABFC" opacity=".45"/>
+  </g></g></svg><div style="flex:1;min-width:0"><div style="font:600 12.5px Literata,Georgia,serif;color:var(--text)">Entrepreneurship</div><div style="font:400 11px Literata,Georgia,serif;color:var(--accent-strong)">day 17 of 56</div></div></div>
+                  <div style="display:flex;gap:10px;align-items:center;padding:10px 11px;border-radius:8px;border:1px solid var(--border)" style-hover="border-color:var(--border-strong)"><svg viewBox="0 0 40 26" width="34" style="flex:none"><g transform="translate(20,20) scale(.26)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(233,233,237,.11)" stroke-width="1.2" stroke-dasharray="5 7"/></g></g></svg><div style="flex:1;min-width:0"><div style="font:600 12.5px Literata,Georgia,serif;color:var(--muted)">Development</div><div style="font:400 11px Literata,Georgia,serif;color:var(--faint)">day 4 of 56</div></div></div>
+                  <div style="display:flex;gap:10px;align-items:center;padding:10px 11px;border-radius:8px;border:1px solid var(--border)" style-hover="border-color:var(--border-strong)"><svg viewBox="0 0 40 26" width="34" style="flex:none"><g transform="translate(20,20) scale(.26)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(233,233,237,.11)" stroke-width="1.2" stroke-dasharray="5 7"/></g></g></svg><div style="flex:1;min-width:0"><div style="font:600 12.5px Literata,Georgia,serif;color:var(--muted)">Behavioral</div><div style="font:400 11px Literata,Georgia,serif;color:var(--faint)">not started</div></div></div>
+                </div>
+              </div>
+
+              <div style="border:1px solid var(--border);border-radius:14px;background:linear-gradient(160deg,var(--reward-soft) 0%,var(--surface) 55%);padding:16px;box-shadow:var(--sh1)">
+                <div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint)">LEAGUE</div><div style="font:500 10.5px 'JetBrains Mono',monospace;color:var(--muted)">rank 14</div></div>
+                <div style="display:flex;align-items:center;gap:11px;margin-top:9px">
+                  <svg viewBox="0 0 44 44" width="40" style="flex:none"><circle cx="22" cy="22" r="19" fill="none" stroke="var(--border)" stroke-width="4"/><circle cx="22" cy="22" r="19" fill="none" stroke="var(--reward)" stroke-width="4" stroke-linecap="round" stroke-dasharray="74 120" transform="rotate(-90 22 22)"/><text x="22" y="27" text-anchor="middle" style="font:600 13px Literata,Georgia,serif;fill:var(--text)">62</text></svg>
+                  <div><div style="font:600 17px Literata,Georgia,serif;color:var(--text)">Gold</div><div style="font:400 11.5px Literata,Georgia,serif;color:var(--muted)">420 XP to Platinum</div></div>
+                </div>
+                <div style="margin-top:12px;padding-top:11px;border-top:1px solid var(--border);font:400 11.5px/1.5 Literata,Georgia,serif;color:var(--muted)">Top 10 promote on Sunday. Two more days keeps you inside it.</div>
+              </div>
+
+              <div style="border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:8px;box-shadow:var(--sh1)">
+                <div style="display:flex;gap:9px;align-items:center;padding:9px 10px;border-radius:8px;font:500 13px Literata,Georgia,serif;color:var(--muted)" style-hover="background:var(--raised);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--danger)"></span>Review mistakes<span style="margin-left:auto;font:500 11px 'JetBrains Mono',monospace;color:var(--faint)">12</span></div>
+                <div style="display:flex;gap:9px;align-items:center;padding:9px 10px;border-radius:8px;font:500 13px Literata,Georgia,serif;color:var(--muted)" style-hover="background:var(--raised);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--reward)"></span>My notes<span style="margin-left:auto;font:500 11px 'JetBrains Mono',monospace;color:var(--faint)">38</span></div>
+                <div style="display:flex;gap:9px;align-items:center;padding:9px 10px;border-radius:8px;font:500 13px Literata,Georgia,serif;color:var(--muted)" style-hover="background:var(--raised);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--article)"></span>Daily challenge</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-endmark="2a"></div>
+    </div>
+
+    <div id="2b" style="display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px">
+      <div style="display:flex;align-items:baseline;gap:9px;font:400 11.5px/1.3 Literata,Georgia,serif;color:rgba(27,29,42,.55)"><a href="#2b" style="font:600 10.5px 'JetBrains Mono',monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1B1D2A;border-radius:5px;text-decoration:none">2b</a>Desktop 1440 · light</div>
+      <div data-m="light" data-screen-label="Roadmap desktop light" style="width:1320px;max-width:100%;border-radius:14px;overflow:hidden;box-shadow:0 22px 50px rgba(27,29,42,.22);background:var(--bg);display:grid;grid-template-columns:232px minmax(0,1fr)">
+
+        <aside style="background:var(--bg-sunk);border-right:1px solid var(--border);padding:20px 14px;display:flex;flex-direction:column;gap:22px">
+          <div style="display:flex;align-items:center;gap:9px;padding:0 6px">
+            <span style="width:26px;height:26px;border-radius:7px;background:var(--accent);display:grid;place-items:center;color:#FFFFFF;font:600 13px Literata,Georgia,serif">E</span>
+            <span style="font:600 14.5px Literata,Georgia,serif;color:var(--text);letter-spacing:-.01em">That's So Econ</span>
+          </div>
+          <div>
+            <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint);padding:0 8px 8px">DASHBOARD</div>
+            <div style="display:grid;gap:2px">
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg>Home</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;background:var(--accent-soft);color:var(--accent-strong);font:600 13.5px Literata,Georgia,serif;box-shadow:inset 2px 0 0 var(--accent)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V8l6-4 6 4 4-2v12l-4 2-6-4-6 4z"/></svg>Roadmap</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M6 4h12v5a6 6 0 01-12 0z"/></svg>Leaderboard</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 20h9M3 20h3M4 4h16v10H8l-4 4z"/></svg>My Challenges</div>
+            </div>
+          </div>
+          <div>
+            <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint);padding:0 8px 8px">LEARN</div>
+            <div style="display:grid;gap:2px">
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--concept)"></span>Concepts</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--article)"></span>Articles</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--quiz)"></span>Quizzes</div>
+              <div style="display:flex;gap:10px;align-items:center;padding:9px 11px;border-radius:8px;color:var(--muted);font:500 13.5px Literata,Georgia,serif" style-hover="background:var(--surface);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--faint)"></span>My Notes</div>
+            </div>
+          </div>
+          <div style="margin-top:auto;padding:11px 12px;border-radius:8px;background:var(--surface);border:1px solid var(--border);display:flex;gap:9px;align-items:center">
+            <span style="width:28px;height:28px;border-radius:999px;background:var(--accent-soft);color:var(--accent-strong);display:grid;place-items:center;font:600 13px Literata,Georgia,serif">A</span>
+            <div style="min-width:0"><div style="font:500 12.5px Literata,Georgia,serif;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Aziza R.</div><div style="font:400 11px Literata,Georgia,serif;color:var(--faint)">Gold · 1 480 XP</div></div>
+          </div>
+        </aside>
+
+        <div style="min-width:0;background:linear-gradient(180deg,var(--sky-1) 0%,var(--bg) 220px)">
+          <header style="display:flex;align-items:center;gap:14px;padding:16px 26px;border-bottom:1px solid var(--border)">
+            <div style="flex:1">
+              <div style="font:600 10.5px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint)">ENTREPRENEURSHIP ECONOMICS · 56-DAY BUILD</div>
+              <h1 style="margin:4px 0 0;font:600 25px/1.1 Literata,Georgia,serif;letter-spacing:-.02em;color:var(--text)">Your plot</h1>
+            </div>
+            <span style="font:600 12.5px Literata,Georgia,serif;padding:7px 11px;border-radius:999px;background:var(--danger-soft);color:var(--danger)">♥ 4/5 <span style="color:var(--faint);font-weight:400">· +1 in 2h</span></span>
+            <span style="font:600 12.5px Literata,Georgia,serif;padding:7px 11px;border-radius:999px;background:var(--reward-soft);color:var(--reward);display:inline-flex;gap:6px;align-items:center"><svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2l2.9 6.3 6.9.8-5 4.8 1.3 6.9L12 17.6 5.9 20.8 7.2 13.9l-5-4.8 6.9-.8z"/></svg>1 480 XP</span>
+            <span style="font:600 12.5px Literata,Georgia,serif;padding:7px 11px;border-radius:999px;background:var(--surface);border:1px solid var(--border);color:var(--text)">🔥 23</span>
+          </header>
+
+          <div style="display:grid;grid-template-columns:minmax(0,1fr) 286px;gap:22px;padding:22px 26px 30px">
+            <div style="min-width:0;display:grid;gap:14px">
+
+              <div style="border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:16px 18px;display:flex;gap:16px;align-items:center;box-shadow:var(--sh1);opacity:.86">
+                <svg viewBox="0 0 150 62" width="106" style="flex:none"><g transform="translate(38,44) scale(.42)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(27,29,42,.13)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#CFC8F2"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#B4ABE4"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#EFECFD"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#C98A2E" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#C98A2E" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#6E5FC4" opacity=".45"/>
+  </g></g><g transform="translate(76,52) scale(.42)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/></g><g>
+    <polygon points="44,16 100,48 6,48 -22,32" fill="rgba(27,29,42,.13)"/>
+    <polygon points="-44,-20 -8,1 -8,25 -44,4" fill="#CFC8F2"/>
+    <polygon points="-8,1 28,-20 28,4 -8,25" fill="#B4ABE4"/>
+    <polygon points="-44,-20 -8,-41 28,-20 -8,1" fill="#EFECFD" opacity=".8"/>
+    <polygon points="-4,-46 30,-26 30,10 -4,-10" fill="#CFC8F2"/>
+    <polygon points="30,-26 46,-35 46,1 30,10" fill="#B4ABE4"/>
+    <polygon points="-4,-46 30,-66 46,-57 30,-26" fill="#EFECFD"/>
+    <polygon points="18,-78 26,-74 26,-58 18,-62" fill="#CFC8F2"/>
+    <polygon points="26,-74 34,-78 34,-62 26,-58" fill="#B4ABE4"/>
+    <polygon points="18,-78 26,-82 34,-78 26,-74" fill="#EFECFD"/>
+    <ellipse cx="26" cy="-94" rx="13" ry="6" fill="#6E5FC4" opacity=".2"/>
+    <polygon points="4,-34 14,-28 14,-17 4,-23" fill="#C98A2E" opacity=".9"/>
+    <polygon points="18,-22 28,-28 28,-17 18,-11" fill="#6E5FC4" opacity=".5"/>
+  </g></g><g transform="translate(114,44) scale(.42)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(27,29,42,.13)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#CFC8F2"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#B4ABE4"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#EFECFD"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#C98A2E" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#C98A2E" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#6E5FC4" opacity=".45"/>
+  </g></g></svg>
+                <div style="flex:1;min-width:0">
+                  <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--success)">CHAPTER 2 · CLOSED</div>
+                  <div style="font:600 15.5px Literata,Georgia,serif;color:var(--text);margin-top:3px">Supply, Demand &amp; the Price Signal</div>
+                  <div style="font:400 12px Literata,Georgia,serif;color:var(--muted);margin-top:2px">7 of 7 days · review quiz 9/10 · +840 XP</div>
+                </div>
+                <button style="font:500 12.5px Literata,Georgia,serif;padding:9px 13px;border-radius:8px;border:1px solid var(--border-strong);background:transparent;color:var(--muted);cursor:pointer;min-height:40px" style-hover="border-color:var(--accent);color:var(--accent-strong)">Revisit</button>
+              </div>
+
+              <div style="border:1px solid var(--border);border-radius:14px;background:var(--surface);overflow:hidden;box-shadow:var(--sh2)">
+                <div style="display:flex;gap:16px;align-items:flex-start;padding:20px 22px 18px;background:linear-gradient(115deg,var(--accent-soft) 0%,transparent 62%);border-bottom:1px solid var(--border)">
+                  <div style="flex:none;width:46px;height:46px;border-radius:12px;background:var(--accent);color:#FFFFFF;display:grid;place-items:center;font:600 20px 'JetBrains Mono',monospace;box-shadow:var(--sh1)">03</div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font:600 10.5px Literata,Georgia,serif;letter-spacing:.14em;color:var(--accent-strong)">CURRENT CHAPTER · DAYS 15–21</div>
+                    <h2 style="margin:5px 0 5px;font:600 27px/1.08 Literata,Georgia,serif;letter-spacing:-.022em;color:var(--text)">Pricing Power</h2>
+                    <p style="margin:0;font:400 13.5px/1.55 Literata,Georgia,serif;color:var(--muted);max-width:56ch;text-wrap:pretty">What a price is actually saying, and why the founders who understand it stop competing on cost. Six lessons, then the chapter review.</p>
+                  </div>
+                  <div style="flex:none;width:176px">
+                    <div style="display:flex;justify-content:space-between;font:500 11.5px Literata,Georgia,serif;color:var(--muted)"><span>2 of 7 days</span><span style="color:var(--text)">29%</span></div>
+                    <div style="height:6px;border-radius:3px;background:var(--bg-sunk);margin-top:7px;overflow:hidden"><div style="width:29%;height:100%;background:var(--accent)"></div></div>
+                    <button style="width:100%;margin-top:11px;font:600 13px Literata,Georgia,serif;padding:11px 14px;border-radius:8px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent-strong);cursor:pointer;min-height:44px" style-hover="background:rgba(145,132,217,.3)">Continue day 17 →</button>
+                  </div>
+                </div>
+
+                <div style="position:relative;background:radial-gradient(120% 80% at 50% 0%,var(--sky-1) 0%,var(--bg-sunk) 100%)">
+                  <svg viewBox="0 0 860 700" width="100%" style="display:block" role="img" aria-label="Isometric chapter plot: days 15 to 21">
+                    <polyline points="300,120 424,192 548,264 424,336 300,408 424,480 548,552" fill="none" stroke="var(--road)" stroke-width="34" stroke-linecap="round" stroke-linejoin="round"/>
+                    <polyline points="300,120 424,192 548,264 424,336 300,408 424,480 548,552" fill="none" stroke="var(--road-line)" stroke-width="1.6" stroke-dasharray="12 16" stroke-linecap="round" style="animation:roadflow 3s linear infinite"/>
+
+                    <g transform="translate(300,120)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(27,29,42,.13)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#CFC8F2"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#B4ABE4"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#EFECFD"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#C98A2E" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#C98A2E" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#6E5FC4" opacity=".45"/>
+  </g></g>
+                    <g transform="translate(424,192)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(27,29,42,.13)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#CFC8F2"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#B4ABE4"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#EFECFD"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#C98A2E" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#C98A2E" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#6E5FC4" opacity=".45"/>
+  </g></g>
+
+                    <g transform="translate(548,264)">
+                      <g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(27,29,42,.13)" opacity=".7"/>
+    <polygon points="-44,-18 0,7 0,25 -44,0" fill="#DDE0EC"/>
+    <polygon points="0,7 44,-18 44,0 0,25" fill="#C6CADB"/>
+    <polygon points="0,-43 44,-18 0,7 -44,-18" fill="#FFFFFF"/>
+    <polygon points="-44,0 -44,-44 0,-69 44,-44 44,0 0,25" fill="none" stroke="#6E5FC4" stroke-width="1.6" stroke-dasharray="6 6" opacity=".85"/>
+    <line x1="-44" y1="-44" x2="0" y2="-19" stroke="#6E5FC4" stroke-width="1.4" stroke-dasharray="5 6" opacity=".6"/>
+    <line x1="0" y1="-19" x2="44" y2="-44" stroke="#6E5FC4" stroke-width="1.4" stroke-dasharray="5 6" opacity=".6"/>
+    <line x1="0" y1="-19" x2="0" y2="25" stroke="#6E5FC4" stroke-width="1.4" stroke-dasharray="5 6" opacity=".6"/>
+  </g>
+                    </g>
+                    <g transform="translate(300,408)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(27,29,42,.13)" stroke-width="1.2" stroke-dasharray="5 7"/></g><g transform="translate(0,-6)"><g><circle r="17" fill="#FAFAFE" stroke="rgba(27,29,42,.2)" stroke-width="1.2"/><rect x="-6" y="-3" width="12" height="10" rx="2.5" fill="#8A8FA3"/><path d="M-3.5 -3 v-4 a3.5 3.5 0 0 1 7 0 V-3" fill="none" stroke="#8A8FA3" stroke-width="2"/></g></g></g>
+                    <g transform="translate(424,336)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(27,29,42,.13)" stroke-width="1.2" stroke-dasharray="5 7"/></g><g transform="translate(0,-6)"><g><circle r="17" fill="#FAFAFE" stroke="rgba(27,29,42,.2)" stroke-width="1.2"/><rect x="-6" y="-3" width="12" height="10" rx="2.5" fill="#8A8FA3"/><path d="M-3.5 -3 v-4 a3.5 3.5 0 0 1 7 0 V-3" fill="none" stroke="#8A8FA3" stroke-width="2"/></g></g></g>
+                    <g transform="translate(424,480)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(27,29,42,.13)" stroke-width="1.2" stroke-dasharray="5 7"/></g><g transform="translate(0,-6)"><g><circle r="17" fill="#FAFAFE" stroke="rgba(27,29,42,.2)" stroke-width="1.2"/><rect x="-6" y="-3" width="12" height="10" rx="2.5" fill="#8A8FA3"/><path d="M-3.5 -3 v-4 a3.5 3.5 0 0 1 7 0 V-3" fill="none" stroke="#8A8FA3" stroke-width="2"/></g></g></g>
+                    <g transform="translate(548,552)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(27,29,42,.13)" stroke-width="1.2" stroke-dasharray="5 7"/></g><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="var(--reward)" stroke-width="1.4" stroke-dasharray="6 7" opacity=".55"/><g transform="translate(0,-6)"><g><circle r="17" fill="#FAFAFE" stroke="rgba(27,29,42,.2)" stroke-width="1.2"/><rect x="-6" y="-3" width="12" height="10" rx="2.5" fill="#8A8FA3"/><path d="M-3.5 -3 v-4 a3.5 3.5 0 0 1 7 0 V-3" fill="none" stroke="#8A8FA3" stroke-width="2"/></g></g></g>
+
+                    <g transform="translate(214,84)"><rect x="-44" y="-15" width="88" height="30" rx="8" fill="var(--surface)" stroke="var(--border)"/><text x="0" y="-1" text-anchor="middle" style="font:600 10px 'JetBrains Mono',monospace;fill:var(--success)">DAY 15</text><text x="0" y="10" text-anchor="middle" style="font:500 9.5px Literata,Georgia,serif;fill:var(--muted)">10/10 · +140 XP</text></g>
+                    <g transform="translate(338,156)"><rect x="-44" y="-15" width="88" height="30" rx="8" fill="var(--surface)" stroke="var(--border)"/><text x="0" y="-1" text-anchor="middle" style="font:600 10px 'JetBrains Mono',monospace;fill:var(--success)">DAY 16</text><text x="0" y="10" text-anchor="middle" style="font:500 9.5px Literata,Georgia,serif;fill:var(--muted)">8/10 · +120 XP</text></g>
+
+                    <g transform="translate(548,132)">
+                      <rect x="-92" y="-26" width="184" height="52" rx="10" fill="var(--accent)" opacity=".14"/>
+                      <rect x="-92" y="-26" width="184" height="52" rx="10" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.5"/>
+                      <text x="0" y="-7" text-anchor="middle" style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;fill:var(--accent-strong)">DAY 17 · BUILD IT</text>
+                      <text x="0" y="9" text-anchor="middle" style="font:600 12.5px Literata,Georgia,serif;fill:var(--text)">Why Airbnb priced</text>
+                      <text x="0" y="22" text-anchor="middle" style="font:600 12.5px Literata,Georgia,serif;fill:var(--text)">beds like hotels</text>
+                      <path d="M0 26 l0 14" stroke="var(--accent)" stroke-width="1.6" stroke-dasharray="4 4"/>
+                    </g>
+                    <g transform="translate(548,264)"><circle r="52" fill="none" stroke="var(--accent)" stroke-width="2" opacity=".5" style="animation:ringpulse 2.2s ease-out infinite;transform-origin:center"/></g>
+
+                    <g transform="translate(548,300)">
+                      <rect x="-58" y="0" width="116" height="24" rx="12" fill="var(--accent)"/>
+                      <text x="0" y="16" text-anchor="middle" style="font:600 11px Literata,Georgia,serif;letter-spacing:.06em;fill:#FFFFFF">3 ACTIVITIES LEFT</text>
+                    </g>
+
+                    <g transform="translate(510,438)"><rect x="-46" y="-14" width="92" height="28" rx="8" fill="var(--bg-sunk)" stroke="var(--border)"/><text x="0" y="4" text-anchor="middle" style="font:500 10.5px Literata,Georgia,serif;fill:var(--faint)">DAYS 18–20 LOCKED</text></g>
+                    <g transform="translate(664,556)"><rect x="-58" y="-16" width="116" height="32" rx="8" fill="var(--reward-soft)" stroke="var(--reward)" stroke-width="1.2"/><text x="0" y="-1" text-anchor="middle" style="font:600 10px Literata,Georgia,serif;letter-spacing:.1em;fill:var(--reward)">DAY 21 · REVIEW</text><text x="0" y="10" text-anchor="middle" style="font:500 9.5px Literata,Georgia,serif;fill:var(--muted)">unlocks the HQ floor</text></g>
+                    <g transform="translate(120,600)"><text x="0" y="0" style="font:500 11px Literata,Georgia,serif;fill:var(--faint)">Drag to pan · scroll to zoom · ← → to walk the plot</text></g>
+                  </svg>
+                </div>
+              </div>
+
+              <div style="border:1px dashed var(--border-strong);border-radius:14px;background:var(--surface);padding:16px 18px;display:flex;gap:14px;align-items:center;opacity:.8">
+                <svg viewBox="0 0 90 54" width="72" style="flex:none"><g transform="translate(45,40) scale(.4)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(27,29,42,.13)" stroke-width="1.2" stroke-dasharray="5 7"/></g></g></svg>
+                <div style="flex:1"><div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint)">CHAPTER 4 · LOCKED</div><div style="font:600 15.5px Literata,Georgia,serif;color:var(--muted);margin-top:3px">Costs, Scale &amp; the Margin</div><div style="font:400 12px Literata,Georgia,serif;color:var(--faint);margin-top:2px">Clear day 21 to break ground on days 22–28.</div></div>
+              </div>
+            </div>
+
+            <div style="display:grid;gap:14px;align-content:start">
+              <div style="border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:15px 16px;box-shadow:var(--sh1)">
+                <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint);margin-bottom:10px">YOUR TRACK</div>
+                <div style="display:grid;gap:7px">
+                  <div style="display:flex;gap:10px;align-items:center;padding:10px 11px;border-radius:8px;border:1px solid var(--accent);background:var(--accent-soft)"><svg viewBox="0 0 40 26" width="34" style="flex:none"><g transform="translate(20,20) scale(.26)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(27,29,42,.13)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#CFC8F2"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#B4ABE4"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#EFECFD"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#C98A2E" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#C98A2E" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#6E5FC4" opacity=".45"/>
+  </g></g></svg><div style="flex:1;min-width:0"><div style="font:600 12.5px Literata,Georgia,serif;color:var(--text)">Entrepreneurship</div><div style="font:400 11px Literata,Georgia,serif;color:var(--accent-strong)">day 17 of 56</div></div></div>
+                  <div style="display:flex;gap:10px;align-items:center;padding:10px 11px;border-radius:8px;border:1px solid var(--border)" style-hover="border-color:var(--border-strong)"><svg viewBox="0 0 40 26" width="34" style="flex:none"><g transform="translate(20,20) scale(.26)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(27,29,42,.13)" stroke-width="1.2" stroke-dasharray="5 7"/></g></g></svg><div style="flex:1;min-width:0"><div style="font:600 12.5px Literata,Georgia,serif;color:var(--muted)">Development</div><div style="font:400 11px Literata,Georgia,serif;color:var(--faint)">day 4 of 56</div></div></div>
+                  <div style="display:flex;gap:10px;align-items:center;padding:10px 11px;border-radius:8px;border:1px solid var(--border)" style-hover="border-color:var(--border-strong)"><svg viewBox="0 0 40 26" width="34" style="flex:none"><g transform="translate(20,20) scale(.26)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(27,29,42,.13)" stroke-width="1.2" stroke-dasharray="5 7"/></g></g></svg><div style="flex:1;min-width:0"><div style="font:600 12.5px Literata,Georgia,serif;color:var(--muted)">Behavioral</div><div style="font:400 11px Literata,Georgia,serif;color:var(--faint)">not started</div></div></div>
+                </div>
+              </div>
+
+              <div style="border:1px solid var(--border);border-radius:14px;background:linear-gradient(160deg,var(--reward-soft) 0%,var(--surface) 55%);padding:16px;box-shadow:var(--sh1)">
+                <div style="display:flex;justify-content:space-between;align-items:baseline"><div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint)">LEAGUE</div><div style="font:500 10.5px 'JetBrains Mono',monospace;color:var(--muted)">rank 14</div></div>
+                <div style="display:flex;align-items:center;gap:11px;margin-top:9px">
+                  <svg viewBox="0 0 44 44" width="40" style="flex:none"><circle cx="22" cy="22" r="19" fill="none" stroke="var(--border)" stroke-width="4"/><circle cx="22" cy="22" r="19" fill="none" stroke="var(--reward)" stroke-width="4" stroke-linecap="round" stroke-dasharray="74 120" transform="rotate(-90 22 22)"/><text x="22" y="27" text-anchor="middle" style="font:600 13px Literata,Georgia,serif;fill:var(--text)">62</text></svg>
+                  <div><div style="font:600 17px Literata,Georgia,serif;color:var(--text)">Gold</div><div style="font:400 11.5px Literata,Georgia,serif;color:var(--muted)">420 XP to Platinum</div></div>
+                </div>
+                <div style="margin-top:12px;padding-top:11px;border-top:1px solid var(--border);font:400 11.5px/1.5 Literata,Georgia,serif;color:var(--muted)">Top 10 promote on Sunday. Two more days keeps you inside it.</div>
+              </div>
+
+              <div style="border:1px solid var(--border);border-radius:14px;background:var(--surface);padding:8px;box-shadow:var(--sh1)">
+                <div style="display:flex;gap:9px;align-items:center;padding:9px 10px;border-radius:8px;font:500 13px Literata,Georgia,serif;color:var(--muted)" style-hover="background:var(--raised);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--danger)"></span>Review mistakes<span style="margin-left:auto;font:500 11px 'JetBrains Mono',monospace;color:var(--faint)">12</span></div>
+                <div style="display:flex;gap:9px;align-items:center;padding:9px 10px;border-radius:8px;font:500 13px Literata,Georgia,serif;color:var(--muted)" style-hover="background:var(--raised);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--reward)"></span>My notes<span style="margin-left:auto;font:500 11px 'JetBrains Mono',monospace;color:var(--faint)">38</span></div>
+                <div style="display:flex;gap:9px;align-items:center;padding:9px 10px;border-radius:8px;font:500 13px Literata,Georgia,serif;color:var(--muted)" style-hover="background:var(--raised);color:var(--text)"><span style="width:7px;height:7px;border-radius:2px;background:var(--article)"></span>Daily challenge</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div data-endmark="2b"></div>
+    </div>
+
+    <div id="2c" style="display:flex;flex-direction:column;gap:9px;scroll-margin-top:16px">
+      <div style="display:flex;align-items:baseline;gap:9px;font:400 11.5px/1.3 Literata,Georgia,serif;color:rgba(27,29,42,.55)"><a href="#2c" style="font:600 10.5px 'JetBrains Mono',monospace;padding:3px 7px;background:rgba(0,0,0,.08);color:#1B1D2A;border-radius:5px;text-decoration:none">2c</a>375px · nav rebuilt as 4 tabs + a Learn sheet</div>
+      <div style="display:flex;gap:20px">
+
+        <div data-m="light" data-screen-label="Roadmap mobile light" style="width:375px;height:812px;border-radius:24px;overflow:hidden;position:relative;background:var(--bg);box-shadow:0 22px 50px rgba(27,29,42,.22);border:1px solid var(--border)">
+          <div style="height:64px;display:flex;align-items:center;gap:10px;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--border);position:relative;z-index:2">
+            <button style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 10px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15 9l-4 4-2 5-2-9z"/></svg><span style="font:600 12.5px Literata,Georgia,serif;color:var(--text)">Entrepreneurship</span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div style="margin-left:auto;display:flex;gap:7px;align-items:center">
+              <span style="font:600 11.5px Literata,Georgia,serif;padding:6px 9px;border-radius:999px;background:var(--reward-soft);color:var(--reward)">1 480</span>
+              <span style="width:32px;height:32px;border-radius:999px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;font:600 13px Literata,Georgia,serif">A</span>
+            </div>
+          </div>
+          <div style="height:calc(812px - 64px - 78px);overflow:hidden;background:linear-gradient(180deg,var(--sky-1) 0%,var(--bg) 180px)">
+            <div style="padding:14px 14px 10px">
+              <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--accent)">CHAPTER 03 · DAYS 15–21</div>
+              <h2 style="margin:4px 0 6px;font:600 25px/1.06 Literata,Georgia,serif;letter-spacing:-.022em;color:var(--text)">Pricing Power</h2>
+              <div style="display:flex;align-items:center;gap:9px"><div style="flex:1;height:6px;border-radius:3px;background:var(--bg-sunk);overflow:hidden"><div style="width:29%;height:100%;background:var(--accent)"></div></div><span style="font:500 11.5px Literata,Georgia,serif;color:var(--muted)">2 / 7 days</span></div>
+            </div>
+            <svg viewBox="0 0 340 470" width="100%" style="display:block" role="img" aria-label="Isometric plot, mobile">
+              <polyline points="100,70 230,132 100,194 230,256 100,318 230,380 165,436" fill="none" stroke="var(--road)" stroke-width="24" stroke-linecap="round" stroke-linejoin="round"/>
+              <polyline points="100,70 230,132 100,194 230,256 100,318 230,380 165,436" fill="none" stroke="var(--road-line)" stroke-width="1.4" stroke-dasharray="10 13" style="animation:roadflow 3s linear infinite"/>
+              <g transform="translate(100,70) scale(.62)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(27,29,42,.13)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#CFC8F2"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#B4ABE4"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#EFECFD"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#C98A2E" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#C98A2E" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#6E5FC4" opacity=".45"/>
+  </g></g>
+              <g transform="translate(230,132) scale(.62)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(27,29,42,.13)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#CFC8F2"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#B4ABE4"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#EFECFD"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#C98A2E" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#C98A2E" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#6E5FC4" opacity=".45"/>
+  </g></g>
+              <g transform="translate(100,194) scale(.62)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(27,29,42,.13)" opacity=".7"/>
+    <polygon points="-44,-18 0,7 0,25 -44,0" fill="#DDE0EC"/>
+    <polygon points="0,7 44,-18 44,0 0,25" fill="#C6CADB"/>
+    <polygon points="0,-43 44,-18 0,7 -44,-18" fill="#FFFFFF"/>
+    <polygon points="-44,0 -44,-44 0,-69 44,-44 44,0 0,25" fill="none" stroke="#6E5FC4" stroke-width="1.6" stroke-dasharray="6 6" opacity=".85"/>
+    <line x1="-44" y1="-44" x2="0" y2="-19" stroke="#6E5FC4" stroke-width="1.4" stroke-dasharray="5 6" opacity=".6"/>
+    <line x1="0" y1="-19" x2="44" y2="-44" stroke="#6E5FC4" stroke-width="1.4" stroke-dasharray="5 6" opacity=".6"/>
+    <line x1="0" y1="-19" x2="0" y2="25" stroke="#6E5FC4" stroke-width="1.4" stroke-dasharray="5 6" opacity=".6"/>
+  </g><circle r="52" fill="none" stroke="var(--accent)" stroke-width="2.4" opacity=".5" style="animation:ringpulse 2.2s ease-out infinite;transform-origin:center"/></g>
+              <g transform="translate(100,120)"><rect x="-58" y="-15" width="116" height="30" rx="9" fill="var(--surface)" stroke="var(--accent)" stroke-width="1.4"/><text x="0" y="-2" text-anchor="middle" style="font:600 9.5px Literata,Georgia,serif;letter-spacing:.12em;fill:var(--accent)">DAY 17 · BUILD IT</text><text x="0" y="10" text-anchor="middle" style="font:600 11px Literata,Georgia,serif;fill:var(--text)">3 activities left</text></g>
+              <g transform="translate(230,256) scale(.62)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(27,29,42,.13)" stroke-width="1.2" stroke-dasharray="5 7"/></g><g transform="translate(0,-6)"><g><circle r="17" fill="#FAFAFE" stroke="rgba(27,29,42,.2)" stroke-width="1.2"/><rect x="-6" y="-3" width="12" height="10" rx="2.5" fill="#8A8FA3"/><path d="M-3.5 -3 v-4 a3.5 3.5 0 0 1 7 0 V-3" fill="none" stroke="#8A8FA3" stroke-width="2"/></g></g></g>
+              <g transform="translate(100,318) scale(.62)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(27,29,42,.13)" stroke-width="1.2" stroke-dasharray="5 7"/></g><g transform="translate(0,-6)"><g><circle r="17" fill="#FAFAFE" stroke="rgba(27,29,42,.2)" stroke-width="1.2"/><rect x="-6" y="-3" width="12" height="10" rx="2.5" fill="#8A8FA3"/><path d="M-3.5 -3 v-4 a3.5 3.5 0 0 1 7 0 V-3" fill="none" stroke="#8A8FA3" stroke-width="2"/></g></g></g>
+              <g transform="translate(230,380) scale(.62)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(27,29,42,.13)" stroke-width="1.2" stroke-dasharray="5 7"/></g><g transform="translate(0,-6)"><g><circle r="17" fill="#FAFAFE" stroke="rgba(27,29,42,.2)" stroke-width="1.2"/><rect x="-6" y="-3" width="12" height="10" rx="2.5" fill="#8A8FA3"/><path d="M-3.5 -3 v-4 a3.5 3.5 0 0 1 7 0 V-3" fill="none" stroke="#8A8FA3" stroke-width="2"/></g></g></g>
+              <g transform="translate(165,436) scale(.62)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#E1E3EE" stroke="rgba(27,29,42,.13)" stroke-width="1.2"/><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="rgba(27,29,42,.13)" stroke-width="1.2" stroke-dasharray="5 7"/></g><polygon points="0,-28 49,0 0,28 -49,0" fill="none" stroke="var(--reward)" stroke-width="1.6" stroke-dasharray="6 7" opacity=".6"/><g transform="translate(0,-6)"><g><circle r="17" fill="#FAFAFE" stroke="rgba(27,29,42,.2)" stroke-width="1.2"/><rect x="-6" y="-3" width="12" height="10" rx="2.5" fill="#8A8FA3"/><path d="M-3.5 -3 v-4 a3.5 3.5 0 0 1 7 0 V-3" fill="none" stroke="#8A8FA3" stroke-width="2"/></g></g></g>
+            </svg>
+          </div>
+          <div style="position:absolute;left:0;right:0;bottom:0;height:78px;background:var(--surface);border-top:1px solid var(--border);display:flex;align-items:flex-start;padding:8px 6px;gap:2px">
+            <div style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:8px;color:var(--muted)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 11l9-8 9 8v9a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg><span style="font:500 10.5px Literata,Georgia,serif">Home</span></div>
+            <div style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:8px;background:var(--accent-soft);color:var(--accent)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 20V8l6-4 6 4 4-2v12l-4 2-6-4-6 4z"/></svg><span style="font:600 10.5px Literata,Georgia,serif">Plot</span></div>
+            <div style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:8px;color:var(--muted)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19V5m5 14V9m5 10V7m5 12v-6"/></svg><span style="font:500 10.5px Literata,Georgia,serif">Learn</span></div>
+            <div style="flex:1;min-height:56px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;border-radius:8px;color:var(--muted)"><svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M8 21h8M12 17v4M6 4h12v5a6 6 0 01-12 0z"/></svg><span style="font:500 10.5px Literata,Georgia,serif">League</span></div>
+          </div>
+        </div>
+
+        <div data-m="dark" data-screen-label="Roadmap mobile dark with Learn sheet" style="width:375px;height:812px;border-radius:24px;overflow:hidden;position:relative;background:var(--bg);box-shadow:0 22px 50px rgba(27,29,42,.3);border:1px solid var(--border)">
+          <div style="height:64px;display:flex;align-items:center;gap:10px;padding:0 14px;background:var(--surface);border-bottom:1px solid var(--border)">
+            <button style="display:flex;align-items:center;gap:6px;min-height:44px;padding:0 10px;border-radius:8px;border:1px solid var(--border);background:transparent;cursor:pointer"><svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="var(--accent)" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M15 9l-4 4-2 5-2-9z"/></svg><span style="font:600 12.5px Literata,Georgia,serif;color:var(--text)">Entrepreneurship</span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2.4"><path d="M6 9l6 6 6-6"/></svg></button>
+            <div style="margin-left:auto;display:flex;gap:7px;align-items:center">
+              <span style="font:600 11.5px Literata,Georgia,serif;padding:6px 9px;border-radius:999px;background:var(--reward-soft);color:var(--reward)">1 480</span>
+              <span style="width:32px;height:32px;border-radius:999px;background:var(--accent-soft);color:var(--accent-strong);display:grid;place-items:center;font:600 13px Literata,Georgia,serif">A</span>
+            </div>
+          </div>
+          <div style="height:calc(812px - 64px);overflow:hidden;background:linear-gradient(180deg,var(--sky-1) 0%,var(--bg) 180px);filter:blur(1.5px);opacity:.5">
+            <div style="padding:14px">
+              <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--accent)">CHAPTER 03 · DAYS 15–21</div>
+              <h2 style="margin:4px 0 0;font:600 25px/1.06 Literata,Georgia,serif;color:var(--text)">Pricing Power</h2>
+            </div>
+            <svg viewBox="0 0 340 300" width="100%"><g transform="translate(100,70) scale(.62)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(8,9,16,.6)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#3A3660"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#272341"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#6B6AA8"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#E3B057" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#E3B057" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#B5ABFC" opacity=".45"/>
+  </g></g><g transform="translate(230,132) scale(.62)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(8,9,16,.6)"/>
+    <polygon points="-44,-44 0,-19 0,25 -44,0" fill="#3A3660"/>
+    <polygon points="0,-19 44,-44 44,0 0,25" fill="#272341"/>
+    <polygon points="0,-69 44,-44 0,-19 -44,-44" fill="#6B6AA8"/>
+    <polygon points="-31,-29 -17,-21 -17,-8 -31,-16" fill="#E3B057" opacity=".85"/>
+    <polygon points="-31,-8 -17,0 -17,13 -31,5" fill="#E3B057" opacity=".5"/>
+    <polygon points="17,-21 31,-29 31,-16 17,-8" fill="#B5ABFC" opacity=".45"/>
+  </g></g><g transform="translate(100,194) scale(.62)"><g><polygon points="0,-40 70,0 0,40 -70,0" fill="#1B1E2E" stroke="rgba(233,233,237,.11)" stroke-width="1.2"/></g><g>
+    <polygon points="40,14 96,46 8,46 -20,30" fill="rgba(8,9,16,.6)" opacity=".7"/>
+    <polygon points="-44,-18 0,7 0,25 -44,0" fill="#2B2F44"/>
+    <polygon points="0,7 44,-18 44,0 0,25" fill="#1E2131"/>
+    <polygon points="0,-43 44,-18 0,7 -44,-18" fill="#4A4F6E"/>
+    <polygon points="-44,0 -44,-44 0,-69 44,-44 44,0 0,25" fill="none" stroke="#9184D9" stroke-width="1.6" stroke-dasharray="6 6" opacity=".85"/>
+    <line x1="-44" y1="-44" x2="0" y2="-19" stroke="#9184D9" stroke-width="1.4" stroke-dasharray="5 6" opacity=".6"/>
+    <line x1="0" y1="-19" x2="44" y2="-44" stroke="#9184D9" stroke-width="1.4" stroke-dasharray="5 6" opacity=".6"/>
+    <line x1="0" y1="-19" x2="0" y2="25" stroke="#9184D9" stroke-width="1.4" stroke-dasharray="5 6" opacity=".6"/>
+  </g></g></svg>
+          </div>
+          <div style="position:absolute;inset:0;background:rgba(8,9,16,.5)"></div>
+          <div style="position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-top:1px solid var(--border-strong);border-radius:24px 24px 0 0;padding:10px 14px 14px;box-shadow:var(--sh3)">
+            <div style="width:38px;height:4px;border-radius:2px;background:var(--border-strong);margin:0 auto 14px"></div>
+            <div style="font:600 10px Literata,Georgia,serif;letter-spacing:.14em;color:var(--faint);margin-bottom:10px">DAY 17 · WHY AIRBNB PRICED BEDS LIKE HOTELS</div>
+            <div style="display:grid;gap:8px">
+              <div style="display:flex;gap:12px;align-items:center;min-height:60px;padding:11px 13px;border-radius:8px;background:var(--raised);border:1px solid var(--border);border-left:3px solid var(--concept)"><span style="width:30px;height:30px;border-radius:8px;background:var(--concept-soft);color:var(--concept);display:grid;place-items:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 3v18M5 7h14M7 12h10"/></svg></span><div style="flex:1"><div style="font:500 14px Literata,Georgia,serif;color:var(--text)">Concept</div><div style="font:400 11.5px Literata,Georgia,serif;color:var(--muted)">7 min · marginal cost, plainly</div></div><span style="width:24px;height:24px;border-radius:999px;background:var(--success);display:grid;place-items:center;flex:none"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#161826" stroke-width="3.2"><path d="M20 6L9 17l-5-5"/></svg></span></div>
+              <div style="display:flex;gap:12px;align-items:center;min-height:60px;padding:11px 13px;border-radius:8px;background:var(--raised);border:1.5px solid var(--accent);border-left:3px solid var(--article)"><span style="width:30px;height:30px;border-radius:8px;background:var(--article-soft);color:var(--article);display:grid;place-items:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16v14H4zM8 9h8M8 13h6"/></svg></span><div style="flex:1"><div style="font:500 14px Literata,Georgia,serif;color:var(--text)">Article</div><div style="font:400 11.5px Literata,Georgia,serif;color:var(--muted)">12 min · continue where you left</div></div><span style="font:600 11px Literata,Georgia,serif;color:var(--accent-strong)">64%</span></div>
+              <div style="display:flex;gap:12px;align-items:center;min-height:60px;padding:11px 13px;border-radius:8px;background:var(--raised);border:1px solid var(--border);border-left:3px solid var(--quiz);opacity:.55"><span style="width:30px;height:30px;border-radius:8px;background:var(--quiz-soft);color:var(--quiz);display:grid;place-items:center;flex:none"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 9a3 3 0 116 0c0 2-3 2.5-3 5M12 18h.01"/></svg></span><div style="flex:1"><div style="font:500 14px Literata,Georgia,serif;color:var(--text)">Quiz</div><div style="font:400 11.5px Literata,Georgia,serif;color:var(--muted)">10 questions · needs 8 to pass</div></div><svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--faint)" stroke-width="2"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V7a4 4 0 018 0v4"/></svg></div>
+            </div>
+            <button style="width:100%;margin-top:12px;min-height:48px;font:600 14px Literata,Georgia,serif;border-radius:8px;border:1px solid var(--accent);background:var(--accent-soft);color:var(--accent-strong);cursor:pointer">Resume the article →</button>
+            <div style="display:flex;justify-content:space-between;margin-top:12px;padding-top:11px;border-top:1px solid var(--border);font:400 11.5px Literata,Georgia,serif;color:var(--faint)"><span>Notes · 38</span><span>Mistakes · 12</span><span>Takeaways · 6</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="margin-top:26px;display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px;max-width:1320px;padding:16px 18px;background:#FAFAFE;border:1px solid rgba(27,29,42,.1);border-radius:14px">
+    <div><div style="font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#8A8FA3;margin-bottom:7px">WHAT CHANGED</div><p style="margin:0;font:400 12.5px/1.6 Literata,Georgia,serif;color:#3A3D4C">The hardcoded x-coordinates go. Plots sit on an isometric grid, so a chapter is generated from its day list — 7 nodes or 70. Completed days carry a volume, the active day is a foundation with dashed intent, locked days are bare ground.</p></div>
+    <div><div style="font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#8A8FA3;margin-bottom:7px">MOBILE NAV</div><p style="margin:0;font:400 12.5px/1.6 Literata,Georgia,serif;color:#3A3D4C">Eight scrolling tabs become four fixed ones — Home, Plot, Learn, League. Learn opens the day sheet in <a href="#2c">2c</a> right, where Concept / Article / Quiz live in reading order, with Notes and Mistakes at its foot.</p></div>
+    <div><div style="font:600 10px 'JetBrains Mono',monospace;letter-spacing:.14em;color:#8A8FA3;margin-bottom:7px">TRY NEXT</div><p style="margin:0;font:400 12.5px/1.6 Literata,Georgia,serif;color:#3A3D4C">"Show all 8 chapters as one continuous city" · "make <a href="#2a">2a</a> light" · "add the day-cleared reward moment" · "now do /home"</p></div>
+  </div>
+</section>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:1440}}"></script>
+</body>
+</html>

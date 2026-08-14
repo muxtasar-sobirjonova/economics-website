@@ -10,7 +10,7 @@ export default function BackButton() {
   return (
     <button
       onClick={() => router.back()}
-      className="inline-flex items-center gap-2 text-[#4ebdd5] hover:text-[#4ebdd5] font-[700] text-sm transition-colors border-none bg-transparent cursor-pointer p-0"
+      className="inline-flex items-center gap-2 text-article hover:text-article font-[700] text-sm transition-colors border-none bg-transparent cursor-pointer p-0"
     >
       <IconArrowLeft size={18} stroke={2.5} />
       Back

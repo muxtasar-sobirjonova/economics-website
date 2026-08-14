@@ -12,7 +12,7 @@ export default function AppError({
       <h2 className="text-xl font-bold mb-4">Dashboard Client Error</h2>
       <p className="font-mono text-sm mb-4 break-all">{error.message || "Unknown error"}</p>
       {error.stack && (
-        <pre className="text-xs bg-white p-4 rounded overflow-auto max-h-[300px] mb-4">
+        <pre className="text-xs bg-surface p-4 rounded overflow-auto max-h-[300px] mb-4">
           {error.stack}
         </pre>
       )}

@@ -13,10 +13,10 @@ export default function TopicsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 min-h-[60vh]">
       <div className="mb-12">
-        <h1 className="text-4xl font-extrabold text-brand-primary tracking-tight mb-4">
+        <h1 className="text-4xl font-extrabold text-accent tracking-tight mb-4">
           Explore by Topic
         </h1>
-        <p className="text-xl text-gray-600 max-w-3xl">
+        <p className="text-xl text-muted max-w-3xl">
           Find stories grouped by the core economic principles they illustrate.
         </p>
       </div>
@@ -26,16 +26,16 @@ export default function TopicsPage() {
           <Link
             key={topic._id}
             href={`/articles?topic=${topic.slug.current}`}
-            className="group block bg-white border border-gray-200 rounded-2xl p-8 hover:border-brand-primary hover:shadow-md transition-all"
+            className="group block bg-surface border border-line rounded-2xl p-8 hover:border-accent hover:shadow-md transition-all"
           >
-            <h2 className="text-2xl font-bold text-brand-primary group-hover:text-[#5A4FBD] mb-3 transition-colors">
+            <h2 className="text-2xl font-bold text-accent group-hover:text-accent-strong mb-3 transition-colors">
               {topic.title}
             </h2>
-            <p className="text-gray-600">
+            <p className="text-muted">
               {topic.description ||
                 "Learn about this economic concept through real-world examples."}
             </p>
-            <div className="mt-6 flex items-center text-brand-primary font-medium">
+            <div className="mt-6 flex items-center text-accent font-medium">
               Explore topic{" "}
               <span className="ml-2 group-hover:translate-x-1 transition-transform">
                 →
@@ -45,9 +45,9 @@ export default function TopicsPage() {
         ))}
 
         {/* Coming soon placeholder */}
-        <div className="block bg-gray-50 border border-dashed border-gray-200 rounded-2xl p-8 flex flex-col items-start justify-center opacity-60">
-          <h2 className="text-2xl font-bold text-gray-400 mb-3">More coming soon</h2>
-          <p className="text-gray-400 text-sm">
+        <div className="block bg-bg border border-dashed border-line rounded-2xl p-8 flex flex-col items-start justify-center opacity-60">
+          <h2 className="text-2xl font-bold text-faint mb-3">More coming soon</h2>
+          <p className="text-faint text-sm">
             New topic areas are being added as new lessons launch.
           </p>
         </div>

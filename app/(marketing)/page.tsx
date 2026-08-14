@@ -13,7 +13,7 @@ export default async function MarketingPage() {
   }
 
   return (
-    <div className="min-h-screen font-sans bg-white text-left selection:bg-brand-primary selection:text-white relative">
+    <div className="min-h-screen font-sans bg-surface text-left selection:bg-accent selection:text-white relative">
       <MarketingNav />
       <MarketingHero />
       <MarketingSections />

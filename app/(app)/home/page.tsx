@@ -61,10 +61,10 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
 
   if (!trackProgress) {
     return (
-      <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4">
-        <h2 className="text-2xl font-bold mb-2 text-[#362A5C]">Welcome to That&apos;s So Econ!</h2>
-        <p className="text-gray-600 mb-6 max-w-md mx-auto">
-          We&apos;re setting up your learning profile. Please complete your onboarding or check back in a moment to view your dashboard.
+      <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-s4">
+        <h2 className="text-h2 font-semibold text-ink mb-s2">Welcome to That&apos;s So Econ</h2>
+        <p className="text-ui text-muted max-w-[46ch]">
+          We&apos;re setting up your learning profile. Finish onboarding, or check back in a moment.
         </p>
       </div>
     );
@@ -187,22 +187,24 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
   return (
     <>
       <DailyQuote activeTrack={activeTrack} />
-      <div className="flex flex-col justify-center py-10 px-4 md:px-12">
-        <DashboardHero 
+      <div className="px-s4 md:px-s6 lg:px-s7 pt-s5 pb-s4">
+        <DashboardHero
           completedAgendaDates={completedAgendaDates}
           completedDates={completedLessonDates}
-          userName={userName} 
+          userName={userName}
+          currentDay={currentDay}
+          streak={streak}
         />
       </div>
 
-      <div className="flex flex-col justify-start py-4 px-4 md:px-12">
-        <div className="flex flex-col lg:flex-row w-full mx-auto gap-6 max-w-[1200px]">
+      <div className="px-s4 md:px-s6 lg:px-s7 pb-s7">
+        <div className="flex flex-col lg:flex-row w-full mx-auto gap-s4 max-w-[1200px]">
           <TodayAgendaCard initialItems={agendaItems} />
           <DailyChallengeCard userId={userId} />
         </div>
         
-        <div className="mt-6 w-full mx-auto max-w-[1200px]">
-          <Suspense fallback={<div className="h-32 w-full bg-slate-100 animate-pulse rounded-xl" />}>
+        <div className="w-full mx-auto max-w-[1200px]">
+          <Suspense fallback={<div className="h-32 w-full bg-bg-sunk animate-pulse rounded-lg mt-s6" />}>
             <DashboardStatsAsync
               userId={userId}
               streak={streak}
@@ -227,11 +229,19 @@ export default async function DashboardPage() {
   const userName = session.user.name || "";
 
   return (
-    <div className="w-full bg-[#F8F9FC]">
+    <div className="w-full bg-bg bg-sky min-h-full">
       <Suspense fallback={
-        <div className="flex flex-col items-center justify-center min-h-[70vh] w-full px-4">
-          <div className="w-12 h-12 border-4 border-slate-200 border-t-brand-primary rounded-full animate-spin mb-4"></div>
-          <p className="text-slate-500 font-medium animate-pulse">Loading dashboard...</p>
+        <div className="px-s4 md:px-s6 lg:px-s7 pt-s5 pb-s7 w-full max-w-[1200px] mx-auto">
+          <div className="h-24 w-full bg-bg-sunk animate-pulse rounded-lg" />
+          <div className="flex flex-col lg:flex-row gap-s4 mt-s5">
+            <div className="h-64 flex-[1.5] bg-bg-sunk animate-pulse rounded-lg" />
+            <div className="h-64 flex-1 bg-bg-sunk animate-pulse rounded-lg" />
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-s3 mt-s6">
+            {Array.from({ length: 5 }).map((_, i) => (
+              <div key={i} className="h-28 bg-bg-sunk animate-pulse rounded-lg" />
+            ))}
+          </div>
         </div>
       }>
         <DashboardData userId={userId} userName={userName} />

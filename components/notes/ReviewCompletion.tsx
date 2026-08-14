@@ -18,10 +18,10 @@ export function ReviewCompletion({
   setActiveLessonId: (id: number | null) => void;
 }) {
   return (
-    <div className="flex-1 min-h-screen bg-[#F8F9FC] flex flex-col p-10 relative max-w-[1200px] mx-auto w-full">
+    <div className="flex-1 min-h-screen bg-bg flex flex-col p-10 relative max-w-[1200px] mx-auto w-full">
       <div className="mb-2 shrink-0">
-        <h1 className="text-[13px] font-[700] text-gray-900 uppercase tracking-[0.08em] mb-1">My Notes</h1>
-        <p className="text-sm text-gray-500">Card Review Complete</p>
+        <h1 className="text-[13px] font-[700] text-ink uppercase tracking-[0.08em] mb-1">My Notes</h1>
+        <p className="text-sm text-muted">Card Review Complete</p>
       </div>
       
       <div className="flex-1 flex flex-col items-center justify-center">
@@ -40,8 +40,8 @@ export function ReviewCompletion({
           </div>
         )}
         
-        <h2 className="text-[28px] font-[900] text-gray-900 mb-2 z-10">🎉 All Done!</h2>
-        <p className="text-base text-gray-500 z-10">You memorized {knewItCount} of {totalInSession} notes today</p>
+        <h2 className="text-[28px] font-[900] text-ink mb-2 z-10">🎉 All Done!</h2>
+        <p className="text-base text-muted z-10">You memorized {knewItCount} of {totalInSession} notes today</p>
         {reviewAgainCount > 0 && (
           <p className="text-sm text-red-500 mt-2 font-bold z-10">↻ {reviewAgainCount} notes needed review</p>
         )}

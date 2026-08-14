@@ -122,7 +122,7 @@ export function SignupForm() {
               {...register('password')}
             />
             {/* Password Strength Indicator */}
-            <div className="mt-2 flex gap-1 h-1.5 w-full bg-gray-100 rounded-full overflow-hidden">
+            <div className="mt-2 flex gap-1 h-1.5 w-full bg-bg-sunk rounded-full overflow-hidden">
               <div className={`h-full flex-1 rounded-full transition-colors ${strength >= 1 ? 'bg-red-400' : 'bg-transparent'}`}></div>
               <div className={`h-full flex-1 rounded-full transition-colors ${strength >= 2 ? 'bg-yellow-400' : 'bg-transparent'}`}></div>
               <div className={`h-full flex-1 rounded-full transition-colors ${strength >= 3 ? 'bg-green-400' : 'bg-transparent'}`}></div>
@@ -140,23 +140,23 @@ export function SignupForm() {
         </div>
 
         {/* Feature Strip */}
-        <div className="flex justify-between items-center py-2 px-1 text-xs font-bold text-gray-500 uppercase tracking-wider">
+        <div className="flex justify-between items-center py-2 px-1 text-xs font-bold text-muted uppercase tracking-wider">
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded-full bg-[#F3F1FF] text-brand-primary flex items-center justify-center">
+            <div className="w-5 h-5 rounded-full bg-[#F3F1FF] text-accent flex items-center justify-center">
               <IconBulb size={12} stroke={2.5} />
             </div>
             Concepts
           </div>
-          <span className="text-gray-300">·</span>
+          <span className="text-faint">·</span>
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded-full bg-[#F3F1FF] text-brand-primary flex items-center justify-center">
+            <div className="w-5 h-5 rounded-full bg-[#F3F1FF] text-accent flex items-center justify-center">
               <IconArticle size={12} stroke={2.5} />
             </div>
             Articles
           </div>
-          <span className="text-gray-300">·</span>
+          <span className="text-faint">·</span>
           <div className="flex items-center gap-1.5">
-            <div className="w-5 h-5 rounded-full bg-[#F3F1FF] text-brand-primary flex items-center justify-center">
+            <div className="w-5 h-5 rounded-full bg-[#F3F1FF] text-accent flex items-center justify-center">
               <IconNotes size={12} stroke={2.5} />
             </div>
             Quizzes
@@ -169,18 +169,18 @@ export function SignupForm() {
               <input
                 id="terms"
                 type="checkbox"
-                className="h-4 w-4 text-brand-primary focus:ring-brand-primary border-gray-300 rounded"
+                className="h-4 w-4 text-accent focus:ring-accent border-gray-300 rounded"
                 {...register('terms')}
               />
             </div>
-            <div className="ml-2 text-sm text-gray-600">
+            <div className="ml-2 text-sm text-muted">
               <label htmlFor="terms">
                 I agree to the{' '}
-                <Link href="/terms" className="font-bold text-brand-primary hover:text-[#6859e0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                <Link href="/terms" className="font-bold text-accent hover:text-[#6859e0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
                   Terms of Service
                 </Link>{' '}
                 and{' '}
-                <Link href="/privacy" className="font-bold text-brand-primary hover:text-[#6859e0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                <Link href="/privacy" className="font-bold text-accent hover:text-[#6859e0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
                   Privacy Policy
                 </Link>
               </label>
@@ -199,10 +199,10 @@ export function SignupForm() {
       <div className="mt-6">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
+            <div className="w-full border-t border-line"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-3 bg-white text-gray-500 font-medium">
+            <span className="px-3 bg-surface text-muted font-medium">
               or
             </span>
           </div>

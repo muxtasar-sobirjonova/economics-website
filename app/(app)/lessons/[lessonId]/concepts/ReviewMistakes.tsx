@@ -54,7 +54,7 @@ export default function ReviewMistakesComponent() {
       <div className="w-full max-w-md">
         <div className="text-center mb-4">
           <p className="text-[#111827] font-semibold">Reviewing Mistake</p>
-          <p className="text-lg font-bold text-[#4ebdd5]">
+          <p className="text-lg font-bold text-article">
             {currentMistakeIndex + 1}/{mistakes.length}
           </p>
         </div>
@@ -66,7 +66,7 @@ export default function ReviewMistakesComponent() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200"
+            className="bg-surface rounded-2xl p-8 shadow-lg border border-line"
           >
             <h3 className="text-lg font-bold text-[#111827] mb-2">
               {currentMistake.term}
@@ -77,7 +77,7 @@ export default function ReviewMistakesComponent() {
 
         <button
           onClick={handleNextMistake}
-          className="w-full mt-6 bg-brand-primary text-white font-[500] py-3 px-4 rounded-xl hover:bg-brand-primary transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#4ebdd5] focus:ring-opacity-50"
+          className="w-full mt-6 bg-accent text-white font-[500] py-3 px-4 rounded-xl hover:bg-accent transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#4ebdd5] focus:ring-opacity-50"
         >
           Got it — mark reviewed
         </button>

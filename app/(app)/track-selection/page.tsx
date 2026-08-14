@@ -22,7 +22,7 @@ export default async function TrackSelectionPage() {
         <h1 className="text-4xl md:text-5xl font-extrabold text-[#1E1548] tracking-tight mb-4">
           Choose Your Economics Track
         </h1>
-        <p className="text-lg text-slate-600 max-w-2xl mx-auto">
+        <p className="text-lg text-muted max-w-2xl mx-auto">
           Select one of our specialized 56-day curriculums to begin your journey. You can switch tracks or change your selection at any time.
         </p>
       </div>

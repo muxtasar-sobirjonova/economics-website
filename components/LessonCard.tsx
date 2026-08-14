@@ -73,11 +73,11 @@ export default function LessonCard({
   }
 
   return (
-    <Link href={href} className="block shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" style={{ width: "260px", minHeight: "220px" }}>
+    <Link href={href} className="block shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent" style={{ width: "260px", minHeight: "220px" }}>
       <div
         data-active={isActive}
-        className={`relative w-full h-full min-h-[220px] p-6 rounded-[20px] cursor-pointer bg-white flex flex-col
-          border-y border-r border-gray-100 border-l-[5px] transition-all duration-200 ease-out
+        className={`relative w-full h-full min-h-[220px] p-6 rounded-[20px] cursor-pointer bg-surface flex flex-col
+          border-y border-r border-line border-l-[5px] transition-all duration-200 ease-out
           ${isActive
             ? `${config.borderClass} ${config.activeBg} -translate-y-1`
             : `border-l-gray-100 hover:${config.borderClass} hover:shadow-[0_8px_30px_rgba(0,0,0,0.09)] hover:-translate-y-1`
@@ -115,9 +115,9 @@ export default function LessonCard({
 
           {/* Icon thumbnail area */}
           <div className="mb-4">
-            {section === "Concepts" && <Lightbulb size={24} className="text-gray-600" />}
-            {section === "Articles" && <FileText size={24} className="text-gray-600" />}
-            {section === "Quizzes" && <HelpCircle size={24} className="text-gray-600" />}
+            {section === "Concepts" && <Lightbulb size={24} className="text-muted" />}
+            {section === "Articles" && <FileText size={24} className="text-muted" />}
+            {section === "Quizzes" && <HelpCircle size={24} className="text-muted" />}
           </div>
 
           {/* Title */}
@@ -127,19 +127,19 @@ export default function LessonCard({
 
           {section === "Concepts" || section === "Articles" ? (
             <div className="flex flex-col gap-1 mb-2">
-              <div className="flex items-center gap-1.5 text-gray-500">
+              <div className="flex items-center gap-1.5 text-muted">
                 <Clock size={14} />
                 <span className="text-xs font-medium">5-10 mins read</span>
               </div>
               <div className="flex items-center gap-1.5">
                 <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: statusText === "COMPLETED" ? config.accentColor : statusText === "IN PROGRESS" ? "#F59E0B" : "#D1D5DB" }} />
-                <span className="text-xs text-gray-500 font-medium">
+                <span className="text-xs text-muted font-medium">
                   {statusText === "COMPLETED" ? "Completed" : statusText === "IN PROGRESS" ? "In Progress" : "Not Started"}
                 </span>
               </div>
             </div>
           ) : section === "Quizzes" ? (
-            <div className="mb-2 text-xs text-gray-500 font-medium">
+            <div className="mb-2 text-xs text-muted font-medium">
               10 questions
             </div>
           ) : null}
@@ -148,7 +148,7 @@ export default function LessonCard({
           {metadata && <div className="mb-3">{metadata}</div>}
 
           {/* Progress indicator at bottom */}
-          <div className="mt-auto flex items-center gap-2 pt-4 border-t border-gray-100">
+          <div className="mt-auto flex items-center gap-2 pt-4 border-t border-line">
             <div className="w-2 h-2 rounded-full flex-shrink-0" style={{ backgroundColor: statusDotColor }} />
             <span className="text-[10px] font-bold tracking-wider uppercase" style={{ color: statusTextColor }}>
               {statusText}

@@ -1,12 +1,26 @@
 import type { Metadata, Viewport } from "next";
-import { Inter } from "next/font/google";
+import { Literata, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader';
 
-const inter = Inter({ subsets: ["latin"], display: 'swap' });
+// Literata carries the whole product — interface and article body alike.
+const literata = Literata({
+  subsets: ["latin"],
+  display: "swap",
+  style: ["normal", "italic"],
+  variable: "--font-literata",
+});
+
+// Numerals, codes and tags only.
+const jetbrains = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  weight: ["500"],
+  variable: "--font-mono",
+});
 
 export const viewport: Viewport = {
-  themeColor: "#51487F",
+  themeColor: "#6E5FC4",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1, // prevents zoom on focus in iOS
@@ -40,9 +54,9 @@ export default function RootLayout({
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
       </head>
       <body
-        className={`${inter.className} min-h-screen bg-white text-[#24203F] not-italic`}
+        className={`${literata.variable} ${jetbrains.variable} font-sans min-h-screen bg-bg text-ink`}
       >
-        <NextTopLoader color="#7B6FE7" height={3} showSpinner={false} shadow="0 0 10px #7B6FE7,0 0 5px #7B6FE7" />
+        <NextTopLoader color="var(--accent)" height={3} showSpinner={false} shadow="0 0 10px var(--accent),0 0 5px var(--accent)" />
         {children}
       </body>
     </html>

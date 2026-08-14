@@ -25,7 +25,7 @@ export default function WeekProgress({ history }: WeekProgressProps) {
         const normalizedDateStr = date.toISOString().split("T")[0];
         const activity = history.find((h) => h.date === normalizedDateStr);
 
-        let bgColor = "bg-gray-100";
+        let bgColor = "bg-bg-sunk";
         let ringColor = "ring-gray-100";
 
         if (activity) {
@@ -42,12 +42,12 @@ export default function WeekProgress({ history }: WeekProgressProps) {
         } else if (idx === 6) {
           // today
           ringColor = "ring-indigo-100 ring-2";
-          bgColor = "bg-white border-2 border-dashed border-gray-300";
+          bgColor = "bg-surface border-2 border-dashed border-gray-300";
         }
 
         return (
           <div key={normalizedDateStr} className="flex flex-col items-center gap-2">
-            <span className="text-xs font-semibold text-gray-400">
+            <span className="text-xs font-semibold text-faint">
               {dayLabels[date.getDay()]}
             </span>
             <div

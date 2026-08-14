@@ -19,7 +19,7 @@ export default async function LeaderboardPage() {
   const userId = session.user.id;
 
   return (
-    <div className="w-full bg-[#F8F9FC] min-h-screen pt-8 px-4">
+    <div className="w-full bg-bg min-h-screen pt-8 px-4">
       <LeaderboardClient currentUserId={userId} />
     </div>
   );

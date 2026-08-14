@@ -37,36 +37,24 @@ export async function DailyChallengeCard({ userId }: { userId?: string }) {
   }
 
   return (
-    <div className="bg-white rounded-[24px] shadow-sm border border-gray-100 p-5 lg:p-6 w-full md:w-[320px] shrink-0 flex flex-col relative">
-      <div className="absolute top-5 lg:top-6 right-5 lg:right-6 bg-purple-100/50 text-purple-600 text-[10px] lg:text-[11px] font-bold tracking-wide px-2 lg:px-3 py-1 rounded-full">
-        Optional
+    <section className="bg-surface border border-line rounded-lg shadow-sh1 p-s4 lg:p-s5 w-full lg:w-[320px] shrink-0 flex flex-col">
+      <div className="flex items-baseline justify-between gap-s2 mb-s3">
+        <h3 className="text-label uppercase text-faint">Daily challenge</h3>
+        <span className="text-label uppercase text-faint">Optional</span>
       </div>
-      
-      <h3 className="font-bold text-base lg:text-[17px] text-[#1A1A3E] mb-2 lg:mb-3 flex items-center gap-2">
-        💡 Daily Challenge
-      </h3>
-      
-      <p className="text-[13px] lg:text-[14px] leading-[1.6] text-slate-700 mb-3 lg:mb-4">
+
+      <p className="text-ui text-ink mb-s4">
         {challenge.prompt}
       </p>
 
-      <div className="bg-purple-50/50 border border-dashed border-purple-200 rounded-[16px] p-4 mb-4">
-        <h4 className="text-[13px] font-bold text-purple-600 mb-1 flex items-center gap-1.5">
-          <span className="text-sm">✨</span> Hint
-        </h4>
-        <p className="text-[13px] text-slate-600 leading-relaxed">
-          Think about what customers truly value, what they&apos;re missing right now, or what experience doesn&apos;t exist yet.
-        </p>
-      </div>
-
-      <DailyChallengeInput 
-        challengeId={challengeId} 
-        initialContent={initialNote} 
+      <DailyChallengeInput
+        challengeId={challengeId}
+        initialContent={initialNote}
       />
-      
-      <div className="text-[12px] font-medium text-slate-400 mt-3 text-left">
-        This is optional. No right or wrong answers!
-      </div>
-    </div>
+
+      <p className="text-meta text-faint mt-s3">
+        No right or wrong answers &mdash; one honest sentence is enough.
+      </p>
+    </section>
   );
 }

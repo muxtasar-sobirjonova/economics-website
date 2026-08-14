@@ -3,7 +3,7 @@
 import React from "react";
 import { useRouter } from "next/navigation";
 import { splitTitle } from "@/lib/roadmap-utils";
-import { LockedNode, ActiveNode, CompletedNode } from "./Nodes";
+import { LockedNode, ActiveNode, CompletedNode, NODE_R } from "./Nodes";
 import { Lesson } from "@prisma/client";
 import { RoadmapUnitCard } from "./RoadmapUnitCard";
 
@@ -189,28 +189,34 @@ const TRACK_CHAPTERS: Record<string, {
     },
   ],
 };
+/**
+ * Node positions are generated from the chapter's day list — a chapter of 7
+ * nodes and a chapter of 70 both lay out correctly. (The old version had seven
+ * hardcoded x-coordinates.)
+ */
+const COL_X = [96, 230, 364];
+const ROW_H = 104;
+
 const generateChapterCoords = (nodeCount: number) => {
-  const coords = [];
-  const startY = 40; 
-  // Adjusted X pattern to match the visual style
-  const xPattern = [100, 260, 380, 240, 100, 300, 180];
-  
+  const coords: { x: number; y: number }[] = [];
   for (let i = 0; i < nodeCount; i++) {
-    const x = xPattern[i % xPattern.length];
-    coords.push({ x, y: startY + (i * 105) });
+    const row = Math.floor(i / COL_X.length);
+    const idxInRow = i % COL_X.length;
+    // Serpentine: every other row runs right-to-left, so the path never jumps.
+    const x = row % 2 === 0 ? COL_X[idxInRow] : COL_X[COL_X.length - 1 - idxInRow];
+    coords.push({ x, y: 48 + i * ROW_H });
   }
   return coords;
 };
 
-const generatePathD = (coords: {x: number, y: number}[]) => {
+const generatePathD = (coords: { x: number; y: number }[]) => {
   if (coords.length < 2) return "";
-  let d = `M ${coords[0].x} ${coords[0].y + 36} `;
-  
+  let d = `M ${coords[0].x} ${coords[0].y + NODE_R} `;
   for (let i = 0; i < coords.length - 1; i++) {
     const curr = coords[i];
     const next = coords[i + 1];
     const midY = (curr.y + next.y) / 2;
-    d += `C ${curr.x} ${midY}, ${next.x} ${midY}, ${next.x} ${next.y - 36} `;
+    d += `C ${curr.x} ${midY}, ${next.x} ${midY}, ${next.x} ${next.y - NODE_R} `;
   }
   return d.trim();
 };
@@ -227,15 +233,15 @@ export const RoadmapMap = ({
   activeTrack?: string;
 }) => {
   const router = useRouter();
-  // Group lessons into chapters based on their 7-day cycle (Day 1-7 = Ch 1, Day 8-14 = Ch 2, etc.)
+
+  // Days 1-7 = chapter 1, 8-14 = chapter 2, and so on.
   const chaptersMap: Record<number, Lesson[]> = {};
   lessons.forEach((lesson) => {
     const chapterIndex = Math.floor((lesson.dayOrder - 1) / 7);
     if (!chaptersMap[chapterIndex]) chaptersMap[chapterIndex] = [];
     chaptersMap[chapterIndex].push(lesson);
   });
-  
-  // Convert map to sorted array
+
   const chapters: Lesson[][] = Object.keys(chaptersMap)
     .map(Number)
     .sort((a, b) => a - b)
@@ -245,59 +251,44 @@ export const RoadmapMap = ({
 
   return (
     <div className="flex flex-col items-center w-full">
-      <style>
-        {`
-          @keyframes dashspin {
-            from { stroke-dashoffset: 0; }
-            to { stroke-dashoffset: -40; }
-          }
-        `}
-      </style>
-      
       {chapters.map((chapterLessons, chapterIndex) => {
         const chapterNum = chapterIndex + 1;
         const chapterInfo = currentChapters[chapterIndex] || {
           chapterNumber: chapterNum,
           title: `Chapter ${chapterNum}`,
           description: "More advanced concepts and lessons.",
-          bgClass: "bg-gray-200",
-          btnClass: "bg-gray-400",
         };
 
         const lastLesson = chapterLessons[chapterLessons.length - 1];
         const chapterQuizDayOrder = lastLesson ? lastLesson.dayOrder + 1 : chapterNum * 7;
-        
-        // Generate coordinates for this chapter's nodes
-        const nodeCount = chapterLessons.length + 1; // +1 for the quiz
-        const coords = generateChapterCoords(nodeCount);
-        const pathD = generatePathD(coords);
-        
-        // Add padding at the bottom of the SVG to prevent clipping
-        const svgHeight = coords.length > 0 ? coords[coords.length - 1].y + 120 : 200;
 
-        // Determine nextUrl and disabled state for the chapter Start button
-        let startHref: string | undefined = undefined;
-        let chapterDisabled = true;
+        const coords = generateChapterCoords(chapterLessons.length + 1); // +1 for the chapter quiz
+        const pathD = generatePathD(coords);
+        const svgHeight = coords.length > 0 ? coords[coords.length - 1].y + 90 : 200;
 
         const isLessonUnlocked = (lessonIdx: number) => {
           if (chapterIndex === 0 && lessonIdx === 0) return true;
-          
           if (lessonIdx === 0) {
-            const prevChapterQuizDayOrder = chapters[chapterIndex - 1][chapters[chapterIndex - 1].length - 1].dayOrder + 1;
+            const prev = chapters[chapterIndex - 1];
+            const prevChapterQuizDayOrder = prev[prev.length - 1].dayOrder + 1;
             return completedQuizDayOrders.includes(prevChapterQuizDayOrder);
           }
-
-          const prevLesson = chapterLessons[lessonIdx - 1];
-          return completedLessonDayOrders.includes(prevLesson.dayOrder);
+          return completedLessonDayOrders.includes(chapterLessons[lessonIdx - 1].dayOrder);
         };
 
-        const firstActiveLesson = chapterLessons.find((l, idx) => {
-          return isLessonUnlocked(idx) && !completedLessonDayOrders.includes(l.dayOrder);
-        });
+        const firstActiveLesson = chapterLessons.find(
+          (l, idx) => isLessonUnlocked(idx) && !completedLessonDayOrders.includes(l.dayOrder)
+        );
 
+        const doneCount = chapterLessons.filter((l) =>
+          completedLessonDayOrders.includes(l.dayOrder)
+        ).length;
         const isAllLessonsDone = lastLesson ? completedLessonDayOrders.includes(lastLesson.dayOrder) : false;
         const isQuizDone = completedQuizDayOrders.includes(chapterQuizDayOrder);
         const isQuizActive = isAllLessonsDone && !isQuizDone;
+
+        let startHref: string | undefined;
+        let chapterDisabled = true;
 
         if (firstActiveLesson) {
           chapterDisabled = false;
@@ -306,189 +297,78 @@ export const RoadmapMap = ({
           chapterDisabled = false;
           startHref = `/lessons/${chapterQuizDayOrder}/quizzes`;
         } else if (isAllLessonsDone && isQuizDone) {
-          // Entire chapter is done, let them review the first lesson
           chapterDisabled = false;
           startHref = `/lessons/${chapterLessons[0]?.dayOrder || 1}/concepts`;
         }
 
+        const firstDay = chapterLessons[0]?.dayOrder;
+        const dayRange = firstDay ? `Days ${firstDay}\u2013${chapterQuizDayOrder}` : undefined;
+
         return (
           <React.Fragment key={`chapter-${chapterNum}`}>
-            <RoadmapUnitCard 
+            <RoadmapUnitCard
               chapterNumber={chapterInfo.chapterNumber}
               title={chapterInfo.title}
               description={chapterInfo.description}
-              bgClass={(chapterInfo as Record<string, unknown>).bgClass as string}
-              btnClass={(chapterInfo as Record<string, unknown>).btnClass as string}
               startHref={startHref}
               disabled={chapterDisabled}
+              dayRange={dayRange}
+              progress={{ done: doneCount + (isQuizDone ? 1 : 0), total: chapterLessons.length + 1 }}
             />
 
             <svg
               viewBox={`0 0 460 ${svgHeight}`}
               className="w-full max-w-[460px] shrink-0 overflow-visible"
+              role="img"
+              aria-label={`Chapter ${chapterNum} path`}
             >
               <path
                 d={pathD}
                 fill="none"
-                stroke="#c4b5fd"
+                stroke="var(--road-line)"
                 strokeWidth="2"
-                strokeDasharray="8 6"
-                className="stroke-linecap-round opacity-100"
+                strokeDasharray="7 7"
+                strokeLinecap="round"
               />
 
               {chapterLessons.map((lesson, lessonIndex) => {
                 const { x, y } = coords[lessonIndex];
                 const [line1, line2] = splitTitle(lesson.title);
-
                 const isCompleted = completedLessonDayOrders.includes(lesson.dayOrder);
-
-                const isLessonUnlocked = () => {
-                  if (chapterIndex === 0 && lessonIndex === 0) return true;
-                  
-                  // If it's the first lesson of a new chapter, it requires the PREVIOUS chapter's quiz to be done
-                  if (lessonIndex === 0) {
-                    const prevChapterQuizDayOrder = chapters[chapterIndex - 1][chapters[chapterIndex - 1].length - 1].dayOrder + 1;
-                    return completedQuizDayOrders.includes(prevChapterQuizDayOrder);
-                  }
-
-                  // Otherwise, it requires the previous lesson in the same chapter
-                  const prevLesson = chapterLessons[lessonIndex - 1];
-                  return completedLessonDayOrders.includes(prevLesson.dayOrder);
-                };
-
-                const isUnlocked = isLessonUnlocked();
+                const isUnlocked = isLessonUnlocked(lessonIndex);
                 const isActive = !isCompleted && isUnlocked;
+                const go = () => router.push(`/lessons/${lesson.dayOrder}/concepts`);
 
-                return (
-                  <React.Fragment key={lesson.id}>
-                    {isCompleted && (
-                      <CompletedNode
-                        x={x}
-                        y={y}
-                        line1={line1}
-                        line2={line2}
-                        onClick={() => router.push(`/lessons/${lesson.dayOrder}/concepts`)}
-                      />
-                    )}
-                    {isActive && (
-                      <ActiveNode
-                        x={x}
-                        y={y}
-                        line1={line1}
-                        line2={line2}
-                        onClick={() => router.push(`/lessons/${lesson.dayOrder}/concepts`)}
-                      />
-                    )}
-                    {!isCompleted && !isActive && (
-                      <LockedNode x={x} y={y} line1={line1} line2={line2} />
-                    )}
-                  </React.Fragment>
-                );
+                if (isCompleted) return <CompletedNode key={lesson.id} x={x} y={y} line1={line1} line2={line2} onClick={go} />;
+                if (isActive) return <ActiveNode key={lesson.id} x={x} y={y} line1={line1} line2={line2} onClick={go} />;
+                return <LockedNode key={lesson.id} x={x} y={y} line1={line1} line2={line2} />;
               })}
 
-              {/* Render the Chapter Quiz Node */}
+              {/* Chapter review quiz — the last node of every chapter */}
               {(() => {
                 const { x, y } = coords[coords.length - 1];
-                const isAllLessonsDone = lastLesson ? completedLessonDayOrders.includes(lastLesson.dayOrder) : false;
-                
-                const isQuizDone = completedQuizDayOrders.includes(chapterQuizDayOrder);
-                const isQuizActive = isAllLessonsDone && !isQuizDone;
+                const go = () => router.push(`/lessons/${chapterQuizDayOrder}/quizzes`);
+                const label1 = `Chapter ${chapterNum}`;
+                const label2 = "review quiz";
 
                 if (isQuizDone) {
-                  return (
-                    <g
-                      key={`quiz-${chapterNum}`}
-                      transform={`translate(${x}, ${y})`}
-                      onClick={() => router.push(`/lessons/${chapterQuizDayOrder}/quizzes`)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          router.push(`/lessons/${chapterQuizDayOrder}/quizzes`);
-                        }
-                      }}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`Chapter ${chapterNum} Quiz: Completed`}
-                      className="cursor-pointer hover:opacity-90 transition-opacity focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full"
-                    >
-                      <circle r="36" fill="#22c55e" />
-                      <polyline points="-10,-2 -2,6 10,-8" fill="none" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
-                      <text y="54" fontSize="13" fill="#0096a5" fontWeight="500" textAnchor="middle">
-                        <tspan x="0" dy="0">Chapter {chapterNum} Quiz</tspan>
-                      </text>
-                    </g>
-                  );
-                } else if (isQuizActive) {
-                  return (
-                    <g
-                      key={`quiz-${chapterNum}`}
-                      transform={`translate(${x}, ${y})`}
-                      onClick={() => router.push(`/lessons/${chapterQuizDayOrder}/quizzes`)}
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' || e.key === ' ') {
-                          e.preventDefault();
-                          router.push(`/lessons/${chapterQuizDayOrder}/quizzes`);
-                        }
-                      }}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`Chapter ${chapterNum} Quiz: Unlocked and active`}
-                      className="cursor-pointer hover:opacity-90 transition-opacity focus:outline-none focus:ring-4 focus:ring-pink-300 rounded-full"
-                    >
-                      <circle r="46" fill="none" stroke="#F7C8D3" strokeWidth="2.5" strokeDasharray="6 4" style={{ animation: "dashspin 2s linear infinite" }} />
-                      <circle r="36" fill="#0096a5" />
-                      <polygon points="0,-12 3,-4 12,-4 5,2 8,10 0,6 -8,10 -5,2 -12,-4 -3,-4" fill="white" stroke="white" strokeWidth="2" strokeLinejoin="round" />
-                      <g transform="translate(0, -60)">
-                        <rect x="-56" y="-14" width="112" height="26" rx="12" fill="white" stroke="#F7C8D3" strokeWidth="1" />
-                        <text y="4" fontSize="11" fill="#0096a5" fontWeight="500" textAnchor="middle">START QUIZ!</text>
-                      </g>
-                      <text y="54" fontSize="13" fill="#0096a5" fontWeight="500" textAnchor="middle">
-                        <tspan x="0" dy="0">Chapter {chapterNum} Quiz</tspan>
-                      </text>
-                    </g>
-                  );
-                } else {
-                  return (
-                    <g transform={`translate(${x}, ${y})`} key={`quiz-${chapterNum}`} className="opacity-80" aria-label={`Chapter ${chapterNum} Quiz: Locked`}>
-                      <circle r="36" fill="#ececf5" stroke="#d4d4e8" strokeWidth="1.5" />
-                      <rect x="-8" y="-4" width="16" height="12" rx="2" fill="#9ca3af" />
-                      <path d="M-4,-4 v-4 a4,4 0 0,1 8,0 v4" fill="none" stroke="#9ca3af" strokeWidth="2" />
-                      <text y="54" fontSize="13" fill="#6b7280" fontWeight="500" textAnchor="middle">
-                        <tspan x="0" dy="0">Chapter {chapterNum} Quiz</tspan>
-                      </text>
-                    </g>
-                  );
+                  return <CompletedNode x={x} y={y} line1={label1} line2={label2} onClick={go} />;
                 }
+                if (isQuizActive) {
+                  return <ActiveNode x={x} y={y} line1={label1} line2={label2} onClick={go} />;
+                }
+                return <LockedNode x={x} y={y} line1={label1} line2={label2} />;
               })()}
             </svg>
           </React.Fragment>
         );
       })}
 
-      {/* Banner at the very bottom */}
-      <svg
-        viewBox="0 0 460 100"
-        className="w-full max-w-[460px] shrink-0 overflow-visible mt-4 mb-10"
-      >
-        <g transform={`translate(230, 40)`}>
-          <rect
-            x="-130"
-            y="-20"
-            width="260"
-            height="40"
-            rx="12"
-            fill="#f9fafb"
-            stroke="#d4d4e8"
-            strokeWidth="1.5"
-            strokeDasharray="6 4"
-          />
-          <rect x="-80" y="-4" width="12" height="10" rx="2" fill="#9ca3af" />
-          <path d="M-78,-4 v-3 a4,4 0 0,1 8,0 v3" fill="none" stroke="#9ca3af" strokeWidth="1.5" />
-          <text x="-60" y="4" fontSize="13" fill="#9ca3af" fontWeight="500" alignmentBaseline="middle">
-            CHAPTER {chapters.length + 1} COMING SOON
-          </text>
-        </g>
-      </svg>
+      <div className="w-full max-w-[460px] rounded-lg border border-dashed border-line-strong px-s5 py-s4 mt-s5 mb-s7 text-center">
+        <span className="text-label uppercase text-faint">
+          Chapter {chapters.length + 1} coming soon
+        </span>
+      </div>
     </div>
   );
 };

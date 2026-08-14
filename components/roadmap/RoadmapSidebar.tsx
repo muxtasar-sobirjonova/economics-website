@@ -60,63 +60,60 @@ export const RoadmapSidebar = ({
   ];
 
   return (
-    <div className="w-full xl:w-[280px] shrink-0 flex flex-col gap-5 bg-transparent xl:overflow-y-auto">
-      {/* Track Selector Card */}
-      <div className="bg-white p-4 flex flex-col gap-3 rounded-xl border border-gray-border shadow-sm">
-        <div className="font-bold text-[11px] tracking-widest text-slate-400 uppercase">
-          Active Curriculum
-        </div>
+    <aside className="w-full xl:w-[300px] shrink-0 flex flex-col gap-s4 xl:overflow-y-auto">
+      {/* Track */}
+      <section className="bg-surface border border-line rounded-lg shadow-sh1 p-s4">
+        <h2 className="text-label uppercase text-faint mb-s3">Active curriculum</h2>
         <div className="relative">
+          <label htmlFor="track-select" className="sr-only">Choose a track</label>
           <select
+            id="track-select"
             value={activeTrack}
             onChange={handleTrackChange}
             disabled={isPending}
-            className="w-full p-2.5 bg-slate-50 border border-slate-200 text-sm font-semibold rounded-lg text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer disabled:opacity-50"
+            className="w-full p-s3 bg-raised border border-line rounded-md text-ui text-ink cursor-pointer disabled:opacity-50 min-h-[44px]"
           >
             {tracks.map(t => (
               <option key={t.id} value={t.id}>{t.name}</option>
             ))}
           </select>
           {isPending && (
-            <div className="absolute right-8 top-1/2 -translate-y-1/2">
-              <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
+            <div className="absolute right-s6 top-1/2 -translate-y-1/2">
+              <div className="w-4 h-4 border-2 border-accent border-t-transparent rounded-full animate-spin" />
             </div>
           )}
         </div>
-      </div>
+      </section>
 
-      {/* League Card */}
-      <div className="bg-white p-4 flex flex-col gap-3 rounded-xl border border-gray-border shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center shrink-0 text-xl">
-            🔥
-          </div>
-          <div>
-            <div className="font-bold text-sm text-slate-800">
-              {league.name}
-            </div>
-            <div className="text-xs mt-0.5 text-slate-500">
-              {league.name === "Diamond League" ? "You are in the top league!" : `${league.max - totalXP} XP to next league`}
-            </div>
-          </div>
+      {/* League */}
+      <section className="bg-surface border border-line rounded-lg shadow-sh1 p-s4">
+        <div className="flex items-baseline justify-between gap-s3 mb-s3">
+          <h2 className="text-label uppercase text-faint">League</h2>
+          <span className="font-mono text-meta text-ink tabular">
+            {totalXP.toLocaleString()} XP
+          </span>
         </div>
-        <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
+
+        <div className="text-h3 font-semibold text-ink">{league.name}</div>
+        <p className="text-meta text-muted mt-1">
+          {league.name === "Diamond League"
+            ? "Top league — nothing above this."
+            : `${(league.max - totalXP).toLocaleString()} XP to ${getLeagueData(league.max).name.replace(" League", "")}`}
+        </p>
+
+        <div className="w-full bg-bg-sunk h-1 rounded-sm overflow-hidden mt-s3">
           <div
-            className="h-1.5 transition-all duration-500 rounded-full bg-indigo-500"
+            className="h-full rounded-sm bg-reward transition-all duration-500"
             style={{ width: league.name === "Diamond League" ? "100%" : `${progressPercentage}%` }}
-          ></div>
+          />
         </div>
-      </div>
+      </section>
 
-      {/* Today's Agenda Card */}
-      <div className="bg-white p-4 rounded-xl border border-gray-border shadow-sm">
-        <div className="font-bold mb-4 text-[11px] tracking-widest text-slate-400 uppercase">
-          Today&apos;s agenda
-        </div>
-        <div className="flex flex-col gap-2 text-xs text-slate-700">
-          <p>{agendaMessage}</p>
-        </div>
-      </div>
-    </div>
+      {/* What's next */}
+      <section className="bg-surface border border-line rounded-lg shadow-sh1 p-s4">
+        <h2 className="text-label uppercase text-faint mb-s3">What&apos;s next</h2>
+        <p className="text-ui text-ink">{agendaMessage}</p>
+      </section>
+    </aside>
   );
 };

@@ -95,15 +95,15 @@ export function LoginForm() {
               id="remember-me"
               name="remember-me"
               type="checkbox"
-              className="h-4 w-4 text-brand-primary focus:ring-brand-primary border-gray-300 rounded"
+              className="h-4 w-4 text-accent focus:ring-accent border-gray-300 rounded"
             />
-            <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-700">
+            <label htmlFor="remember-me" className="ml-2 block text-sm text-muted">
               Remember me
             </label>
           </div>
 
           <div className="text-sm">
-            <Link href="/forgot-password" className="font-bold text-brand-primary hover:text-[#6859e0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+            <Link href="/forgot-password" className="font-bold text-accent hover:text-[#6859e0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
               Forgot password?
             </Link>
           </div>
@@ -119,10 +119,10 @@ export function LoginForm() {
       <div className="mt-6">
         <div className="relative">
           <div className="absolute inset-0 flex items-center">
-            <div className="w-full border-t border-gray-200"></div>
+            <div className="w-full border-t border-line"></div>
           </div>
           <div className="relative flex justify-center text-sm">
-            <span className="px-3 bg-white text-gray-500 font-medium">
+            <span className="px-3 bg-surface text-muted font-medium">
               or
             </span>
           </div>

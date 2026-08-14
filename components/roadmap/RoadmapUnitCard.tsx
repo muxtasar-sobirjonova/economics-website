@@ -1,87 +1,74 @@
 import React from "react";
-import { Button } from "@/components/ui/Button";
 import Link from "next/link";
 
 type RoadmapUnitCardProps = {
   chapterNumber: number;
   title: string;
   description: string;
-  bgClass?: string;
-  btnClass?: string;
   startHref?: string;
   disabled?: boolean;
+  dayRange?: string;
+  /** completed / total lessons in this chapter */
+  progress?: { done: number; total: number };
 };
 
 export const RoadmapUnitCard = ({
   chapterNumber,
   title,
   description,
-  bgClass = "bg-primary-100",
-  btnClass = "bg-primary-500",
   startHref,
   disabled = false,
+  dayRange,
+  progress,
 }: RoadmapUnitCardProps) => {
+  const pct = progress && progress.total > 0 ? (progress.done / progress.total) * 100 : 0;
+  const isDone = progress ? progress.done >= progress.total : false;
+
   return (
-    <div 
-      className={`w-full max-w-[520px] rounded-3xl p-5 lg:p-6 mt-8 mb-6 relative shrink-0 font-sans shadow-sm border-none flex flex-col sm:block ${bgClass} ${disabled ? "opacity-60" : ""}`}
+    <div
+      className={`w-full max-w-[520px] rounded-lg border border-line bg-surface shadow-sh2 p-s5 mt-s6 mb-s5 shrink-0 ${
+        disabled ? "opacity-60" : ""
+      }`}
     >
-      <div className="pl-1 lg:pl-2 pr-0 sm:pr-32">
-        <div className="text-[11px] lg:text-[12px] font-bold tracking-widest text-[#3a2072] uppercase mb-1.5 lg:mb-2 opacity-80">
-          CHAPTER {chapterNumber}
-        </div>
-        <div className="font-extrabold text-lg lg:text-xl mb-2 lg:mb-3 text-gray-900 leading-[1.25]">
-          {title}
-        </div>
-        <div className="text-[13px] lg:text-[14px] text-[#222222] font-medium leading-[1.5]">
-          {description}
-        </div>
+      <div className="flex items-baseline justify-between gap-s3 mb-s2">
+        <span className="text-label uppercase text-faint">
+          Chapter {String(chapterNumber).padStart(2, "0")}
+          {dayRange ? ` · ${dayRange}` : ""}
+        </span>
+        {progress && (
+          <span className="font-mono text-meta text-muted tabular shrink-0">
+            {progress.done}/{progress.total}
+          </span>
+        )}
       </div>
-      
-      {startHref && !disabled ? (
-        <Link href={startHref} className={`mt-4 sm:mt-0 sm:absolute sm:top-6 sm:right-6 w-max ${disabled ? "pointer-events-none" : ""}`}>
-          <Button 
-            disabled={disabled}
-            className={`rounded-[14px] flex items-center gap-2 group text-white border-none shadow-sm px-4 py-2 font-bold transition-all hover:brightness-110 hover:-translate-y-[2px] ${btnClass}`}
-          >
-            {disabled ? "Locked" : "Start"}
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="transition-transform group-hover:translate-x-1"
-            >
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </Button>
-        </Link>
-      ) : (
-        <div className="mt-4 sm:mt-0 sm:absolute sm:top-6 sm:right-6 w-max">
-          <Button 
-            disabled={true}
-            className={`rounded-[14px] flex items-center gap-2 group text-white border-none shadow-sm px-4 py-2 font-bold transition-all hover:brightness-110 hover:-translate-y-[2px] ${btnClass}`}
-          >
-            Locked
-            <svg
-              width="16"
-              height="16"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="transition-transform group-hover:translate-x-1"
-            >
-              <path d="M5 12h14M12 5l7 7-7 7" />
-            </svg>
-          </Button>
+
+      <h2 className="text-h2 font-semibold text-ink text-balance">{title}</h2>
+      <p className="text-meta text-muted mt-s2 max-w-[56ch]">{description}</p>
+
+      {progress && (
+        <div className="h-1 w-full bg-bg-sunk rounded-sm overflow-hidden mt-s4">
+          <div
+            className={`h-full rounded-sm transition-all duration-500 ${isDone ? "bg-success" : "bg-accent"}`}
+            style={{ width: `${pct}%` }}
+          />
         </div>
       )}
+
+      <div className="mt-s4">
+        {startHref && !disabled ? (
+          <Link
+            href={startHref}
+            className="inline-flex items-center gap-s2 px-s5 py-s3 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors min-h-[44px]"
+          >
+            {isDone ? "Review chapter" : "Continue"}
+            <span aria-hidden>&rarr;</span>
+          </Link>
+        ) : (
+          <span className="inline-flex items-center gap-s2 px-s5 py-s3 rounded-md border border-line text-ui text-faint min-h-[44px] cursor-not-allowed">
+            Locked
+          </span>
+        )}
+      </div>
     </div>
   );
 };

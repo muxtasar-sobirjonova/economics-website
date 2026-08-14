@@ -65,19 +65,19 @@ export default async function ReviewPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#F8F9FC] flex flex-col font-sans">
-      <header className="bg-white border-b border-gray-100 px-6 py-4 flex items-center shrink-0">
-        <Link href="/" className="mr-4 p-2 -ml-2 rounded-full hover:bg-gray-50 transition-colors">
-          <ArrowLeft size={20} className="text-gray-600" />
+    <div className="min-h-screen bg-bg flex flex-col font-sans">
+      <header className="bg-surface border-b border-line px-6 py-4 flex items-center shrink-0">
+        <Link href="/" className="mr-4 p-2 -ml-2 rounded-full hover:bg-bg transition-colors">
+          <ArrowLeft size={20} className="text-muted" />
         </Link>
-        <h1 className="text-lg font-bold text-gray-900">Needs Review</h1>
+        <h1 className="text-lg font-bold text-ink">Needs Review</h1>
       </header>
 
       <main className="flex-1 max-w-[800px] w-full mx-auto p-4 md:p-8 flex flex-col gap-6">
         
-        <div className="bg-white rounded-3xl p-6 md:p-8 border border-gray-100 shadow-sm">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Room for Improvement</h2>
-          <p className="text-gray-600 text-[15px] mb-8">
+        <div className="bg-surface rounded-3xl p-6 md:p-8 border border-line shadow-sm">
+          <h2 className="text-2xl font-bold text-ink mb-2">Room for Improvement</h2>
+          <p className="text-muted text-[15px] mb-8">
             These are lessons where you scored less than 6 out of 10 on the quiz. We recommend reviewing the core materials before trying again!
           </p>
 
@@ -86,30 +86,30 @@ export default async function ReviewPage() {
               <div className="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mb-4">
                 <CheckCircle2 size={32} />
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-1">You&apos;re all caught up!</h3>
-              <p className="text-gray-500 text-sm">You don&apos;t have any lessons that need review right now.</p>
+              <h3 className="text-lg font-bold text-ink mb-1">You&apos;re all caught up!</h3>
+              <p className="text-muted text-sm">You don&apos;t have any lessons that need review right now.</p>
             </div>
           ) : (
             <div className="flex flex-col gap-4">
               {lessonsToReview.map((lesson) => (
-                <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-gray-100 bg-gray-50 hover:bg-gray-100/50 transition-colors">
+                <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-line bg-bg hover:bg-bg-sunk/50 transition-colors">
                   <div className="flex flex-col pr-4">
-                    <span className="text-xs font-bold text-brand-primary tracking-wider uppercase mb-1">
+                    <span className="text-xs font-bold text-accent tracking-wider uppercase mb-1">
                       Lesson {lesson.dayOrder}
                     </span>
-                    <h3 className="text-gray-900 font-bold text-lg leading-tight">{lesson.title}</h3>
-                    <p className="text-gray-500 text-xs mt-1">{lesson.tag}</p>
+                    <h3 className="text-ink font-bold text-lg leading-tight">{lesson.title}</h3>
+                    <p className="text-muted text-xs mt-1">{lesson.tag}</p>
                   </div>
                   
                   <div className="flex items-center gap-2 shrink-0 mt-2 sm:mt-0">
                     <Link href={`/lessons/${lesson.dayOrder}/concepts`} className="flex-1 sm:flex-none">
-                      <button className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white border border-gray-200 text-gray-700 text-sm font-semibold flex items-center justify-center gap-2 hover:bg-gray-50 hover:text-brand-primary transition-all">
+                      <button className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-surface border border-line text-muted text-sm font-semibold flex items-center justify-center gap-2 hover:bg-bg hover:text-accent transition-all">
                         <Lightbulb size={16} />
                         Concept
                       </button>
                     </Link>
                     <Link href={`/lessons/${lesson.dayOrder}/articles`} className="flex-1 sm:flex-none">
-                      <button className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-brand-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-brand-primary/90 transition-all">
+                      <button className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-accent text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-accent/90 transition-all">
                         <BookOpen size={16} />
                         Article
                       </button>
