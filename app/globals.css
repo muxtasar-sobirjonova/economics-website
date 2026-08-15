@@ -50,6 +50,14 @@
   --sky-1:      #F4F5FA;
   --sky-2:      #E7E9F3;
 
+  /* Isometric plot volumes — a completed day carries a building */
+  --vol-top:    #9A8DE0;
+  --vol-left:   #6E5FC4;
+  --vol-right:  #554896;
+  --vol-shadow: rgba(27, 29, 42, .16);
+  --vol-window: #E3B057;
+  --plinth:     #D2D5E3;
+
   /* Highlighter swatches and sticky-note colours are product data —
      they stay identical across modes so saved marks survive a theme switch. */
   --hl-yellow: #FCD34D;
@@ -101,6 +109,13 @@
   --road-line:   rgba(233, 233, 237, .16);
   --sky-1:       #1C2032;
   --sky-2:       #101120;
+
+  --vol-top:     #6B6AA8;
+  --vol-left:    #3A3660;
+  --vol-right:   #272341;
+  --vol-shadow:  rgba(8, 9, 16, .6);
+  --vol-window:  #E3B057;
+  --plinth:      #202435;
 }
 
 html, body {

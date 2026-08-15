@@ -34,13 +34,13 @@ export default async function ProfilePage() {
     .join(' ');
 
   return (
-    <div className="min-h-screen bg-bg flex flex-col font-sans">
+    <div className="min-h-screen bg-bg bg-sky flex flex-col">
       {/* Header */}
       <header className="bg-surface border-b border-line px-6 py-4 flex items-center shrink-0">
         <Link href="/" className="mr-4 p-2 -ml-2 rounded-full hover:bg-bg transition-colors">
           <ArrowLeft size={20} className="text-muted" />
         </Link>
-        <h1 className="text-lg font-bold text-ink">My Profile</h1>
+        <h1 className="text-h3 font-semibold text-ink">My profile</h1>
       </header>
 
       <main className="flex-1 max-w-[600px] w-full mx-auto p-6 md:p-10 flex flex-col gap-6">
@@ -52,7 +52,7 @@ export default async function ProfilePage() {
             {avatarLetter}
           </div>
           
-          <h2 className="text-2xl font-bold text-ink mb-1">{user.name || 'Student'}</h2>
+          <h2 className="text-h2 font-semibold text-ink mb-1">{user.name || 'Student'}</h2>
           
           <div className="flex items-center gap-1.5 text-muted text-sm mb-6">
             <Mail size={14} />
@@ -60,7 +60,7 @@ export default async function ProfilePage() {
           </div>
 
           <div className="w-full flex gap-4 mt-2">
-            <div className="flex-1 bg-bg rounded-2xl p-4 flex flex-col items-center justify-center border border-line">
+            <div className="flex-1 bg-bg rounded-lg p-4 flex flex-col items-center justify-center border border-line">
               <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center mb-2">
                 <Award size={20} />
               </div>
@@ -68,7 +68,7 @@ export default async function ProfilePage() {
               <div className="text-xs font-semibold text-muted tracking-wider uppercase mt-1">Total XP</div>
             </div>
             
-            <div className="flex-1 bg-bg rounded-2xl p-4 flex flex-col items-center justify-center border border-line">
+            <div className="flex-1 bg-bg rounded-lg p-4 flex flex-col items-center justify-center border border-line">
               <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center mb-2">
                 <Clock size={20} />
               </div>
@@ -82,7 +82,7 @@ export default async function ProfilePage() {
         <div className="bg-surface rounded-3xl p-6 border border-line shadow-sm flex flex-col">
           <h3 className="text-sm font-bold text-ink uppercase tracking-wider mb-4 px-2">Account Details</h3>
           
-          <div className="flex items-center justify-between p-4 bg-bg rounded-2xl border border-line mb-4">
+          <div className="flex items-center justify-between p-4 bg-bg rounded-lg border border-line mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-surface flex items-center justify-center shadow-sm">
                 <Compass size={18} className="text-accent" />

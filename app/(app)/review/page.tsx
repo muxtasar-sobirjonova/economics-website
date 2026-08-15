@@ -65,18 +65,18 @@ export default async function ReviewPage() {
   });
 
   return (
-    <div className="min-h-screen bg-bg flex flex-col font-sans">
+    <div className="min-h-screen bg-bg bg-sky flex flex-col">
       <header className="bg-surface border-b border-line px-6 py-4 flex items-center shrink-0">
         <Link href="/" className="mr-4 p-2 -ml-2 rounded-full hover:bg-bg transition-colors">
           <ArrowLeft size={20} className="text-muted" />
         </Link>
-        <h1 className="text-lg font-bold text-ink">Needs Review</h1>
+        <h1 className="text-h3 font-semibold text-ink">Mistakes</h1>
       </header>
 
       <main className="flex-1 max-w-[800px] w-full mx-auto p-4 md:p-8 flex flex-col gap-6">
         
         <div className="bg-surface rounded-3xl p-6 md:p-8 border border-line shadow-sm">
-          <h2 className="text-2xl font-bold text-ink mb-2">Room for Improvement</h2>
+          <h2 className="text-h2 font-semibold text-ink mb-s2">Room for improvement</h2>
           <p className="text-muted text-[15px] mb-8">
             These are lessons where you scored less than 6 out of 10 on the quiz. We recommend reviewing the core materials before trying again!
           </p>

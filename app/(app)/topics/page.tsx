@@ -13,7 +13,7 @@ export default function TopicsPage() {
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 min-h-[60vh]">
       <div className="mb-12">
-        <h1 className="text-4xl font-extrabold text-accent tracking-tight mb-4">
+        <h1 className="text-h1 font-semibold text-ink mb-s3">
           Explore by Topic
         </h1>
         <p className="text-xl text-muted max-w-3xl">
@@ -28,7 +28,7 @@ export default function TopicsPage() {
             href={`/articles?topic=${topic.slug.current}`}
             className="group block bg-surface border border-line rounded-2xl p-8 hover:border-accent hover:shadow-md transition-all"
           >
-            <h2 className="text-2xl font-bold text-accent group-hover:text-accent-strong mb-3 transition-colors">
+            <h2 className="text-h3 font-semibold text-ink group-hover:text-accent mb-s2 transition-colors">
               {topic.title}
             </h2>
             <p className="text-muted">
@@ -46,7 +46,7 @@ export default function TopicsPage() {
 
         {/* Coming soon placeholder */}
         <div className="block bg-bg border border-dashed border-line rounded-2xl p-8 flex flex-col items-start justify-center opacity-60">
-          <h2 className="text-2xl font-bold text-faint mb-3">More coming soon</h2>
+          <h2 className="text-h3 font-semibold text-faint mb-s2">More coming soon</h2>
           <p className="text-faint text-sm">
             New topic areas are being added as new lessons launch.
           </p>

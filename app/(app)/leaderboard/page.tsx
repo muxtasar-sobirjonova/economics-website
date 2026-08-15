@@ -1,3 +1,4 @@
+import { PageHeader } from "@/components/PageHeader";
 import { auth } from "@/auth";
 // Triggering Vercel rebuild
 import { redirect } from "next/navigation";
@@ -19,8 +20,11 @@ export default async function LeaderboardPage() {
   const userId = session.user.id;
 
   return (
-    <div className="w-full bg-bg min-h-screen pt-8 px-4">
+    <div className="w-full bg-bg bg-sky min-h-screen flex flex-col">
+      <PageHeader eyebrow="This week" title="Leaderboard" />
+      <div className="px-s4 md:px-s5 py-s5">
       <LeaderboardClient currentUserId={userId} />
+    </div>
     </div>
   );
 }

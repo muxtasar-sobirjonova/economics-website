@@ -17,9 +17,9 @@ export default async function TrackSelectionPage() {
   });
 
   return (
-    <div className="min-h-screen bg-[#FAF9FC] flex flex-col justify-center items-center px-4 py-12">
+    <div className="min-h-screen bg-bg bg-sky flex flex-col justify-center items-center px-4 py-12">
       <div className="max-w-4xl w-full text-center mb-10">
-        <h1 className="text-4xl md:text-5xl font-extrabold text-[#1E1548] tracking-tight mb-4">
+        <h1 className="text-h1 md:text-display font-semibold text-ink mb-s3">
           Choose Your Economics Track
         </h1>
         <p className="text-lg text-muted max-w-2xl mx-auto">

@@ -2,10 +2,9 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { splitTitle } from "@/lib/roadmap-utils";
-import { LockedNode, ActiveNode, CompletedNode, NODE_R } from "./Nodes";
+import { IsoPlot, PlotDay } from "./IsoPlot";
 import { Lesson } from "@prisma/client";
-import { RoadmapUnitCard } from "./RoadmapUnitCard";
+
 
 const TRACK_CHAPTERS: Record<string, {
   chapterNumber: number;
@@ -189,38 +188,6 @@ const TRACK_CHAPTERS: Record<string, {
     },
   ],
 };
-/**
- * Node positions are generated from the chapter's day list — a chapter of 7
- * nodes and a chapter of 70 both lay out correctly. (The old version had seven
- * hardcoded x-coordinates.)
- */
-const COL_X = [96, 230, 364];
-const ROW_H = 104;
-
-const generateChapterCoords = (nodeCount: number) => {
-  const coords: { x: number; y: number }[] = [];
-  for (let i = 0; i < nodeCount; i++) {
-    const row = Math.floor(i / COL_X.length);
-    const idxInRow = i % COL_X.length;
-    // Serpentine: every other row runs right-to-left, so the path never jumps.
-    const x = row % 2 === 0 ? COL_X[idxInRow] : COL_X[COL_X.length - 1 - idxInRow];
-    coords.push({ x, y: 48 + i * ROW_H });
-  }
-  return coords;
-};
-
-const generatePathD = (coords: { x: number; y: number }[]) => {
-  if (coords.length < 2) return "";
-  let d = `M ${coords[0].x} ${coords[0].y + NODE_R} `;
-  for (let i = 0; i < coords.length - 1; i++) {
-    const curr = coords[i];
-    const next = coords[i + 1];
-    const midY = (curr.y + next.y) / 2;
-    d += `C ${curr.x} ${midY}, ${next.x} ${midY}, ${next.x} ${next.y - NODE_R} `;
-  }
-  return d.trim();
-};
-
 export const RoadmapMap = ({
   completedLessonDayOrders,
   completedQuizDayOrders,
@@ -245,126 +212,176 @@ export const RoadmapMap = ({
   const chapters: Lesson[][] = Object.keys(chaptersMap)
     .map(Number)
     .sort((a, b) => a - b)
-    .map((chapterIndex) => chaptersMap[chapterIndex]);
+    .map((i) => chaptersMap[i]);
 
-  const currentChapters = TRACK_CHAPTERS[activeTrack] || TRACK_CHAPTERS.ENTREPRENEURSHIP_ECONOMICS;
+  const meta = TRACK_CHAPTERS[activeTrack] || TRACK_CHAPTERS.ENTREPRENEURSHIP_ECONOMICS;
+
+  // Build every chapter's day list once, so the summary rows and the plot agree.
+  const built = chapters.map((chapterLessons, chapterIndex) => {
+    const lastLesson = chapterLessons[chapterLessons.length - 1];
+    const quizDayOrder = lastLesson ? lastLesson.dayOrder + 1 : (chapterIndex + 1) * 7;
+
+    const isLessonUnlocked = (idx: number): boolean => {
+      if (chapterIndex === 0 && idx === 0) return true;
+      if (idx === 0) {
+        const prev = chapters[chapterIndex - 1];
+        return completedQuizDayOrders.includes(prev[prev.length - 1].dayOrder + 1);
+      }
+      return completedLessonDayOrders.includes(chapterLessons[idx - 1].dayOrder);
+    };
+
+    const days: PlotDay[] = chapterLessons.map((l, idx) => {
+      const done = completedLessonDayOrders.includes(l.dayOrder);
+      return {
+        dayOrder: l.dayOrder,
+        title: l.title,
+        state: done ? "done" : isLessonUnlocked(idx) ? "active" : "locked",
+        href: `/lessons/${l.dayOrder}/concepts`,
+      };
+    });
+
+    const allLessonsDone = lastLesson ? completedLessonDayOrders.includes(lastLesson.dayOrder) : false;
+    const quizDone = completedQuizDayOrders.includes(quizDayOrder);
+
+    days.push({
+      dayOrder: quizDayOrder,
+      title: `${meta[chapterIndex]?.title ?? `Chapter ${chapterIndex + 1}`} review`,
+      state: quizDone ? "done" : allLessonsDone ? "active" : "locked",
+      isQuiz: true,
+      href: `/lessons/${quizDayOrder}/quizzes`,
+    });
+
+    // Only one day may read as active — the first one.
+    let seenActive = false;
+    days.forEach((d) => {
+      if (d.state === "active") {
+        if (seenActive) d.state = "locked";
+        seenActive = true;
+      }
+    });
+
+    const doneCount = days.filter((d) => d.state === "done").length;
+
+    return {
+      chapterIndex,
+      info: meta[chapterIndex] || {
+        chapterNumber: chapterIndex + 1,
+        title: `Chapter ${chapterIndex + 1}`,
+        description: "More advanced concepts and lessons.",
+      },
+      days,
+      doneCount,
+      isClosed: doneCount === days.length,
+      hasActive: days.some((d) => d.state === "active"),
+      firstDay: chapterLessons[0]?.dayOrder,
+      quizDayOrder,
+    };
+  });
+
+  const currentIndex = built.findIndex((c) => c.hasActive);
+  const go = (day: PlotDay) => day.href && router.push(day.href);
 
   return (
-    <div className="flex flex-col items-center w-full">
-      {chapters.map((chapterLessons, chapterIndex) => {
-        const chapterNum = chapterIndex + 1;
-        const chapterInfo = currentChapters[chapterIndex] || {
-          chapterNumber: chapterNum,
-          title: `Chapter ${chapterNum}`,
-          description: "More advanced concepts and lessons.",
-        };
+    <div className="flex flex-col items-stretch w-full max-w-[860px] gap-s3">
+      {built.map((c) => {
+        const isCurrent = c.chapterIndex === currentIndex;
+        const num = String(c.info.chapterNumber).padStart(2, "0");
+        const range = c.firstDay ? `Days ${c.firstDay}\u2013${c.quizDayOrder}` : "";
 
-        const lastLesson = chapterLessons[chapterLessons.length - 1];
-        const chapterQuizDayOrder = lastLesson ? lastLesson.dayOrder + 1 : chapterNum * 7;
+        // ── Closed or not-yet-open chapters collapse to one quiet row ─────────
+        if (!isCurrent) {
+          return (
+            <section
+              key={num}
+              className={`rounded-lg border border-line bg-surface shadow-sh1 px-s5 py-s4 flex items-center gap-s4 ${
+                c.isClosed ? "" : "opacity-70"
+              }`}
+            >
+              <span
+                className={`w-10 h-10 rounded-md grid place-items-center shrink-0 font-mono text-meta ${
+                  c.isClosed ? "bg-success-soft text-success" : "bg-bg-sunk text-faint"
+                }`}
+              >
+                {num}
+              </span>
 
-        const coords = generateChapterCoords(chapterLessons.length + 1); // +1 for the chapter quiz
-        const pathD = generatePathD(coords);
-        const svgHeight = coords.length > 0 ? coords[coords.length - 1].y + 90 : 200;
+              <div className="min-w-0 flex-1">
+                <div className="text-label uppercase text-faint">
+                  {c.isClosed ? "Closed" : "Locked"} · {range}
+                </div>
+                <h2 className="text-h3 font-semibold text-ink mt-[2px] line-clamp-2">{c.info.title}</h2>
+                <p className="font-mono text-meta text-muted tabular mt-1">
+                  {c.doneCount} of {c.days.length} days
+                </p>
+              </div>
 
-        const isLessonUnlocked = (lessonIdx: number) => {
-          if (chapterIndex === 0 && lessonIdx === 0) return true;
-          if (lessonIdx === 0) {
-            const prev = chapters[chapterIndex - 1];
-            const prevChapterQuizDayOrder = prev[prev.length - 1].dayOrder + 1;
-            return completedQuizDayOrders.includes(prevChapterQuizDayOrder);
-          }
-          return completedLessonDayOrders.includes(chapterLessons[lessonIdx - 1].dayOrder);
-        };
-
-        const firstActiveLesson = chapterLessons.find(
-          (l, idx) => isLessonUnlocked(idx) && !completedLessonDayOrders.includes(l.dayOrder)
-        );
-
-        const doneCount = chapterLessons.filter((l) =>
-          completedLessonDayOrders.includes(l.dayOrder)
-        ).length;
-        const isAllLessonsDone = lastLesson ? completedLessonDayOrders.includes(lastLesson.dayOrder) : false;
-        const isQuizDone = completedQuizDayOrders.includes(chapterQuizDayOrder);
-        const isQuizActive = isAllLessonsDone && !isQuizDone;
-
-        let startHref: string | undefined;
-        let chapterDisabled = true;
-
-        if (firstActiveLesson) {
-          chapterDisabled = false;
-          startHref = `/lessons/${firstActiveLesson.dayOrder}/concepts`;
-        } else if (isQuizActive) {
-          chapterDisabled = false;
-          startHref = `/lessons/${chapterQuizDayOrder}/quizzes`;
-        } else if (isAllLessonsDone && isQuizDone) {
-          chapterDisabled = false;
-          startHref = `/lessons/${chapterLessons[0]?.dayOrder || 1}/concepts`;
+              {c.isClosed && (
+                <button
+                  onClick={() => router.push(`/lessons/${c.firstDay}/concepts`)}
+                  className="shrink-0 px-s4 py-s2 rounded-md border border-line text-meta text-muted hover:border-accent hover:text-accent transition-colors min-h-[44px]"
+                >
+                  Revisit
+                </button>
+              )}
+            </section>
+          );
         }
 
-        const firstDay = chapterLessons[0]?.dayOrder;
-        const dayRange = firstDay ? `Days ${firstDay}\u2013${chapterQuizDayOrder}` : undefined;
+        // ── The chapter you are in gets the card and the plot ────────────────
+        const activeDay = c.days.find((d) => d.state === "active");
+        const pct = (c.doneCount / c.days.length) * 100;
 
         return (
-          <React.Fragment key={`chapter-${chapterNum}`}>
-            <RoadmapUnitCard
-              chapterNumber={chapterInfo.chapterNumber}
-              title={chapterInfo.title}
-              description={chapterInfo.description}
-              startHref={startHref}
-              disabled={chapterDisabled}
-              dayRange={dayRange}
-              progress={{ done: doneCount + (isQuizDone ? 1 : 0), total: chapterLessons.length + 1 }}
-            />
+          <section key={num} className="rounded-lg border border-line bg-surface shadow-sh2 overflow-hidden">
+            <div className="p-s5">
+              <div className="flex items-start gap-s4">
+                <span className="w-11 h-11 rounded-md grid place-items-center shrink-0 bg-accent-soft text-accent-strong font-mono text-h3">
+                  {num}
+                </span>
+                <div className="min-w-0 flex-1">
+                  <div className="text-label uppercase text-accent">Current chapter · {range}</div>
+                  <h2 className="text-h3 sm:text-h2 font-semibold text-ink mt-1 text-balance">{c.info.title}</h2>
+                </div>
+              </div>
 
-            <svg
-              viewBox={`0 0 460 ${svgHeight}`}
-              className="w-full max-w-[460px] shrink-0 overflow-visible"
-              role="img"
-              aria-label={`Chapter ${chapterNum} path`}
-            >
-              <path
-                d={pathD}
-                fill="none"
-                stroke="var(--road-line)"
-                strokeWidth="2"
-                strokeDasharray="7 7"
-                strokeLinecap="round"
+              <p className="text-ui text-muted mt-s3 max-w-[62ch]">{c.info.description}</p>
+
+              <div className="flex items-center gap-s4 mt-s5 flex-wrap">
+                <div className="flex-1 min-w-[180px]">
+                  <div className="flex items-baseline justify-between mb-s2">
+                    <span className="font-mono text-meta text-muted tabular">
+                      {c.doneCount} of {c.days.length} days
+                    </span>
+                    <span className="font-mono text-meta text-muted tabular">{Math.round(pct)}%</span>
+                  </div>
+                  <div className="h-1 w-full bg-bg-sunk rounded-sm overflow-hidden">
+                    <div className="h-full bg-accent rounded-sm transition-all duration-500" style={{ width: `${pct}%` }} />
+                  </div>
+                </div>
+
+                {activeDay && (
+                  <button
+                    onClick={() => go(activeDay)}
+                    className="px-s5 py-s3 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors min-h-[44px] shrink-0"
+                  >
+                    {activeDay.isQuiz ? "Take the review quiz" : `Continue day ${activeDay.dayOrder}`} &rarr;
+                  </button>
+                )}
+              </div>
+            </div>
+
+            <div className="px-s3 pb-s5 bg-gradient-to-b from-transparent to-bg-sunk/40">
+              <IsoPlot
+                days={c.days}
+                onSelect={go}
+                ariaLabel={`${c.info.title}: days ${c.firstDay} to ${c.quizDayOrder}`}
               />
-
-              {chapterLessons.map((lesson, lessonIndex) => {
-                const { x, y } = coords[lessonIndex];
-                const [line1, line2] = splitTitle(lesson.title);
-                const isCompleted = completedLessonDayOrders.includes(lesson.dayOrder);
-                const isUnlocked = isLessonUnlocked(lessonIndex);
-                const isActive = !isCompleted && isUnlocked;
-                const go = () => router.push(`/lessons/${lesson.dayOrder}/concepts`);
-
-                if (isCompleted) return <CompletedNode key={lesson.id} x={x} y={y} line1={line1} line2={line2} onClick={go} />;
-                if (isActive) return <ActiveNode key={lesson.id} x={x} y={y} line1={line1} line2={line2} onClick={go} />;
-                return <LockedNode key={lesson.id} x={x} y={y} line1={line1} line2={line2} />;
-              })}
-
-              {/* Chapter review quiz — the last node of every chapter */}
-              {(() => {
-                const { x, y } = coords[coords.length - 1];
-                const go = () => router.push(`/lessons/${chapterQuizDayOrder}/quizzes`);
-                const label1 = `Chapter ${chapterNum}`;
-                const label2 = "review quiz";
-
-                if (isQuizDone) {
-                  return <CompletedNode x={x} y={y} line1={label1} line2={label2} onClick={go} />;
-                }
-                if (isQuizActive) {
-                  return <ActiveNode x={x} y={y} line1={label1} line2={label2} onClick={go} />;
-                }
-                return <LockedNode x={x} y={y} line1={label1} line2={label2} />;
-              })()}
-            </svg>
-          </React.Fragment>
+            </div>
+          </section>
         );
       })}
 
-      <div className="w-full max-w-[460px] rounded-lg border border-dashed border-line-strong px-s5 py-s4 mt-s5 mb-s7 text-center">
+      <div className="rounded-lg border border-dashed border-line-strong px-s5 py-s4 text-center">
         <span className="text-label uppercase text-faint">
           Chapter {chapters.length + 1} coming soon
         </span>

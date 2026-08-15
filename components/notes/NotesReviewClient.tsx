@@ -141,9 +141,9 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
   if (isComplete) {
      const isPerfect = knewIt.length === totalInSession;
      return (
-       <div className="flex-1 min-h-screen bg-bg flex flex-col p-10 relative max-w-[1200px] mx-auto w-full">
+       <div className="flex-1 min-h-screen bg-bg flex flex-col p-s5 md:p-s6 relative max-w-[1200px] mx-auto w-full">
          <div className="mb-2 shrink-0">
-           <h1 className="text-[13px] font-[700] text-ink uppercase tracking-[0.08em] mb-1">{title}</h1>
+           <h1 className="text-label uppercase text-faint mb-1">{title}</h1>
            <p className="text-sm text-muted">Card Review Complete</p>
          </div>
          
@@ -163,7 +163,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
              </div>
            )}
            
-           <h2 className="text-[28px] font-[900] text-ink mb-2 z-10">🎉 All Done!</h2>
+           <h2 className="text-h1 font-semibold text-ink mb-s2 z-10">Card review complete</h2>
            <p className="text-base text-muted z-10">You memorized {knewIt.length} of {totalInSession} notes today</p>
            {reviewAgainCount > 0 && (
              <p className="text-sm text-red-500 mt-2 font-bold z-10">↻ {reviewAgainCount} notes needed review</p>
@@ -171,7 +171,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
            
            <div className="flex gap-4 z-10 mt-8">
              {reviewAgainCount > 0 && (
-               <button onClick={() => startSession(activeLessonId!)} className="bg-red-500 text-white px-6 py-3 rounded-lg font-bold shadow-sm hover:bg-red-600">
+               <button onClick={() => startSession(activeLessonId!)} className="bg-danger text-white px-6 py-3 rounded-lg font-bold shadow-sm hover:bg-red-600">
                  Review Again
                </button>
              )}
@@ -218,24 +218,24 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
   if (initialNotes.length === 0) {
     return (
-      <div className="flex-1 min-h-screen bg-bg flex flex-col p-6 md:p-10 relative max-w-[1200px] mx-auto w-full">
+      <div className="flex-1 min-h-screen bg-bg flex flex-col p-6 md:p-s5 md:p-s6 relative max-w-[1200px] mx-auto w-full">
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-ink tracking-tight">My Notes</h1>
+          <h1 className="text-h1-sm md:text-h1 font-semibold text-ink">My notes</h1>
           <p className="text-sm md:text-base text-muted mt-1">Review all your saved insights across lessons.</p>
         </div>
         
         <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto">
-          <div className="bg-surface border border-line shadow-sm rounded-3xl p-8 flex flex-col items-center text-center w-full">
-            <div className="w-16 h-16 bg-accent/10 rounded-2xl flex items-center justify-center mb-5">
+          <div className="bg-surface border border-line shadow-sh1 rounded-lg p-s6 flex flex-col items-center text-center w-full">
+            <div className="w-16 h-16 bg-accent/10 rounded-md flex items-center justify-center mb-5">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent">
                 <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
               </svg>
             </div>
-            <h2 className="text-2xl font-extrabold text-ink mb-3">No notes yet!</h2>
+            <h2 className="text-h2 font-semibold text-ink mb-s2">No notes yet</h2>
             <p className="text-[15px] text-muted mb-8 leading-relaxed">
               You haven&apos;t saved any notes yet. Complete lessons and save insights to review them here.
             </p>
-            <Link href="/roadmap" className="bg-accent text-white w-full py-3.5 rounded-2xl font-bold text-[15px] shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+            <Link href="/roadmap" className="bg-accent text-white w-full py-3.5 rounded-md font-bold text-[15px] shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
               Go to Roadmap
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                  <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -259,7 +259,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
       {/* Header and Day Pills */}
       <div className="mb-2 shrink-0">
-        <h1 className="text-[13px] font-[700] text-ink uppercase tracking-[0.08em] mb-1">
+        <h1 className="text-label uppercase text-faint mb-1">
           {title}
         </h1>
         <p className="text-sm text-muted">
@@ -317,21 +317,21 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
            {/* Instructions */}
            <div className="mb-4">
-              <h2 className="text-xl font-[800] text-ink text-center mb-2">Review your notes</h2>
+              <h2 className="text-h3 font-semibold text-ink text-center mb-s2">Review your notes</h2>
               <p className="text-sm text-muted text-center leading-[1.6] max-w-[320px] mx-auto">Pick a day above to start reviewing your saved insights.</p>
            </div>
 
            {/* 3 Steps */}
            <div className="flex gap-2.5 justify-center mb-4">
-              <div className="bg-surface border border-line rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
+              <div className="bg-surface border border-line rounded-md px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">1</div>
                  Pick a day
               </div>
-              <div className="bg-surface border border-line rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
+              <div className="bg-surface border border-line rounded-md px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">2</div>
                  Read each card
               </div>
-              <div className="bg-surface border border-line rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
+              <div className="bg-surface border border-line rounded-md px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">3</div>
                  Sort by memory
               </div>
@@ -380,7 +380,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
                  <div key={i} className="w-[100px] h-[130px] rounded-lg shadow-[2px_2px_8px_rgba(0,0,0,0.12)]" style={getPileStyle(i)} />
                ))}
                {reviewAgainCount > 0 && (
-                 <div className="absolute -bottom-3 -right-3 bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shadow-sm z-10">
+                 <div className="absolute -bottom-3 -right-3 bg-danger text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shadow-sm z-10">
                    {reviewAgainCount}
                  </div>
                )}
@@ -444,10 +444,10 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
           {/* Action Buttons */}
           <div className="mt-8 flex gap-4 justify-center shrink-0 z-20">
-             <button onClick={() => confirmAction('reviewAgain')} className="bg-surface/80 backdrop-blur border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
+             <button onClick={() => confirmAction('reviewAgain')} className="bg-surface/80 backdrop-blur border border-danger text-red-500 hover:bg-red-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
                ↻ Review Again
              </button>
-             <button onClick={() => confirmAction('knewIt')} className="bg-surface/80 backdrop-blur border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
+             <button onClick={() => confirmAction('knewIt')} className="bg-surface/80 backdrop-blur border border-success text-green-500 hover:bg-green-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
                ✓ Memorized
              </button>
           </div>
