@@ -38,12 +38,12 @@ export function ReadPageBookmark({
       onClick={handleToggle}
       disabled={isPending}
       aria-label={isBookmarked ? "Remove bookmark" : "Bookmark this lesson"}
-      className="p-2 rounded-full hover:bg-accent/10 transition-colors disabled:opacity-50"
+      className="p-2 rounded-full hover:bg-brand-primary/10 transition-colors disabled:opacity-50"
     >
       <Bookmark
         size={20}
-        color="var(--accent)"
-        fill={isBookmarked ? "var(--accent)" : "none"}
+        color="#7B6FE7"
+        fill={isBookmarked ? "#7B6FE7" : "none"}
         strokeWidth={2}
       />
     </button>

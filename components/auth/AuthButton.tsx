@@ -9,7 +9,7 @@ export function AuthButton({ children, loading, className = '', ...props }: Auth
     <button
       {...props}
       disabled={loading || props.disabled}
-      className={`w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-full text-white bg-accent hover:bg-accent-strong focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-accent disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-sm active:scale-[0.98] ${className}`}
+      className={`w-full flex justify-center py-3 px-4 border border-transparent text-sm font-bold rounded-full text-white bg-brand-primary hover:bg-[#6859e0] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-brand-primary disabled:opacity-70 disabled:cursor-not-allowed transition-all shadow-sm active:scale-[0.98] ${className}`}
     >
       {loading ? (
         <span className="flex items-center gap-2">

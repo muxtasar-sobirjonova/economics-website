@@ -15,7 +15,6 @@ vi.mock('framer-motion', () => ({
   motion: {
     div: ({ children, layout, initial, animate, variants, whileHover, whileTap, transition, ...props }: any) => <div {...props}>{children}</div>,
     li: ({ children, layout, initial, animate, variants, whileHover, whileTap, transition, ...props }: any) => <li {...props}>{children}</li>,
-    ul: ({ children, layout, initial, animate, variants, whileHover, whileTap, transition, ...props }: any) => <ul {...props}>{children}</ul>,
   },
   AnimatePresence: ({ children }: any) => <>{children}</>,
 }));
@@ -48,7 +47,7 @@ describe('TodayAgendaCard', () => {
   it('renders completed state', () => {
     render(<TodayAgendaCard initialItems={[]} />);
     
-    expect(screen.getByText(/All caught up/i)).toBeDefined();
-    expect(screen.getByText(/finished today's agenda/i)).toBeDefined();
+    expect(screen.getByText(/All caught up!/i)).toBeDefined();
+    expect(screen.getByText(/You've finished your agenda for today./i)).toBeDefined();
   });
 });

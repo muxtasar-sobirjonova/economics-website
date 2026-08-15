@@ -1,137 +1,65 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { IconHome, IconMap, IconTrophy, IconBooks, IconX } from "@tabler/icons-react";
+import {
+  IconHome,
+  IconMap,
+  IconBulb,
+  IconTrophy,
+  IconArticle,
+  IconBookmark,
+  IconNotes,
+} from "@tabler/icons-react";
 
-/**
- * Four fixed tabs instead of eight scrolling ones. "Learn" opens a sheet where
- * Concept / Article / Quiz sit in reading order, with Notes and Mistakes at its
- * foot — the same destinations, just not all crammed into the bar.
- */
 export function MobileBottomNav() {
   const pathname = usePathname() || "";
-  const [learnOpen, setLearnOpen] = useState(false);
-
   const match = pathname.match(/^\/lessons\/(\d+)/);
   const currentLessonId = match ? match[1] : "1";
 
-  const isLearnRoute = /\/(concepts|articles|quizzes)/.test(pathname) || pathname.startsWith("/saved") || pathname.startsWith("/review");
-
-  const tabs = [
-    { name: "Home", href: "/home", icon: IconHome, active: pathname === "/home" },
-    { name: "Plot", href: "/roadmap", icon: IconMap, active: pathname.startsWith("/roadmap") },
-    { name: "Learn", icon: IconBooks, active: isLearnRoute },
-    { name: "League", href: "/leaderboard", icon: IconTrophy, active: pathname.startsWith("/leaderboard") },
-  ];
-
-  const learnLinks = [
-    { name: "Concept", meta: "Read the idea, plainly", href: `/lessons/${currentLessonId}/concepts`, swatch: "var(--concept)" },
-    { name: "Article", meta: "The story behind it", href: `/lessons/${currentLessonId}/articles`, swatch: "var(--article)" },
-    { name: "Quiz", meta: "10 questions · needs 8 to pass", href: `/lessons/${currentLessonId}/quizzes`, swatch: "var(--quiz)" },
-  ];
-
-  const footLinks = [
-    { name: "My notes", href: "/saved" },
-    { name: "Mistakes", href: "/review" },
+  const navItems = [
+    { name: "Home", href: "/home", icon: IconHome },
+    { name: "Roadmap", href: "/roadmap", icon: IconMap },
+    { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
+    { name: "Concepts", href: `/lessons/${currentLessonId}/concepts`, matchHref: "/concepts", icon: IconBulb },
+    { name: "Articles", href: `/lessons/${currentLessonId}/articles`, matchHref: "/articles", icon: IconArticle },
+    { name: "Quizzes", href: `/lessons/${currentLessonId}/quizzes`, matchHref: "/quizzes", icon: IconNotes },
+    { name: "Notes", href: "/saved", matchHref: "/saved", icon: IconBookmark },
   ];
 
   return (
-    <>
-      {learnOpen && (
-        <>
-          <div
-            className="md:hidden fixed inset-0 bg-black/40 z-[60]"
-            onClick={() => setLearnOpen(false)}
-            aria-hidden
-          />
-          <div
-            role="dialog"
-            aria-label="Learn"
-            className="md:hidden fixed left-0 right-0 bottom-0 z-[70] bg-surface rounded-t-xl border-t border-line shadow-sh3 p-s5 pb-s8 animate-fadeUp"
-          >
-            <div className="flex items-start justify-between mb-s4">
-              <div>
-                <div className="text-label uppercase text-faint">Day {currentLessonId}</div>
-                <h2 className="text-h3 font-semibold text-ink mt-1">What&apos;s next</h2>
+    <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+      <div className="flex items-center overflow-x-auto py-1.5 px-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        {navItems.map((item) => {
+          const isActive =
+            item.href === "/home" || item.href === "/profile"
+              ? pathname === item.href
+              : item.matchHref
+                ? pathname.includes(item.matchHref)
+                : pathname.startsWith(item.href);
+          
+          const Icon = item.icon;
+
+          return (
+            <Link
+              key={item.name}
+              href={item.href}
+              className={`flex flex-col items-center justify-center flex-1 shrink-0 min-w-[72px] px-1 py-1.5 rounded-xl transition-all snap-center ${
+                isActive 
+                  ? "text-brand-primary" 
+                  : "text-gray-400 hover:text-gray-600"
+              }`}
+            >
+              <div className={`flex items-center justify-center w-12 h-8 rounded-full mb-1 transition-colors ${isActive ? "bg-brand-primary/10" : "bg-transparent"}`}>
+                 <Icon size={22} stroke={isActive ? 2.5 : 1.5} fill={isActive && item.name === "Concepts" ? "currentColor" : "none"} />
               </div>
-              <button
-                onClick={() => setLearnOpen(false)}
-                aria-label="Close"
-                className="w-9 h-9 grid place-items-center rounded-md border border-line text-faint"
-              >
-                <IconX size={16} />
-              </button>
-            </div>
-
-            <div className="grid gap-s2">
-              {learnLinks.map((l) => (
-                <Link
-                  key={l.name}
-                  href={l.href}
-                  onClick={() => setLearnOpen(false)}
-                  className="flex items-center gap-s3 p-s3 rounded-md border border-line bg-raised min-h-[56px]"
-                >
-                  <span className="w-[7px] h-7 rounded-sm shrink-0" style={{ background: l.swatch }} />
-                  <span className="min-w-0">
-                    <span className="block text-ui font-semibold text-ink">{l.name}</span>
-                    <span className="block text-meta text-muted truncate">{l.meta}</span>
-                  </span>
-                </Link>
-              ))}
-            </div>
-
-            <div className="flex flex-wrap gap-s2 mt-s4 pt-s4 border-t border-line">
-              {footLinks.map((l) => (
-                <Link
-                  key={l.name}
-                  href={l.href}
-                  onClick={() => setLearnOpen(false)}
-                  className="text-meta text-muted px-s3 py-s2 rounded-md border border-line min-h-[44px] flex items-center"
-                >
-                  {l.name}
-                </Link>
-              ))}
-            </div>
-          </div>
-        </>
-      )}
-
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-surface border-t border-line z-50 pb-safe">
-        <div className="flex items-stretch">
-          {tabs.map((tab) => {
-            const Icon = tab.icon;
-            const cls = `flex-1 flex flex-col items-center justify-center gap-1 min-h-[56px] py-s2 transition-colors ${
-              tab.active ? "text-accent" : "text-faint"
-            }`;
-
-            const inner = (
-              <>
-                <Icon size={21} stroke={tab.active ? 2.2 : 1.7} />
-                <span className={`text-[10.5px] ${tab.active ? "font-semibold" : "font-medium"}`}>
-                  {tab.name}
-                </span>
-              </>
-            );
-
-            return tab.href ? (
-              <Link key={tab.name} href={tab.href} className={cls} aria-current={tab.active ? "page" : undefined}>
-                {inner}
-              </Link>
-            ) : (
-              <button
-                key={tab.name}
-                onClick={() => setLearnOpen(true)}
-                aria-expanded={learnOpen}
-                className={cls}
-              >
-                {inner}
-              </button>
-            );
-          })}
-        </div>
-      </nav>
-    </>
+              <span className={`text-[10px] tracking-wide ${isActive ? "font-bold" : "font-medium"}`}>
+                {item.name}
+              </span>
+            </Link>
+          );
+        })}
+      </div>
+    </nav>
   );
 }

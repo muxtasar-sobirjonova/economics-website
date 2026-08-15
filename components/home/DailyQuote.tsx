@@ -29,12 +29,13 @@ export const DailyQuote = ({ activeTrack = "ENTREPRENEURSHIP_ECONOMICS" }: { act
   const currentQuote = quotes[getDayOfYear() % quotes.length];
 
   return (
-    <div className="w-full flex items-center gap-s3 px-s4 md:px-s6 lg:px-s7 py-s3 bg-surface border-b border-line">
-      <span className="text-label uppercase text-accent shrink-0">Today</span>
-      <p className="text-meta text-muted italic truncate">
-        &ldquo;{currentQuote.text}&rdquo;
-        <span className="not-italic text-faint"> &mdash; {currentQuote.author}</span>
+    <div className="w-full text-center pt-6 lg:pt-10 pb-2 lg:pb-4">
+      <p
+        className="text-slate-900 italic mx-auto px-4 max-w-[800px] text-sm lg:text-[15px] leading-relaxed font-sans"
+      >
+        “{currentQuote.text}”
       </p>
+      <p className="text-slate-900/60 text-[13px] mt-2 text-center">— {currentQuote.author}</p>
     </div>
   );
 };

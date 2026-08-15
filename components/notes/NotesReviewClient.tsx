@@ -13,23 +13,8 @@ export interface Note {
 }
 
 export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", subtitle = "Your saved insights across all lessons", size = "normal" }: { initialNotes: Note[], lessons: Lesson[], title?: string, subtitle?: string, size?: 'normal' | 'large' }) => {
-  // Notes carry the page they were written on, so the board can be narrowed
-  // to one kind without another round trip.
-  const [sourceFilter, setSourceFilter] = useState<"All" | "Concept" | "Article" | "Quiz">("All");
-
-  const visibleNotes = sourceFilter === "All"
-    ? initialNotes
-    : initialNotes.filter((n: Note) => (n.source || "").toLowerCase().startsWith(sourceFilter.toLowerCase()));
-
-  const sourceCounts = {
-    All: initialNotes.length,
-    Concept: initialNotes.filter((n: Note) => (n.source || "").toLowerCase().startsWith("concept")).length,
-    Article: initialNotes.filter((n: Note) => (n.source || "").toLowerCase().startsWith("article")).length,
-    Quiz: initialNotes.filter((n: Note) => (n.source || "").toLowerCase().startsWith("quiz")).length,
-  } as const;
-
   // Group notes by lessonId
-  const notesByLesson = visibleNotes.reduce((acc: Record<number, Note[]>, note: Note) => {
+  const notesByLesson = initialNotes.reduce((acc: Record<number, Note[]>, note: Note) => {
     if (!acc[note.lessonId]) acc[note.lessonId] = [];
     acc[note.lessonId].push(note);
     return acc;
@@ -156,10 +141,10 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
   if (isComplete) {
      const isPerfect = knewIt.length === totalInSession;
      return (
-       <div className="flex-1 min-h-screen bg-bg flex flex-col p-s5 md:p-s6 relative max-w-[1200px] mx-auto w-full">
+       <div className="flex-1 min-h-screen bg-slate-50 flex flex-col p-10 relative max-w-[1200px] mx-auto w-full">
          <div className="mb-2 shrink-0">
-           <h1 className="text-label uppercase text-faint mb-1">{title}</h1>
-           <p className="text-sm text-muted">Card Review Complete</p>
+           <h1 className="text-[13px] font-[700] text-gray-900 uppercase tracking-[0.08em] mb-1">{title}</h1>
+           <p className="text-sm text-gray-500">Card Review Complete</p>
          </div>
          
          <div className="flex-1 flex flex-col items-center justify-center">
@@ -178,19 +163,19 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
              </div>
            )}
            
-           <h2 className="text-h1 font-semibold text-ink mb-s2 z-10">Card review complete</h2>
-           <p className="text-base text-muted z-10">You memorized {knewIt.length} of {totalInSession} notes today</p>
+           <h2 className="text-[28px] font-[900] text-gray-900 mb-2 z-10">🎉 All Done!</h2>
+           <p className="text-base text-gray-500 z-10">You memorized {knewIt.length} of {totalInSession} notes today</p>
            {reviewAgainCount > 0 && (
              <p className="text-sm text-red-500 mt-2 font-bold z-10">↻ {reviewAgainCount} notes needed review</p>
            )}
            
            <div className="flex gap-4 z-10 mt-8">
              {reviewAgainCount > 0 && (
-               <button onClick={() => startSession(activeLessonId!)} className="bg-danger text-white px-6 py-3 rounded-lg font-bold shadow-sm hover:bg-red-600">
+               <button onClick={() => startSession(activeLessonId!)} className="bg-red-500 text-white px-6 py-3 rounded-lg font-bold shadow-sm hover:bg-red-600">
                  Review Again
                </button>
              )}
-             <button onClick={() => { setActiveLessonId(null); setIsComplete(false); }} className="bg-accent text-white px-6 py-3 rounded-lg font-medium shadow-sm hover:bg-accent/90 transition-colors">
+             <button onClick={() => { setActiveLessonId(null); setIsComplete(false); }} className="bg-brand-primary text-white px-6 py-3 rounded-lg font-medium shadow-sm hover:bg-brand-primary/90 transition-colors">
                ← Back to days
              </button>
            </div>
@@ -233,24 +218,24 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
   if (initialNotes.length === 0) {
     return (
-      <div className="flex-1 min-h-screen bg-bg flex flex-col p-6 md:p-s5 md:p-s6 relative max-w-[1200px] mx-auto w-full">
+      <div className="flex-1 min-h-screen bg-slate-50 flex flex-col p-6 md:p-10 relative max-w-[1200px] mx-auto w-full">
         <div className="mb-8">
-          <h1 className="text-h1-sm md:text-h1 font-semibold text-ink">My notes</h1>
-          <p className="text-sm md:text-base text-muted mt-1">Review all your saved insights across lessons.</p>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">My Notes</h1>
+          <p className="text-sm md:text-base text-gray-500 mt-1">Review all your saved insights across lessons.</p>
         </div>
         
         <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto">
-          <div className="bg-surface border border-line shadow-sh1 rounded-lg p-s6 flex flex-col items-center text-center w-full">
-            <div className="w-16 h-16 bg-accent/10 rounded-md flex items-center justify-center mb-5">
-              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-accent">
+          <div className="bg-white border border-gray-200 shadow-sm rounded-3xl p-8 flex flex-col items-center text-center w-full">
+            <div className="w-16 h-16 bg-brand-primary/10 rounded-2xl flex items-center justify-center mb-5">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-brand-primary">
                 <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
               </svg>
             </div>
-            <h2 className="text-h2 font-semibold text-ink mb-s2">No notes yet</h2>
-            <p className="text-[15px] text-muted mb-8 leading-relaxed">
+            <h2 className="text-2xl font-extrabold text-gray-900 mb-3">No notes yet!</h2>
+            <p className="text-[15px] text-gray-600 mb-8 leading-relaxed">
               You haven&apos;t saved any notes yet. Complete lessons and save insights to review them here.
             </p>
-            <Link href="/roadmap" className="bg-accent text-white w-full py-3.5 rounded-md font-bold text-[15px] shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
+            <Link href="/roadmap" className="bg-brand-primary text-white w-full py-3.5 rounded-2xl font-bold text-[15px] shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
               Go to Roadmap
               <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                  <path d="M5 12h14M12 5l7 7-7 7"/>
@@ -266,7 +251,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
   const cardMinHeightClass = size === 'large' ? 'min-h-[360px]' : 'min-h-[240px]';
 
   return (
-    <div className="flex-1 min-h-screen bg-bg relative overflow-hidden flex flex-col p-10 max-w-[1200px] mx-auto w-full select-none">
+    <div className="flex-1 min-h-screen bg-slate-50 relative overflow-hidden flex flex-col p-10 max-w-[1200px] mx-auto w-full select-none">
       {/* Flash overlay */}
       {showFlash && (
         <div className="fixed inset-0 z-[300] pointer-events-none bg-[rgba(34,197,94,0.06)] animate-flash" />
@@ -274,37 +259,15 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
       {/* Header and Day Pills */}
       <div className="mb-2 shrink-0">
-        <h1 className="text-label uppercase text-faint mb-1">
+        <h1 className="text-[13px] font-[700] text-gray-900 uppercase tracking-[0.08em] mb-1">
           {title}
         </h1>
-        <p className="text-sm text-muted">
+        <p className="text-sm text-gray-500">
           {subtitle}
         </p>
       </div>
 
-      <div className="flex flex-wrap items-center gap-s2 mb-s4">
-          {(["All", "Concept", "Article", "Quiz"] as const).map((k) => {
-            const on = sourceFilter === k;
-            const tone = k === "Concept" ? "concept" : k === "Article" ? "article" : k === "Quiz" ? "quiz" : null;
-            return (
-              <button
-                key={k}
-                onClick={() => { setSourceFilter(k); setActiveLessonId(null); }}
-                aria-pressed={on}
-                className={`px-s4 py-s2 rounded-md border text-meta transition-colors min-h-[44px] flex items-center gap-s2 ${
-                  on ? "border-transparent text-ink" : "border-line text-muted hover:text-ink"
-                }`}
-                style={on && tone ? { background: `var(--${tone}-soft)`, color: `var(--${tone})` }
-                     : on ? { background: "var(--accent-soft)", color: "var(--accent-strong)" } : undefined}
-              >
-                {k}
-                <span className="font-mono text-[11px] tabular opacity-70">{sourceCounts[k]}</span>
-              </button>
-            );
-          })}
-        </div>
-
-        <div className="flex items-center gap-2 overflow-x-auto pb-4 shrink-0 scrollbar-hide">
+      <div className="flex items-center gap-2 overflow-x-auto pb-4 shrink-0 scrollbar-hide">
         {lessonIds.map(id => {
           const dayStr = id < 10 ? `0${id}` : `${id}`;
           const isActive = activeLessonId === id;
@@ -327,7 +290,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
       {activeLessonId && (
         <div className="mb-2 shrink-0">
-           <button onClick={() => setActiveLessonId(null)} className="text-accent text-[13px] font-[600] hover:underline">
+           <button onClick={() => setActiveLessonId(null)} className="text-[#3D52A0] text-[13px] font-[600] hover:underline">
              ← Back to days
            </button>
         </div>
@@ -348,27 +311,27 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
                     <div className="h-2.5 bg-[rgba(0,0,0,0.08)] rounded mb-2 w-full" />
                     <div className="h-2.5 bg-[rgba(0,0,0,0.08)] rounded mb-2 w-[60%]" />
                   </div>
-                  <div className="text-[10px] text-faint">Lesson 1 · Concepts</div>
+                  <div className="text-[10px] text-gray-400">Lesson 1 · Concepts</div>
               </div>
            </div>
 
            {/* Instructions */}
            <div className="mb-4">
-              <h2 className="text-h3 font-semibold text-ink text-center mb-s2">Review your notes</h2>
-              <p className="text-sm text-muted text-center leading-[1.6] max-w-[320px] mx-auto">Pick a day above to start reviewing your saved insights.</p>
+              <h2 className="text-xl font-[800] text-gray-900 text-center mb-2">Review your notes</h2>
+              <p className="text-sm text-gray-500 text-center leading-[1.6] max-w-[320px] mx-auto">Pick a day above to start reviewing your saved insights.</p>
            </div>
 
            {/* 3 Steps */}
            <div className="flex gap-2.5 justify-center mb-4">
-              <div className="bg-surface border border-line rounded-md px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
+              <div className="bg-white border border-gray-200 rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">1</div>
                  Pick a day
               </div>
-              <div className="bg-surface border border-line rounded-md px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
+              <div className="bg-white border border-gray-200 rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">2</div>
                  Read each card
               </div>
-              <div className="bg-surface border border-line rounded-md px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
+              <div className="bg-white border border-gray-200 rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">3</div>
                  Sort by memory
               </div>
@@ -377,12 +340,12 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
            {/* Swipe Hint */}
            <div className="flex items-center gap-5 justify-center">
                <div className="text-[13px] font-[700] text-green-500">← Memorized</div>
-               <div className="w-[1px] h-6 bg-[#EBEBEB]" />
+               <div className="w-[1px] h-6 bg-gray-200" />
                <div className="text-[13px] font-[700] text-red-500">Review Again →</div>
            </div>
         </div>
       ) : reviewQueue.length === 0 && knewIt.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center text-center text-muted">
+        <div className="flex-1 flex items-center justify-center text-center text-gray-500">
            No reviewable notes found for this day. (New notes must be filled out first.)
         </div>
       ) : (
@@ -390,7 +353,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
         <div className="relative flex flex-col items-center justify-center min-h-[calc(100vh-160px)] w-full max-w-[900px] mx-auto">
           
           {/* Counter */}
-          <div className="text-sm font-[700] text-muted text-center mb-3">
+          <div className="text-sm font-[700] text-gray-600 text-center mb-3">
              Card {Math.min(currentCardNum, totalInSession)} of {totalInSession}
           </div>
 
@@ -417,7 +380,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
                  <div key={i} className="w-[100px] h-[130px] rounded-lg shadow-[2px_2px_8px_rgba(0,0,0,0.12)]" style={getPileStyle(i)} />
                ))}
                {reviewAgainCount > 0 && (
-                 <div className="absolute -bottom-3 -right-3 bg-danger text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shadow-sm z-10">
+                 <div className="absolute -bottom-3 -right-3 bg-red-500 text-white text-xs font-bold w-6 h-6 rounded-full flex items-center justify-center shadow-sm z-10">
                    {reviewAgainCount}
                  </div>
                )}
@@ -470,10 +433,10 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
                     <div className="text-red-500 text-xl font-[900] px-4 py-2 rotate-[15deg]">↻ REVIEW</div>
                  </div>
 
-                 <div className="text-base leading-[1.8] text-ink font-sans flex-1 overflow-y-auto scrollbar-hide break-words whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: activeCard.content }} />
+                 <div className="text-base leading-[1.8] text-gray-900 font-sans flex-1 overflow-y-auto scrollbar-hide break-words whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: activeCard.content }} />
                  
                  <div className="mt-6 flex justify-between items-center shrink-0">
-                    <span className="text-[11px] text-faint">Lesson {lesson?.id} · {lesson?.title}</span>
+                    <span className="text-[11px] text-gray-400">Lesson {lesson?.id} · {lesson?.title}</span>
                  </div>
               </div>
             )}
@@ -481,10 +444,10 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
           {/* Action Buttons */}
           <div className="mt-8 flex gap-4 justify-center shrink-0 z-20">
-             <button onClick={() => confirmAction('reviewAgain')} className="bg-surface/80 backdrop-blur border border-danger text-red-500 hover:bg-red-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
+             <button onClick={() => confirmAction('reviewAgain')} className="bg-white/80 backdrop-blur border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
                ↻ Review Again
              </button>
-             <button onClick={() => confirmAction('knewIt')} className="bg-surface/80 backdrop-blur border border-success text-green-500 hover:bg-green-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
+             <button onClick={() => confirmAction('knewIt')} className="bg-white/80 backdrop-blur border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
                ✓ Memorized
              </button>
           </div>

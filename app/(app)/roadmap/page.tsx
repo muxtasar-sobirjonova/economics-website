@@ -71,9 +71,9 @@ async function RoadmapContent({ userId }: { userId: string }) {
   const lessons = JSON.parse(JSON.stringify(lessonsData));
 
   return (
-    <div className="flex flex-col-reverse xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden p-s4 gap-s5">
+    <div className="flex flex-col-reverse xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden p-4 gap-5">
       {/* Left Content Area */}
-      <div className="flex-1 flex flex-col items-center xl:overflow-y-auto pb-s7">
+      <div className="flex-1 flex flex-col items-center xl:overflow-y-auto pb-10">
         <RoadmapMap lessons={lessons} 
           completedLessonDayOrders={progressData.completedLessonIds} 
           completedQuizDayOrders={progressData.completedQuizIds}
@@ -94,11 +94,11 @@ async function RoadmapContent({ userId }: { userId: string }) {
 function RoadmapSkeleton() {
   return (
     <div className="flex flex-col-reverse xl:flex-row flex-1 overflow-y-auto xl:overflow-hidden p-4 gap-5">
-      <div className="flex-1 flex flex-col items-center xl:overflow-y-auto pb-s7">
-        <div className="w-full max-w-[520px] h-32 bg-bg-sunk animate-pulse rounded-lg mb-s6" />
-        <div className="w-full max-w-[460px] h-[600px] bg-bg-sunk animate-pulse rounded-lg" />
+      <div className="flex-1 flex flex-col items-center xl:overflow-y-auto pb-10">
+        <div className="w-full max-w-2xl h-32 bg-slate-100 animate-pulse rounded-2xl mb-8"></div>
+        <div className="w-full max-w-md h-[600px] bg-slate-100 animate-pulse rounded-2xl"></div>
       </div>
-      <div className="w-full xl:w-[300px] h-[420px] bg-bg-sunk animate-pulse rounded-lg shrink-0" />
+      <div className="w-full xl:w-80 h-[500px] bg-slate-100 animate-pulse rounded-2xl shrink-0"></div>
     </div>
   );
 }
@@ -115,15 +115,15 @@ export default async function RoadmapPage() {
   const avatarLetter = (session?.user?.name?.trim().charAt(0) || session?.user?.email?.trim().charAt(0) || "?").toUpperCase();
 
   return (
-    <div className="roadmap-page min-h-screen w-full flex flex-col bg-bg bg-sky">
-      <div className="w-full bg-surface border-b border-line flex justify-between items-center shrink-0 px-s5 h-14">
-        <div>
-          <span className="text-label uppercase text-faint block">Your plot</span>
-          <h1 className="text-h3 font-semibold text-ink leading-tight">Roadmap</h1>
+    <div className="roadmap-page min-h-screen w-full font-sans flex flex-col p-0">
+      {/* Page Header */}
+      <div className="w-full bg-white flex justify-between items-center shrink-0 border-b border-slate-100 px-8 h-[52px]">
+        <div className="text-[22px] font-bold text-gray-900">
+          Roadmap
         </div>
-        <span className="w-9 h-9 rounded-full bg-accent-soft text-accent grid place-items-center font-semibold text-meta">
+        <div className="bg-brand-primary text-white shadow-sm cursor-pointer hover:opacity-90 transition-all rounded-full w-9 h-9 flex items-center justify-center font-bold text-sm">
           {avatarLetter}
-        </span>
+        </div>
       </div>
 
       {/* Content area */}

@@ -48,7 +48,7 @@ export const LearningPathSlider = ({
               className={`flex-shrink-0 w-[280px] flex flex-col items-start p-5 rounded-[20px] transition-all h-[140px] relative overflow-hidden ${
                 status === "Locked" ? "cursor-not-allowed opacity-80" : "cursor-pointer"
               } ${
-                isCurrent ? "ring-2 ring-accent ring-offset-2" : ""
+                isCurrent ? "ring-2 ring-brand-primary ring-offset-2" : ""
               } ${
                 status === "In Progress"
                   ? "bg-gradient-to-br from-[#E2D4FD] to-[#C6D2FE] border-[2px] border-transparent shadow-[0_8px_20px_rgba(123,104,238,0.2)] hover:-translate-y-0.5"
@@ -86,26 +86,26 @@ export const LearningPathSlider = ({
                     ? "text-[#3B3073]"
                     : status === "Completed"
                     ? "text-[#1E3A8A]"
-                    : "text-muted"
+                    : "text-gray-500"
                 }`}
               >
                 LESSON {lesson.id}
               </div>
               <h4
-                className={`font-bold text-[15px] leading-snug mb-auto line-clamp-2 relative z-10 text-ink`}
+                className={`font-bold text-[15px] leading-snug mb-auto line-clamp-2 relative z-10 text-gray-900`}
               >
                 {lesson.title}
               </h4>
 
               <div className="mt-5 w-full relative z-10">
                 {status === "Completed" && (
-                  <span className="bg-surface/60 border border-white text-[#3B82F6] px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wide flex items-center gap-1.5 w-fit shadow-sm">
+                  <span className="bg-white/60 border border-white text-[#3B82F6] px-3 py-1.5 rounded-full text-[11px] font-bold tracking-wide flex items-center gap-1.5 w-fit shadow-sm">
                     Completed <IconCheck size={12} stroke={3} />
                   </span>
                 )}
 
                 {status === "Locked" && (
-                  <span className="bg-surface/60 border border-white text-faint px-3 py-1.5 rounded-full text-[13px] font-bold tracking-wide flex items-center gap-1.5 w-fit shadow-sm">
+                  <span className="bg-white/60 border border-white text-gray-400 px-3 py-1.5 rounded-full text-[13px] font-bold tracking-wide flex items-center gap-1.5 w-fit shadow-sm">
                     Locked <IconLock size={12} stroke={2.5} />
                   </span>
                 )}

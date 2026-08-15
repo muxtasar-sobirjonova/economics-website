@@ -34,10 +34,9 @@ export function MarkReadButton({ lessonId, isArticle }: { lessonId: string, isAr
     <button
       onClick={handleClick}
       disabled={isPending}
-      className="px-s5 py-s3 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors disabled:opacity-60 min-h-[44px] flex items-center gap-s2 shrink-0"
+      className="bg-brand-primary text-white hover:bg-[#5A4FBD] px-7 py-3 rounded-lg font-[700] text-sm transition-all shadow-sm active:scale-95 disabled:opacity-70 flex items-center gap-2"
     >
-      {isPending ? "Saving…" : (isArticle ? "Next: Quiz" : "Next: Article")}
-      <span aria-hidden>&rarr;</span>
+      {isPending ? "Saving…" : (isArticle ? "Next: Quizzes →" : "Next: Articles →")}
     </button>
   );
 }

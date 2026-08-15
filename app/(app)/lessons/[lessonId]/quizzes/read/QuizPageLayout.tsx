@@ -25,12 +25,12 @@ export default function QuizPageLayout({ quizContent, notesContent }: QuizPageLa
 
       {/* Collapsible Notes Panel */}
       <div 
-        className="absolute right-0 top-0 bottom-0 w-[340px] bg-bg border-l border-line shadow-[-4px_0_12px_rgba(0,0,0,0.06)] z-[40] transition-transform duration-300 ease-in-out"
+        className="absolute right-0 top-0 bottom-0 w-[340px] bg-slate-50 border-l border-gray-200 shadow-[-4px_0_12px_rgba(0,0,0,0.06)] z-[40] transition-transform duration-300 ease-in-out"
         style={{ transform: marginOpen ? 'translateX(0)' : 'translateX(340px)' }}
       >
         <button 
           onClick={() => setMarginOpen(!marginOpen)}
-          className="absolute left-[-28px] top-10 w-7 h-[80px] bg-accent rounded-l-[8px] cursor-pointer flex flex-col items-center justify-center gap-1 text-white hover:bg-accent-strong transition-colors shadow-[-2px_0_8px_rgba(0,0,0,0.1)] border-none"
+          className="absolute left-[-28px] top-10 w-7 h-[80px] bg-brand-primary rounded-l-[8px] cursor-pointer flex flex-col items-center justify-center gap-1 text-white hover:bg-[#5A4FBD] transition-colors shadow-[-2px_0_8px_rgba(0,0,0,0.1)] border-none"
         >
           {marginOpen ? (
             <XIcon size={16} />

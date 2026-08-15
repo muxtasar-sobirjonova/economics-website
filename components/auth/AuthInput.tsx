@@ -21,14 +21,14 @@ export const AuthInput = forwardRef<HTMLInputElement, AuthInputProps>(
         </label>
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-            <Icon className="h-5 w-5 text-faint" />
+            <Icon className="h-5 w-5 text-gray-400" />
           </div>
           <input
             ref={ref}
             id={id}
             className={`appearance-none rounded-xl relative block w-full px-3 py-3 pl-10 border ${
-              error ? 'border-red-300' : 'border-line'
-            } placeholder-gray-400 text-ink bg-surface focus:outline-none focus:ring-2 focus:ring-accent focus:border-accent focus:z-10 sm:text-sm transition-all shadow-sm`}
+              error ? 'border-red-300' : 'border-gray-200'
+            } placeholder-gray-400 text-gray-900 bg-white focus:outline-none focus:ring-2 focus:ring-brand-primary focus:border-brand-primary focus:z-10 sm:text-sm transition-all shadow-sm`}
             {...props}
           />
         </div>

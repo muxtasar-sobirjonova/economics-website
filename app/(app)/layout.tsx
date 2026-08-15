@@ -11,10 +11,10 @@ export default function AppLayout({
 }) {
   return (
     <SessionProviderWrapper>
-      <div className="md:fixed md:inset-0 md:flex md:flex-row md:overflow-hidden w-full bg-bg min-h-[100dvh]">
+      <div className="md:fixed md:inset-0 md:flex md:flex-row md:overflow-hidden w-full bg-slate-50 min-h-[100dvh]">
         <MobileHeader />
         <Sidebar />
-        <main className="w-full relative md:flex-1 md:overflow-y-auto pt-14 pb-[72px] md:pt-0 md:pb-0">
+        <main className="w-full relative md:flex-1 md:overflow-y-auto pt-16 pb-20 md:pt-0 md:pb-0">
           {children}
         </main>
         <MobileBottomNav />

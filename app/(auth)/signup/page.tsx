@@ -11,16 +11,14 @@ export const metadata: Metadata = {
 export default function SignupPage() {
   return (
     <AuthLayout 
-      title="Break ground" 
-      subtitle="Free, no card. Pick a track after you sign up."
-      quote="Eight chapters later you have a skyline."
-      quoteMeta="56 days · 168 lessons"
+      title="Create your account" 
+      subtitle="Start learning concepts, reading articles, and taking quizzes."
     >
       <SignupForm />
 
-      <div className="mt-8 text-center text-sm text-muted">
+      <div className="mt-8 text-center text-sm text-gray-600">
         Already have an account?{' '}
-        <Link href="/login" className="font-bold text-accent hover:text-[#6859e0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent">
+        <Link href="/login" className="font-bold text-brand-primary hover:text-[#6859e0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
           Log in
         </Link>
       </div>

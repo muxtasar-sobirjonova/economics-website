@@ -1,51 +1,36 @@
-"use client";
+import Link from 'next/link';
 
-import Link from "next/link";
-import Image from "next/image";
-import { useEffect, useState } from "react";
-
-export const MarketingNav = () => {
-  const [scrolled, setScrolled] = useState(false);
-
-  useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 12);
-    onScroll();
-    window.addEventListener("scroll", onScroll, { passive: true });
-    return () => window.removeEventListener("scroll", onScroll);
-  }, []);
-
-  return (
-    <header
-      className={`sticky top-0 z-50 w-full transition-colors ${
-        scrolled ? "bg-bg-sunk/90 backdrop-blur border-b border-line" : "bg-transparent"
-      }`}
-    >
-      <nav className="max-w-[1180px] mx-auto px-s4 md:px-s5 h-16 flex items-center justify-between gap-s4">
-        <Link href="/" className="flex items-center gap-s3 shrink-0">
-          <span className="w-8 h-8 rounded-md bg-surface border border-line grid place-items-center overflow-hidden p-1">
-            <Image src="/favicon.png" alt="" width={24} height={24} className="w-full h-full object-contain" />
-          </span>
-          <span className="text-ui font-semibold text-ink tracking-[-.01em]">That&apos;s So Econ</span>
+export const MarketingNav = () => (
+  <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-gray-200 w-full transition-all duration-300" aria-label="Main Navigation">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
+      <div className="flex items-center gap-3 relative z-50">
+        <Link href="/" aria-label="That's So Econ Home" className="flex items-center gap-4 focus:outline-none focus:ring-4 focus:ring-brand-primary/50 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+          <div className="bg-white text-white font-black text-2xl flex items-center justify-center w-10 h-10 rounded-xl shadow-sm p-1">
+             <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain" />
+          </div>
+          <div className="flex flex-col justify-center mt-1">
+            <span className="text-[10px] font-bold tracking-[0.22em] text-[#5E1451] leading-none mb-0.5">That&apos;s So</span>
+            <span className="text-2xl font-black text-slate-900 leading-none">Econ<span className="text-[#5E1451]">!</span></span>
+          </div>
         </Link>
+      </div>
+      
+      <div className="hidden lg:flex items-center gap-8" role="menubar">
+        <Link href="#roadmap" className="font-semibold text-sm transition-colors text-gray-600 hover:text-slate-900 pb-1 border-b-2 border-transparent focus:outline-none focus:border-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" role="menuitem">Roadmap</Link>
+        <Link href="#concepts" className="font-semibold text-sm transition-colors text-gray-600 hover:text-slate-900 pb-1 border-b-2 border-transparent focus:outline-none focus:border-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" role="menuitem">Concepts</Link>
+        <Link href="#articles" className="font-semibold text-sm transition-colors text-gray-600 hover:text-slate-900 pb-1 border-b-2 border-transparent focus:outline-none focus:border-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" role="menuitem">Articles</Link>
+        <Link href="#quizzes" className="font-semibold text-sm transition-colors text-gray-600 hover:text-slate-900 pb-1 border-b-2 border-transparent focus:outline-none focus:border-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" role="menuitem">Quizzes</Link>
+        <Link href="#my-notes" className="font-semibold text-sm transition-colors text-gray-600 hover:text-slate-900 pb-1 border-b-2 border-transparent focus:outline-none focus:border-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" role="menuitem">Notes</Link>
+      </div>
 
-        <div className="hidden md:flex items-center gap-s5 text-meta text-muted">
-          <a href="#how" className="hover:text-ink transition-colors">How it works</a>
-          <a href="#tracks" className="hover:text-ink transition-colors">Tracks</a>
-          <a href="#faq" className="hover:text-ink transition-colors">FAQ</a>
-        </div>
-
-        <div className="flex items-center gap-s3 shrink-0">
-          <Link href="/login" className="text-meta text-muted hover:text-ink transition-colors min-h-[44px] flex items-center px-s2">
-            Log in
-          </Link>
-          <Link
-            href="/signup"
-            className="px-s4 py-s2 rounded-md bg-accent text-on-accent text-meta font-semibold hover:bg-accent-strong transition-colors min-h-[44px] flex items-center"
-          >
-            Get started
-          </Link>
-        </div>
-      </nav>
-    </header>
-  );
-};
+      <div className="flex items-center gap-2 sm:gap-4">
+        <Link href="/login" className="text-slate-900 font-bold px-4 py-2 rounded-full hover:bg-gray-100 transition-colors focus:outline-none focus:ring-4 focus:ring-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+          Log In
+        </Link>
+        <Link href="/signup" className="bg-brand-primary text-white px-4 sm:px-5 py-2 rounded-full font-bold hover:bg-[#6859e0] transition-colors shadow-sm focus:outline-none focus:ring-4 focus:ring-brand-primary/50 text-sm sm:text-base focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+          Sign Up
+        </Link>
+      </div>
+    </div>
+  </nav>
+);

@@ -11,19 +11,17 @@ export const metadata: Metadata = {
 export default function LoginPage() {
   return (
     <AuthLayout 
-      title="Welcome back"
-      subtitle="Pick up where you left off — your streak is still alive."
-      quote="I understood pricing the day I had to set one."
-      quoteMeta="Chapter 3 · Pricing Power"
+      title="Welcome back" 
+      subtitle="Log in to continue your entrepreneurship economics journey."
     >
       <LoginForm />
 
-      <p className="mt-s5 text-meta text-muted">
-        New here?{' '}
-        <Link href="/signup" className="text-accent hover:text-accent-strong font-semibold">
-          Create an account
+      <div className="mt-8 text-center text-sm text-gray-600">
+        Don&apos;t have an account?{' '}
+        <Link href="/signup" className="font-bold text-brand-primary hover:text-[#6859e0] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+          Sign up
         </Link>
-      </p>
+      </div>
     </AuthLayout>
   );
 }

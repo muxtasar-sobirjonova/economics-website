@@ -34,22 +34,22 @@ export default function ArticleBody({
         </h3>
       ),
       normal: ({ children }) => (
-        <p className="mb-6 text-muted leading-relaxed">{children}</p>
+        <p className="mb-6 text-gray-700 leading-relaxed">{children}</p>
       ),
       blockquote: ({ children }) => (
-        <blockquote className="border-l-4 border-[#0096a5] pl-4 italic my-6 text-muted bg-bg py-2 pr-4 rounded-r-lg">
+        <blockquote className="border-l-4 border-[#0096a5] pl-4 italic my-6 text-gray-600 bg-gray-50 py-2 pr-4 rounded-r-lg">
           {children}
         </blockquote>
       ),
     },
     list: {
       bullet: ({ children }) => (
-        <ul className="list-disc pl-6 mb-6 space-y-2 text-muted">
+        <ul className="list-disc pl-6 mb-6 space-y-2 text-gray-700">
           {children}
         </ul>
       ),
       number: ({ children }) => (
-        <ol className="list-decimal pl-6 mb-6 space-y-2 text-muted">
+        <ol className="list-decimal pl-6 mb-6 space-y-2 text-gray-700">
           {children}
         </ol>
       ),
@@ -66,7 +66,7 @@ export default function ArticleBody({
             href={href}
           target="_blank"
           rel="noreferrer noopener"
-            className="text-article hover:text-article underline underline-offset-2 decoration-[#A898D4] hover:decoration-[#0096a5] transition-colors"
+            className="text-[#4ebdd5] hover:text-[#4ebdd5] underline underline-offset-2 decoration-[#A898D4] hover:decoration-[#0096a5] transition-colors"
           >
             {children}
           </a>
@@ -80,7 +80,7 @@ export default function ArticleBody({
     block: {
       ...(baseComponents.block as Record<string, React.FC<unknown>>),
       h3: ({ children }: { children?: React.ReactNode }) => (
-        <h3 className="text-sm md:text-lg font-[800] mt-10 mb-4 text-article uppercase border-b-2 border-article inline-block tracking-wide">
+        <h3 className="text-sm md:text-lg font-[800] mt-10 mb-4 text-[#0096a5] uppercase border-b-2 border-tropic inline-block tracking-wide">
           {children}
         </h3>
       ),
@@ -123,9 +123,9 @@ export default function ArticleBody({
             alt="Pizza Delivery Illustration"
             fill
             sizes="(max-width: 768px) 100vw, 45vw"
-            className="rounded-xl shadow-sm border border-line filter sepia-[0.3] object-cover"
+            className="rounded-xl shadow-sm border border-sky-blue filter sepia-[0.3] object-cover"
           />
-          <div className="absolute top-4 right-4 bg-surface/90 backdrop-blur-sm px-3 py-1 rounded-lg border border-line shadow-sm font-bold text-article text-sm">
+          <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg border border-sky-blue shadow-sm font-bold text-[#4ebdd5] text-sm">
             30 MINUTE DELIVERY
           </div>
         </div>

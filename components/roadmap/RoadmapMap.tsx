@@ -2,9 +2,10 @@
 
 import React from "react";
 import { useRouter } from "next/navigation";
-import { IsoPlot, PlotDay } from "./IsoPlot";
+import { splitTitle } from "@/lib/roadmap-utils";
+import { LockedNode, ActiveNode, CompletedNode } from "./Nodes";
 import { Lesson } from "@prisma/client";
-
+import { RoadmapUnitCard } from "./RoadmapUnitCard";
 
 const TRACK_CHAPTERS: Record<string, {
   chapterNumber: number;
@@ -188,6 +189,32 @@ const TRACK_CHAPTERS: Record<string, {
     },
   ],
 };
+const generateChapterCoords = (nodeCount: number) => {
+  const coords = [];
+  const startY = 40; 
+  // Adjusted X pattern to match the visual style
+  const xPattern = [100, 260, 380, 240, 100, 300, 180];
+  
+  for (let i = 0; i < nodeCount; i++) {
+    const x = xPattern[i % xPattern.length];
+    coords.push({ x, y: startY + (i * 105) });
+  }
+  return coords;
+};
+
+const generatePathD = (coords: {x: number, y: number}[]) => {
+  if (coords.length < 2) return "";
+  let d = `M ${coords[0].x} ${coords[0].y + 36} `;
+  
+  for (let i = 0; i < coords.length - 1; i++) {
+    const curr = coords[i];
+    const next = coords[i + 1];
+    const midY = (curr.y + next.y) / 2;
+    d += `C ${curr.x} ${midY}, ${next.x} ${midY}, ${next.x} ${next.y - 36} `;
+  }
+  return d.trim();
+};
+
 export const RoadmapMap = ({
   completedLessonDayOrders,
   completedQuizDayOrders,
@@ -200,192 +227,268 @@ export const RoadmapMap = ({
   activeTrack?: string;
 }) => {
   const router = useRouter();
-
-  // Days 1-7 = chapter 1, 8-14 = chapter 2, and so on.
+  // Group lessons into chapters based on their 7-day cycle (Day 1-7 = Ch 1, Day 8-14 = Ch 2, etc.)
   const chaptersMap: Record<number, Lesson[]> = {};
   lessons.forEach((lesson) => {
     const chapterIndex = Math.floor((lesson.dayOrder - 1) / 7);
     if (!chaptersMap[chapterIndex]) chaptersMap[chapterIndex] = [];
     chaptersMap[chapterIndex].push(lesson);
   });
-
+  
+  // Convert map to sorted array
   const chapters: Lesson[][] = Object.keys(chaptersMap)
     .map(Number)
     .sort((a, b) => a - b)
-    .map((i) => chaptersMap[i]);
+    .map((chapterIndex) => chaptersMap[chapterIndex]);
 
-  const meta = TRACK_CHAPTERS[activeTrack] || TRACK_CHAPTERS.ENTREPRENEURSHIP_ECONOMICS;
-
-  // Build every chapter's day list once, so the summary rows and the plot agree.
-  const built = chapters.map((chapterLessons, chapterIndex) => {
-    const lastLesson = chapterLessons[chapterLessons.length - 1];
-    const quizDayOrder = lastLesson ? lastLesson.dayOrder + 1 : (chapterIndex + 1) * 7;
-
-    const isLessonUnlocked = (idx: number): boolean => {
-      if (chapterIndex === 0 && idx === 0) return true;
-      if (idx === 0) {
-        const prev = chapters[chapterIndex - 1];
-        return completedQuizDayOrders.includes(prev[prev.length - 1].dayOrder + 1);
-      }
-      return completedLessonDayOrders.includes(chapterLessons[idx - 1].dayOrder);
-    };
-
-    const days: PlotDay[] = chapterLessons.map((l, idx) => {
-      const done = completedLessonDayOrders.includes(l.dayOrder);
-      return {
-        dayOrder: l.dayOrder,
-        title: l.title,
-        state: done ? "done" : isLessonUnlocked(idx) ? "active" : "locked",
-        href: `/lessons/${l.dayOrder}/concepts`,
-      };
-    });
-
-    const allLessonsDone = lastLesson ? completedLessonDayOrders.includes(lastLesson.dayOrder) : false;
-    const quizDone = completedQuizDayOrders.includes(quizDayOrder);
-
-    days.push({
-      dayOrder: quizDayOrder,
-      title: `${meta[chapterIndex]?.title ?? `Chapter ${chapterIndex + 1}`} review`,
-      state: quizDone ? "done" : allLessonsDone ? "active" : "locked",
-      isQuiz: true,
-      href: `/lessons/${quizDayOrder}/quizzes`,
-    });
-
-    // Only one day may read as active — the first one.
-    let seenActive = false;
-    days.forEach((d) => {
-      if (d.state === "active") {
-        if (seenActive) d.state = "locked";
-        seenActive = true;
-      }
-    });
-
-    const doneCount = days.filter((d) => d.state === "done").length;
-
-    return {
-      chapterIndex,
-      info: meta[chapterIndex] || {
-        chapterNumber: chapterIndex + 1,
-        title: `Chapter ${chapterIndex + 1}`,
-        description: "More advanced concepts and lessons.",
-      },
-      days,
-      doneCount,
-      isClosed: doneCount === days.length,
-      hasActive: days.some((d) => d.state === "active"),
-      firstDay: chapterLessons[0]?.dayOrder,
-      quizDayOrder,
-    };
-  });
-
-  const currentIndex = built.findIndex((c) => c.hasActive);
-  const go = (day: PlotDay) => day.href && router.push(day.href);
+  const currentChapters = TRACK_CHAPTERS[activeTrack] || TRACK_CHAPTERS.ENTREPRENEURSHIP_ECONOMICS;
 
   return (
-    <div className="flex flex-col items-stretch w-full max-w-[860px] gap-s3">
-      {built.map((c) => {
-        const isCurrent = c.chapterIndex === currentIndex;
-        const num = String(c.info.chapterNumber).padStart(2, "0");
-        const range = c.firstDay ? `Days ${c.firstDay}\u2013${c.quizDayOrder}` : "";
+    <div className="flex flex-col items-center w-full">
+      <style>
+        {`
+          @keyframes dashspin {
+            from { stroke-dashoffset: 0; }
+            to { stroke-dashoffset: -40; }
+          }
+        `}
+      </style>
+      
+      {chapters.map((chapterLessons, chapterIndex) => {
+        const chapterNum = chapterIndex + 1;
+        const chapterInfo = currentChapters[chapterIndex] || {
+          chapterNumber: chapterNum,
+          title: `Chapter ${chapterNum}`,
+          description: "More advanced concepts and lessons.",
+          bgClass: "bg-gray-200",
+          btnClass: "bg-gray-400",
+        };
 
-        // ── Closed or not-yet-open chapters collapse to one quiet row ─────────
-        if (!isCurrent) {
-          return (
-            <section
-              key={num}
-              className={`rounded-lg border border-line bg-surface shadow-sh1 px-s5 py-s4 flex items-center gap-s4 ${
-                c.isClosed ? "" : "opacity-70"
-              }`}
-            >
-              <span
-                className={`w-10 h-10 rounded-md grid place-items-center shrink-0 font-mono text-meta ${
-                  c.isClosed ? "bg-success-soft text-success" : "bg-bg-sunk text-faint"
-                }`}
-              >
-                {num}
-              </span>
+        const lastLesson = chapterLessons[chapterLessons.length - 1];
+        const chapterQuizDayOrder = lastLesson ? lastLesson.dayOrder + 1 : chapterNum * 7;
+        
+        // Generate coordinates for this chapter's nodes
+        const nodeCount = chapterLessons.length + 1; // +1 for the quiz
+        const coords = generateChapterCoords(nodeCount);
+        const pathD = generatePathD(coords);
+        
+        // Add padding at the bottom of the SVG to prevent clipping
+        const svgHeight = coords.length > 0 ? coords[coords.length - 1].y + 120 : 200;
 
-              <div className="min-w-0 flex-1">
-                <div className="text-label uppercase text-faint">
-                  {c.isClosed ? "Closed" : "Locked"} · {range}
-                </div>
-                <h2 className="text-h3 font-semibold text-ink mt-[2px] line-clamp-3 pb-[3px]">{c.info.title}</h2>
-                <p className="font-mono text-meta text-muted tabular mt-1">
-                  {c.doneCount} of {c.days.length} days
-                </p>
-              </div>
+        // Determine nextUrl and disabled state for the chapter Start button
+        let startHref: string | undefined = undefined;
+        let chapterDisabled = true;
 
-              {c.isClosed && (
-                <button
-                  onClick={() => router.push(`/lessons/${c.firstDay}/concepts`)}
-                  className="shrink-0 px-s4 py-s2 rounded-md border border-line text-meta text-muted hover:border-accent hover:text-accent transition-colors min-h-[44px]"
-                >
-                  Revisit
-                </button>
-              )}
-            </section>
-          );
+        const isLessonUnlocked = (lessonIdx: number) => {
+          if (chapterIndex === 0 && lessonIdx === 0) return true;
+          
+          if (lessonIdx === 0) {
+            const prevChapterQuizDayOrder = chapters[chapterIndex - 1][chapters[chapterIndex - 1].length - 1].dayOrder + 1;
+            return completedQuizDayOrders.includes(prevChapterQuizDayOrder);
+          }
+
+          const prevLesson = chapterLessons[lessonIdx - 1];
+          return completedLessonDayOrders.includes(prevLesson.dayOrder);
+        };
+
+        const firstActiveLesson = chapterLessons.find((l, idx) => {
+          return isLessonUnlocked(idx) && !completedLessonDayOrders.includes(l.dayOrder);
+        });
+
+        const isAllLessonsDone = lastLesson ? completedLessonDayOrders.includes(lastLesson.dayOrder) : false;
+        const isQuizDone = completedQuizDayOrders.includes(chapterQuizDayOrder);
+        const isQuizActive = isAllLessonsDone && !isQuizDone;
+
+        if (firstActiveLesson) {
+          chapterDisabled = false;
+          startHref = `/lessons/${firstActiveLesson.dayOrder}/concepts`;
+        } else if (isQuizActive) {
+          chapterDisabled = false;
+          startHref = `/lessons/${chapterQuizDayOrder}/quizzes`;
+        } else if (isAllLessonsDone && isQuizDone) {
+          // Entire chapter is done, let them review the first lesson
+          chapterDisabled = false;
+          startHref = `/lessons/${chapterLessons[0]?.dayOrder || 1}/concepts`;
         }
 
-        // ── The chapter you are in gets the card and the plot ────────────────
-        const activeDay = c.days.find((d) => d.state === "active");
-        const pct = (c.doneCount / c.days.length) * 100;
-
         return (
-          <section key={num} className="rounded-lg border border-line bg-surface shadow-sh2 overflow-hidden">
-            <div className="p-s5">
-              <div className="flex items-start gap-s4">
-                <span className="w-11 h-11 rounded-md grid place-items-center shrink-0 bg-accent-soft text-accent-strong font-mono text-h3">
-                  {num}
-                </span>
-                <div className="min-w-0 flex-1">
-                  <div className="text-label uppercase text-accent">Current chapter · {range}</div>
-                  <h2 className="text-h3 sm:text-h2 font-semibold text-ink mt-1 text-balance">{c.info.title}</h2>
-                </div>
-              </div>
+          <React.Fragment key={`chapter-${chapterNum}`}>
+            <RoadmapUnitCard 
+              chapterNumber={chapterInfo.chapterNumber}
+              title={chapterInfo.title}
+              description={chapterInfo.description}
+              bgClass={(chapterInfo as Record<string, unknown>).bgClass as string}
+              btnClass={(chapterInfo as Record<string, unknown>).btnClass as string}
+              startHref={startHref}
+              disabled={chapterDisabled}
+            />
 
-              <p className="text-ui text-muted mt-s3 max-w-[62ch]">{c.info.description}</p>
-
-              <div className="flex items-center gap-s4 mt-s5 flex-wrap">
-                <div className="flex-1 min-w-[180px]">
-                  <div className="flex items-baseline justify-between mb-s2">
-                    <span className="font-mono text-meta text-muted tabular">
-                      {c.doneCount} of {c.days.length} days
-                    </span>
-                    <span className="font-mono text-meta text-muted tabular">{Math.round(pct)}%</span>
-                  </div>
-                  <div className="h-1 w-full bg-bg-sunk rounded-sm overflow-hidden">
-                    <div className="h-full bg-accent rounded-sm transition-all duration-500" style={{ width: `${pct}%` }} />
-                  </div>
-                </div>
-
-                {activeDay && (
-                  <button
-                    onClick={() => go(activeDay)}
-                    className="px-s5 py-s3 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors min-h-[44px] shrink-0"
-                  >
-                    {activeDay.isQuiz ? "Take the review quiz" : `Continue day ${activeDay.dayOrder}`} &rarr;
-                  </button>
-                )}
-              </div>
-            </div>
-
-            <div className="px-s3 pb-s5 bg-gradient-to-b from-transparent to-bg-sunk/40">
-              <IsoPlot
-                days={c.days}
-                onSelect={go}
-                ariaLabel={`${c.info.title}: days ${c.firstDay} to ${c.quizDayOrder}`}
+            <svg
+              viewBox={`0 0 460 ${svgHeight}`}
+              className="w-full max-w-[460px] shrink-0 overflow-visible"
+            >
+              <path
+                d={pathD}
+                fill="none"
+                stroke="#c4b5fd"
+                strokeWidth="2"
+                strokeDasharray="8 6"
+                className="stroke-linecap-round opacity-100"
               />
-            </div>
-          </section>
+
+              {chapterLessons.map((lesson, lessonIndex) => {
+                const { x, y } = coords[lessonIndex];
+                const [line1, line2] = splitTitle(lesson.title);
+
+                const isCompleted = completedLessonDayOrders.includes(lesson.dayOrder);
+
+                const isLessonUnlocked = () => {
+                  if (chapterIndex === 0 && lessonIndex === 0) return true;
+                  
+                  // If it's the first lesson of a new chapter, it requires the PREVIOUS chapter's quiz to be done
+                  if (lessonIndex === 0) {
+                    const prevChapterQuizDayOrder = chapters[chapterIndex - 1][chapters[chapterIndex - 1].length - 1].dayOrder + 1;
+                    return completedQuizDayOrders.includes(prevChapterQuizDayOrder);
+                  }
+
+                  // Otherwise, it requires the previous lesson in the same chapter
+                  const prevLesson = chapterLessons[lessonIndex - 1];
+                  return completedLessonDayOrders.includes(prevLesson.dayOrder);
+                };
+
+                const isUnlocked = isLessonUnlocked();
+                const isActive = !isCompleted && isUnlocked;
+
+                return (
+                  <React.Fragment key={lesson.id}>
+                    {isCompleted && (
+                      <CompletedNode
+                        x={x}
+                        y={y}
+                        line1={line1}
+                        line2={line2}
+                        onClick={() => router.push(`/lessons/${lesson.dayOrder}/concepts`)}
+                      />
+                    )}
+                    {isActive && (
+                      <ActiveNode
+                        x={x}
+                        y={y}
+                        line1={line1}
+                        line2={line2}
+                        onClick={() => router.push(`/lessons/${lesson.dayOrder}/concepts`)}
+                      />
+                    )}
+                    {!isCompleted && !isActive && (
+                      <LockedNode x={x} y={y} line1={line1} line2={line2} />
+                    )}
+                  </React.Fragment>
+                );
+              })}
+
+              {/* Render the Chapter Quiz Node */}
+              {(() => {
+                const { x, y } = coords[coords.length - 1];
+                const isAllLessonsDone = lastLesson ? completedLessonDayOrders.includes(lastLesson.dayOrder) : false;
+                
+                const isQuizDone = completedQuizDayOrders.includes(chapterQuizDayOrder);
+                const isQuizActive = isAllLessonsDone && !isQuizDone;
+
+                if (isQuizDone) {
+                  return (
+                    <g
+                      key={`quiz-${chapterNum}`}
+                      transform={`translate(${x}, ${y})`}
+                      onClick={() => router.push(`/lessons/${chapterQuizDayOrder}/quizzes`)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          router.push(`/lessons/${chapterQuizDayOrder}/quizzes`);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Chapter ${chapterNum} Quiz: Completed`}
+                      className="cursor-pointer hover:opacity-90 transition-opacity focus:outline-none focus:ring-4 focus:ring-green-300 rounded-full"
+                    >
+                      <circle r="36" fill="#22c55e" />
+                      <polyline points="-10,-2 -2,6 10,-8" fill="none" stroke="#FFFFFF" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" />
+                      <text y="54" fontSize="13" fill="#0096a5" fontWeight="500" textAnchor="middle">
+                        <tspan x="0" dy="0">Chapter {chapterNum} Quiz</tspan>
+                      </text>
+                    </g>
+                  );
+                } else if (isQuizActive) {
+                  return (
+                    <g
+                      key={`quiz-${chapterNum}`}
+                      transform={`translate(${x}, ${y})`}
+                      onClick={() => router.push(`/lessons/${chapterQuizDayOrder}/quizzes`)}
+                      onKeyDown={(e) => {
+                        if (e.key === 'Enter' || e.key === ' ') {
+                          e.preventDefault();
+                          router.push(`/lessons/${chapterQuizDayOrder}/quizzes`);
+                        }
+                      }}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Chapter ${chapterNum} Quiz: Unlocked and active`}
+                      className="cursor-pointer hover:opacity-90 transition-opacity focus:outline-none focus:ring-4 focus:ring-pink-300 rounded-full"
+                    >
+                      <circle r="46" fill="none" stroke="#F7C8D3" strokeWidth="2.5" strokeDasharray="6 4" style={{ animation: "dashspin 2s linear infinite" }} />
+                      <circle r="36" fill="#0096a5" />
+                      <polygon points="0,-12 3,-4 12,-4 5,2 8,10 0,6 -8,10 -5,2 -12,-4 -3,-4" fill="white" stroke="white" strokeWidth="2" strokeLinejoin="round" />
+                      <g transform="translate(0, -60)">
+                        <rect x="-56" y="-14" width="112" height="26" rx="12" fill="white" stroke="#F7C8D3" strokeWidth="1" />
+                        <text y="4" fontSize="11" fill="#0096a5" fontWeight="500" textAnchor="middle">START QUIZ!</text>
+                      </g>
+                      <text y="54" fontSize="13" fill="#0096a5" fontWeight="500" textAnchor="middle">
+                        <tspan x="0" dy="0">Chapter {chapterNum} Quiz</tspan>
+                      </text>
+                    </g>
+                  );
+                } else {
+                  return (
+                    <g transform={`translate(${x}, ${y})`} key={`quiz-${chapterNum}`} className="opacity-80" aria-label={`Chapter ${chapterNum} Quiz: Locked`}>
+                      <circle r="36" fill="#ececf5" stroke="#d4d4e8" strokeWidth="1.5" />
+                      <rect x="-8" y="-4" width="16" height="12" rx="2" fill="#9ca3af" />
+                      <path d="M-4,-4 v-4 a4,4 0 0,1 8,0 v4" fill="none" stroke="#9ca3af" strokeWidth="2" />
+                      <text y="54" fontSize="13" fill="#6b7280" fontWeight="500" textAnchor="middle">
+                        <tspan x="0" dy="0">Chapter {chapterNum} Quiz</tspan>
+                      </text>
+                    </g>
+                  );
+                }
+              })()}
+            </svg>
+          </React.Fragment>
         );
       })}
 
-      <div className="rounded-lg border border-dashed border-line-strong px-s5 py-s4 text-center">
-        <span className="text-label uppercase text-faint">
-          Chapter {chapters.length + 1} coming soon
-        </span>
-      </div>
+      {/* Banner at the very bottom */}
+      <svg
+        viewBox="0 0 460 100"
+        className="w-full max-w-[460px] shrink-0 overflow-visible mt-4 mb-10"
+      >
+        <g transform={`translate(230, 40)`}>
+          <rect
+            x="-130"
+            y="-20"
+            width="260"
+            height="40"
+            rx="12"
+            fill="#f9fafb"
+            stroke="#d4d4e8"
+            strokeWidth="1.5"
+            strokeDasharray="6 4"
+          />
+          <rect x="-80" y="-4" width="12" height="10" rx="2" fill="#9ca3af" />
+          <path d="M-78,-4 v-3 a4,4 0 0,1 8,0 v3" fill="none" stroke="#9ca3af" strokeWidth="1.5" />
+          <text x="-60" y="4" fontSize="13" fill="#9ca3af" fontWeight="500" alignmentBaseline="middle">
+            CHAPTER {chapters.length + 1} COMING SOON
+          </text>
+        </g>
+      </svg>
     </div>
   );
 };

@@ -77,7 +77,7 @@ export const LessonOneCaseStudy = () => {
 
       <div className="w-full my-12 mx-auto">
         <p
-          className={`italic font-semibold text-[22px] leading-[1.6] text-muted border-l-[3px] border-accent pl-4 my-6`}
+          className={`italic font-semibold text-[22px] leading-[1.6] text-gray-600 border-l-[3px] border-brand-primary pl-4 my-6`}
         >
           &quot;Traditional economics explains why Domino&apos;s worked.
           Entrepreneurial economics is what Monaghan was doing while

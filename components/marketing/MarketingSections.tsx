@@ -1,204 +1,199 @@
-import { FaqAccordion } from "./FaqAccordion";
-import Link from "next/link";
-
-/** Small previews built from the real design tokens — not hand-drawn fakes. */
-
-const AgendaPreview = () => (
-  <div className="rounded-lg border border-line bg-surface shadow-sh2 p-s4 w-full max-w-[420px]">
-    <div className="flex items-baseline justify-between mb-s3">
-      <span className="text-ui font-semibold text-ink">Today&apos;s Agenda</span>
-      <span className="font-mono text-meta text-muted tabular">1 / 3 done</span>
-    </div>
-    <div className="h-1 w-full bg-bg-sunk rounded-sm overflow-hidden mb-s3">
-      <div className="h-full w-1/3 bg-accent rounded-sm" />
-    </div>
-    {[
-      { k: "CONCEPT", tone: "concept", t: "Marginal cost, plainly", done: true },
-      { k: "ARTICLE", tone: "article", t: "Why Airbnb priced beds like hotels", done: false },
-      { k: "QUIZ", tone: "quiz", t: "10 questions · pass at 8", done: false },
-    ].map((r) => (
-      <div key={r.k} className="flex items-center gap-s3 p-s3 rounded-md border border-line bg-raised mb-s2 last:mb-0">
-        <span className="w-[3px] self-stretch rounded-sm" style={{ background: `var(--${r.tone})` }} />
-        <span className="min-w-0 flex-1">
-          <span className="text-label uppercase px-[6px] py-[2px] rounded-sm" style={{ background: `var(--${r.tone}-soft)`, color: `var(--${r.tone})` }}>
-            {r.k}
-          </span>
-          <span className="block text-meta text-ink truncate mt-1">{r.t}</span>
-        </span>
-        <span className={`w-6 h-6 rounded-full border shrink-0 ${r.done ? "bg-success border-success" : "border-line bg-bg-sunk"}`} />
-      </div>
-    ))}
-  </div>
-);
-
-const QuizPreview = () => (
-  <div className="rounded-lg border border-line bg-surface shadow-sh2 p-s4 w-full max-w-[420px]">
-    <p className="text-ui font-semibold text-ink mb-s3">Why price against hotels, not under them?</p>
-    <div className="flex items-center gap-s3 p-s3 rounded-md border border-success bg-success-soft mb-s2">
-      <span className="w-6 h-6 rounded-sm grid place-items-center bg-success text-white font-mono text-[11px]">A</span>
-      <span className="text-meta text-ink">Marginal cost is near zero</span>
-    </div>
-    <div className="flex items-center gap-s3 p-s3 rounded-md border border-line bg-raised opacity-60">
-      <span className="w-6 h-6 rounded-sm grid place-items-center bg-bg-sunk text-muted font-mono text-[11px]">B</span>
-      <span className="text-meta text-ink">Hotels had already cut rates</span>
-    </div>
-  </div>
-);
-
-const NotesPreview = () => (
-  <div className="w-full max-w-[420px] flex flex-col gap-s3">
-    <div className="rounded-md p-s4 shadow-sh2" style={{ background: "var(--hl-yellow)" }}>
-      <span className="text-label uppercase text-black/50">Article · Day 17</span>
-      <p className="text-meta text-black/85 mt-s2">
-        &ldquo;Adding one guest to a room you already heat costs almost nothing.&rdquo;
-      </p>
-    </div>
-    <div className="rounded-md p-s4 shadow-sh2 ml-s6" style={{ background: "var(--hl-blue)" }}>
-      <span className="text-label uppercase text-black/50">My note</span>
-      <p className="text-meta text-black/85 mt-s2">
-        Is this the same as price discrimination? Check day 19.
-      </p>
-    </div>
-  </div>
-);
-
-const ArticlePreview = () => (
-  <div className="rounded-lg border border-line bg-read-bg shadow-sh2 p-s5 w-full max-w-[420px]">
-    <span className="text-label uppercase" style={{ color: "var(--article)" }}>Article · 12 min</span>
-    <h3 className="text-h3 font-semibold mt-s2" style={{ color: "var(--read-text)" }}>
-      The bed that cost nothing to make
-    </h3>
-    <p className="text-meta mt-s3 leading-[1.7]" style={{ color: "var(--read-text)", opacity: .75 }}>
-      Three founders had a loft, two air mattresses and a city with no rooms
-      left. What they discovered about price had nothing to do with bedding…
-    </p>
-  </div>
-);
-
-function Section({
-  id, eyebrow, title, body, children, flip,
-}: {
-  id?: string; eyebrow: string; title: string; body: string; children: React.ReactNode; flip?: boolean;
-}) {
-  return (
-    <section id={id} className="max-w-[1180px] mx-auto px-s4 md:px-s5 py-s7 md:py-s8">
-      <div className={`flex flex-col ${flip ? "md:flex-row-reverse" : "md:flex-row"} items-center gap-s6 md:gap-s8`}>
-        <div className="flex-1 min-w-0">
-          <span className="font-mono text-label uppercase text-accent-strong">{eyebrow}</span>
-          <h2 className="mt-s3 text-h1-sm md:text-h1 font-semibold text-ink text-balance">{title}</h2>
-          <p className="mt-s4 text-ui text-muted max-w-[54ch]">{body}</p>
-        </div>
-        <div className="flex-1 w-full flex justify-center">{children}</div>
-      </div>
-    </section>
-  );
-}
-
-const APPROACH = [
-  { t: "Learn by doing, not memorising", b: "Every concept is immediately spent on a decision someone actually had to make." },
-  { t: "Real case studies, not just theory", b: "168 readings drawn from ventures, markets and mistakes you can name." },
-  { t: "A plan that adapts daily", b: "Miss a day and the plan reshuffles instead of shaming you into quitting." },
-];
-
-const TRACKS = [
-  { t: "Entrepreneurship Economics", b: "Why founders exist, how value is created, captured and priced." },
-  { t: "Development Economics", b: "Why some countries grow rich and others stay poor." },
-  { t: "Behavioral Economics", b: "How people actually decide — shortcuts, biases and nudges." },
-];
+import { IconTrophy, IconTarget, IconChartLine, IconFlame, IconBulb } from '@tabler/icons-react';
+import { ScrollReveal } from './ScrollReveal';
+import { RoadmapMockup } from './RoadmapMockup';
+import { ConceptsMockup } from './ConceptsMockup';
+import { ArticlesMockup } from './ArticlesMockup';
+import { FlashcardMockup } from './FlashcardMockup';
+import { Eyebrow } from './Eyebrow';
+import { SectionHeading } from './SectionHeading';
+import { FeatureCard } from './FeatureCard';
+import { FaqAccordion } from './FaqAccordion';
 
 export const MarketingSections = () => (
   <>
-    <Section
-      id="how"
-      eyebrow="Your personal study plan"
-      title="Stop guessing. Start learning."
-      body="The dashboard shows one day's work: a concept, a case study, a quiz. Nothing else competes for attention until those three are done."
-    >
-      <AgendaPreview />
-    </Section>
-
-    <Section
-      eyebrow="Case study driven"
-      title="Applied case studies."
-      body="Magazine-length readings about ventures that got it right and wrong, set in a serif built for the long haul."
-      flip
-    >
-      <ArticlePreview />
-    </Section>
-
-    <Section
-      eyebrow="Active recall"
-      title="Mastery through assessment."
-      body="Ten questions, eight to pass. Wrong answers become a review deck instead of a dead end."
-    >
-      <QuizPreview />
-    </Section>
-
-    <Section
-      eyebrow="Spaced repetition notes"
-      title="Highlight it. Save it. Never forget it."
-      body="Select any line while reading, pick a colour, and it comes back as a flashcard days later — with the lesson it came from attached."
-      flip
-    >
-      <NotesPreview />
-    </Section>
-
-    {/* Tracks */}
-    <section id="tracks" className="max-w-[1180px] mx-auto px-s4 md:px-s5 py-s7 md:py-s8">
-      <div className="text-center mb-s6">
-        <span className="font-mono text-label uppercase text-accent-strong">Three tracks</span>
-        <h2 className="mt-s3 text-h1-sm md:text-h1 font-semibold text-ink">Pick where to start.</h2>
+    <section id="roadmap" className="py-20 md:py-24 bg-gray-50 border-y border-gray-100 scroll-mt-28">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <ScrollReveal delay={0.2} className="order-2 md:order-1 flex justify-center w-full">
+             <RoadmapMockup />
+          </ScrollReveal>
+          <ScrollReveal delay={0} className="order-1 md:order-2 text-left">
+            <Eyebrow>Your Personal Study Plan</Eyebrow>
+            <SectionHeading>Stop guessing. Start learning.</SectionHeading>
+            <p className="text-xl text-gray-600 leading-relaxed mb-8">
+              Every day, we build a personalized agenda for you—so you know exactly where to pick up.
+            </p>
+            <div className="bg-white p-6 rounded-3xl border border-gray-200 shadow-sm flex gap-4 transition-shadow hover:shadow-md">
+              <div className="w-12 h-12 rounded-2xl bg-yellow-50 text-yellow-500 flex items-center justify-center shrink-0">
+                <IconTrophy size={24} />
+              </div>
+              <div>
+                <h4 className="font-bold text-slate-900 text-lg mb-1">Earn XP & Climb Leagues</h4>
+                <p className="text-gray-600 leading-relaxed text-sm">Earn XP, climb the leaderboards, and unlock advanced concepts as you progress.</p>
+              </div>
+            </div>
+          </ScrollReveal>
+        </div>
       </div>
-      <div className="grid md:grid-cols-3 gap-s4">
-        {TRACKS.map((t, i) => (
-          <div key={t.t} className="rounded-lg border border-line bg-surface shadow-sh1 p-s5">
-            <span className="font-mono text-label uppercase text-faint">0{i + 1}</span>
-            <h3 className="text-h3 font-semibold text-ink mt-s2">{t.t}</h3>
-            <p className="text-meta text-muted mt-s2">{t.b}</p>
+    </section>
+
+    <section id="concepts" className="py-20 md:py-24 scroll-mt-28">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <ScrollReveal delay={0} className="text-left">
+            <Eyebrow>Core Concepts</Eyebrow>
+            <SectionHeading>Build a Robust Mental Model.</SectionHeading>
+            <p className="text-xl text-gray-600 leading-relaxed mb-8">
+              Master the economic fundamentals that drive modern startups. We distill complex theories into actionable, bite-sized lessons.
+            </p>
+          </ScrollReveal>
+          <ScrollReveal delay={0.2} className="flex justify-center w-full">
+            <ConceptsMockup />
+          </ScrollReveal>
+        </div>
+      </div>
+    </section>
+
+    <section id="articles" className="py-20 md:py-24 bg-gray-50 border-y border-gray-100 scroll-mt-28">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <ScrollReveal delay={0.2} className="order-2 md:order-1 flex justify-center w-full">
+            <ArticlesMockup />
+          </ScrollReveal>
+          <ScrollReveal delay={0} className="order-1 md:order-2 text-left">
+            <Eyebrow>Case Study Driven</Eyebrow>
+            <SectionHeading>Applied Case Studies.</SectionHeading>
+            <p className="text-xl text-gray-600 leading-relaxed mb-8">
+              Move beyond dry textbooks. Analyze how legendary startups won markets using these core economic principles.
+            </p>
+          </ScrollReveal>
+        </div>
+      </div>
+    </section>
+
+    <section id="quizzes" className="py-20 md:py-24 scroll-mt-28">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <ScrollReveal delay={0} className="text-left">
+            <Eyebrow>Active Recall & Assessment</Eyebrow>
+            <SectionHeading>Mastery through Assessment.</SectionHeading>
+            <p className="text-xl text-gray-600 leading-relaxed mb-8">
+              Get instant feedback and target your weak spots with our dedicated <strong>Mistake Review</strong>.
+            </p>
+          </ScrollReveal>
+          <ScrollReveal delay={0.2} className="text-left">
+            <div className="flex items-start gap-5 bg-white p-8 rounded-3xl border border-gray-200 shadow-sm w-full cursor-pointer">
+               <div className="w-14 h-14 rounded-2xl bg-purple-50 text-purple-500 flex items-center justify-center shrink-0">
+                 <IconBulb size={28} />
+               </div>
+               <div>
+                 <h4 className="font-bold text-slate-900 text-lg mb-2">Targeted Mistake Review</h4>
+                 <p className="text-gray-600 leading-relaxed">Unlike standard quizzes, we isolate your knowledge gaps to help you focus on what matters.</p>
+               </div>
+            </div>
+          </ScrollReveal>
+        </div>
+      </div>
+    </section>
+
+    <section id="my-notes" className="py-20 md:py-24 bg-gray-50 border-y border-gray-100 scroll-mt-28">
+      <div className="max-w-7xl mx-auto px-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+          <ScrollReveal delay={0.2} className="order-2 md:order-1 flex justify-center w-full">
+            <FlashcardMockup />
+          </ScrollReveal>
+          <ScrollReveal delay={0} className="order-1 md:order-2 text-left">
+            <Eyebrow>Spaced Repetition Notes</Eyebrow>
+            <SectionHeading>Highlight it. Save it. Never forget it.</SectionHeading>
+            <p className="text-xl text-gray-600 mb-8 leading-relaxed">
+              Turn any concept or article into a note with one click, then review your notes like flashcards — organized by the day you learned them.
+            </p>
+          </ScrollReveal>
+        </div>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-16 items-center mt-32">
+          <ScrollReveal delay={0} className="text-left">
+             <Eyebrow>Active Recall</Eyebrow>
+             <SectionHeading>Review with Intent.</SectionHeading>
+             <p className="text-xl text-gray-600 leading-relaxed">
+               Our integrated spaced-repetition system ensures long-term retention of every concept. Stop reading. Start remembering.
+             </p>
+          </ScrollReveal>
+          <ScrollReveal delay={0.2} className="flex justify-center w-full">
+             <FlashcardMockup />
+          </ScrollReveal>
+        </div>
+      </div>
+    </section>
+
+    <section className="py-20 md:py-24">
+      <div className="max-w-7xl mx-auto px-6">
+        <ScrollReveal delay={0} className="mb-12 text-center max-w-3xl mx-auto">
+          <Eyebrow>Our Approach</Eyebrow>
+          <SectionHeading align="center">Why Choose That&apos;s So Econ?</SectionHeading>
+        </ScrollReveal>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+          <ScrollReveal delay={0.1}>
+            <FeatureCard 
+              icon={<IconTarget size={28} stroke={2} />} 
+              title="Learn by doing, not memorizing" 
+              description="Interactive modules designed for practical application in business building."
+              colorClass="text-brand-primary" bgClass="bg-purple-50"
+            />
+          </ScrollReveal>
+          <ScrollReveal delay={0.2}>
+            <FeatureCard 
+              icon={<IconChartLine size={28} stroke={2} />} 
+              title="Real case studies, not just theory" 
+              description="See how fundamental economics drives success in actual startups and markets."
+              colorClass="text-brand-primary" bgClass="bg-purple-50"
+            />
+          </ScrollReveal>
+          <ScrollReveal delay={0.3}>
+            <FeatureCard 
+              icon={<IconFlame size={28} stroke={2} />} 
+              title="A study plan that adapts daily" 
+              description="Your custom agenda is built for you every morning. Just log in and learn."
+              colorClass="text-brand-primary" bgClass="bg-purple-50"
+            />
+          </ScrollReveal>
+        </div>
+      </div>
+    </section>
+
+    <section className="py-20 md:py-24 bg-gray-50 border-y border-gray-100">
+      <div className="max-w-4xl mx-auto px-6">
+        <ScrollReveal delay={0} className="bg-white rounded-3xl p-10 md:p-14 border border-gray-200 shadow-sm relative">
+          <div className="absolute -top-6 -left-6 text-gray-200">
+            <svg width="80" height="80" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
           </div>
-        ))}
-      </div>
-    </section>
-
-    {/* Approach */}
-    <section className="max-w-[1180px] mx-auto px-s4 md:px-s5 py-s7 md:py-s8">
-      <div className="text-center mb-s6">
-        <span className="font-mono text-label uppercase text-accent-strong">Our approach</span>
-        <h2 className="mt-s3 text-h1-sm md:text-h1 font-semibold text-ink">Why choose That&apos;s So Econ?</h2>
-      </div>
-      <div className="grid md:grid-cols-3 gap-s4">
-        {APPROACH.map((a) => (
-          <div key={a.t} className="rounded-lg border border-line bg-surface shadow-sh1 p-s5">
-            <h3 className="text-h3 font-semibold text-ink">{a.t}</h3>
-            <p className="text-meta text-muted mt-s2">{a.b}</p>
+          <div className="relative z-10 text-left">
+            <p className="text-xl md:text-2xl text-slate-900 font-medium leading-relaxed mb-8">
+              &quot;We built That&apos;s So Econ to bridge the gap between academic theory and real-world venture building. Traditional education is often disconnected from the speed of the startup world. We provide the fastest path to building a powerful mental model for business.&quot;
+            </p>
+            <div className="flex items-center gap-4">
+              <div className="w-14 h-14 rounded-full bg-gray-200 flex shrink-0"></div>
+              <div>
+                <div className="font-bold text-slate-900">The Team</div>
+                <div className="text-gray-600 text-sm">Founders</div>
+              </div>
+            </div>
           </div>
-        ))}
+        </ScrollReveal>
       </div>
     </section>
 
-    {/* FAQ */}
-    <section id="faq" className="max-w-[820px] mx-auto px-s4 md:px-s5 py-s7 md:py-s8">
-      <div className="text-center mb-s6">
-        <span className="font-mono text-label uppercase text-accent-strong">Support</span>
-        <h2 className="mt-s3 text-h1-sm md:text-h1 font-semibold text-ink">Frequently asked questions</h2>
+    <section className="py-20 md:py-24">
+      <div className="max-w-7xl mx-auto px-6">
+         <ScrollReveal delay={0} className="text-center mb-12 max-w-3xl mx-auto">
+           <Eyebrow>Support</Eyebrow>
+           <SectionHeading align="center">Frequently Asked Questions</SectionHeading>
+           <p className="text-xl text-gray-600">Everything you need to know about the platform.</p>
+         </ScrollReveal>
+         <ScrollReveal delay={0.2} className="w-full">
+           <FaqAccordion />
+         </ScrollReveal>
       </div>
-      <FaqAccordion />
-    </section>
-
-    {/* Closing */}
-    <section className="max-w-[1180px] mx-auto px-s4 md:px-s5 py-s8 text-center">
-      <h2 className="text-h1-sm md:text-h1 font-semibold text-ink text-balance max-w-[22ch] mx-auto">
-        Your plot is empty ground today.
-      </h2>
-      <p className="mt-s4 text-ui text-muted">
-        Twelve minutes from now it has its first building.
-      </p>
-      <Link
-        href="/signup"
-        className="mt-s6 inline-flex items-center px-s6 py-s3 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors min-h-[48px]"
-      >
-        Get started free
-      </Link>
     </section>
   </>
 );

@@ -53,10 +53,10 @@ export function ReviewCard({
         <div className="text-red-500 text-xl font-[900] px-4 py-2 rotate-[15deg]">↻ REVIEW</div>
       </div>
 
-      <div className="text-base leading-[1.8] text-ink font-sans flex-1 overflow-hidden" dangerouslySetInnerHTML={{ __html: activeCard.content }} />
+      <div className="text-base leading-[1.8] text-gray-900 font-sans flex-1 overflow-hidden" dangerouslySetInnerHTML={{ __html: activeCard.content }} />
       
       <div className="mt-6 flex justify-between items-center shrink-0">
-        <span className="text-[11px] text-faint">Lesson {lesson?.id} · {lesson?.title}</span>
+        <span className="text-[11px] text-gray-400">Lesson {lesson?.id} · {lesson?.title}</span>
       </div>
     </div>
   );

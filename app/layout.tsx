@@ -1,26 +1,12 @@
 import type { Metadata, Viewport } from "next";
-import { Literata, JetBrains_Mono } from "next/font/google";
+import { Inter } from "next/font/google";
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader';
 
-// Literata carries the whole product — interface and article body alike.
-const literata = Literata({
-  subsets: ["latin"],
-  display: "swap",
-  style: ["normal", "italic"],
-  variable: "--font-literata",
-});
-
-// Numerals, codes and tags only.
-const jetbrains = JetBrains_Mono({
-  subsets: ["latin"],
-  display: "swap",
-  weight: ["500"],
-  variable: "--font-mono",
-});
+const inter = Inter({ subsets: ["latin"], display: 'swap' });
 
 export const viewport: Viewport = {
-  themeColor: "#6E5FC4",
+  themeColor: "#51487F",
   width: "device-width",
   initialScale: 1,
   maximumScale: 1, // prevents zoom on focus in iOS
@@ -53,17 +39,13 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
-          dangerouslySetInnerHTML={{
-            __html: `(function(){try{var m=localStorage.getItem('tse-theme')||'light';var d=m==='dark'||(m==='system'&&window.matchMedia('(prefers-color-scheme: dark)').matches);document.documentElement.setAttribute('data-theme',d?'dark':'light');}catch(e){}})();`,
-          }}
-        />
+        <meta name="color-scheme" content="light only" />
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
       </head>
       <body
-        className={`${literata.variable} ${jetbrains.variable} font-sans min-h-screen bg-bg text-ink`}
+        className={`${inter.className} min-h-screen bg-white text-[#24203F] not-italic`}
       >
-        <NextTopLoader color="var(--accent)" height={3} showSpinner={false} shadow="0 0 10px var(--accent),0 0 5px var(--accent)" />
+        <NextTopLoader color="#7B6FE7" height={3} showSpinner={false} shadow="0 0 10px #7B6FE7,0 0 5px #7B6FE7" />
         {children}
       </body>
     </html>

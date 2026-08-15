@@ -81,14 +81,14 @@ export default async function SavedPage({
       <NotesReviewClient initialNotes={globalNotes} lessons={lessons} />
       
       {totalNotes > 20 && (
-        <div className="flex justify-center gap-4 py-8 bg-bg">
+        <div className="flex justify-center gap-4 py-8 bg-slate-50">
           {page > 1 && (
-            <Link href={`/saved?page=${page - 1}`} className="px-4 py-2 bg-surface border border-line rounded-lg hover:bg-bg font-semibold text-sm">
+            <Link href={`/saved?page=${page - 1}`} className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 font-semibold text-sm">
               ← Previous
             </Link>
           )}
           {page * take < totalNotes && (
-            <Link href={`/saved?page=${page + 1}`} className="px-4 py-2 bg-surface border border-line rounded-lg hover:bg-bg font-semibold text-sm">
+            <Link href={`/saved?page=${page + 1}`} className="px-4 py-2 bg-white border border-gray-200 rounded-lg hover:bg-gray-50 font-semibold text-sm">
               Next →
             </Link>
           )}

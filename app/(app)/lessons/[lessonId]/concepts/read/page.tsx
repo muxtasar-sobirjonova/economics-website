@@ -75,11 +75,8 @@ export default async function ConceptsReadPage({
 
   if (!activeLesson || !activeLesson.conceptText) {
     return (
-      <div className="min-h-screen bg-read-bg flex flex-col items-center justify-center text-center px-s4">
-        <h1 className="text-h2 font-semibold text-read-text">Not written yet</h1>
-        <p className="text-ui text-muted mt-s2 max-w-[42ch]">
-          This concept is still being written. Check the roadmap for what&apos;s ready.
-        </p>
+      <div className="p-8 text-center text-brand-primary bg-[#FCF6F0] min-h-screen">
+        Content coming soon for this concept.
       </div>
     );
   }
@@ -113,59 +110,69 @@ export default async function ConceptsReadPage({
   const cleanConceptHtml = activeLesson.conceptText;
 
   return (
-    <div className="content-page min-h-screen w-full flex flex-col bg-read-bg">
-      {/* Sticky context bar — lesson chip on the left, highlight hint on the right */}
-      <div className="sticky top-14 md:top-0 z-20 w-full bg-read-bg/95 backdrop-blur-sm border-b border-line">
-        <div className="max-w-[860px] mx-auto px-s4 md:px-s5 h-14 flex items-center justify-between gap-s3">
-          <div className="flex items-center gap-s3 min-w-0">
-            <Link
-              href={`/lessons/${lessonId}/concepts`}
-              className="text-meta text-muted hover:text-ink transition-colors shrink-0"
-            >
-              &larr; Concepts
-            </Link>
-            <span className="text-label uppercase px-s2 py-1 rounded-sm bg-concept-soft text-concept shrink-0">
-              Day {activeLesson.lessonId}
-            </span>
-          </div>
-          <div className="shrink-0">
-            <ReadingActions />
-          </div>
+    <div className="content-page min-h-screen w-full font-sans flex flex-col p-0 bg-[#FCF6F0]">
+      <div className="w-full bg-white border-b border-gray-100 h-[56px] px-8 flex items-center shrink-0">
+        <div className="text-[13px] font-[700] tracking-[0.08em] text-gray-900 uppercase">
+          CONCEPTS
         </div>
       </div>
 
-      <article className="flex-1 w-full max-w-[860px] mx-auto px-s4 md:px-s5 py-s6 md:py-s7">
-        {/* #main-content is the highlightable region — it must wrap the body copy,
-            not just the heading. */}
-        <div id="main-content" className="text-read-text">
-          <header className="mb-s6 md:mb-s7">
-            <div className="text-label uppercase text-muted mb-s3">Concept</div>
-            <h1 className="text-h1-sm md:text-display font-semibold tracking-[-.03em] text-read-text text-balance">
-              {activeLesson.title}
-            </h1>
-            <p className="font-mono text-meta text-faint mt-s4">
-              5&ndash;10 min read · Day {lessonId || 1}
-            </p>
-          </header>
+      <div className="flex-1 overflow-visible w-full px-6 max-w-4xl mx-auto relative flex flex-col">
+        {/* Main Content Column */}
+        <div className="flex-1 overflow-visible py-8 w-full">
+          <div className="w-full mx-auto flex flex-col gap-6">
+            <div className="relative pt-5 pb-10 flex flex-col">
+              <div className="flex items-center justify-between mb-6">
+                <Link
+                  href={`/lessons/${lessonId}/concepts`}
+                  className="text-brand-primary text-[15px] font-[700] hover:text-[#5A4FBD] transition-colors inline-block w-fit bg-transparent border-none mb-2"
+                >
+                  &larr; Back to Concepts
+                </Link>
 
-          <div
-            className="prose prose-article mx-auto"
-            dangerouslySetInnerHTML={{ __html: cleanConceptHtml }}
+              </div>
+              <div className="flex justify-between items-center gap-3 mb-8 w-full sticky top-[68px] md:top-4 z-20 py-3 bg-[#FCF6F0]/95 backdrop-blur-sm rounded-lg border-b border-gray-200">
+                <div className="inline-block border border-brand-primary bg-transparent text-brand-primary text-[10px] sm:text-[11px] font-[800] tracking-[0.08em] uppercase px-2.5 sm:px-3.5 py-1.5 rounded-full whitespace-nowrap">
+                  LESSON {activeLesson.lessonId}
+                </div>
+                <div className="flex-shrink-0">
+                  <ReadingActions />
+                </div>
+              </div>
+              {/* #main-content is the highlightable region — it must wrap the
+                  body copy, not just the heading. */}
+              <div className="relative z-10" id="main-content">
+                <div className="text-center mb-16 pt-8">
+                    <h1 className={`text-[32px] sm:text-[44px] md:text-[52px] font-black text-[#1A1A2E] leading-[1.1] uppercase tracking-tight`}>
+                      {activeLesson.title}
+                    </h1>
+                    <div className="text-center text-gray-400 font-sans font-[500] text-[13px] mt-6 tracking-wide uppercase">
+                      ESTIMATED READING TIME (10-20 MIN) • DAY 0{lessonId || 1}
+                    </div>
+                </div>
+                <div className="flex flex-col">
+                  <div className="prose prose-lg max-w-[800px] mx-auto w-full prose-h2:text-[#1A1A2E] prose-h2:uppercase prose-h2:tracking-tight prose-h2:font-bold prose-h2:mt-12 prose-p:text-[18px] prose-p:leading-[1.8] prose-p:text-gray-800">
+                    <div dangerouslySetInnerHTML={{ __html: cleanConceptHtml }} />
+                  </div>
+                </div>
+              </div>
+              <div className="relative z-10 flex items-center justify-end mt-12">
+                <MarkReadButton lessonId={String(activeLesson.lessonId)} />
+              </div>
+            </div>
+          </div>
+        </div>
+
+        {/* Floating Notes Drawer */}
+        <div className="z-50">
+          <ReadingTabs
+            lessonId={String(lessonId)}
+            takeawaysText={takeawaysText}
+            initialNotes={initialNotes}
+            source="Concept"
           />
         </div>
-
-        <div className="flex items-center justify-between gap-s3 mt-s7 pt-s5 border-t border-line">
-          <p className="text-meta text-muted hidden sm:block">Next: the story behind it.</p>
-          <MarkReadButton lessonId={String(activeLesson.lessonId)} />
-        </div>
-      </article>
-
-      <ReadingTabs
-        lessonId={String(lessonId)}
-        takeawaysText={takeawaysText}
-        initialNotes={initialNotes}
-        source="Concept"
-      />
+      </div>
     </div>
   );
 }
