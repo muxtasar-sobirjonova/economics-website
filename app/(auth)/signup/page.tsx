@@ -11,8 +11,10 @@ export const metadata: Metadata = {
 export default function SignupPage() {
   return (
     <AuthLayout 
-      title="Create your account" 
-      subtitle="Start learning concepts, reading articles, and taking quizzes."
+      title="Break ground" 
+      subtitle="Free, no card. Pick a track after you sign up."
+      quote="Eight chapters later you have a skyline."
+      quoteMeta="56 days · 168 lessons"
     >
       <SignupForm />
 

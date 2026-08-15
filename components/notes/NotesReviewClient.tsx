@@ -13,8 +13,23 @@ export interface Note {
 }
 
 export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", subtitle = "Your saved insights across all lessons", size = "normal" }: { initialNotes: Note[], lessons: Lesson[], title?: string, subtitle?: string, size?: 'normal' | 'large' }) => {
+  // Notes carry the page they were written on, so the board can be narrowed
+  // to one kind without another round trip.
+  const [sourceFilter, setSourceFilter] = useState<"All" | "Concept" | "Article" | "Quiz">("All");
+
+  const visibleNotes = sourceFilter === "All"
+    ? initialNotes
+    : initialNotes.filter((n: Note) => (n.source || "").toLowerCase().startsWith(sourceFilter.toLowerCase()));
+
+  const sourceCounts = {
+    All: initialNotes.length,
+    Concept: initialNotes.filter((n: Note) => (n.source || "").toLowerCase().startsWith("concept")).length,
+    Article: initialNotes.filter((n: Note) => (n.source || "").toLowerCase().startsWith("article")).length,
+    Quiz: initialNotes.filter((n: Note) => (n.source || "").toLowerCase().startsWith("quiz")).length,
+  } as const;
+
   // Group notes by lessonId
-  const notesByLesson = initialNotes.reduce((acc: Record<number, Note[]>, note: Note) => {
+  const notesByLesson = visibleNotes.reduce((acc: Record<number, Note[]>, note: Note) => {
     if (!acc[note.lessonId]) acc[note.lessonId] = [];
     acc[note.lessonId].push(note);
     return acc;
@@ -267,7 +282,29 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
         </p>
       </div>
 
-      <div className="flex items-center gap-2 overflow-x-auto pb-4 shrink-0 scrollbar-hide">
+      <div className="flex flex-wrap items-center gap-s2 mb-s4">
+          {(["All", "Concept", "Article", "Quiz"] as const).map((k) => {
+            const on = sourceFilter === k;
+            const tone = k === "Concept" ? "concept" : k === "Article" ? "article" : k === "Quiz" ? "quiz" : null;
+            return (
+              <button
+                key={k}
+                onClick={() => { setSourceFilter(k); setActiveLessonId(null); }}
+                aria-pressed={on}
+                className={`px-s4 py-s2 rounded-md border text-meta transition-colors min-h-[44px] flex items-center gap-s2 ${
+                  on ? "border-transparent text-ink" : "border-line text-muted hover:text-ink"
+                }`}
+                style={on && tone ? { background: `var(--${tone}-soft)`, color: `var(--${tone})` }
+                     : on ? { background: "var(--accent-soft)", color: "var(--accent-strong)" } : undefined}
+              >
+                {k}
+                <span className="font-mono text-[11px] tabular opacity-70">{sourceCounts[k]}</span>
+              </button>
+            );
+          })}
+        </div>
+
+        <div className="flex items-center gap-2 overflow-x-auto pb-4 shrink-0 scrollbar-hide">
         {lessonIds.map(id => {
           const dayStr = id < 10 ? `0${id}` : `${id}`;
           const isActive = activeLessonId === id;

@@ -103,7 +103,7 @@ async function ArticlesContent({ userId, lessonId, avatarLetter }: { userId: str
       dayLabel={`Day ${lessonId} / 56`}
       title={activeLesson?.title || "Reading"}
       description={articleSummary}
-      timeLabel="5\u201320 min"
+      timeLabel="5–20 min"
       readHref={`/lessons/${lessonId}/articles/read`}
       avatarLetter={avatarLetter}
       lessons={lessons.map((l) => ({ id: l.dayOrder, title: l.title }))}

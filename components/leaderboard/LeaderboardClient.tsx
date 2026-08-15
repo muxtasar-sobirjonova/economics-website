@@ -214,7 +214,7 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
             id="lb-search"
             value={searchQuery}
             onChange={handleSearch}
-            placeholder="Search learners\u2026"
+            placeholder="Search learners…"
             className="w-full bg-raised border border-line rounded-md px-s3 py-s2 text-ui text-ink placeholder:text-faint min-h-[44px]"
           />
         </div>
@@ -259,7 +259,7 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
 
       {!isCurrentUserVisible && myRankInfo?.rank && (
         <p className="text-meta text-faint text-center">
-          You are #{myRankInfo.rank} \u2014 keep building to climb into view.
+          You are #{myRankInfo.rank} — keep building to climb into view.
         </p>
       )}
     </div>

@@ -1,135 +1,122 @@
 "use client";
 
-import React, { useState, useTransition } from "react";
+import React, { useTransition, useState } from "react";
 import { switchTrackAction } from "@/app/actions/user";
 import { useRouter } from "next/navigation";
-import { IconTrendingUp, IconBrain, IconGlobe, IconCheck } from "@tabler/icons-react";
+
+interface TrackProgress {
+  currentDay: number;
+  xp: number;
+}
 
 interface TrackSelectionClientProps {
   currentTrack: string | null;
+  progressByTrack?: Record<string, TrackProgress | undefined>;
 }
 
-export function TrackSelectionClient({ currentTrack }: TrackSelectionClientProps) {
-  const [selected, setSelected] = useState<string | null>(currentTrack);
+const TRACKS = [
+  {
+    id: "ENTREPRENEURSHIP_ECONOMICS",
+    name: "Entrepreneurship",
+    blurb: "Pricing, moats, margins and the decisions founders actually face.",
+    tone: "quiz",
+  },
+  {
+    id: "DEVELOPMENT_ECONOMICS",
+    name: "Development",
+    blurb: "Why some countries grow and others stall — institutions, aid, trade.",
+    tone: "article",
+  },
+  {
+    id: "BEHAVIORAL_ECONOMICS",
+    name: "Behavioral",
+    blurb: "The gap between the rational buyer in the model and the one in the shop.",
+    tone: "concept",
+  },
+] as const;
+
+export function TrackSelectionClient({ currentTrack, progressByTrack = {} }: TrackSelectionClientProps) {
   const [isPending, startTransition] = useTransition();
+  const [busyId, setBusyId] = useState<string | null>(null);
   const router = useRouter();
 
-  const tracks = [
-    {
-      id: "ENTREPRENEURSHIP_ECONOMICS",
-      title: "Entrepreneurship Economics",
-      subtitle: "Cost structures, pricing power, and scale economics.",
-      description: "Master the microeconomic forces that drive successful ventures. Explore Knightian uncertainty, scale mechanisms, vertical supply integrations, and unit-economic calculations that shape product viability.",
-      icon: IconTrendingUp,
-      accentColor: "border-[#4F46E5] text-[#4F46E5] bg-[#EEF2FF]",
-      iconBg: "bg-[#EEF2FF] text-[#4F46E5]",
-      glowColor: "hover:shadow-[0_0_20px_rgba(79,70,229,0.15)] hover:border-[#4F46E5]",
-      buttonColor: "bg-[#4F46E5] hover:bg-[#4338CA]"
-    },
-    {
-      id: "BEHAVIORAL_ECONOMICS",
-      title: "Behavioral Economics",
-      subtitle: "Human psychology, choice architecture, and cognitive biases.",
-      description: "Understand how people actually make decisions, not just how equations say they should. Explore irrational heuristics, loss aversion, nudge theory, framing bias, and social coordination dynamics.",
-      icon: IconBrain,
-      accentColor: "border-[#0D9488] text-[#0D9488] bg-[#F0FDFA]",
-      iconBg: "bg-[#F0FDFA] text-[#0D9488]",
-      glowColor: "hover:shadow-[0_0_20px_rgba(13,148,136,0.15)] hover:border-[#0D9488]",
-      buttonColor: "bg-[#0D9488] hover:bg-[#0F766E]"
-    },
-    {
-      id: "DEVELOPMENT_ECONOMICS",
-      title: "Development Economics",
-      subtitle: "Macroeconomic systems, institutions, and poverty traps.",
-      description: "Analyze the structures governing national and regional prosperity. Explore institutional development, ease of business regulation, ease of access to credit, cluster economies, and global innovation zone dynamics.",
-      icon: IconGlobe,
-      accentColor: "border-[#EA580C] text-[#EA580C] bg-[#FFF7ED]",
-      iconBg: "bg-[#FFF7ED] text-[#EA580C]",
-      glowColor: "hover:shadow-[0_0_20px_rgba(234,88,12,0.15)] hover:border-[#EA580C]",
-      buttonColor: "bg-[#EA580C] hover:bg-[#C2410C]"
+  const choose = (trackId: string) => {
+    if (trackId === currentTrack) {
+      router.push("/home");
+      return;
     }
-  ];
-
-  const handleSelectTrack = (trackId: string) => {
-    setSelected(trackId);
-  };
-
-  const handleConfirm = () => {
-    if (!selected) return;
-
+    setBusyId(trackId);
     startTransition(async () => {
       try {
-        const res = await switchTrackAction(selected);
+        const res = await switchTrackAction(trackId);
         if (!res.success) {
-          console.error("Failed to set active track:", res.error);
-        } else {
-          router.push("/roadmap");
-          router.refresh();
+          console.error("Failed to switch track:", res.error);
+          setBusyId(null);
+          return;
         }
-      } catch (error) {
-        console.error("Failed to set active track:", error);
+        router.push("/home");
+        router.refresh();
+      } catch (err) {
+        console.error("Failed to switch track:", err);
+        setBusyId(null);
       }
     });
   };
 
   return (
-    <div className="w-full max-w-5xl flex flex-col items-center">
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12 w-full">
-        {tracks.map((track) => {
-          const Icon = track.icon;
-          const isSelected = selected === track.id;
+    <div className="w-full max-w-[820px] flex flex-col gap-s3">
+      {TRACKS.map((track) => {
+        const p = progressByTrack[track.id];
+        const started = Boolean(p && (p.currentDay > 1 || p.xp > 0));
+        const isCurrent = currentTrack === track.id;
+        const busy = busyId === track.id && isPending;
 
-          return (
-            <div
-              key={track.id}
-              onClick={() => handleSelectTrack(track.id)}
-              className={`flex flex-col bg-surface border-2 rounded-2xl p-4 md:p-6 cursor-pointer transition-all duration-300 relative ${
-                isSelected 
-                  ? `${track.accentColor} shadow-md` 
-                  : "border-line hover:border-slate-300 shadow-sm"
-              } ${track.glowColor}`}
-            >
-              {isSelected && (
-                <div className={`absolute top-4 right-4 rounded-full w-6 h-6 flex items-center justify-center text-white ${track.id === "ENTREPRENEURSHIP_ECONOMICS" ? "bg-[#4F46E5]" : track.id === "BEHAVIORAL_ECONOMICS" ? "bg-[#0D9488]" : "bg-[#EA580C]"}`}>
-                  <IconCheck className="w-4 h-4 stroke-[3px]" />
-                </div>
-              )}
+        const cta = isCurrent ? "Continue" : started ? "Switch to this" : "Break ground";
 
-              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center mb-3 md:mb-6 ${track.iconBg}`}>
-                <Icon className="w-5 h-5 md:w-6 md:h-6" />
+        return (
+          <section
+            key={track.id}
+            className={`rounded-lg border bg-surface shadow-sh1 p-s5 flex flex-col sm:flex-row sm:items-center gap-s4 ${
+              isCurrent ? "border-accent" : "border-line"
+            }`}
+          >
+            <span
+              aria-hidden
+              className="w-1 h-full min-h-[3rem] rounded-sm shrink-0 hidden sm:block"
+              style={{ background: `var(--${track.tone})` }}
+            />
+
+            <div className="min-w-0 flex-1">
+              <div className="flex items-center gap-s3 flex-wrap">
+                <h2 className="text-h3 font-semibold text-ink pb-[2px]">{track.name}</h2>
+                {isCurrent && (
+                  <span className="text-label uppercase px-s2 py-1 rounded-sm bg-accent-soft text-accent-strong">
+                    Current
+                  </span>
+                )}
               </div>
-
-              <h3 className="text-lg md:text-xl font-bold text-ink mb-1 md:mb-2 leading-snug">
-                {track.title}
-              </h3>
-              <p className="text-xs md:text-sm font-semibold text-muted mb-2 md:mb-4">
-                {track.subtitle}
-              </p>
-              <p className="hidden md:block text-muted text-sm leading-relaxed mt-auto">
-                {track.description}
+              <p className="text-meta text-muted mt-s2 max-w-[58ch]">{track.blurb}</p>
+              <p className="font-mono text-meta text-faint tabular mt-s3">
+                {started && p
+                  ? `day ${p.currentDay} of 56 · ${p.xp.toLocaleString()} XP`
+                  : "not started · empty lot"}
               </p>
             </div>
-          );
-        })}
-      </div>
 
-      <button
-        onClick={handleConfirm}
-        disabled={!selected || isPending}
-        className={`px-8 py-3.5 rounded-xl font-bold text-white shadow-lg transition-all duration-200 min-w-[200px] flex items-center justify-center gap-2 ${
-          selected 
-            ? `${tracks.find(t => t.id === selected)?.buttonColor} active:scale-[0.98] cursor-pointer` 
-            : "bg-slate-300 cursor-not-allowed shadow-none"
-        }`}
-      >
-        {isPending ? (
-          <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-        ) : currentTrack ? (
-          "Switch Active Track"
-        ) : (
-          "Confirm & Begin Roadmap"
-        )}
-      </button>
+            <button
+              onClick={() => choose(track.id)}
+              disabled={isPending}
+              className={`shrink-0 px-s5 py-s3 rounded-md text-ui font-semibold transition-colors min-h-[44px] disabled:opacity-50 ${
+                isCurrent
+                  ? "bg-accent text-on-accent hover:bg-accent-strong"
+                  : "border border-line-strong text-ink hover:border-accent hover:text-accent"
+              }`}
+            >
+              {busy ? "Switching…" : cta}
+            </button>
+          </section>
+        );
+      })}
     </div>
   );
 }
