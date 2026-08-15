@@ -203,7 +203,7 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
                     </div>
                   </div>
                   <div className="text-center mb-4 min-h-[48px]">
-                    <h3 className="font-bold text-[#2f2759] text-lg leading-tight truncate w-full px-2">{users[1].username || "Anonymous"}</h3>
+                    <h3 className="font-bold text-ink text-lg truncate w-full px-2 pb-[3px]">{users[1].username || "Anonymous"}</h3>
                     <p className="text-[10px] font-bold tracking-[0.2em] text-[#94A3B8] uppercase mt-1">RUNNER UP</p>
                   </div>
                   <div className="w-full bg-gradient-to-b from-[#94A3B8] to-white rounded-3xl md:rounded-b-none md:rounded-t-3xl pt-8 pb-6 flex flex-col items-center justify-between h-auto md:h-[160px] gap-4 md:gap-0 shadow-sm md:shadow-none">
@@ -234,7 +234,7 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
                     )}
                   </div>
                   <div className="text-center mb-4 min-h-[48px]">
-                    <h3 className="font-bold text-[#2f2759] text-xl leading-tight truncate w-full px-2">{users[0].username || "Anonymous"}</h3>
+                    <h3 className="font-bold text-ink text-xl truncate w-full px-2 pb-[3px]">{users[0].username || "Anonymous"}</h3>
                     <p className="text-[10px] font-bold tracking-[0.2em] text-[#cda434] uppercase mt-1">GRAND CHAMPION</p>
                   </div>
                   <div className="w-full bg-gradient-to-b from-[#8c7df0] to-white rounded-3xl md:rounded-b-none md:rounded-t-3xl pt-10 pb-8 flex flex-col items-center justify-between h-auto md:h-[210px] gap-4 md:gap-0 shadow-sm md:shadow-none">
@@ -260,7 +260,7 @@ export const LeaderboardClient: React.FC<LeaderboardClientProps> = ({ currentUse
                     </div>
                   </div>
                   <div className="text-center mb-4 min-h-[48px]">
-                    <h3 className="font-bold text-[#2f2759] text-lg leading-tight truncate w-full px-2">{users[2].username || "Anonymous"}</h3>
+                    <h3 className="font-bold text-ink text-lg truncate w-full px-2 pb-[3px]">{users[2].username || "Anonymous"}</h3>
                     <p className="text-[10px] font-bold tracking-[0.2em] text-[#D97706] uppercase mt-1">THIRD PLACE</p>
                   </div>
                   <div className="w-full bg-gradient-to-b from-[#f59e0b] to-white rounded-3xl md:rounded-b-none md:rounded-t-3xl pt-8 pb-6 flex flex-col items-center justify-between h-auto md:h-[130px] gap-4 md:gap-0 shadow-sm md:shadow-none">

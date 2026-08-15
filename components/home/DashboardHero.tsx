@@ -66,6 +66,13 @@ export const DashboardHero = ({
     ? weekDates.filter((d) => allCompletedDates.includes(d)).length
     : 0;
 
+  // A day only counts as missed once the learner has actually started. Before
+  // their first recorded activity the days are simply blank — a brand new
+  // account should not open on a week painted red.
+  const firstActivity = allCompletedDates.length
+    ? allCompletedDates.slice().sort()[0]
+    : null;
+
   const firstName = (userName || "").trim().split(" ")[0] || "there";
   const initial = firstName.charAt(0).toUpperCase() || "?";
 
@@ -78,7 +85,7 @@ export const DashboardHero = ({
             {initial}
           </span>
           <div className="min-w-0">
-            <h1 className="text-h1-sm sm:text-h1 font-semibold text-ink truncate">
+            <h1 className="text-h1-sm sm:text-h1 font-semibold text-ink break-words">
               {greeting}, {firstName}
             </h1>
             <p className="text-meta text-muted mt-1">
@@ -121,7 +128,9 @@ export const DashboardHero = ({
             const isCleared = mounted && dateStr ? allCompletedDates.includes(dateStr) : false;
             const isToday = mounted && i === todayIndex;
             const isFuture = mounted && i > todayIndex;
-            const isMissed = mounted && !isCleared && !isToday && !isFuture;
+            const isMissed =
+              mounted && !isCleared && !isToday && !isFuture &&
+              firstActivity !== null && dateStr > firstActivity;
 
             let pill = "bg-bg-sunk text-faint border border-line";
             if (isCleared) pill = "bg-success text-white border border-success";
@@ -150,7 +159,7 @@ export const DashboardHero = ({
 
         <Link
           href="/roadmap"
-          className="block text-meta text-accent hover:text-accent-strong mt-s3 pt-s3 border-t border-line transition-colors"
+          className="flex items-center min-h-[44px] text-meta text-accent hover:text-accent-strong mt-s2 pt-s3 border-t border-line transition-colors"
         >
           Study today to build your streak &rarr;
         </Link>

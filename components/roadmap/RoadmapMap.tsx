@@ -309,7 +309,7 @@ export const RoadmapMap = ({
                 <div className="text-label uppercase text-faint">
                   {c.isClosed ? "Closed" : "Locked"} · {range}
                 </div>
-                <h2 className="text-h3 font-semibold text-ink mt-[2px] line-clamp-2">{c.info.title}</h2>
+                <h2 className="text-h3 font-semibold text-ink mt-[2px] line-clamp-3 pb-[3px]">{c.info.title}</h2>
                 <p className="font-mono text-meta text-muted tabular mt-1">
                   {c.doneCount} of {c.days.length} days
                 </p>

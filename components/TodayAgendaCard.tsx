@@ -50,7 +50,7 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
     <section className="flex flex-col w-full lg:flex-[1.5] bg-surface border border-line rounded-lg shadow-sh1 p-s4 lg:p-s5">
       <div className="flex items-baseline justify-between gap-s3 mb-s3">
         <div className="flex items-baseline gap-s3 min-w-0">
-          <h2 className="text-h2 font-semibold text-ink truncate">Today&apos;s Agenda</h2>
+          <h2 className="text-h2 font-semibold text-ink">Today&apos;s Agenda</h2>
           {totalCount > 0 && (
             <span className="text-label uppercase text-faint whitespace-nowrap hidden sm:inline">
               up to {totalAgendaMinutes} minutes
