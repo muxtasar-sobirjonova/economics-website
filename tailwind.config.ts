@@ -103,7 +103,7 @@ const config: Config = {
         sh3: "var(--sh3)",
       },
       backgroundImage: {
-        sky: "linear-gradient(180deg, var(--sky-1) 0%, var(--bg) 260px)",
+        sky: "radial-gradient(60rem 22rem at 12% -6%, var(--accent-soft), transparent 62%), linear-gradient(180deg, var(--sky-1) 0%, var(--bg) 320px)",
       },
     },
   },

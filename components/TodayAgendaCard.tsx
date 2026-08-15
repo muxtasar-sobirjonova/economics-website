@@ -47,7 +47,8 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
   const allDone = totalCount > 0 && completedCount === totalCount;
 
   return (
-    <section className="flex flex-col w-full lg:flex-[1.5] bg-surface border border-line rounded-lg shadow-sh1 p-s4 lg:p-s5">
+    <section className="flex flex-col w-full lg:flex-[1.5] bg-surface border border-line rounded-lg shadow-sh1 p-s4 lg:p-s5 relative overflow-hidden">
+      <span aria-hidden className="absolute inset-x-0 top-0 h-[3px] bg-accent" />
       <div className="flex items-baseline justify-between gap-s3 mb-s3">
         <div className="flex items-baseline gap-s3 min-w-0">
           <h2 className="text-h2 font-semibold text-ink">Today&apos;s Agenda</h2>

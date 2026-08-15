@@ -14,15 +14,17 @@ interface Stat {
 function StatTile({ stat }: { stat: Stat }) {
   const Icon = stat.icon;
   return (
-    <div className="bg-surface border border-line rounded-lg shadow-sh1 p-s4 flex flex-col gap-s3">
+    <div
+      className="rounded-lg border shadow-sh1 p-s4 flex flex-col gap-s3 relative overflow-hidden"
+      style={{ background: stat.toneSoft, borderColor: "transparent" }}
+    >
+      {/* The tile wears its own colour so five stats never read as one grey block */}
+      <span aria-hidden className="absolute inset-x-0 top-0 h-[3px]" style={{ background: stat.tone }} />
       <div className="flex items-center gap-s2">
-        <span
-          className="w-7 h-7 rounded-md grid place-items-center shrink-0"
-          style={{ background: stat.toneSoft, color: stat.tone }}
-        >
+        <span className="w-7 h-7 rounded-md grid place-items-center shrink-0 bg-white/70" style={{ color: stat.tone }}>
           <Icon size={15} stroke={2.1} />
         </span>
-        <span className="text-label uppercase text-faint">{stat.label}</span>
+        <span className="text-label uppercase" style={{ color: stat.tone }}>{stat.label}</span>
       </div>
       <div className="mt-auto">
         <div className="font-mono text-h2 text-ink tabular leading-none">{stat.value}</div>

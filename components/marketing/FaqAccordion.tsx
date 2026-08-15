@@ -10,62 +10,50 @@ type FaqItem = {
 
 const faqs: FaqItem[] = [
   {
-    question: "Is That's So Econ! free to use?",
-    answer: "Yes! Core concepts, articles, and quizzes are entirely free. We believe everyone should have access to fundamental economic knowledge for building businesses.",
+    question: "Do I need any economics background?",
+    answer: "No. Day 1 assumes nothing. The first chapter builds the vocabulary the other seven use.",
   },
   {
-    question: "Do I need an economics background to start?",
-    answer: "Not at all. That's So Econ! is designed specifically for founders, builders, and curious minds without a formal economics degree. We break down complex theories into practical, easy-to-understand lessons.",
+    question: "What happens if I miss a day?",
+    answer: "Nothing is lost. Your streak resets, but the plan simply picks up where you left off \u2014 the next unfinished day is still waiting on the roadmap.",
   },
   {
-    question: "How do streaks and XP work?",
-    answer: "Every day you complete your personalized agenda, your streak increases. You earn XP for reading articles, completing concepts, and passing quizzes. Earn enough XP to climb from Bronze to Silver and Gold leagues!",
+    question: "Can I take more than one track?",
+    answer: "Yes. Each track keeps its own progress, XP and roadmap, so switching never costs you anything on the track you leave.",
   },
   {
-    question: "Can I review questions I got wrong?",
-    answer: "Yes! Our Mistake Review feature saves every quiz question you get wrong. You can revisit them anytime to learn from your mistakes and reinforce your understanding.",
+    question: "Why do failed quizzes cost a heart?",
+    answer: "Hearts make an attempt worth something. You have five, one regenerates every four hours, and a day only counts as cleared at 8 out of 10.",
   },
   {
-    question: "How does the notes system work?",
-    answer: "While reading any concept or article, you can highlight text and instantly save it as a colored sticky note. Later, in the 'My Notes' section, you can review these notes using our spaced-repetition flashcard system to ensure you actually remember what you learn.",
+    question: "How do notes and highlights work?",
+    answer: "Select any line while reading and pick a colour. Saved notes land in My Notes, where they come back as flashcards with the lesson they came from attached.",
   },
 ];
 
 export function FaqAccordion() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
 
-  const toggleAccordion = (index: number) => {
-    setOpenIndex(openIndex === index ? null : index);
-  };
-
   return (
-    <div className="max-w-3xl mx-auto space-y-4">
+    <div className="flex flex-col gap-s2">
       {faqs.map((faq, index) => {
         const isOpen = openIndex === index;
         return (
-          <div 
-            key={index} 
-            className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-200 hover:shadow-md"
-          >
+          <div key={faq.question} className="rounded-lg border border-line bg-surface overflow-hidden">
             <button
-              onClick={() => toggleAccordion(index)}
-              className="w-full flex items-center justify-between p-6 text-left focus:outline-none"
+              onClick={() => setOpenIndex(isOpen ? null : index)}
+              aria-expanded={isOpen}
+              className="w-full flex items-center justify-between gap-s4 text-left px-s5 py-s4 min-h-[56px]"
             >
-              <span className="font-bold text-slate-900 text-lg">{faq.question}</span>
-              <IconChevronDown 
-                className={`text-brand-primary transition-transform duration-300 ${isOpen ? "rotate-180" : ""}`} 
-                size={24} 
+              <span className="text-ui font-medium text-ink">{faq.question}</span>
+              <IconChevronDown
+                size={18}
+                className={`shrink-0 text-faint transition-transform ${isOpen ? "rotate-180" : ""}`}
               />
             </button>
-            <div 
-              className={`transition-all duration-300 ease-in-out ${
-                isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-              } overflow-hidden`}
-            >
-              <div className="p-6 pt-0 text-gray-600 leading-relaxed">
-                {faq.answer}
-              </div>
-            </div>
+            {isOpen && (
+              <p className="px-s5 pb-s5 text-meta text-muted max-w-[62ch]">{faq.answer}</p>
+            )}
           </div>
         );
       })}
