@@ -1,122 +1,129 @@
 "use client";
 
 import React, { useTransition } from "react";
-import { Lesson } from "@prisma/client";
+import Link from "next/link";
 import { switchTrackAction } from "@/app/actions/user";
 
-
-export function getLeagueData(weeklyXP: number) {
-  if (weeklyXP < 100) return { name: "Bronze League", min: 0, max: 100 };
-  if (weeklyXP < 250) return { name: "Silver League", min: 100, max: 250 };
-  if (weeklyXP < 500) return { name: "Gold League", min: 250, max: 500 };
-  if (weeklyXP < 1000) return { name: "Platinum League", min: 500, max: 1000 };
-  return { name: "Diamond League", min: 1000, max: 1000 };
+export function getLeagueData(totalXP: number) {
+  if (totalXP < 100) return { name: "Bronze", min: 0, max: 100, next: "Silver" };
+  if (totalXP < 250) return { name: "Silver", min: 100, max: 250, next: "Gold" };
+  if (totalXP < 500) return { name: "Gold", min: 250, max: 500, next: "Platinum" };
+  if (totalXP < 1000) return { name: "Platinum", min: 500, max: 1000, next: "Diamond" };
+  return { name: "Diamond", min: 1000, max: 1000, next: null };
 }
+
+const TRACKS = [
+  { id: "ENTREPRENEURSHIP_ECONOMICS", name: "Entrepreneurship" },
+  { id: "DEVELOPMENT_ECONOMICS", name: "Development" },
+  { id: "BEHAVIORAL_ECONOMICS", name: "Behavioral" },
+] as const;
 
 export const RoadmapSidebar = ({
   serverTotalXP,
-  completedLessonDayOrders,
-  lessons,
   activeTrack,
+  progressByTrack = {},
+  rank,
+  mistakesCount = 0,
+  notesCount = 0,
 }: {
   serverTotalXP: number;
-  completedLessonDayOrders: number[];
-  lessons: Lesson[];
   activeTrack: string;
+  progressByTrack?: Record<string, { currentDay: number; xp: number } | undefined>;
+  rank?: number | null;
+  mistakesCount?: number;
+  notesCount?: number;
 }) => {
-  
   const [isPending, startTransition] = useTransition();
-  const totalXP = serverTotalXP;
-  
-  const allCompletedDayOrders = completedLessonDayOrders;
+  const league = getLeagueData(serverTotalXP);
+  const toNext = Math.max(0, league.max - serverTotalXP);
+  const pct = league.next
+    ? Math.max(0, Math.min(100, ((serverTotalXP - league.min) / (league.max - league.min)) * 100))
+    : 100;
 
-  const nextLesson = (lessons || []).find(l => !allCompletedDayOrders.includes(l.dayOrder));
-  
-  const agendaMessage = nextLesson 
-    ? `You're on track. Start with ${nextLesson.title} when you're ready.`
-    : "You're all caught up for today! Come back tomorrow for more.";
-
-  const league = getLeagueData(totalXP);
-  const progressPercentage = Math.max(0, Math.min(100, ((totalXP - league.min) / (league.max - league.min)) * 100));
-
-  const handleTrackChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    const newTrack = e.target.value;
+  const switchTo = (trackId: string) => {
+    if (trackId === activeTrack) return;
     startTransition(async () => {
       try {
-        const res = await switchTrackAction(newTrack);
-        if (!res.success) {
-          console.error("Failed to switch track:", res.error);
-        }
+        await switchTrackAction(trackId);
       } catch (err) {
         console.error("Failed to switch track:", err);
       }
     });
   };
 
-  const tracks = [
-    { id: "ENTREPRENEURSHIP_ECONOMICS", name: "Entrepreneurship Economics" },
-    { id: "BEHAVIORAL_ECONOMICS", name: "Behavioral Economics" },
-    { id: "DEVELOPMENT_ECONOMICS", name: "Development Economics" }
-  ];
-
   return (
-    <div className="w-full xl:w-[280px] shrink-0 flex flex-col gap-5 bg-transparent xl:overflow-y-auto">
-      {/* Track Selector Card */}
-      <div className="bg-white p-4 flex flex-col gap-3 rounded-xl border border-gray-border shadow-sm">
-        <div className="font-bold text-[11px] tracking-widest text-slate-400 uppercase">
-          Active Curriculum
+    <aside className="w-full xl:w-[300px] shrink-0 flex flex-col gap-s3 xl:overflow-y-auto">
+      {/* Your track */}
+      <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s4">
+        <h2 className="text-label uppercase text-faint mb-s3">Your track</h2>
+        <div className="grid gap-s1">
+          {TRACKS.map((t) => {
+            const p = progressByTrack[t.id];
+            const on = activeTrack === t.id;
+            const started = Boolean(p && (p.currentDay > 1 || p.xp > 0));
+            return (
+              <button
+                key={t.id}
+                onClick={() => switchTo(t.id)}
+                disabled={isPending || on}
+                aria-current={on ? "true" : undefined}
+                className={`flex items-center justify-between gap-s3 px-s3 py-s2 rounded-md text-left transition-colors min-h-[44px] ${
+                  on ? "bg-accent-soft" : "hover:bg-bg-sunk disabled:opacity-60"
+                }`}
+              >
+                <span className={`text-ui ${on ? "text-accent-strong font-semibold" : "text-ink"}`}>
+                  {t.name}
+                </span>
+                <span className="font-mono text-meta text-faint tabular shrink-0">
+                  {started && p ? `day ${p.currentDay} of 56` : "not started"}
+                </span>
+              </button>
+            );
+          })}
         </div>
-        <div className="relative">
-          <select
-            value={activeTrack}
-            onChange={handleTrackChange}
-            disabled={isPending}
-            className="w-full p-2.5 bg-slate-50 border border-slate-200 text-sm font-semibold rounded-lg text-slate-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 cursor-pointer disabled:opacity-50"
+      </section>
+
+      {/* League */}
+      <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s4">
+        <div className="flex items-baseline justify-between gap-s3 mb-s3">
+          <h2 className="text-label uppercase text-faint">League</h2>
+          {rank ? (
+            <span className="font-mono text-meta text-muted tabular">rank {rank}</span>
+          ) : null}
+        </div>
+
+        <div className="flex items-baseline gap-s3">
+          <span className="text-h3 font-semibold text-ink">{league.name}</span>
+          <span className="font-mono text-meta text-muted tabular">
+            {serverTotalXP.toLocaleString()} XP
+          </span>
+        </div>
+
+        <p className="text-meta text-muted mt-1">
+          {league.next ? `${toNext.toLocaleString()} XP to ${league.next}` : "Top league — nothing above this."}
+        </p>
+
+        <div className="w-full bg-bg-sunk h-1 rounded-sm overflow-hidden mt-s3">
+          <div className="h-full rounded-sm bg-reward transition-all duration-500" style={{ width: `${pct}%` }} />
+        </div>
+      </section>
+
+      {/* Quick links */}
+      <section className="rounded-lg border border-line bg-surface shadow-sh1 overflow-hidden">
+        {[
+          { href: "/review", label: "Review mistakes", count: mistakesCount },
+          { href: "/saved", label: "My notes", count: notesCount },
+        ].map((l) => (
+          <Link
+            key={l.href}
+            href={l.href}
+            className="flex items-center justify-between gap-s3 px-s4 py-s3 border-b border-line last:border-b-0 hover:bg-bg-sunk transition-colors min-h-[48px]"
           >
-            {tracks.map(t => (
-              <option key={t.id} value={t.id}>{t.name}</option>
-            ))}
-          </select>
-          {isPending && (
-            <div className="absolute right-8 top-1/2 -translate-y-1/2">
-              <div className="w-4 h-4 border-2 border-indigo-500 border-t-transparent rounded-full animate-spin" />
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* League Card */}
-      <div className="bg-white p-4 flex flex-col gap-3 rounded-xl border border-gray-border shadow-sm">
-        <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-orange-50 border border-orange-100 flex items-center justify-center shrink-0 text-xl">
-            🔥
-          </div>
-          <div>
-            <div className="font-bold text-sm text-slate-800">
-              {league.name}
-            </div>
-            <div className="text-xs mt-0.5 text-slate-500">
-              {league.name === "Diamond League" ? "You are in the top league!" : `${league.max - totalXP} XP to next league`}
-            </div>
-          </div>
-        </div>
-        <div className="w-full bg-slate-200 h-1.5 rounded-full overflow-hidden">
-          <div
-            className="h-1.5 transition-all duration-500 rounded-full bg-indigo-500"
-            style={{ width: league.name === "Diamond League" ? "100%" : `${progressPercentage}%` }}
-          ></div>
-        </div>
-      </div>
-
-      {/* Today's Agenda Card */}
-      <div className="bg-white p-4 rounded-xl border border-gray-border shadow-sm">
-        <div className="font-bold mb-4 text-[11px] tracking-widest text-slate-400 uppercase">
-          Today&apos;s agenda
-        </div>
-        <div className="flex flex-col gap-2 text-xs text-slate-700">
-          <p>{agendaMessage}</p>
-        </div>
-      </div>
-    </div>
+            <span className="text-ui text-ink">{l.label}</span>
+            <span className="font-mono text-meta text-faint tabular">{l.count}</span>
+          </Link>
+        ))}
+      </section>
+    </aside>
   );
 };

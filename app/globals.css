@@ -263,3 +263,145 @@ body {
 .animate-orb2 {
   animation: orbFloat2 20s ease-in-out infinite reverse;
 }
+
+/* ── Design-system tokens (v2) ───────────────────────────────────────────────
+   Added ALONGSIDE the tokens above, not replacing them, so pages can migrate
+   one at a time. A page opts in by using the v2 utilities (surface / ink /
+   accent, text-h2, rounded-lg…) and, where it wants the reading face, the
+   `theme-v2` class which switches that subtree to Literata.
+
+   Dark is opt-in via data-theme="dark" on any ancestor.                       */
+
+:root {
+  --bg:            #EEEFF5;
+  --bg-sunk:       #E4E6EF;
+  --surface:       #FAFAFE;
+  --raised:        #FDFDFF;
+
+  --border:        rgba(27, 29, 42, .10);
+  --border-strong: rgba(27, 29, 42, .20);
+
+  --text:          #1B1D2A;
+  --muted:         #5C6072;
+  --faint:         #8A8FA3;
+
+  --accent:        #6E5FC4;
+  --accent-strong: #554896;
+  --accent-soft:   #EAE7FB;
+  --on-accent:     #FFFFFF;
+
+  --read-bg:       #F7F3EC;
+  --read-text:     #22201C;
+
+  --concept:       #B0552A;  --concept-soft: #F7E4DA;
+  --article:       #1F6E7C;  --article-soft: #DCEEF1;
+  --quiz:          #6E5FC4;  --quiz-soft:    #EAE7FB;
+
+  --success:       #24774F;  --success-soft: #DCEFE4;
+  --danger:        #B23A2E;  --danger-soft:  #F7E2DE;
+  --reward:        #A97711;  --reward-soft:  #F7ECD2;
+
+  --sh1: 0 1px 2px rgba(27, 29, 42, .06);
+  --sh2: 0 4px 14px rgba(27, 29, 42, .09);
+  --sh3: 0 18px 40px rgba(27, 29, 42, .14);
+
+  /* Roadmap plot */
+  --ground:      #E1E3EE;
+  --ground-edge: rgba(27, 29, 42, .13);
+  --road:        #D2D5E3;
+  --road-line:   rgba(27, 29, 42, .22);
+  --sky-1:       #F4F5FA;
+  --sky-2:       #E7E9F3;
+
+  /* Isometric volumes — a completed day carries a building */
+  --vol-top:      #EFECFD;
+  --vol-left:     #CFC8F2;
+  --vol-right:    #B4ABE4;
+  --vol-shadow:   rgba(27, 29, 42, .13);
+  --vol-window:   #C98A2E;
+  /* The active day is a poured foundation waiting for its volume */
+  --plinth-top:   #FFFFFF;
+  --plinth-left:  #DDE0EC;
+  --plinth-right: #C6CADB;
+}
+
+[data-theme="dark"] {
+  color-scheme: dark;
+
+  --bg:            #161826;
+  --bg-sunk:       #101120;
+  --surface:       #1E2130;
+  --raised:        #262A3B;
+
+  --border:        rgba(233, 233, 237, .12);
+  --border-strong: rgba(233, 233, 237, .24);
+
+  --text:          #E9E9ED;
+  --muted:         #9397AB;
+  --faint:         #75798C;
+
+  --accent:        #9184D9;
+  --accent-strong: #B5ABFC;
+  --accent-soft:   rgba(145, 132, 217, .18);
+  --on-accent:     #161826;
+
+  --read-bg:       #1B1922;
+  --read-text:     #E4DED4;
+
+  --concept:       #E89A6B;  --concept-soft: rgba(232, 154, 107, .16);
+  --article:       #6FC6D3;  --article-soft: rgba(111, 198, 211, .16);
+  --quiz:          #B5ABFC;  --quiz-soft:    rgba(181, 171, 252, .16);
+
+  --success:       #63D19A;  --success-soft: rgba(99, 209, 154, .16);
+  --danger:        #F08A80;  --danger-soft:  rgba(240, 138, 128, .16);
+  --reward:        #F2C264;  --reward-soft:  rgba(242, 194, 100, .16);
+
+  /* On dark, elevation is an edge plus ambient darkness — not a bigger blur */
+  --sh1: 0 0 0 1px rgba(233, 233, 237, .08);
+  --sh2: 0 0 0 1px rgba(233, 233, 237, .10), 0 6px 18px rgba(0, 0, 0, .55);
+  --sh3: 0 0 0 1px rgba(233, 233, 237, .14), 0 18px 44px rgba(0, 0, 0, .65);
+
+  --ground:      #1B1E2E;
+  --ground-edge: rgba(233, 233, 237, .11);
+  --road:        #202435;
+  --road-line:   rgba(233, 233, 237, .16);
+  --sky-1:       #1C2032;
+  --sky-2:       #101120;
+
+  --vol-top:      #6B6AA8;
+  --vol-left:     #3A3660;
+  --vol-right:    #272341;
+  --vol-shadow:   rgba(8, 9, 16, .6);
+  --vol-window:   #E3B057;
+  --plinth-top:   #262A3B;
+  --plinth-left:  #1E2130;
+  --plinth-right: #14161F;
+}
+
+/* A migrated subtree opts into the reading face and the v2 ground. */
+.theme-v2 {
+  font-family: var(--font-literata), Georgia, serif;
+  color: var(--text);
+  background: var(--bg);
+}
+
+.theme-v2 :where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+@layer utilities {
+  .tabular { font-variant-numeric: tabular-nums; }
+}
+
+@keyframes ringpulse { 0% { transform: scale(1); opacity: .8 } 75% { transform: scale(1.45); opacity: 0 } 100% { opacity: 0 } }
+@keyframes roadflow  { to { stroke-dashoffset: -56 } }
+@keyframes bob       { 0%, 100% { transform: translateY(0) } 50% { transform: translateY(-4px) } }
+.animate-ringpulse { animation: ringpulse 2s ease-out infinite; transform-origin: center; }
+.animate-roadflow  { animation: roadflow 1.6s linear infinite; }
+.animate-bob       { animation: bob 3s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-ringpulse, .animate-roadflow, .animate-bob { animation: none !important; }
+}
