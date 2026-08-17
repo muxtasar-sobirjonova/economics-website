@@ -10,6 +10,7 @@ import {
   IconArticle,
   IconBookmark,
   IconNotes,
+  IconBriefcase,
 } from "@tabler/icons-react";
 
 export function MobileBottomNav() {
@@ -24,6 +25,7 @@ export function MobileBottomNav() {
     { name: "Concepts", href: `/lessons/${currentLessonId}/concepts`, matchHref: "/concepts", icon: IconBulb },
     { name: "Articles", href: `/lessons/${currentLessonId}/articles`, matchHref: "/articles", icon: IconArticle },
     { name: "Quizzes", href: `/lessons/${currentLessonId}/quizzes`, matchHref: "/quizzes", icon: IconNotes },
+    { name: "Internships", href: "/internships", matchHref: "/internships", icon: IconBriefcase },
     { name: "Notes", href: "/saved", matchHref: "/saved", icon: IconBookmark },
   ];
 
