@@ -8,6 +8,7 @@ import {
   queryOrganisations,
 } from "@/lib/internships";
 import { BoardFilters } from "@/components/internships/BoardFilters";
+import { RegionMap } from "@/components/internships/RegionMap";
 
 const TIER_TONE: Record<string, string> = {
   "Top Tier": "reward",
@@ -24,6 +25,12 @@ function Stat({ label, value, hint }: { label: string; value: string; hint?: str
       {hint && <div className="text-meta text-muted mt-s2">{hint}</div>}
     </div>
   );
+}
+
+/** Opens the organisation's address in Google Maps. */
+function mapsUrl(parts: (string | null)[]) {
+  const q = parts.filter(Boolean).join(", ");
+  return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(q)}`;
 }
 
 export interface BoardParams {
@@ -144,7 +151,17 @@ export function ExchangeBoard({ searchParams }: { searchParams?: BoardParams }) 
             All {summary.regions} regions. Pick one to open its listings.
           </p>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-s2">
+          <div className="grid lg:grid-cols-[1.15fr_1fr] gap-s4 items-start">
+            <RegionMap
+              regions={regions.map((r) => ({
+                region: r.region,
+                symbol: r.symbol,
+                total: r.total,
+                topCategory: r.topCategory,
+              }))}
+            />
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-2 gap-s2">
             {regions.map((r) => {
               const on = region === r.region;
               return (
@@ -166,6 +183,7 @@ export function ExchangeBoard({ searchParams }: { searchParams?: BoardParams }) 
                 </Link>
               );
             })}
+            </div>
           </div>
         </section>
 
@@ -226,6 +244,16 @@ export function ExchangeBoard({ searchParams }: { searchParams?: BoardParams }) 
                     )}
                     {!o.email && !o.phone && (
                       <span className="text-meta text-faint">No public contact listed</span>
+                    )}
+                    {(o.address || o.city) && (
+                      <a
+                        href={mapsUrl([o.name, o.address, o.city, o.region, "Uzbekistan"])}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="inline-flex items-center min-h-[44px] text-meta text-accent hover:text-accent-strong"
+                      >
+                        Map ↗
+                      </a>
                     )}
                     {o.sourceUrl && (
                       <a
@@ -315,6 +343,16 @@ export function ExchangeBoard({ searchParams }: { searchParams?: BoardParams }) 
                       </div>
                       <p className="text-meta text-muted mt-1">{c.sector} · {c.region}</p>
                       {c.notes && <p className="text-meta text-ink mt-s3">{c.notes}</p>}
+                      {c.address && (
+                        <a
+                          href={mapsUrl([c.name, c.address, c.region, "Uzbekistan"])}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="inline-flex items-center min-h-[44px] text-meta text-accent hover:text-accent-strong mt-s2"
+                        >
+                          Map ↗
+                        </a>
+                      )}
                       {(c.email || c.phone) && (
                         <p className="font-mono text-meta text-muted mt-s3 pt-s3 border-t border-line break-all">
                           {[c.email, c.phone].filter(Boolean).join(" · ")}
