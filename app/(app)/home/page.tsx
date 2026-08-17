@@ -5,7 +5,8 @@ import { prisma } from "@/lib/prisma";
 import TodayAgendaCard from "@/components/TodayAgendaCard";
 import { DailyQuote } from "@/components/home/DailyQuote";
 import { DashboardHero } from "@/components/home/DashboardHero";
-import { LearningStats } from "@/components/home/LearningStats";
+import { DashboardHeader } from "@/components/home/DashboardHeader";
+import OpportunitiesCard from "@/components/OpportunitiesCard";
 
 import { ensureUserProgress } from "@/lib/user-progress";
 import { Suspense } from "react";
@@ -187,7 +188,8 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
     <>
       <DailyQuote activeTrack={activeTrack} />
       <div className="px-s4 md:px-s6 lg:px-s7 pt-s5 pb-s4">
-        <DashboardHero
+        <DashboardHeader title="Home" />
+    <DashboardHero
           completedAgendaDates={completedAgendaDates}
           completedDates={completedLessonDates}
           userName={userName}
@@ -196,23 +198,25 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
         />
       </div>
 
-      <div className="px-s4 md:px-s6 lg:px-s7 pb-s7">
-        <div className="flex flex-col w-full mx-auto gap-s4 max-w-[1200px]">
-          <TodayAgendaCard initialItems={agendaItems} />
+        <div className="px-s4 md:px-s6 lg:px-s7 pb-s7">
+          <div className="flex flex-col md:flex-row w-full mx-auto gap-s4 max-w-[1200px]">
+            <div className="flex-1">
+              <TodayAgendaCard initialItems={agendaItems} />
+              <Suspense fallback={<div className="h-32 w-full bg-bg-sunk animate-pulse rounded-lg mt-s6" />}>
+                <DashboardStatsAsync
+                  userId={userId}
+                  streak={streak}
+                  activeTrack={activeTrack}
+                  totalXP={xp}
+                  currentDay={currentDay}
+                />
+              </Suspense>
+            </div>
+            <div className="w-64 flex-shrink-0">
+              <OpportunitiesCard />
+            </div>
+          </div>
         </div>
-        
-        <div className="w-full mx-auto max-w-[1200px]">
-          <Suspense fallback={<div className="h-32 w-full bg-bg-sunk animate-pulse rounded-lg mt-s6" />}>
-            <DashboardStatsAsync
-              userId={userId}
-              streak={streak}
-              activeTrack={activeTrack}
-              totalXP={xp}
-              currentDay={currentDay}
-            />
-          </Suspense>
-        </div>
-      </div>
     </>
   );
 }

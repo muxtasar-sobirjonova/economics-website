@@ -8,10 +8,10 @@
    of these — no more one-off hexes.                                           */
 
 :root {
-  --bg:            #EEEFF5;
-  --bg-sunk:       #E4E6EF;
-  --surface:       #FAFAFE;
-  --raised:        #FDFDFF;
+  --bg:            #F4F0FF;
+  --bg-sunk:       #EDE7F5;
+  --surface:       #FAF7FF;
+  --raised:        #FFF9FF;
 
   --border:        rgba(27, 29, 42, .10);
   --border-strong: rgba(27, 29, 42, .20);
@@ -25,11 +25,9 @@
   --accent-soft:   #EAE7FB;
   --on-accent:     #FFFFFF;
 
-  /* Reading ground shifts warm — paper in light, lamplight in dark */
   --read-bg:       #F7F3EC;
   --read-text:     #22201C;
 
-  /* One colour per activity type */
   --concept:       #B0552A;  --concept-soft: #F7E4DA;
   --article:       #1F6E7C;  --article-soft: #DCEEF1;
   --quiz:          #6E5FC4;  --quiz-soft:    #EAE7FB;
@@ -42,7 +40,6 @@
   --sh2: 0 4px 14px rgba(27, 29, 42, .09);
   --sh3: 0 18px 40px rgba(27, 29, 42, .14);
 
-  /* Roadmap plot */
   --ground:     #E1E3EE;
   --ground-edge: rgba(27, 29, 42, .13);
   --road:       #D2D5E3;
@@ -50,8 +47,6 @@
   --sky-1:      #F4F5FA;
   --sky-2:      #E7E9F3;
 
-  /* Highlighter swatches and sticky-note colours are product data —
-     they stay identical across modes so saved marks survive a theme switch. */
   --hl-yellow: #FCD34D;
   --hl-blue:   #93C5FD;
   --hl-pink:   #F9A8D4;
@@ -59,13 +54,30 @@
 
   --background: var(--bg);
   --foreground: var(--text);
+
+  --ink: #1B1329;
+  --ink-soft: #5B5169;
+  --purple-900: #2A0F4E;
+  --purple-700: #4C1A85;
+  --purple-500: #7C4DBF;
+  --purple-300: #B292DE;
+  --purple-150: #E4D8F5;
+  --purple-100: #EFE6FA;
+  --surface: #FBF8F9;
+  --line: #E5DAEF;
+  --up: #D89A3B;
+  --down: #9C5B72;
+  --flat: #8C82A0;
+  --font-display: 'Fraunces', serif;
+  --font-body: 'Manrope', sans-serif;
+  --font-mono: 'JetBrains Mono', monospace;
 }
 
 [data-theme="dark"] {
-  --bg:            #161826;
-  --bg-sunk:       #101120;
-  --surface:       #1E2130;
-  --raised:        #262A3B;
+  --bg:            #1A0D2E; /* dark purple background */
+  --bg-sunk:       #150C25; /* deeper */
+  --surface:       #2A1A40; /* surface */
+  --raised:        #3A274F; /* raised */
 
   --border:        rgba(233, 233, 237, .12);
   --border-strong: rgba(233, 233, 237, .24);
@@ -74,9 +86,9 @@
   --muted:         #9397AB;
   --faint:         #75798C;
 
-  --accent:        #9184D9;
-  --accent-strong: #B5ABFC;
-  --accent-soft:   rgba(145, 132, 217, .18);
+  --accent:        #6A0DAD; /* deep purple */
+  --accent-strong: #9B30FF; /* vivid purple */
+  --accent-soft:   rgba(106, 13, 173, 0.15); /* soft pastel purple */
   --on-accent:     #161826;
 
   --read-bg:       #1B1922;
