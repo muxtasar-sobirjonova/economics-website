@@ -32,40 +32,64 @@ function weekStart(): Date {
 /** XP earned since Monday, per user, summed across tracks. */
 async function weeklyXpFor(userIds: string[]): Promise<Record<string, number>> {
   if (userIds.length === 0) return {};
-  const rows = await prisma.quizResult.groupBy({
-    by: ["userId"],
-    where: { userId: { in: userIds }, date: { gte: weekStart() } },
-    _sum: { xpEarned: true },
-  });
-  const out: Record<string, number> = {};
-  rows.forEach((r) => {
-    out[r.userId] = r._sum.xpEarned ?? 0;
-  });
-  return out;
+  try {
+    const rows = await prisma.quizResult.groupBy({
+      by: ["userId"],
+      where: { userId: { in: userIds }, date: { gte: weekStart() } },
+      _sum: { xpEarned: true },
+    });
+    const out: Record<string, number> = {};
+    rows.forEach((r) => {
+      out[r.userId] = r._sum.xpEarned ?? 0;
+    });
+    return out;
+  } catch {
+    // Weekly XP is a nice-to-have; it must never take the board down.
+    return {};
+  }
 }
 
 /**
- * The cron fills LeaderboardRank every 12 hours. If it has not run yet the
- * board would look empty while users clearly exist, so fall back to the same
- * ranking computed live.
+ * The cron fills LeaderboardRank every 12 hours, but that table has no
+ * migration and may not exist in a given database at all — in which case the
+ * query throws rather than returning nothing. Either way the board falls back
+ * to the same ranking computed live, so it is never blank or broken.
  */
 async function rankedUsers(limit: number) {
-  const cached = await prisma.leaderboardRank.findMany({
-    orderBy: { rank: "asc" },
-    take: limit,
-    select: {
-      userId: true,
-      username: true,
-      profileImage: true,
-      lessonsCompleted: true,
-      totalXP: true,
-      rank: true,
-    },
-  });
+  let cached: Array<{
+    userId: string;
+    username: string | null;
+    profileImage: string | null;
+    lessonsCompleted: number;
+    totalXP: number;
+    rank: number;
+  }> = [];
+
+  try {
+    cached = await prisma.leaderboardRank.findMany({
+      orderBy: { rank: "asc" },
+      take: limit,
+      select: {
+        userId: true,
+        username: true,
+        profileImage: true,
+        lessonsCompleted: true,
+        totalXP: true,
+        rank: true,
+      },
+    });
+  } catch {
+    // No LeaderboardRank table here — rank live instead.
+    cached = [];
+  }
 
   if (cached.length > 0) {
-    const total = await prisma.leaderboardRank.count();
-    return { rows: cached, total, live: false };
+    try {
+      const total = await prisma.leaderboardRank.count();
+      return { rows: cached, total, live: false };
+    } catch {
+      return { rows: cached, total: cached.length, live: false };
+    }
   }
 
   const users = await prisma.user.findMany({
@@ -129,7 +153,9 @@ export async function getLeaderboard(currentUserId: string, limit = 10) {
       totalRanked: total,
     };
   } else if (!live) {
-    const mine = await prisma.leaderboardRank.findUnique({ where: { userId: currentUserId } });
+    const mine = await prisma.leaderboardRank
+      .findUnique({ where: { userId: currentUserId } })
+      .catch(() => null);
     standing = {
       rank: mine?.rank ?? null,
       lessonsCompleted: mine?.lessonsCompleted ?? 0,
