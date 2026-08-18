@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { PodiumPlot } from "./PodiumPlot";
-import { getLeagueData } from "@/components/roadmap/RoadmapSidebar";
+import { getLeagueData } from "@/lib/league";
 import type { BoardEntry, Standing } from "@/lib/leaderboard";
 
 function Row({ entry }: { entry: BoardEntry }) {

@@ -3,14 +3,8 @@
 import React, { useTransition } from "react";
 import Link from "next/link";
 import { switchTrackAction } from "@/app/actions/user";
+import { getLeagueData } from "@/lib/league";
 
-export function getLeagueData(totalXP: number) {
-  if (totalXP < 100) return { name: "Bronze", min: 0, max: 100, next: "Silver" };
-  if (totalXP < 250) return { name: "Silver", min: 100, max: 250, next: "Gold" };
-  if (totalXP < 500) return { name: "Gold", min: 250, max: 500, next: "Platinum" };
-  if (totalXP < 1000) return { name: "Platinum", min: 500, max: 1000, next: "Diamond" };
-  return { name: "Diamond", min: 1000, max: 1000, next: null };
-}
 
 const TRACKS = [
   { id: "ENTREPRENEURSHIP_ECONOMICS", name: "Entrepreneurship" },
