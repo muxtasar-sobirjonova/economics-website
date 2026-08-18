@@ -313,6 +313,16 @@ body {
   --sky-1:       #F4F5FA;
   --sky-2:       #E7E9F3;
 
+  /* Podium places and league tiers carry their own metal, so a glance at the
+     board tells you the standing before you read a word. */
+  --gold-top:   #F6E3B0;  --gold-left:   #E3BC6A;  --gold-right:   #B98F35;  --gold-ink: #8A6612;
+  --silver-top: #ECEEF4;  --silver-left: #C9CEDC;  --silver-right: #9AA1B4;  --silver-ink: #5C6072;
+  --bronze-top: #F2D6BF;  --bronze-left: #D8A87E;  --bronze-right: #AA7A50;  --bronze-ink: #8A5526;
+  --platinum:   #4F8FA6;  --platinum-soft: #DCEDF3;
+  /* Light pooling at the top of the podium card, in the champion's metal */
+  --podium-wash: rgba(227, 188, 106, .40);
+  --diamond:    #6E5FC4;  --diamond-soft:  #EAE7FB;
+
   /* Isometric volumes — a completed day carries a building */
   --vol-top:      #EFECFD;
   --vol-left:     #CFC8F2;
@@ -367,6 +377,13 @@ body {
   --road-line:   rgba(233, 233, 237, .16);
   --sky-1:       #1C2032;
   --sky-2:       #101120;
+
+  --gold-top:   #7A6224;  --gold-left:   #55431A;  --gold-right:   #3B2E12;  --gold-ink: #F2C264;
+  --silver-top: #6C7185;  --silver-left: #474C5E;  --silver-right: #2F3342;  --silver-ink: #C3C7D4;
+  --bronze-top: #7A543A;  --bronze-left: #543926;  --bronze-right: #3A2718;  --bronze-ink: #E0A87C;
+  --platinum:   #7FC4DA;  --platinum-soft: rgba(127, 196, 218, .16);
+  --podium-wash: rgba(242, 194, 100, .10);
+  --diamond:    #B5ABFC;  --diamond-soft:  rgba(181, 171, 252, .18);
 
   --vol-top:      #6B6AA8;
   --vol-left:     #3A3660;

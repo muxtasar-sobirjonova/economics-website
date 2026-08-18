@@ -87,7 +87,13 @@ export const RoadmapSidebar = ({
         </div>
 
         <div className="flex items-baseline gap-s3">
-          <span className="text-h3 font-semibold text-ink">{league.name}</span>
+          <span
+            className="inline-flex items-center gap-s2 px-s3 py-1 rounded-full border text-h3 font-semibold"
+            style={{ color: league.ink, background: league.soft, borderColor: league.edge }}
+          >
+            <span className="w-2 h-2 rounded-full" style={{ background: league.ink }} aria-hidden />
+            {league.name}
+          </span>
           <span className="font-mono text-meta text-muted tabular">
             {lessonsCompleted} {lessonsCompleted === 1 ? "lesson" : "lessons"}
           </span>
@@ -100,7 +106,10 @@ export const RoadmapSidebar = ({
         </p>
 
         <div className="w-full bg-bg-sunk h-1 rounded-sm overflow-hidden mt-s3">
-          <div className="h-full rounded-sm bg-reward transition-all duration-500" style={{ width: `${pct}%` }} />
+          <div
+            className="h-full rounded-sm transition-all duration-500"
+            style={{ width: `${pct}%`, background: league.ink }}
+          />
         </div>
       </section>
 
