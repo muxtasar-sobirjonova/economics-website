@@ -1,26 +1,31 @@
+import { Metadata } from "next";
 import { auth } from "@/auth";
-// Triggering Vercel rebuild
 import { redirect } from "next/navigation";
-import { LeaderboardClient } from "@/components/leaderboard/LeaderboardClient";
-import { Metadata } from 'next';
+import { getLeaderboard } from "@/lib/leaderboard";
+import { LeaderboardBoard } from "@/components/leaderboard/LeaderboardBoard";
 
 export const metadata: Metadata = {
   title: "Leaderboard | That's So Econ",
-  description: "See how you rank among other learners on That's So Econ!",
+  description: "See how you rank among other learners on That's So Econ.",
 };
+
+export const dynamic = "force-dynamic";
 
 export default async function LeaderboardPage() {
   const session = await auth();
-  
-  if (!session?.user || !session.user.id) {
+  if (!session?.user?.id) {
     redirect("/login");
   }
 
-  const userId = session.user.id;
+  // Three on the podium, seven in the list.
+  const { podium, rest, standing, totalRanked } = await getLeaderboard(session.user.id, 10);
 
   return (
-    <div className="w-full bg-slate-50 min-h-screen pt-8 px-4">
-      <LeaderboardClient currentUserId={userId} />
-    </div>
+    <LeaderboardBoard
+      podium={podium}
+      rest={rest}
+      standing={standing}
+      totalRanked={totalRanked}
+    />
   );
 }
