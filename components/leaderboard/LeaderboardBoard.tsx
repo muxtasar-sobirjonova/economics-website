@@ -7,7 +7,7 @@ import type { BoardEntry, Standing } from "@/lib/leaderboard";
 function Row({ entry }: { entry: BoardEntry }) {
   return (
     <div
-      className={`grid grid-cols-[2.5rem_1fr_auto] sm:grid-cols-[2.5rem_1fr_4.5rem_5rem_5.5rem] gap-s3 items-center px-s4 py-s3 border-t border-line ${
+      className={`grid grid-cols-[2.5rem_1fr_auto] gap-s3 items-center px-s4 py-s3 border-t border-line ${
         entry.isYou ? "bg-accent-soft" : ""
       }`}
     >
@@ -24,14 +24,8 @@ function Row({ entry }: { entry: BoardEntry }) {
         </span>
       </span>
 
-      <span className="hidden sm:block font-mono text-meta text-muted tabular text-right">
-        {entry.lessonsCompleted}
-      </span>
-      <span className="hidden sm:block font-mono text-meta tabular text-right" style={{ color: entry.weeklyXP > 0 ? "var(--reward)" : "var(--faint)" }}>
-        {entry.weeklyXP > 0 ? `+${entry.weeklyXP}` : "—"}
-      </span>
       <span className="font-mono text-meta text-ink tabular text-right">
-        {entry.totalXP.toLocaleString()}
+        {entry.lessonsCompleted}
       </span>
     </div>
   );
@@ -48,8 +42,8 @@ export function LeaderboardBoard({
   standing: Standing;
   totalRanked: number;
 }) {
-  const league = getLeagueData(standing.totalXP);
-  const toNext = Math.max(0, league.max - standing.totalXP);
+  const league = getLeagueData(standing.lessonsCompleted);
+  const toNext = Math.max(0, league.max - standing.lessonsCompleted);
   const empty = podium.length === 0;
   const rank = totalRanked > 0 ? standing.rank : null;
 
@@ -93,12 +87,10 @@ export function LeaderboardBoard({
             {/* The next seven */}
             {rest.length > 0 && (
               <section className="rounded-lg border border-line bg-surface shadow-sh1 overflow-hidden">
-                <div className="grid grid-cols-[2.5rem_1fr_auto] sm:grid-cols-[2.5rem_1fr_4.5rem_5rem_5.5rem] gap-s3 px-s4 py-s3 bg-bg-sunk text-label uppercase text-faint">
+                <div className="grid grid-cols-[2.5rem_1fr_auto] gap-s3 px-s4 py-s3 bg-bg-sunk text-label uppercase text-faint">
                   <span>Rank</span>
                   <span>Learner</span>
-                  <span className="hidden sm:block text-right">Built</span>
-                  <span className="hidden sm:block text-right">This week</span>
-                  <span className="text-right">Total XP</span>
+                  <span className="text-right">Lessons</span>
                 </div>
                 {rest.map((e) => (
                   <Row key={e.userId} entry={e} />
@@ -123,23 +115,17 @@ export function LeaderboardBoard({
             </div>
             <div>
               <div className="font-mono text-h2 text-ink tabular leading-none">{standing.lessonsCompleted}</div>
-              <div className="text-label uppercase text-faint mt-s2">Built</div>
+              <div className="text-label uppercase text-faint mt-s2">Lessons built</div>
             </div>
             <div>
-              <div className="font-mono text-h2 tabular leading-none" style={{ color: standing.weeklyXP > 0 ? "var(--reward)" : "var(--ink)" }}>
-                {standing.weeklyXP > 0 ? `+${standing.weeklyXP}` : "0"}
-              </div>
-              <div className="text-label uppercase text-faint mt-s2">This week</div>
-            </div>
-            <div>
-              <div className="font-mono text-h2 text-ink tabular leading-none">{standing.totalXP.toLocaleString()}</div>
-              <div className="text-label uppercase text-faint mt-s2">Total XP</div>
+              <div className="text-h2 font-semibold text-ink leading-none">{league.name}</div>
+              <div className="text-label uppercase text-faint mt-s2">League</div>
             </div>
           </div>
 
           <p className="text-meta text-muted mt-s4 pt-s4 border-t border-line">
             {league.next
-              ? `${toNext.toLocaleString()} XP to ${league.next}.`
+              ? `${toNext} more ${toNext === 1 ? "lesson" : "lessons"} to ${league.next}.`
               : "Top league — nothing above this."}
             {rank === null && " Finish a lesson to take a place on the board."}
           </p>

@@ -23,7 +23,6 @@ export interface PlotDay {
   state: DayState;
   isQuiz?: boolean;
   score?: number | null;
-  xp?: number | null;
   href?: string;
 }
 
@@ -87,14 +86,14 @@ const BareGround = () => (
 );
 
 /** Small tag beside a finished day. */
-const DoneTag = ({ x, y, day, score, xp }: { x: number; y: number; day: number; score?: number | null; xp?: number | null }) => (
+const DoneTag = ({ x, y, day, score }: { x: number; y: number; day: number; score?: number | null }) => (
   <g transform={`translate(${x}, ${y})`}>
     <rect x="-44" y="-15" width="88" height="30" rx="8" fill="var(--surface)" stroke="var(--border)" />
     <text x="0" y="-1" textAnchor="middle" style={{ font: "600 10px var(--font-mono), monospace", fill: "var(--success)" }}>
       DAY {day}
     </text>
     <text x="0" y="10" textAnchor="middle" style={{ font: "500 9.5px var(--font-literata), Georgia, serif", fill: "var(--muted)" }}>
-      {score != null ? `${score}/10` : "cleared"}{xp ? ` · +${xp} XP` : ""}
+      {score != null ? `${score}/10` : "cleared"}
     </text>
   </g>
 );

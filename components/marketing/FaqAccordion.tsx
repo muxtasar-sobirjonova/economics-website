@@ -18,8 +18,8 @@ const faqs: FaqItem[] = [
     answer: "Not at all. That's So Econ! is designed specifically for founders, builders, and curious minds without a formal economics degree. We break down complex theories into practical, easy-to-understand lessons.",
   },
   {
-    question: "How do streaks and XP work?",
-    answer: "Every day you complete your personalized agenda, your streak increases. You earn XP for reading articles, completing concepts, and passing quizzes. Earn enough XP to climb from Bronze to Silver and Gold leagues!",
+    question: "How do streaks and leagues work?",
+    answer: "Every day you complete your agenda, your streak increases. Your league is set by how many lessons you have finished — clear a chapter and you move up, from Bronze all the way to Diamond.",
   },
   {
     question: "Can I review questions I got wrong?",

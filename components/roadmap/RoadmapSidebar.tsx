@@ -13,14 +13,14 @@ const TRACKS = [
 ] as const;
 
 export const RoadmapSidebar = ({
-  serverTotalXP,
+  lessonsCompleted,
   activeTrack,
   progressByTrack = {},
   rank,
   mistakesCount = 0,
   notesCount = 0,
 }: {
-  serverTotalXP: number;
+  lessonsCompleted: number;
   activeTrack: string;
   progressByTrack?: Record<string, { currentDay: number; xp: number } | undefined>;
   rank?: number | null;
@@ -28,10 +28,10 @@ export const RoadmapSidebar = ({
   notesCount?: number;
 }) => {
   const [isPending, startTransition] = useTransition();
-  const league = getLeagueData(serverTotalXP);
-  const toNext = Math.max(0, league.max - serverTotalXP);
+  const league = getLeagueData(lessonsCompleted);
+  const toNext = Math.max(0, league.max - lessonsCompleted);
   const pct = league.next
-    ? Math.max(0, Math.min(100, ((serverTotalXP - league.min) / (league.max - league.min)) * 100))
+    ? Math.max(0, Math.min(100, ((lessonsCompleted - league.min) / (league.max - league.min)) * 100))
     : 100;
 
   const switchTo = (trackId: string) => {
@@ -89,12 +89,14 @@ export const RoadmapSidebar = ({
         <div className="flex items-baseline gap-s3">
           <span className="text-h3 font-semibold text-ink">{league.name}</span>
           <span className="font-mono text-meta text-muted tabular">
-            {serverTotalXP.toLocaleString()} XP
+            {lessonsCompleted} {lessonsCompleted === 1 ? "lesson" : "lessons"}
           </span>
         </div>
 
         <p className="text-meta text-muted mt-1">
-          {league.next ? `${toNext.toLocaleString()} XP to ${league.next}` : "Top league — nothing above this."}
+          {league.next
+            ? `${toNext} more ${toNext === 1 ? "lesson" : "lessons"} to ${league.next}`
+            : "Top league — nothing above this."}
         </p>
 
         <div className="w-full bg-bg-sunk h-1 rounded-sm overflow-hidden mt-s3">

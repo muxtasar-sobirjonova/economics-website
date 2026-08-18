@@ -46,7 +46,7 @@ export function PodiumPlot({ place, entry }: { place: 1 | 2 | 3; entry?: BoardEn
         {entry.isYou ? `You · ${entry.username || "Anonymous"}` : entry.username || "Anonymous"}
       </h3>
       <p className="font-mono text-meta text-muted tabular mt-1">
-        {entry.lessonsCompleted} lessons · {entry.totalXP.toLocaleString()} XP
+        {entry.lessonsCompleted} {entry.lessonsCompleted === 1 ? "lesson" : "lessons"}
       </p>
     </div>
   );

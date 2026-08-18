@@ -28,8 +28,8 @@ export const MarketingSections = () => (
                 <IconTrophy size={24} />
               </div>
               <div>
-                <h4 className="font-bold text-slate-900 text-lg mb-1">Earn XP & Climb Leagues</h4>
-                <p className="text-gray-600 leading-relaxed text-sm">Earn XP, climb the leaderboards, and unlock advanced concepts as you progress.</p>
+                <h4 className="font-bold text-slate-900 text-lg mb-1">Build Your Streak & Climb Leagues</h4>
+                <p className="text-gray-600 leading-relaxed text-sm">Finish lessons, climb the leaderboard, and move up the leagues as each chapter closes.</p>
               </div>
             </div>
           </ScrollReveal>

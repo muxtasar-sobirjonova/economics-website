@@ -7,7 +7,6 @@ export interface BoardEntry {
   profileImage: string | null;
   lessonsCompleted: number;
   totalXP: number;
-  weeklyXP: number;
   isYou: boolean;
 }
 
@@ -15,38 +14,7 @@ export interface Standing {
   rank: number | null;
   lessonsCompleted: number;
   totalXP: number;
-  weeklyXP: number;
   totalRanked: number;
-}
-
-/** Monday 00:00 UTC of the current week — the same boundary the dashboard uses. */
-function weekStart(): Date {
-  const now = new Date();
-  const jsDay = now.getUTCDay();
-  const monday = new Date(now);
-  monday.setUTCDate(now.getUTCDate() - (jsDay === 0 ? 6 : jsDay - 1));
-  monday.setUTCHours(0, 0, 0, 0);
-  return monday;
-}
-
-/** XP earned since Monday, per user, summed across tracks. */
-async function weeklyXpFor(userIds: string[]): Promise<Record<string, number>> {
-  if (userIds.length === 0) return {};
-  try {
-    const rows = await prisma.quizResult.groupBy({
-      by: ["userId"],
-      where: { userId: { in: userIds }, date: { gte: weekStart() } },
-      _sum: { xpEarned: true },
-    });
-    const out: Record<string, number> = {};
-    rows.forEach((r) => {
-      out[r.userId] = r._sum.xpEarned ?? 0;
-    });
-    return out;
-  } catch {
-    // Weekly XP is a nice-to-have; it must never take the board down.
-    return {};
-  }
 }
 
 /**
@@ -130,13 +98,8 @@ async function rankedUsers(limit: number) {
 export async function getLeaderboard(currentUserId: string, limit = 10) {
   const { rows, total, live } = await rankedUsers(limit);
 
-  const ids = rows.map((r) => r.userId);
-  if (!ids.includes(currentUserId)) ids.push(currentUserId);
-  const weekly = await weeklyXpFor(ids);
-
   const entries: BoardEntry[] = rows.map((r) => ({
     ...r,
-    weeklyXP: weekly[r.userId] ?? 0,
     isYou: r.userId === currentUserId,
   }));
 
@@ -149,7 +112,6 @@ export async function getLeaderboard(currentUserId: string, limit = 10) {
       rank: inSlice.rank,
       lessonsCompleted: inSlice.lessonsCompleted,
       totalXP: inSlice.totalXP,
-      weeklyXP: inSlice.weeklyXP,
       totalRanked: total,
     };
   } else if (!live) {
@@ -160,7 +122,6 @@ export async function getLeaderboard(currentUserId: string, limit = 10) {
       rank: mine?.rank ?? null,
       lessonsCompleted: mine?.lessonsCompleted ?? 0,
       totalXP: mine?.totalXP ?? 0,
-      weeklyXP: weekly[currentUserId] ?? 0,
       totalRanked: total,
     };
   } else {
@@ -180,7 +141,6 @@ export async function getLeaderboard(currentUserId: string, limit = 10) {
       rank: ahead === null ? null : ahead + 1,
       lessonsCompleted: me?.lessonsCompleted ?? 0,
       totalXP: me?.progress?.totalXP ?? 0,
-      weeklyXP: weekly[currentUserId] ?? 0,
       totalRanked: total,
     };
   }

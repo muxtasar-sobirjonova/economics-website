@@ -19,15 +19,11 @@ export const metadata: Metadata = {
 };
 
 
-async function DashboardStatsAsync({ userId, streak, activeTrack = Track.ENTREPRENEURSHIP_ECONOMICS, totalXP, currentDay }: { userId: string, streak: number, activeTrack?: Track, totalXP: number, currentDay: number }) {
+async function DashboardStatsAsync({ userId, streak, activeTrack = Track.ENTREPRENEURSHIP_ECONOMICS, currentDay }: { userId: string, streak: number, activeTrack?: Track, currentDay: number }) {
   const {
-    weeklyQuizzesAgg,
     quizAgg,
     totalLessonsAgg,
   } = await getUserDashboardData(userId, activeTrack as Track, currentDay);
-
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const xpThisWeek = (weeklyQuizzesAgg as any)?._sum?.xpEarned || 0;
 
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   let avgQuizScore = (quizAgg as any)?._avg?.score ? Math.round((quizAgg as any)._avg.score * 10) : 0;
@@ -38,8 +34,6 @@ async function DashboardStatsAsync({ userId, streak, activeTrack = Track.ENTREPR
       backendStreak={streak}
       completedLessonsCount={totalLessonsAgg}
       avgQuizScore={avgQuizScore}
-      xpThisWeek={xpThisWeek}
-      totalXP={totalXP}
     />
   );
 }
@@ -72,7 +66,6 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
 
   const streak = trackProgress.streak || 0;
   const currentDay = trackProgress.currentDay || 1;
-  const xp = trackProgress.xp || 0;
   const {
     recentLessons,
     recentCompletions,
@@ -206,7 +199,6 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
               userId={userId}
               streak={streak}
               activeTrack={activeTrack}
-              totalXP={xp}
               currentDay={currentDay}
             />
           </Suspense>

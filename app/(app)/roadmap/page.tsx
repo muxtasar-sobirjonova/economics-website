@@ -41,7 +41,6 @@ async function RoadmapContent({ userId }: { userId: string }) {
   ]);
 
   const current = trackProgressAll.find((t) => t.track === activeTrack);
-  const totalXP = current?.xp ?? 0;
 
   const progressByTrack = Object.fromEntries(
     trackProgressAll.map((t) => [t.track, { currentDay: t.currentDay, xp: t.xp }])
@@ -61,6 +60,8 @@ async function RoadmapContent({ userId }: { userId: string }) {
     const d = quizIdToDayOrder(q.quizId);
     if (d != null) scoresByDay[d] = q.score;
   });
+
+  const lessonsCompleted = completedLessonDayOrders.length;
 
   const lessonsData = await getLessons(activeTrack);
   const lessons = JSON.parse(JSON.stringify(lessonsData));
@@ -84,10 +85,6 @@ async function RoadmapContent({ userId }: { userId: string }) {
             <span className="text-danger">&hearts;</span>
             <span className="font-mono text-meta text-ink tabular">{hearts}/5</span>
           </span>
-          <span className="flex items-center gap-s2 px-s3 py-s2 rounded-md bg-surface border border-line">
-            <span className="font-mono text-meta text-ink tabular">{totalXP.toLocaleString()}</span>
-            <span className="text-label uppercase text-faint">XP</span>
-          </span>
           <span className="flex items-center gap-s2 px-s3 py-s2 rounded-md bg-reward-soft">
             <span aria-hidden>🔥</span>
             <span className="font-mono text-meta tabular" style={{ color: "var(--reward)" }}>{streak}</span>
@@ -107,7 +104,7 @@ async function RoadmapContent({ userId }: { userId: string }) {
         </div>
 
         <RoadmapSidebar
-          serverTotalXP={totalXP}
+          lessonsCompleted={lessonsCompleted}
           activeTrack={activeTrack}
           progressByTrack={progressByTrack}
           mistakesCount={mistakesCount}

@@ -1,7 +1,6 @@
 import React from 'react';
 import Link from 'next/link';
 import { auth } from '@/auth';
-import { prisma } from '@/lib/prisma';
 import { IconChevronDown } from '@tabler/icons-react';
 import { Compass } from 'lucide-react';
 import { unstable_noStore as noStore } from 'next/cache';
@@ -11,21 +10,6 @@ export default async function MobileHeader() {
   noStore();
   const session = await auth();
   if (!session?.user?.id) return null;
-
-  const userRecord = await prisma.user.findUnique({
-    where: { id: session.user.id },
-    select: { 
-      activeTrack: true, 
-    }
-  });
-
-  const activeTrack = userRecord?.activeTrack;
-  const trackProg = activeTrack ? await prisma.trackProgress.findUnique({
-    where: { userId_track: { userId: session.user.id, track: activeTrack } },
-    select: { xp: true }
-  }) : null;
-
-  const totalXP = trackProg?.xp || 0;
 
   // Simple mapping for track to an emoji icon
   // We're moving away from emojis to a cleaner lucide icon, but keeping this logic 
@@ -45,10 +29,6 @@ export default async function MobileHeader() {
 
       {/* Right side: Rewards */}
       <div className="flex items-center gap-3">
-        <div className="flex items-center gap-1.5 bg-white px-3.5 py-1.5 rounded-full shadow-[0_2px_8px_rgba(0,0,0,0.04)] border border-gray-50">
-           <span className="text-amber-400 font-black text-sm tracking-tighter">XP</span>
-           <span className="font-bold text-[#1A1A2E] text-sm tracking-wide">{totalXP}</span>
-        </div>
         {/* Avatar circle with Dropdown */}
         <MobileProfileMenu avatarLetter={avatarLetter} />
       </div>

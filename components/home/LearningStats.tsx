@@ -1,6 +1,6 @@
 'use client';
 
-import { IconFlame, IconCircleCheck, IconTrophy, IconStar } from '@tabler/icons-react';
+import { IconFlame, IconCircleCheck, IconTrophy } from '@tabler/icons-react';
 
 function AnimatedNumber({ value }: { value: number }) {
   // Safe fallback to just render the number if framer-motion fails
@@ -14,14 +14,10 @@ export const LearningStats = ({
   backendStreak,
   completedLessonsCount,
   avgQuizScore,
-  xpThisWeek,
-  totalXP
 }: { 
   backendStreak: number,
   completedLessonsCount: number,
   avgQuizScore: number,
-  xpThisWeek: number,
-  totalXP: number
 }) => {
   return (
     <div className="w-full mx-auto mt-8 max-w-[1200px]">
@@ -30,7 +26,7 @@ export const LearningStats = ({
           Your Learning Stats
         </h3>
       </div>
-      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-3 gap-4">
         
         <div className="bg-white rounded-3xl p-4 flex flex-col gap-3 hover:-translate-y-1 transition-all duration-300 active:scale-[0.97] active:translate-y-0 cursor-pointer shadow-sm">
           <div className="flex items-center gap-2">
@@ -73,25 +69,6 @@ export const LearningStats = ({
           </div>
         </div>
 
-        <div className="bg-white rounded-3xl p-4 flex flex-col gap-3 hover:-translate-y-1 transition-all duration-300 active:scale-[0.97] active:translate-y-0 cursor-pointer shadow-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-brand-50 flex items-center justify-center shrink-0">
-              <IconStar size={18} className="text-[#8B5CF6]" stroke={2.5} />
-            </div>
-            <span className="font-bold text-slate-900 text-xs lg:text-[13px] whitespace-normal leading-tight">XP This Week</span>
-          </div>
-          <div className="text-2xl font-black text-slate-900 leading-none mt-auto"><AnimatedNumber value={xpThisWeek} /> <span className="text-[13px] font-bold text-gray-500">XP</span></div>
-        </div>
-
-        <div className="bg-white rounded-3xl p-4 flex flex-col gap-3 hover:-translate-y-1 transition-all duration-300 active:scale-[0.97] active:translate-y-0 cursor-pointer shadow-sm">
-          <div className="flex items-center gap-2">
-            <div className="w-8 h-8 rounded-full bg-pink-50 flex items-center justify-center shrink-0">
-              <IconStar size={18} className="text-pink-500" stroke={2.5} />
-            </div>
-            <span className="font-bold text-slate-900 text-xs lg:text-[13px] whitespace-normal leading-tight">Total XP</span>
-          </div>
-          <div className="text-2xl font-black text-slate-900 leading-none mt-auto"><AnimatedNumber value={totalXP} /> <span className="text-[13px] font-bold text-gray-500">XP</span></div>
-        </div>
       </div>
     </div>
   );
