@@ -114,15 +114,28 @@ function Tile({ tile }: { tile: StatTile }) {
         })}
       </div>
 
-      <div className="text-meta text-muted mt-s2 leading-snug min-h-[34px]">
-        {focus ? (
-          <>
-            <span className="text-ink">{focus.label}</span>{" "}
-            <span className="font-mono tabular text-faint">{focus.value}</span>
-          </>
-        ) : (
-          tile.caption
-        )}
+      {/* Every line the tile can ever show is stacked in one grid cell, so the
+          box is sized once by the longest of them. Swapping the caption for a
+          segment label then changes no height, and the strip cannot jump under
+          the cursor that caused it. */}
+      <div className="grid text-meta leading-snug mt-s2">
+        <span
+          className="col-start-1 row-start-1 text-muted"
+          style={{ visibility: focus ? "hidden" : "visible" }}
+        >
+          {tile.caption}
+        </span>
+        {tile.segments.map((s, i) => (
+          <span
+            key={s.label}
+            aria-hidden={hover !== i}
+            className="col-start-1 row-start-1"
+            style={{ visibility: hover === i ? "visible" : "hidden" }}
+          >
+            <span className="text-ink">{s.label}</span>{" "}
+            <span className="font-mono tabular text-faint">{s.value}</span>
+          </span>
+        ))}
       </div>
     </div>
   );

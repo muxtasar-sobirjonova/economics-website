@@ -14,6 +14,7 @@ import {
   IconMicroscope,
 } from "@tabler/icons-react";
 import { AuthStatus } from "@/components/AuthStatus";
+import { SidebarSkyline } from "@/components/SidebarSkyline";
 
 interface NavItemProps {
   item: {
@@ -44,7 +45,7 @@ const NavItem = ({ item, pathname, setIsOpen }: NavItemProps) => {
       className={`flex items-center py-2.5 text-sm gap-3 transition-all duration-150 active:scale-[0.97] rounded-xl relative overflow-hidden border-l-[3px] ${
         isActive
           ? "font-bold shadow-sm pl-[9px] pr-3 bg-brand-800 text-white border-l-white"
-          : "text-white hover:bg-brand-700 hover:text-white font-medium px-3 border-transparent"
+          : "text-white hover:bg-brand-700 hover:text-white hover:translate-x-[3px] font-medium px-3 border-transparent"
       }`}
     >
       <div className="flex items-center gap-3 z-10 relative">
@@ -128,8 +129,9 @@ export default function Sidebar() {
 
         {/* Dashboard Section */}
         <div className="mb-8 mt-2">
-          <h3 className="pl-3 text-[11px] font-[700] tracking-[0.1em] text-gray-200 uppercase mb-3">
+          <h3 className="flex items-center gap-3 pl-3 text-[11px] font-[700] tracking-[0.1em] text-gray-200 uppercase mb-3">
             DASHBOARD
+            <span className="h-px flex-1 bg-[rgba(255,255,255,.18)]" aria-hidden />
           </h3>
           <nav className="space-y-1.5">
             {dashboardItems.map((item) => (
@@ -140,8 +142,9 @@ export default function Sidebar() {
 
         {/* Opportunities Section */}
         <div className="mb-8">
-          <h3 className="pl-3 text-[11px] font-[700] tracking-[0.1em] text-gray-200 uppercase mb-3">
+          <h3 className="flex items-center gap-3 pl-3 text-[11px] font-[700] tracking-[0.1em] text-gray-200 uppercase mb-3">
             OPPORTUNITIES
+            <span className="h-px flex-1 bg-[rgba(255,255,255,.18)]" aria-hidden />
           </h3>
           <nav className="space-y-1.5">
             {opportunityItems.map((item) => (
@@ -152,8 +155,9 @@ export default function Sidebar() {
 
         {/* Learn Section */}
         <div>
-          <h3 className="pl-3 text-[11px] font-[700] tracking-[0.1em] text-gray-200 uppercase mb-3">
+          <h3 className="flex items-center gap-3 pl-3 text-[11px] font-[700] tracking-[0.1em] text-gray-200 uppercase mb-3">
             LEARN
+            <span className="h-px flex-1 bg-[rgba(255,255,255,.18)]" aria-hidden />
           </h3>
           <nav className="space-y-1.5">
             {learnItems.map((item) => (
@@ -162,8 +166,12 @@ export default function Sidebar() {
           </nav>
         </div>
 
+        <div className="mt-auto pt-8 px-1 opacity-90">
+          <SidebarSkyline />
+        </div>
+
         {/* Bottom Area (User Profile) */}
-        <div className="mt-auto pt-6 border-t border-slate-700">
+        <div className="pt-5 border-t border-slate-700">
           <AuthStatus />
         </div>
       </div>
