@@ -15,7 +15,6 @@ import {
 } from "@tabler/icons-react";
 import { AuthStatus } from "@/components/AuthStatus";
 import { SidebarSkyline } from "@/components/SidebarSkyline";
-import { SidebarProgress } from "@/components/SidebarProgress";
 
 interface NavItemProps {
   item: {
@@ -148,8 +147,6 @@ export default function Sidebar() {
             <span className="text-2xl font-black text-white leading-none">Econ<span className="text-white">!</span></span>
           </div>
         </div>
-
-        <SidebarProgress />
 
         {/* Dashboard Section */}
         <div className="mb-7">
