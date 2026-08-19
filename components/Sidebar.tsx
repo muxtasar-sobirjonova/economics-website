@@ -11,6 +11,7 @@ import {
   IconNotes,
   IconTrophy,
   IconBriefcase,
+  IconMicroscope,
 } from "@tabler/icons-react";
 import { AuthStatus } from "@/components/AuthStatus";
 
@@ -75,6 +76,7 @@ export default function Sidebar() {
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
     { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
     { name: "Internships", href: "/internships", matchHref: "/internships", icon: IconBriefcase },
+    { name: "Research", href: "/research", matchHref: "/research", icon: IconMicroscope },
   ];
 
   const learnItems = [

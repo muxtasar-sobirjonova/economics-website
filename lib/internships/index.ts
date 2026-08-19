@@ -41,20 +41,8 @@ export interface FeaturedCompany {
 export const organisations = organisationsRaw as Organisation[];
 export const featured = featuredRaw as FeaturedCompany[];
 
-/**
- * Short symbol for a region, in the market language of the board.
- * "Tashkent city" and "Tashkent region" must not both come out as TAS, so a
- * city keeps a trailing C.
- */
-export function regionSymbol(region: string): string {
-  const isCity = /\s+city$/i.test(region);
-  const cleaned = region.replace(/\s+(region|city)$/i, "");
-  const parts = cleaned.split(/[\s-]+/).filter(Boolean);
-  const base = parts.length > 1
-    ? parts.map((p) => p[0]).join("")
-    : cleaned.slice(0, 3);
-  return (base + (isCity ? "C" : "")).toUpperCase().slice(0, 4);
-}
+export { regionSymbol, regionLabel } from "./labels";
+import { regionSymbol } from "./labels";
 
 export interface RegionStat {
   region: string;

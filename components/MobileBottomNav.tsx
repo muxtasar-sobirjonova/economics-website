@@ -11,6 +11,7 @@ import {
   IconBookmark,
   IconNotes,
   IconBriefcase,
+  IconMicroscope,
 } from "@tabler/icons-react";
 
 export function MobileBottomNav() {
@@ -26,6 +27,7 @@ export function MobileBottomNav() {
     { name: "Articles", href: `/lessons/${currentLessonId}/articles`, matchHref: "/articles", icon: IconArticle },
     { name: "Quizzes", href: `/lessons/${currentLessonId}/quizzes`, matchHref: "/quizzes", icon: IconNotes },
     { name: "Internships", href: "/internships", matchHref: "/internships", icon: IconBriefcase },
+    { name: "Research", href: "/research", matchHref: "/research", icon: IconMicroscope },
     { name: "Notes", href: "/saved", matchHref: "/saved", icon: IconBookmark },
   ];
 

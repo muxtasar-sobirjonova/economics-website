@@ -6,6 +6,7 @@ import {
   getCategoryStats,
   getFeaturedByTier,
   queryOrganisations,
+  regionLabel,
 } from "@/lib/internships";
 import { BoardFilters } from "@/components/internships/BoardFilters";
 import { RegionMap } from "@/components/internships/RegionMap";
@@ -126,7 +127,7 @@ export function ExchangeBoard({ searchParams }: { searchParams?: BoardParams }) 
                 style={{ background: "var(--bg-sunk)" }}
               >
                 <span className="font-mono text-label uppercase text-faint">{r.symbol}</span>
-                <h3 className="text-h3 font-semibold text-ink mt-s2">{r.region}</h3>
+                <h3 className="text-h3 font-semibold text-ink mt-s2">{regionLabel(r.region)}</h3>
                 <div className="flex items-end justify-between mt-s4">
                   <span className="font-mono text-h1 text-ink tabular leading-none">{r.total}</span>
                   <span className="text-meta text-muted text-right">
@@ -177,7 +178,7 @@ export function ExchangeBoard({ searchParams }: { searchParams?: BoardParams }) 
                 >
                   <span className="font-mono text-label uppercase text-faint">{r.symbol}</span>
                   <span className={`block text-meta font-medium mt-1 truncate ${on ? "text-accent-strong" : "text-ink"}`}>
-                    {r.region.replace(/\s+region$/i, "")}
+                    {regionLabel(r.region)}
                   </span>
                   <span className="font-mono text-h3 text-ink tabular block mt-s2">{r.total}</span>
                 </Link>
@@ -191,7 +192,7 @@ export function ExchangeBoard({ searchParams }: { searchParams?: BoardParams }) 
         <section>
           <div className="flex items-baseline gap-s4 mb-s4">
             <h2 className="text-h2 font-semibold text-ink whitespace-nowrap">
-              {region ? region : "All organisations"}
+              {region ? regionLabel(region) : "All organisations"}
             </h2>
             <span className="h-px bg-line flex-1" />
             <span className="font-mono text-meta text-muted tabular whitespace-nowrap">
@@ -224,7 +225,7 @@ export function ExchangeBoard({ searchParams }: { searchParams?: BoardParams }) 
                     <div className="min-w-0">
                       <h3 className="text-ui font-semibold text-ink">{o.name}</h3>
                       <p className="text-meta text-muted mt-1">
-                        {o.city || o.region}
+                        {o.city || regionLabel(o.region)}
                         {o.address ? ` · ${o.address}` : ""}
                       </p>
                     </div>

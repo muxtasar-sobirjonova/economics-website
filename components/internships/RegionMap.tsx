@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { REGION_SHAPES, MAP_VIEWBOX, MAP_TRANSFORM } from "@/lib/internships/mapShapes";
+import { regionLabel } from "@/lib/internships/labels";
 
 export interface MapRegion {
   region: string;
@@ -78,7 +79,7 @@ export function RegionMap({ regions }: { regions: MapRegion[] }) {
                 strokeWidth="1"
                 opacity=".7"
               >
-                <title>{shape.region} — no records yet</title>
+                <title>{regionLabel(shape.region)} — no records yet</title>
               </path>
             );
           }
@@ -91,7 +92,7 @@ export function RegionMap({ regions }: { regions: MapRegion[] }) {
               d={shape.d}
               role="button"
               tabIndex={0}
-              aria-label={`${shape.region}: ${stat.total} organisations`}
+              aria-label={`${regionLabel(shape.region)}: ${stat.total} organisations`}
               aria-pressed={isSelected}
               onClick={() => select(shape.region!)}
               onKeyDown={(e) => {
@@ -110,7 +111,7 @@ export function RegionMap({ regions }: { regions: MapRegion[] }) {
               stroke={isSelected ? "var(--accent-strong)" : "var(--surface)"}
               strokeWidth={isSelected ? 2.5 : 1.2}
             >
-              <title>{shape.region} — {stat.total} organisations</title>
+              <title>{regionLabel(shape.region)} — {stat.total} organisations</title>
             </path>
           );
         })}
@@ -120,7 +121,7 @@ export function RegionMap({ regions }: { regions: MapRegion[] }) {
       <div className="mt-s3 pt-s3 border-t border-line min-h-[52px]">
         {focus ? (
           <div className="flex items-baseline justify-between gap-s3 flex-wrap">
-            <span className="text-ui font-semibold text-ink">{focus.region}</span>
+            <span className="text-ui font-semibold text-ink">{regionLabel(focus.region)}</span>
             <span className="font-mono text-meta text-muted tabular">
               {focus.total} organisations · mostly {focus.topCategory}
             </span>
