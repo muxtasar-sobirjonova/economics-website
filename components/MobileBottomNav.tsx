@@ -23,13 +23,13 @@ export function MobileBottomNav() {
     { name: "Home", href: "/home", icon: IconHome },
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
     { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
-    // Same order as the sidebar groups: dashboard, then opportunities, then learn.
-    { name: "Internships", href: "/internships", matchHref: "/internships", icon: IconBriefcase },
-    { name: "Research", href: "/research", matchHref: "/research", icon: IconMicroscope },
+    // Same order as the sidebar groups: dashboard, then learn, then opportunities.
     { name: "Concepts", href: `/lessons/${currentLessonId}/concepts`, matchHref: "/concepts", icon: IconBulb },
     { name: "Articles", href: `/lessons/${currentLessonId}/articles`, matchHref: "/articles", icon: IconArticle },
     { name: "Quizzes", href: `/lessons/${currentLessonId}/quizzes`, matchHref: "/quizzes", icon: IconNotes },
     { name: "Notes", href: "/saved", matchHref: "/saved", icon: IconBookmark },
+    { name: "Internships", href: "/internships", matchHref: "/internships", icon: IconBriefcase },
+    { name: "Research", href: "/research", matchHref: "/research", icon: IconMicroscope },
   ];
 
   return (

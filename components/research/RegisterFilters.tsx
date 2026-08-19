@@ -7,6 +7,8 @@ interface Option {
   value: string;
   label: string;
   count: number;
+  /** Reach chips carry the colour their kind uses everywhere else. */
+  tone?: string;
 }
 
 /**
@@ -16,11 +18,11 @@ interface Option {
 export function RegisterFilters({
   tiers,
   cities,
-  directCount,
+  reaches,
 }: {
   tiers: Option[];
   cities: Option[];
-  directCount: number;
+  reaches: Option[];
 }) {
   const router = useRouter();
   const pathname = usePathname();
@@ -79,15 +81,28 @@ export function RegisterFilters({
       </form>
 
       <div className="flex flex-wrap gap-s2">
-        <button
-          onClick={() => toggle("reach", "personal")}
-          aria-pressed={params.get("reach") === "personal"}
-          className={chip(params.get("reach") === "personal")}
-        >
-          Direct contact only
-          <span className="font-mono text-[11px] tabular opacity-70">{directCount}</span>
-        </button>
+        {reaches.map((r) => {
+          const on = params.get("reach") === r.value;
+          return (
+            <button
+              key={r.value}
+              onClick={() => toggle("reach", r.value)}
+              aria-pressed={on}
+              className={chip(on)}
+            >
+              <span
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{ background: `var(--${r.tone})` }}
+                aria-hidden
+              />
+              {r.label}
+              <span className="font-mono text-[11px] tabular opacity-70">{r.count}</span>
+            </button>
+          );
+        })}
+      </div>
 
+      <div className="flex flex-wrap gap-s2">
         {tiers.map((t) => (
           <button
             key={t.value}

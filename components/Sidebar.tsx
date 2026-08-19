@@ -161,22 +161,22 @@ export default function Sidebar() {
           </nav>
         </div>
 
-        {/* Opportunities Section */}
-        <div className="mb-7">
-          <SectionLabel tone="reward">Opportunities</SectionLabel>
-          <nav className="space-y-1">
-            {opportunityItems.map((item) => (
-              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} tone="reward" />
-            ))}
-          </nav>
-        </div>
-
         {/* Learn Section */}
-        <div>
+        <div className="mb-7">
           <SectionLabel tone="article">Learn</SectionLabel>
           <nav className="space-y-1">
             {learnItems.map((item) => (
               <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} tone="article" />
+            ))}
+          </nav>
+        </div>
+
+        {/* Opportunities Section */}
+        <div>
+          <SectionLabel tone="reward">Opportunities</SectionLabel>
+          <nav className="space-y-1">
+            {opportunityItems.map((item) => (
+              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} tone="reward" />
             ))}
           </nav>
         </div>

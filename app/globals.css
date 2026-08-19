@@ -319,6 +319,10 @@ body {
   --silver-top: #ECEEF4;  --silver-left: #C9CEDC;  --silver-right: #9AA1B4;  --silver-ink: #5C6072;
   --bronze-top: #F2D6BF;  --bronze-left: #D8A87E;  --bronze-right: #AA7A50;  --bronze-ink: #8A5526;
   --platinum:   #4F8FA6;  --platinum-soft: #DCEDF3;
+  /* University tiers are ordinal, so they read as one hue in three steps.
+     Three unrelated colours implied three unrelated kinds and shouted. */
+  --tier-1: #2E6B7A;  --tier-2: #58A0AC;  --tier-3: #9AC5CD;
+
   /* Light pooling at the top of the podium card. It reads as the page's own
      colour rather than a fourth metal — the medals are on the buildings. */
   --podium-wash: rgba(110, 95, 196, .22);
@@ -383,6 +387,7 @@ body {
   --silver-top: #6C7185;  --silver-left: #474C5E;  --silver-right: #2F3342;  --silver-ink: #C3C7D4;
   --bronze-top: #7A543A;  --bronze-left: #543926;  --bronze-right: #3A2718;  --bronze-ink: #E0A87C;
   --platinum:   #7FC4DA;  --platinum-soft: rgba(127, 196, 218, .16);
+  --tier-1: #8FD3E0;  --tier-2: #5C9DAB;  --tier-3: #3B6B78;
   --podium-wash: rgba(181, 171, 252, .13);
   --diamond:    #B5ABFC;  --diamond-soft:  rgba(181, 171, 252, .18);
 

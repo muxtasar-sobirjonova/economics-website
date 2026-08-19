@@ -235,7 +235,7 @@ export function ExchangeBoard({ searchParams }: { searchParams?: BoardParams }) 
 
           {filtered && (
             <div className="mt-s3">
-              <Link href="/internships" className="text-meta text-accent hover:text-accent-strong">
+              <Link href="/internships" className="inline-flex items-center min-h-[44px] text-meta text-accent hover:text-accent-strong">
                 Clear filters
               </Link>
             </div>

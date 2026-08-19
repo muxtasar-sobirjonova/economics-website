@@ -16,14 +16,13 @@ import {
   initialsOf,
 } from "@/lib/research";
 import { RegisterFilters } from "@/components/research/RegisterFilters";
-import { FacultyQuarter } from "@/components/research/FacultyQuarter";
+import { FacultyLadder } from "@/components/research/FacultyLadder";
 import { StatStrip } from "@/components/common/StatStrip";
 
 /** Tier 1 reads as the most established, so it takes the warmest tone. */
-const TIER_TONE: Record<number, string> = { 1: "reward", 2: "article", 3: "concept" };
-
+/** Tiers are ordinal, so they share one hue in three steps — see globals.css. */
 function toneOf(tier: string) {
-  return TIER_TONE[tierRank(tier)] ?? "quiz";
+  return `tier-${Math.min(3, tierRank(tier))}`;
 }
 
 export interface RegisterParams {
@@ -37,7 +36,7 @@ export interface RegisterParams {
 
 export function ResearchRegister({ searchParams }: { searchParams?: RegisterParams }) {
   const summary = getRegisterSummary();
-  const universities = getUniversityStats();
+  const universities = [...getUniversityStats()].sort((a, b) => b.total - a.total);
   const tiers = getTierStats();
   const uniByTier = getUniversityTierStats();
   const reachCounts = getReachCounts();
@@ -98,7 +97,7 @@ export function ResearchRegister({ searchParams }: { searchParams?: RegisterPara
                 {
                   label: "Professors",
                   value: String(summary.total),
-                  caption: `${tiers[0]?.count ?? 0} of them at tier 1 institutions`,
+                  caption: `${tiers[0]?.count ?? 0} at tier 1`,
                   segments: tiers.map((t) => ({
                     label: tierLabel(t.name),
                     value: t.count,
@@ -109,7 +108,7 @@ export function ResearchRegister({ searchParams }: { searchParams?: RegisterPara
                 {
                   label: "Universities",
                   value: String(summary.universities),
-                  caption: `${uniByTier[uniByTier.length - 1]?.count ?? 0} are regional, holding ${tiers[tiers.length - 1]?.count ?? 0} of the faculty`,
+                  caption: `${uniByTier[uniByTier.length - 1]?.count ?? 0} regional, holding ${tiers[tiers.length - 1]?.count ?? 0}`,
                   segments: uniByTier.map((u) => ({
                     label: `${tierLabel(u.tier)} institutions`,
                     value: u.count,
@@ -120,7 +119,7 @@ export function ResearchRegister({ searchParams }: { searchParams?: RegisterPara
                 {
                   label: "Cities",
                   value: String(summary.cities),
-                  caption: `${Math.round(((cities[0]?.count ?? 0) / summary.total) * 100)}% of faculty sit in ${cities[0]?.name}`,
+                  caption: `${Math.round(((cities[0]?.count ?? 0) / summary.total) * 100)}% in ${cities[0]?.name}`,
                   segments: cities.map((c) => ({
                     label: c.name,
                     value: c.count,
@@ -130,7 +129,7 @@ export function ResearchRegister({ searchParams }: { searchParams?: RegisterPara
                 {
                   label: "Direct contact",
                   value: String(summary.direct),
-                  caption: `${Math.round((summary.direct / summary.total) * 100)}% publish their own address`,
+                  caption: `${Math.round((summary.direct / summary.total) * 100)}% publish their own`,
                   segments: (["personal", "office", "none"] as const).map((r) => ({
                     label: REACH_COPY[r].label,
                     value: reachCounts[r],
@@ -143,61 +142,6 @@ export function ResearchRegister({ searchParams }: { searchParams?: RegisterPara
           </div>
         </header>
 
-        {/* ── How to write ─────────────────────────────────────────────── */}
-        <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s5">
-          <div className="flex items-baseline justify-between gap-s3 flex-wrap">
-            <h2 className="text-label uppercase text-faint">Before you write</h2>
-            <span className="text-meta text-muted">Pick a channel to narrow the list</span>
-          </div>
-
-          {/* Each kind is also a filter: knowing 137 addresses are personal is
-              only useful if you can then look at just those 137. */}
-          <div className="grid md:grid-cols-3 gap-s3 mt-s4">
-            {(["personal", "office", "none"] as const).map((r) => {
-              const copy = REACH_COPY[r];
-              const count = reachCounts[r];
-              const on = reach === r;
-              return (
-                <Link
-                  key={r}
-                  href={on ? withParams({ reach: undefined }) : withParams({ reach: r, university: undefined })}
-                  aria-pressed={on}
-                  className={`rounded-md border p-s4 transition-colors block ${
-                    on ? "border-accent bg-accent-soft" : "border-line hover:border-line-strong"
-                  }`}
-                >
-                  <div className="flex items-baseline justify-between gap-s3">
-                    <span
-                      className="text-label uppercase px-s2 py-1 rounded-sm"
-                      style={{ background: `var(--${copy.tone}-soft)`, color: `var(--${copy.tone})` }}
-                    >
-                      {copy.label}
-                    </span>
-                    <span className="font-mono text-h3 text-ink tabular leading-none">{count}</span>
-                  </div>
-
-                  <span className="block h-1 rounded-full bg-bg-sunk mt-s3 overflow-hidden" aria-hidden>
-                    <span
-                      className="block h-full rounded-full"
-                      style={{
-                        width: `${Math.round((count / summary.total) * 100)}%`,
-                        background: `var(--${copy.tone})`,
-                      }}
-                    />
-                  </span>
-
-                  <p className="text-meta text-muted mt-s3">{copy.hint}</p>
-                </Link>
-              );
-            })}
-          </div>
-          <p className="text-meta text-muted mt-s4 pt-s4 border-t border-line">
-            Say what you are studying and what you want to work on in the first
-            two lines. Every address here was published by the university
-            itself — treat it as a professional inbox, not a support desk.
-          </p>
-        </section>
-
         {/* ── Universities ─────────────────────────────────────────────── */}
         <section>
           <div className="flex items-baseline gap-s4 mb-s2">
@@ -205,50 +149,25 @@ export function ResearchRegister({ searchParams }: { searchParams?: RegisterPara
             <span className="h-px bg-line flex-1" />
           </div>
           <p className="text-meta text-muted mb-s4">
-            All {summary.universities} universities on the register. Pick one to open its faculty.
+            All {summary.universities} universities, largest first. Pick one to open its faculty.
           </p>
 
-          <div className="flex flex-col gap-s4">
-            <FacultyQuarter
-              buildings={universities.map((u) => ({
-                university: u.university,
-                short: u.short,
-                city: u.city,
-                tier: tierRank(u.tier),
-                total: u.total,
-                direct: u.direct,
-                topDepartment: u.topDepartment,
-              }))}
-            />
-
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-s2">
-              {universities.map((u) => {
-                const on = university === u.university;
-                const t = toneOf(u.tier);
-                return (
-                  <Link
-                    key={u.university}
-                    href={on ? withParams({ university: undefined }) : withParams({ university: u.university })}
-                    aria-current={on ? "true" : undefined}
-                    className={`rounded-md border p-s3 transition-colors ${
-                      on ? "border-accent bg-accent-soft" : "border-line bg-surface hover:border-line-strong"
-                    }`}
-                  >
-                    <span className="font-mono text-label uppercase" style={{ color: `var(--${t})` }}>
-                      Tier {tierRank(u.tier)}
-                    </span>
-                    <span className={`block text-meta font-medium mt-1 ${on ? "text-accent-strong" : "text-ink"}`}>
-                      {u.short}
-                    </span>
-                    <span className="flex items-baseline justify-between gap-s2 mt-s2">
-                      <span className="font-mono text-h3 text-ink tabular">{u.total}</span>
-                      <span className="text-label uppercase text-faint">{u.direct} direct</span>
-                    </span>
-                  </Link>
-                );
-              })}
-            </div>
-          </div>
+          <FacultyLadder
+            rows={universities.map((u) => ({
+              university: u.university,
+              short: u.short,
+              city: u.city,
+              tier: tierRank(u.tier),
+              total: u.total,
+              direct: u.direct,
+              topDepartment: u.topDepartment,
+              href: withParams({
+                university: university === u.university ? undefined : u.university,
+                page: undefined,
+              }),
+            }))}
+            selected={university}
+          />
         </section>
 
         {/* ── Listings ─────────────────────────────────────────────────── */}
@@ -264,12 +183,23 @@ export function ResearchRegister({ searchParams }: { searchParams?: RegisterPara
           <RegisterFilters
             tiers={tiers.map((t) => ({ value: t.name, label: tierLabel(t.name), count: t.count }))}
             cities={cities.map((c) => ({ value: c.name, label: c.name, count: c.count }))}
-            directCount={summary.direct}
+            reaches={(["personal", "office", "none"] as const).map((r) => ({
+              value: r,
+              label: REACH_COPY[r].label,
+              count: reachCounts[r],
+              tone: REACH_COPY[r].tone,
+            }))}
           />
+
+          <p className="text-meta text-muted mt-s3">
+            {REACH_COPY.personal.label} means the professor published the address
+            themselves. Say what you study and what you want to work on in the
+            first two lines.
+          </p>
 
           {filtered && (
             <div className="mt-s3">
-              <Link href="/research" className="text-meta text-accent hover:text-accent-strong">
+              <Link href="/research" className="inline-flex items-center min-h-[44px] text-meta text-accent hover:text-accent-strong">
                 Clear filters
               </Link>
             </div>
@@ -291,11 +221,7 @@ export function ResearchRegister({ searchParams }: { searchParams?: RegisterPara
                     <div className="flex items-start gap-s3">
                       <span
                         aria-hidden
-                        className="w-10 h-10 rounded-full grid place-items-center shrink-0 font-semibold text-meta"
-                        style={{
-                          background: `var(--${toneOf(p.tier)}-soft)`,
-                          color: `var(--${toneOf(p.tier)})`,
-                        }}
+                        className="w-10 h-10 rounded-full grid place-items-center shrink-0 font-semibold text-meta bg-bg-sunk text-muted"
                       >
                         {initialsOf(p.name)}
                       </span>
