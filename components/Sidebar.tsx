@@ -75,6 +75,11 @@ export default function Sidebar() {
     { name: "Home", href: "/home", icon: IconHome },
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
     { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
+  ];
+
+  /* Directories of people to reach outside the course — they answer a
+     different question from the daily lessons, so they get their own group. */
+  const opportunityItems = [
     { name: "Internships", href: "/internships", matchHref: "/internships", icon: IconBriefcase },
     { name: "Research", href: "/research", matchHref: "/research", icon: IconMicroscope },
   ];
@@ -128,6 +133,18 @@ export default function Sidebar() {
           </h3>
           <nav className="space-y-1.5">
             {dashboardItems.map((item) => (
+              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} />
+            ))}
+          </nav>
+        </div>
+
+        {/* Opportunities Section */}
+        <div className="mb-8">
+          <h3 className="pl-3 text-[11px] font-[700] tracking-[0.1em] text-gray-200 uppercase mb-3">
+            OPPORTUNITIES
+          </h3>
+          <nav className="space-y-1.5">
+            {opportunityItems.map((item) => (
               <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} />
             ))}
           </nav>

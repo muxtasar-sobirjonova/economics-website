@@ -14,6 +14,7 @@ import {
   initialsOf,
 } from "@/lib/research";
 import { RegisterFilters } from "@/components/research/RegisterFilters";
+import { FacultyQuarter } from "@/components/research/FacultyQuarter";
 
 /** Tier 1 reads as the most established, so it takes the warmest tone. */
 const TIER_TONE: Record<number, string> = { 1: "reward", 2: "article", 3: "concept" };
@@ -146,39 +147,46 @@ export function ResearchRegister({ searchParams }: { searchParams?: RegisterPara
             All {summary.universities} universities on the register. Pick one to open its faculty.
           </p>
 
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-s3">
-            {universities.map((u) => {
-              const tone = toneOf(u.tier);
-              const on = university === u.university;
-              return (
-                <Link
-                  key={u.university}
-                  href={on ? withParams({ university: undefined }) : withParams({ university: u.university })}
-                  className={`rounded-lg border bg-surface shadow-sh1 p-s4 transition-colors block ${
-                    on ? "border-accent" : "border-line hover:border-line-strong"
-                  }`}
-                >
-                  <div className="flex items-start justify-between gap-s3">
-                    <span
-                      className="text-label uppercase px-s2 py-1 rounded-sm shrink-0"
-                      style={{ background: `var(--${tone}-soft)`, color: `var(--${tone})` }}
-                    >
+          <div className="flex flex-col gap-s4">
+            <FacultyQuarter
+              buildings={universities.map((u) => ({
+                university: u.university,
+                short: u.short,
+                city: u.city,
+                tier: tierRank(u.tier),
+                total: u.total,
+                direct: u.direct,
+                topDepartment: u.topDepartment,
+              }))}
+            />
+
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-s2">
+              {universities.map((u) => {
+                const on = university === u.university;
+                const t = toneOf(u.tier);
+                return (
+                  <Link
+                    key={u.university}
+                    href={on ? withParams({ university: undefined }) : withParams({ university: u.university })}
+                    aria-current={on ? "true" : undefined}
+                    className={`rounded-md border p-s3 transition-colors ${
+                      on ? "border-accent bg-accent-soft" : "border-line bg-surface hover:border-line-strong"
+                    }`}
+                  >
+                    <span className="font-mono text-label uppercase" style={{ color: `var(--${t})` }}>
                       Tier {tierRank(u.tier)}
                     </span>
-                    <span className="font-mono text-meta text-faint tabular">{u.city}</span>
-                  </div>
-
-                  <h3 className="text-ui font-semibold text-ink mt-s3">{u.short}</h3>
-
-                  <div className="flex items-baseline justify-between gap-s3 mt-s3 pt-s3 border-t border-line">
-                    <span className="font-mono text-h3 text-ink tabular leading-none">{u.total}</span>
-                    <span className="text-meta text-muted text-right">
-                      {u.direct} direct
+                    <span className={`block text-meta font-medium mt-1 ${on ? "text-accent-strong" : "text-ink"}`}>
+                      {u.short}
                     </span>
-                  </div>
-                </Link>
-              );
-            })}
+                    <span className="flex items-baseline justify-between gap-s2 mt-s2">
+                      <span className="font-mono text-h3 text-ink tabular">{u.total}</span>
+                      <span className="text-label uppercase text-faint">{u.direct} direct</span>
+                    </span>
+                  </Link>
+                );
+              })}
+            </div>
           </div>
         </section>
 
