@@ -80,9 +80,9 @@ export function RegisterFilters({
 
       <div className="flex flex-wrap gap-s2">
         <button
-          onClick={() => toggle("reach", "direct")}
-          aria-pressed={params.get("reach") === "direct"}
-          className={chip(params.get("reach") === "direct")}
+          onClick={() => toggle("reach", "personal")}
+          aria-pressed={params.get("reach") === "personal"}
+          className={chip(params.get("reach") === "personal")}
         >
           Direct contact only
           <span className="font-mono text-[11px] tabular opacity-70">{directCount}</span>

@@ -85,6 +85,25 @@ export function getTierStats() {
   return tally(professors, (p) => p.tier).sort((a, b) => tierRank(a.name) - tierRank(b.name));
 }
 
+/** Institutions per tier — a different story from faculty per tier. */
+export function getUniversityTierStats() {
+  const seen: Record<string, string> = {};
+  professors.forEach((p) => {
+    seen[p.university] ||= p.tier;
+  });
+  return tally(Object.keys(seen), (u) => seen[u])
+    .map((t) => ({ tier: t.name, count: t.count }))
+    .sort((a, b) => tierRank(a.tier) - tierRank(b.tier));
+}
+
+export function getReachCounts() {
+  return {
+    personal: professors.filter((p) => reachOf(p.contactType) === "personal").length,
+    office: professors.filter((p) => reachOf(p.contactType) === "office").length,
+    none: professors.filter((p) => reachOf(p.contactType) === "none").length,
+  };
+}
+
 export function getCityStats() {
   return tally(
     professors.filter((p) => p.city),
@@ -106,7 +125,7 @@ export interface ProfessorQuery {
   tier?: string;
   university?: string;
   city?: string;
-  /** "direct" narrows to professors who publish their own address. */
+  /** One of the reach kinds: personal, office or none. */
   reach?: string;
   search?: string;
   page?: number;
@@ -129,7 +148,7 @@ export function queryProfessors({
     if (tier && p.tier !== tier) return false;
     if (university && p.university !== university) return false;
     if (city && p.city !== city) return false;
-    if (reach === "direct" && reachOf(p.contactType) !== "personal") return false;
+    if (reach && reachOf(p.contactType) !== reach) return false;
     if (needle) {
       const hay = `${p.name} ${p.title ?? ""} ${p.department ?? ""} ${p.university} ${p.city ?? ""}`.toLowerCase();
       if (!hay.includes(needle)) return false;

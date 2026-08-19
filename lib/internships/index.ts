@@ -90,6 +90,14 @@ export function getCategoryStats() {
   return tally(organisations, (o) => o.category);
 }
 
+/** How each organisation can be reached — the shape behind "324 with contact". */
+export function getContactBreakdown() {
+  const both = organisations.filter((o) => o.email && o.phone).length;
+  const emailOnly = organisations.filter((o) => o.email && !o.phone).length;
+  const phoneOnly = organisations.filter((o) => o.phone && !o.email).length;
+  return { both, emailOnly, phoneOnly, none: organisations.length - both - emailOnly - phoneOnly };
+}
+
 export function getBoardSummary() {
   const stats = getRegionStats();
   return {

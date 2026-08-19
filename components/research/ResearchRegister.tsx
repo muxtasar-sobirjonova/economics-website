@@ -4,6 +4,8 @@ import {
   getRegisterSummary,
   getUniversityStats,
   getTierStats,
+  getUniversityTierStats,
+  getReachCounts,
   getCityStats,
   queryProfessors,
   tierLabel,
@@ -15,22 +17,13 @@ import {
 } from "@/lib/research";
 import { RegisterFilters } from "@/components/research/RegisterFilters";
 import { FacultyQuarter } from "@/components/research/FacultyQuarter";
+import { StatStrip } from "@/components/common/StatStrip";
 
 /** Tier 1 reads as the most established, so it takes the warmest tone. */
 const TIER_TONE: Record<number, string> = { 1: "reward", 2: "article", 3: "concept" };
 
 function toneOf(tier: string) {
   return TIER_TONE[tierRank(tier)] ?? "quiz";
-}
-
-function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
-  return (
-    <div className="px-s4 py-s3 border-b border-r border-line sm:border-b-0 last:border-r-0 sm:flex-1 sm:min-w-[128px] min-w-0">
-      <div className="text-label uppercase text-faint">{label}</div>
-      <div className="font-mono text-h2 text-ink tabular leading-none mt-s2">{value}</div>
-      {hint && <div className="text-meta text-muted mt-s2">{hint}</div>}
-    </div>
-  );
 }
 
 export interface RegisterParams {
@@ -46,6 +39,8 @@ export function ResearchRegister({ searchParams }: { searchParams?: RegisterPara
   const summary = getRegisterSummary();
   const universities = getUniversityStats();
   const tiers = getTierStats();
+  const uniByTier = getUniversityTierStats();
+  const reachCounts = getReachCounts();
   const cities = getCityStats();
 
   const tier = searchParams?.tier;
@@ -98,35 +93,101 @@ export function ResearchRegister({ searchParams }: { searchParams?: RegisterPara
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:flex w-full sm:w-auto border border-line rounded-lg bg-surface shadow-sh1 overflow-hidden">
-              <Stat label="Professors" value={String(summary.total)} />
-              <Stat label="Universities" value={String(summary.universities)} />
-              <Stat label="Cities" value={String(summary.cities)} />
-              <Stat
-                label="Direct contact"
-                value={String(summary.direct)}
-                hint={`${Math.round((summary.direct / summary.total) * 100)}% personally published`}
-              />
-            </div>
+            <StatStrip
+              tiles={[
+                {
+                  label: "Professors",
+                  value: String(summary.total),
+                  caption: `${tiers[0]?.count ?? 0} of them at tier 1 institutions`,
+                  segments: tiers.map((t) => ({
+                    label: tierLabel(t.name),
+                    value: t.count,
+                    tone: toneOf(t.name),
+                    href: withParams({ tier: t.name, university: undefined }),
+                  })),
+                },
+                {
+                  label: "Universities",
+                  value: String(summary.universities),
+                  caption: `${uniByTier[uniByTier.length - 1]?.count ?? 0} are regional, holding ${tiers[tiers.length - 1]?.count ?? 0} of the faculty`,
+                  segments: uniByTier.map((u) => ({
+                    label: `${tierLabel(u.tier)} institutions`,
+                    value: u.count,
+                    tone: toneOf(u.tier),
+                    href: withParams({ tier: u.tier, university: undefined }),
+                  })),
+                },
+                {
+                  label: "Cities",
+                  value: String(summary.cities),
+                  caption: `${Math.round(((cities[0]?.count ?? 0) / summary.total) * 100)}% of faculty sit in ${cities[0]?.name}`,
+                  segments: cities.map((c) => ({
+                    label: c.name,
+                    value: c.count,
+                    href: withParams({ city: c.name, university: undefined }),
+                  })),
+                },
+                {
+                  label: "Direct contact",
+                  value: String(summary.direct),
+                  caption: `${Math.round((summary.direct / summary.total) * 100)}% publish their own address`,
+                  segments: (["personal", "office", "none"] as const).map((r) => ({
+                    label: REACH_COPY[r].label,
+                    value: reachCounts[r],
+                    tone: REACH_COPY[r].tone,
+                    href: withParams({ reach: r, university: undefined }),
+                  })),
+                },
+              ]}
+            />
           </div>
         </header>
 
         {/* ── How to write ─────────────────────────────────────────────── */}
         <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s5">
-          <h2 className="text-label uppercase text-faint">Before you write</h2>
-          <div className="grid md:grid-cols-3 gap-s5 mt-s4">
+          <div className="flex items-baseline justify-between gap-s3 flex-wrap">
+            <h2 className="text-label uppercase text-faint">Before you write</h2>
+            <span className="text-meta text-muted">Pick a channel to narrow the list</span>
+          </div>
+
+          {/* Each kind is also a filter: knowing 137 addresses are personal is
+              only useful if you can then look at just those 137. */}
+          <div className="grid md:grid-cols-3 gap-s3 mt-s4">
             {(["personal", "office", "none"] as const).map((r) => {
               const copy = REACH_COPY[r];
+              const count = reachCounts[r];
+              const on = reach === r;
               return (
-                <div key={r}>
-                  <span
-                    className="text-label uppercase px-s2 py-1 rounded-sm"
-                    style={{ background: `var(--${copy.tone}-soft)`, color: `var(--${copy.tone})` }}
-                  >
-                    {copy.label}
+                <Link
+                  key={r}
+                  href={on ? withParams({ reach: undefined }) : withParams({ reach: r, university: undefined })}
+                  aria-pressed={on}
+                  className={`rounded-md border p-s4 transition-colors block ${
+                    on ? "border-accent bg-accent-soft" : "border-line hover:border-line-strong"
+                  }`}
+                >
+                  <div className="flex items-baseline justify-between gap-s3">
+                    <span
+                      className="text-label uppercase px-s2 py-1 rounded-sm"
+                      style={{ background: `var(--${copy.tone}-soft)`, color: `var(--${copy.tone})` }}
+                    >
+                      {copy.label}
+                    </span>
+                    <span className="font-mono text-h3 text-ink tabular leading-none">{count}</span>
+                  </div>
+
+                  <span className="block h-1 rounded-full bg-bg-sunk mt-s3 overflow-hidden" aria-hidden>
+                    <span
+                      className="block h-full rounded-full"
+                      style={{
+                        width: `${Math.round((count / summary.total) * 100)}%`,
+                        background: `var(--${copy.tone})`,
+                      }}
+                    />
                   </span>
+
                   <p className="text-meta text-muted mt-s3">{copy.hint}</p>
-                </div>
+                </Link>
               );
             })}
           </div>

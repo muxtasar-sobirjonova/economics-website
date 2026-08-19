@@ -6,10 +6,12 @@ import {
   getCategoryStats,
   getFeaturedByTier,
   queryOrganisations,
+  getContactBreakdown,
   regionLabel,
 } from "@/lib/internships";
 import { BoardFilters } from "@/components/internships/BoardFilters";
 import { RegionMap } from "@/components/internships/RegionMap";
+import { StatStrip } from "@/components/common/StatStrip";
 
 const TIER_TONE: Record<string, string> = {
   "Top Tier": "reward",
@@ -17,16 +19,6 @@ const TIER_TONE: Record<string, string> = {
   "Tier Three": "concept",
   "Resources & Programs": "quiz",
 };
-
-function Stat({ label, value, hint }: { label: string; value: string; hint?: string }) {
-  return (
-    <div className="px-s4 py-s3 border-b border-r border-line sm:border-b-0 last:border-r-0 sm:flex-1 sm:min-w-[128px] min-w-0">
-      <div className="text-label uppercase text-faint">{label}</div>
-      <div className="font-mono text-h2 text-ink tabular leading-none mt-s2">{value}</div>
-      {hint && <div className="text-meta text-muted mt-s2">{hint}</div>}
-    </div>
-  );
-}
 
 /** Opens the organisation's address in Google Maps. */
 function mapsUrl(parts: (string | null)[]) {
@@ -46,6 +38,7 @@ export function ExchangeBoard({ searchParams }: { searchParams?: BoardParams }) 
   const regions = getRegionStats();
   const categories = getCategoryStats();
   const tiers = getFeaturedByTier();
+  const contact = getContactBreakdown();
 
   const region = searchParams?.region;
   const category = searchParams?.category;
@@ -95,16 +88,54 @@ export function ExchangeBoard({ searchParams }: { searchParams?: BoardParams }) 
               </p>
             </div>
 
-            <div className="grid grid-cols-2 sm:flex w-full sm:w-auto border border-line rounded-lg bg-surface shadow-sh1 overflow-hidden">
-              <Stat label="Organisations" value={summary.totalOrgs.toLocaleString()} />
-              <Stat label="Regions" value={String(summary.regions)} />
-              <Stat label="Featured" value={String(summary.featured)} />
-              <Stat
-                label="With contact"
-                value={summary.withContact.toLocaleString()}
-                hint={`${Math.round((summary.withContact / summary.totalOrgs) * 100)}% reachable`}
-              />
-            </div>
+            <StatStrip
+              tiles={[
+                {
+                  label: "Organisations",
+                  value: summary.totalOrgs.toLocaleString(),
+                  caption: `${categories[0]?.name} is the deepest sector, at ${categories[0]?.count}`,
+                  segments: [
+                    ...categories.slice(0, 4).map((c) => ({
+                      label: c.name,
+                      value: c.count,
+                      href: withParams({ category: c.name, page: undefined }),
+                    })),
+                    {
+                      label: `${categories.length - 4} other sectors`,
+                      value: categories.slice(4).reduce((a, c) => a + c.count, 0),
+                    },
+                  ],
+                },
+                {
+                  label: "Regions",
+                  value: String(summary.regions),
+                  caption: `Swept to about ${Math.round(summary.totalOrgs / summary.regions)} per region — coverage is even`,
+                  segments: regions.map((r) => ({ label: regionLabel(r.region), value: r.total })),
+                },
+                {
+                  label: "Featured",
+                  value: String(summary.featured),
+                  caption: "Desks with a confirmed internship route",
+                  segments: tiers.map((t) => ({
+                    label: t.tier,
+                    value: t.companies.length,
+                    tone: TIER_TONE[t.tier],
+                  })),
+                },
+                {
+                  label: "With contact",
+                  value: summary.withContact.toLocaleString(),
+                  total: summary.totalOrgs,
+                  caption: `${Math.round((summary.withContact / summary.totalOrgs) * 100)}% reachable — the rest list a source only`,
+                  segments: [
+                    { label: "Phone only", value: contact.phoneOnly, tone: "article" },
+                    { label: "Email only", value: contact.emailOnly, tone: "quiz" },
+                    { label: "Phone and email", value: contact.both, tone: "success" },
+                    { label: "No public channel", value: contact.none },
+                  ],
+                },
+              ]}
+            />
           </div>
         </header>
 
