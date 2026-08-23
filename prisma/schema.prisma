@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "postgresql"
-  url      = env("DATABASE_URL")
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
   directUrl = env("DIRECT_URL")
 }
 
@@ -21,21 +21,21 @@ enum Track {
 }
 
 model User {
-  id               String             @id @default(cuid())
-  name             String?
-  email            String?            @unique
-  emailVerified    DateTime?
-  image            String?
-  password         String?
-  createdAt           DateTime           @default(now())
-  deletedAt           DateTime?
-  twoFactorSecret     String?
-  isTwoFactorEnabled  Boolean            @default(false)
-  lockedUntil         DateTime?
-  failedLoginAttempts Int                @default(0)
-  lessonsCompleted    Int                @default(0)
+  id                    String    @id @default(cuid())
+  name                  String?
+  email                 String?   @unique
+  emailVerified         DateTime?
+  image                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  deletedAt             DateTime?
+  twoFactorSecret       String?
+  isTwoFactorEnabled    Boolean   @default(false)
+  lockedUntil           DateTime?
+  failedLoginAttempts   Int       @default(0)
+  lessonsCompleted      Int       @default(0)
   lastLessonCompletedAt DateTime?
-  
+
   activeTrack      Track?
   trackProgress    TrackProgress[]
   progress         UserProgress?
@@ -50,16 +50,18 @@ model User {
   notes            Note[]
   bookmarks        Bookmark[]
   leaderboardRank  LeaderboardRank?
+  duelRuns         DuelRun[]
+  duelRating       PlayerRating?
 
   @@index([lessonsCompleted, lastLessonCompletedAt, createdAt])
 }
 
 model DailyCompletion {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
   normalizedDate DateTime
-  createdAt  DateTime @default(now())
+  createdAt      DateTime @default(now())
   track          Track    @default(ENTREPRENEURSHIP_ECONOMICS)
 
   @@unique([userId, normalizedDate, track])
@@ -67,48 +69,48 @@ model DailyCompletion {
 }
 
 model UserProgress {
-  id             String  @id @default(cuid())
-  userId         String  @unique
-  user           User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  currentDay     Int     @default(1)
-  streak         Int     @default(0)
+  id             String   @id @default(cuid())
+  userId         String   @unique
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  currentDay     Int      @default(1)
+  streak         Int      @default(0)
   lastActiveDate String?
-  totalXP        Int     @default(0)
-  hearts         Int     @default(5)
+  totalXP        Int      @default(0)
+  hearts         Int      @default(5)
   lastHeartDecay DateTime @default(now())
-  dailyTimeGoal  Int     @default(60)
+  dailyTimeGoal  Int      @default(60)
   startDate      String?
   createdAt      DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  updatedAt      DateTime @default(now()) @updatedAt
 }
 
 model TrackProgress {
-  id         String   @id @default(cuid())
+  id         String    @id @default(cuid())
   userId     String
   track      Track
-  xp         Int      @default(0)
-  currentDay Int      @default(1)
-  streak     Int      @default(0)
+  xp         Int       @default(0)
+  currentDay Int       @default(1)
+  streak     Int       @default(0)
   lastActive DateTime?
-  
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @default(now()) @updatedAt
 
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@unique([userId, track])
   @@index([userId])
 }
 
 model CompletedLesson {
-  id       String   @id @default(cuid())
-  userId   String
-  user     User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  lessonId String
-  title    String
-  date     DateTime
-  xpEarned Int
-  track    Track
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  lessonId  String
+  title     String
+  date      DateTime
+  xpEarned  Int
+  track     Track
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
@@ -124,8 +126,8 @@ model QuizResult {
   score    Int
   date     DateTime
   xpEarned Int
-  
-  track    Track
+
+  track     Track
   createdAt DateTime @default(now())
   updatedAt DateTime @default(now()) @updatedAt
 
@@ -136,12 +138,12 @@ model QuizResult {
 }
 
 model Lesson {
-  id               String   @id @default(cuid())
-  title            String
-  tag              String
-  timeEstimate     Int
-  dayOrder         Int
-  track    Track
+  id           String @id @default(cuid())
+  title        String
+  tag          String
+  timeEstimate Int
+  dayOrder     Int
+  track        Track
 
   conceptText      String?
   conceptSummary   String?
@@ -152,11 +154,11 @@ model Lesson {
   articleSummary   String?
   articleTakeaways Json?
 
-  articles         Article[]
-  concepts         Concept[]
+  articles          Article[]
+  concepts          Concept[]
   agendaCompletions AgendaCompletion[]
-  createdAt DateTime @default(now())
-  updatedAt DateTime @default(now()) @updatedAt
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now()) @updatedAt
 
   @@unique([track, dayOrder])
   @@index([tag])
@@ -164,16 +166,16 @@ model Lesson {
 }
 
 model Quiz {
-  id           String @id @default(cuid())
-  title        String
-  tag          String
-  timeEstimate Int
-  dayOrder     Int
-  track    Track
+  id                String             @id @default(cuid())
+  title             String
+  tag               String
+  timeEstimate      Int
+  dayOrder          Int
+  track             Track
   agendaCompletions AgendaCompletion[]
-  questions    QuizQuestion[]
-  createdAt    DateTime @default(now())
-  updatedAt    DateTime @default(now()) @updatedAt
+  questions         QuizQuestion[]
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @default(now()) @updatedAt
 
   @@unique([track, dayOrder])
   @@index([tag])
@@ -194,34 +196,34 @@ model QuizQuestion {
 }
 
 model Article {
-  id           String @id @default(cuid())
-  lessonId     String
-  lesson       Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  id                String             @id @default(cuid())
+  lessonId          String
+  lesson            Lesson             @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   agendaCompletions AgendaCompletion[]
 }
 
 model Concept {
-  id           String @id @default(cuid())
-  lessonId     String
-  lesson       Lesson @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  id                String             @id @default(cuid())
+  lessonId          String
+  lesson            Lesson             @relation(fields: [lessonId], references: [id], onDelete: Cascade)
   agendaCompletions AgendaCompletion[]
 }
 
 model AgendaCompletion {
-  id          String   @id @default(cuid())
-  userId      String
-  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  itemType    ItemType
-  lessonId    String?
-  lesson      Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
-  quizId      String?
-  quiz        Quiz?    @relation(fields: [quizId], references: [id], onDelete: Cascade)
-  articleId   String?
-  article     Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
-  conceptId   String?
-  concept     Concept? @relation(fields: [conceptId], references: [id], onDelete: Cascade)
-  completedAt DateTime @default(now())
-  normalizedDate  DateTime
+  id             String   @id @default(cuid())
+  userId         String
+  user           User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  itemType       ItemType
+  lessonId       String?
+  lesson         Lesson?  @relation(fields: [lessonId], references: [id], onDelete: Cascade)
+  quizId         String?
+  quiz           Quiz?    @relation(fields: [quizId], references: [id], onDelete: Cascade)
+  articleId      String?
+  article        Article? @relation(fields: [articleId], references: [id], onDelete: Cascade)
+  conceptId      String?
+  concept        Concept? @relation(fields: [conceptId], references: [id], onDelete: Cascade)
+  completedAt    DateTime @default(now())
+  normalizedDate DateTime
 
   @@index([userId])
   @@index([normalizedDate])
@@ -255,7 +257,7 @@ model MistakeReview {
   quizAttempt   QuizAttempt @relation(fields: [quizAttemptId], references: [id], onDelete: Cascade)
   reviewed      Boolean     @default(false)
   reviewedAt    DateTime?
-  track    Track
+  track         Track
 
   @@index([userId])
   @@index([userId, track])
@@ -301,17 +303,17 @@ model VerificationToken {
 }
 
 model Note {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   userId    String
-  user      User     @relation(fields: [userId], references: [id])
+  user      User      @relation(fields: [userId], references: [id])
   lessonId  String?
-  content   String   @db.Text
+  content   String    @db.Text
   color     String?
   source    String?
   timestamp DateTime?
-  track    Track
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  track     Track
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
 
   @@index([userId])
   @@index([userId, lessonId, track])
@@ -322,7 +324,7 @@ model Bookmark {
   userId    String
   user      User     @relation(fields: [userId], references: [id])
   slug      String
-  track    Track
+  track     Track
   createdAt DateTime @default(now())
 
   @@unique([userId, slug, track])
@@ -338,8 +340,125 @@ model LeaderboardRank {
   totalXP          Int
   rank             Int
 
-  user             User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-  
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
   @@index([rank])
   @@index([username])
+}
+
+// ─── Duel mode ───────────────────────────────────────────────────────────────
+// A rated head-to-head ladder. Deliberately separate from the curriculum
+// models: nothing here reads or writes lesson progress, so a fault in duel
+// code cannot damage a learner's 56-day record.
+
+enum DuelRunStatus {
+  /// Played, waiting for a challenger to face the same set.
+  OPEN
+  /// Paired into a resolved Duel.
+  MATCHED
+  /// Started and never finished; carries no rating consequence.
+  ABANDONED
+}
+
+/// The duel question bank, kept apart from QuizQuestion so that duels cannot
+/// spoil lessons the player has not reached yet.
+model DuelQuestion {
+  id            String   @id @default(cuid())
+  topic         String
+  questionText  String
+  options       String[]
+  correctAnswer String
+  explanation   String?
+
+  /// Filled by real play. Two counters now are what later lets a question's
+  /// difficulty be graded from the ratings of the players who answered it.
+  timesServed  Int @default(0)
+  timesCorrect Int @default(0)
+
+  /// A leaked or broken question is retired without deleting its history.
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+
+  @@index([topic])
+  @@index([active])
+}
+
+/// Ten question ids in a fixed order. Whoever plays first creates the set; the
+/// challenger is served the identical one, which is what makes the two runs
+/// comparable at all.
+model DuelSet {
+  id          String   @id @default(cuid())
+  questionIds String[]
+  createdAt   DateTime @default(now())
+
+  runs  DuelRun[]
+  duels Duel[]
+
+  @@index([createdAt])
+}
+
+/// One player's attempt at one set.
+model DuelRun {
+  id     String  @id @default(cuid())
+  userId String
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  setId  String
+  set    DuelSet @relation(fields: [setId], references: [id], onDelete: Cascade)
+
+  /// [{ questionId, chosen, isCorrect, ms }] — only the result screen reads
+  /// these, so they stay a document rather than a table in week one.
+  answers Json @default("[]")
+  score   Int  @default(0)
+  totalMs Int  @default(0)
+
+  /// The player's rating when they sat down. Not used to settle the duel —
+  /// that reads live ratings — but it is the record calibration needs later.
+  ratingBefore Int
+  status       DuelRunStatus @default(OPEN)
+  startedAt    DateTime      @default(now())
+  finishedAt   DateTime?
+
+  duelsAsA Duel[] @relation("DuelRunA")
+  duelsAsB Duel[] @relation("DuelRunB")
+
+  /// A player faces a given set once. Enforced here rather than in code so a
+  /// race between two tabs cannot produce a second attempt.
+  @@unique([userId, setId])
+  @@index([status, startedAt])
+  @@index([userId])
+}
+
+/// A resolved pairing of two runs over the same set.
+model Duel {
+  id    String  @id @default(cuid())
+  setId String
+  set   DuelSet @relation(fields: [setId], references: [id], onDelete: Cascade)
+
+  /// Unique on both sides: one run settles one duel, so a lucky round cannot
+  /// be farmed for rating against several challengers.
+  runAId String  @unique
+  runA   DuelRun @relation("DuelRunA", fields: [runAId], references: [id], onDelete: Cascade)
+  runBId String  @unique
+  runB   DuelRun @relation("DuelRunB", fields: [runBId], references: [id], onDelete: Cascade)
+
+  /// Null is a draw.
+  winnerId  String?
+  deltaA    Int
+  deltaB    Int
+  createdAt DateTime @default(now())
+
+  @@index([createdAt])
+}
+
+model PlayerRating {
+  userId    String   @id
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  rating    Int      @default(1000)
+  played    Int      @default(0)
+  won       Int      @default(0)
+  lost      Int      @default(0)
+  drawn     Int      @default(0)
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([rating])
 }

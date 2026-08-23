@@ -14,7 +14,9 @@
     "test:watch": "vitest",
     "test:e2e": "playwright test",
     "prepare": "husky",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "duel:check": "tsx prisma/seed-duel-questions.ts --check",
+    "duel:seed": "tsx prisma/seed-duel-questions.ts"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.13",
