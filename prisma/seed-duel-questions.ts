@@ -2,15 +2,18 @@
  * Load the duel question bank.
  *
  *   npx tsx prisma/seed-duel-questions.ts questions.csv --check
- *   npx tsx prisma/seed-duel-questions.ts questions.csv --sql > bank.sql
+ *   npx tsx prisma/seed-duel-questions.ts questions.csv --sql --out bank.sql
  *   npx tsx prisma/seed-duel-questions.ts questions.csv
  *
  * --check validates the file and writes nothing, so a five-hundred-row bank
  * can be proofread before it ever reaches Postgres.
  *
- * --sql prints the INSERT instead of connecting, for pasting into the Supabase
+ * --sql writes the INSERT instead of connecting, for pasting into the Supabase
  * editor. The database credentials are sensitive Vercel variables that cannot
  * be read back, so this is the route that needs no credentials at all.
+ *
+ * Prefer --out over a shell redirect: `npm run` prints its own banner to
+ * stdout, which lands in the file and makes the first line a syntax error.
  *
  * Accepts .csv or .json. Required per row: the question text, at least two
  * options, and a correct answer. The answer may be the option's text, its
@@ -20,7 +23,7 @@
  * Re-running is safe: a question's id is derived from its text, so a corrected
  * file updates the rows it already loaded instead of doubling the bank.
  */
-import { readFileSync } from "node:fs";
+import { readFileSync, writeFileSync } from "node:fs";
 import { PrismaClient } from "@prisma/client";
 import { parseCsvRecords } from "../lib/duel/csv";
 import { buildQuestions } from "../lib/duel/questionImport";
@@ -43,13 +46,18 @@ function readRecords(path: string): Record<string, unknown>[] {
 
 async function main() {
   const args = process.argv.slice(2);
-  const path = args.find((a) => !a.startsWith("--"));
   const checkOnly = args.includes("--check");
   const sqlOnly = args.includes("--sql");
 
+  const outIdx = args.indexOf("--out");
+  const outPath = outIdx >= 0 ? args[outIdx + 1] : undefined;
+
+  // The value after --out is a path too, so it must not be mistaken for input.
+  const path = args.find((a, i) => !a.startsWith("--") && i !== outIdx + 1);
+
   if (!path) {
     console.error(
-      "Usage: tsx prisma/seed-duel-questions.ts <file.csv|file.json> [--check | --sql]"
+      "Usage: tsx prisma/seed-duel-questions.ts <file.csv|file.json> [--check | --sql [--out FILE]]"
     );
     process.exit(1);
   }
@@ -91,8 +99,14 @@ async function main() {
     process.exit(1);
   }
   if (sqlOnly) {
-    process.stdout.write(questionsToSql(questions));
-    console.error(`\n--sql: ${questions.length} question(s) written to stdout.`);
+    const sql = questionsToSql(questions);
+    if (outPath) {
+      writeFileSync(outPath, sql, "utf8");
+      say(`\n--sql: ${questions.length} question(s) written to ${outPath}`);
+    } else {
+      process.stdout.write(sql);
+      console.error(`\n--sql: ${questions.length} question(s) written to stdout.`);
+    }
     return;
   }
 
