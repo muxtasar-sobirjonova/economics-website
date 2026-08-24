@@ -2,10 +2,11 @@ import { Metadata } from "next";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getDuelLadder } from "@/lib/duel/engine";
+import { getDuelLadder, getRecentDuels, type RecentDuel } from "@/lib/duel/engine";
 import { START_RATING, PROVISIONAL_GAMES } from "@/lib/duel/elo";
 import { DuelClient } from "@/components/duel/DuelClient";
 import { DuelLadder } from "@/components/duel/DuelLadder";
+import { RecentDuels } from "@/components/duel/RecentDuels";
 
 export const metadata: Metadata = {
   title: "Duel | That's So Econ",
@@ -23,14 +24,16 @@ export default async function DuelPage() {
   // The ladder is reference data; a failure there must not cost the player the
   // page they came to use.
   let ladder: Awaited<ReturnType<typeof getDuelLadder>> = [];
+  let recent: RecentDuel[] = [];
   let me: { rating: number; played: number; won: number; lost: number; drawn: number } | null = null;
   try {
-    [ladder, me] = await Promise.all([
+    [ladder, me, recent] = await Promise.all([
       getDuelLadder(20),
       prisma.playerRating.findUnique({
         where: { userId },
         select: { rating: true, played: true, won: true, lost: true, drawn: true },
       }),
+      getRecentDuels(userId, 6),
     ]);
   } catch (e) {
     console.error("duel page load failed", e);
@@ -81,6 +84,8 @@ export default async function DuelPage() {
         </section>
 
         <DuelClient rating={rating} played={played} />
+
+        <RecentDuels duels={recent} />
 
         <div>
           <div className="flex items-baseline gap-s4 mb-s3">

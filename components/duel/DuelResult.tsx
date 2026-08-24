@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { StartedDuel, DuelOutcome } from "@/lib/duel/engine";
+import { DuelReviewList } from "@/components/duel/DuelReviewList";
 
 /* ── Result ───────────────────────────────────────────────────────────── */
 
@@ -63,24 +64,29 @@ export function DuelResult({
         </div>
       </div>
 
-      <div className="rounded-lg border border-line bg-surface shadow-sh1 p-s5">
-        <h3 className="text-label uppercase text-faint mb-s4">The ten</h3>
-        <ol className="list-none m-0 p-0 flex flex-col gap-s3">
-          {duel.questions.map((q, i) => (
-            <li key={q.id} className="border-t border-line pt-s3 first:border-0 first:pt-0">
-              <div className="flex items-baseline gap-s3">
-                <span className="font-mono text-label text-faint tabular">
-                  {String(i + 1).padStart(2, "0")}
-                </span>
-                <span className="text-ui text-ink">{q.questionText}</span>
-              </div>
-            </li>
-          ))}
-        </ol>
-        <p className="text-meta text-faint mt-s4 pt-s4 border-t border-line">
-          Answers stay hidden while this set is still being played by others.
-        </p>
-      </div>
+      {outcome.review ? (
+        <DuelReviewList lines={outcome.review} />
+      ) : (
+        <div className="rounded-lg border border-line bg-surface shadow-sh1 p-s5">
+          <h3 className="text-label uppercase text-faint mb-s4">The ten</h3>
+          <ol className="list-none m-0 p-0 flex flex-col gap-s3">
+            {duel.questions.map((q, i) => (
+              <li key={q.id} className="border-t border-line pt-s3 first:border-0 first:pt-0">
+                <div className="flex items-baseline gap-s3">
+                  <span className="font-mono text-label text-faint tabular">
+                    {String(i + 1).padStart(2, "0")}
+                  </span>
+                  <span className="text-ui text-ink">{q.questionText}</span>
+                </div>
+              </li>
+            ))}
+          </ol>
+          <p className="text-meta text-faint mt-s4 pt-s4 border-t border-line">
+            Answers open once someone has faced this set. Until then it is still
+            in play, and showing them here would show them to your opponent too.
+          </p>
+        </div>
+      )}
     </section>
   );
 }

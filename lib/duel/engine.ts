@@ -3,6 +3,7 @@ import { prisma } from "@/lib/prisma";
 import { QUESTIONS_PER_DUEL, gradeRun, elapsedMs, type SubmittedAnswer } from "./grading";
 import { pickQuestionIds, shuffle } from "./selection";
 import { START_RATING, resolveDuel } from "./elo";
+import { buildReview, parseGraded, type ReviewLine } from "./review";
 
 /**
  * The duel engine.
@@ -165,6 +166,8 @@ export interface DuelOutcome {
     rating: number;
   } | null;
   rating: number;
+  /** Present only once a duel is settled — see getDuelReview. */
+  review: ReviewLine[] | null;
 }
 
 /**
@@ -362,7 +365,106 @@ async function readOutcome(userId: string, runId: string): Promise<DuelOutcome> 
     total: run.set.questionIds.length,
     settled,
     rating: rating?.rating ?? START_RATING,
+    review: settled ? await getDuelReview(userId, runId) : null,
   };
+}
+
+/**
+ * The two runs side by side, with the answers.
+ *
+ * Only ever returned for a settled duel. While a set is still waiting for a
+ * challenger it is in circulation, and handing its answers to the player who
+ * just finished it would hand them to whoever they talk to next.
+ */
+export async function getDuelReview(
+  userId: string,
+  runId: string
+): Promise<ReviewLine[] | null> {
+  const duel = await prisma.duel.findFirst({
+    where: {
+      OR: [{ runAId: runId }, { runBId: runId }],
+    },
+    select: {
+      runAId: true,
+      set: { select: { questionIds: true } },
+      runA: { select: { userId: true, answers: true } },
+      runB: { select: { userId: true, answers: true } },
+    },
+  });
+  if (!duel) return null;
+
+  const iAmA = duel.runA.userId === userId;
+  if (!iAmA && duel.runB.userId !== userId) return null;
+
+  const mine = parseGraded(iAmA ? duel.runA.answers : duel.runB.answers);
+  const theirs = parseGraded(iAmA ? duel.runB.answers : duel.runA.answers);
+
+  const rows = await prisma.duelQuestion.findMany({
+    where: { id: { in: duel.set.questionIds } },
+    select: {
+      id: true,
+      topic: true,
+      questionText: true,
+      options: true,
+      correctAnswer: true,
+      explanation: true,
+    },
+  });
+
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const ordered = duel.set.questionIds
+    .map((id) => byId.get(id))
+    .filter((r): r is NonNullable<typeof r> => Boolean(r));
+
+  return buildReview(ordered, mine, theirs);
+}
+
+export interface RecentDuel {
+  runId: string;
+  opponentName: string | null;
+  yourScore: number;
+  theirScore: number;
+  result: "won" | "lost" | "drew";
+  delta: number;
+  at: Date;
+}
+
+/**
+ * Duels settle while the player is not looking — that is what asynchronous
+ * means — so the lobby has to be able to say what happened since last time.
+ */
+export async function getRecentDuels(userId: string, limit = 8): Promise<RecentDuel[]> {
+  const duels = await prisma.duel.findMany({
+    where: { OR: [{ runA: { userId } }, { runB: { userId } }] },
+    orderBy: { createdAt: "desc" },
+    take: limit,
+    select: {
+      winnerId: true,
+      deltaA: true,
+      deltaB: true,
+      createdAt: true,
+      runAId: true,
+      runBId: true,
+      runA: { select: { userId: true, score: true, user: { select: { name: true } } } },
+      runB: { select: { userId: true, score: true, user: { select: { name: true } } } },
+    },
+  });
+
+  return duels.map((d) => {
+    const iAmA = d.runA.userId === userId;
+    const me = iAmA ? d.runA : d.runB;
+    const them = iAmA ? d.runB : d.runA;
+    return {
+      runId: iAmA ? d.runAId : d.runBId,
+      opponentName: them.user.name,
+      yourScore: me.score,
+      theirScore: them.score,
+      result:
+        d.winnerId === null ? ("drew" as const) : d.winnerId === userId ? ("won" as const) : ("lost" as const),
+      delta: iAmA ? d.deltaA : d.deltaB,
+      at: d.createdAt,
+    };
+  });
 }
 
 /** The ladder. */
