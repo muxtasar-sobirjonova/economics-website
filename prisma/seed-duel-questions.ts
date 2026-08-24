@@ -2,10 +2,15 @@
  * Load the duel question bank.
  *
  *   npx tsx prisma/seed-duel-questions.ts questions.csv --check
+ *   npx tsx prisma/seed-duel-questions.ts questions.csv --sql > bank.sql
  *   npx tsx prisma/seed-duel-questions.ts questions.csv
  *
  * --check validates the file and writes nothing, so a five-hundred-row bank
  * can be proofread before it ever reaches Postgres.
+ *
+ * --sql prints the INSERT instead of connecting, for pasting into the Supabase
+ * editor. The database credentials are sensitive Vercel variables that cannot
+ * be read back, so this is the route that needs no credentials at all.
  *
  * Accepts .csv or .json. Required per row: the question text, at least two
  * options, and a correct answer. The answer may be the option's text, its
@@ -19,6 +24,7 @@ import { readFileSync } from "node:fs";
 import { PrismaClient } from "@prisma/client";
 import { parseCsvRecords } from "../lib/duel/csv";
 import { buildQuestions } from "../lib/duel/questionImport";
+import { questionsToSql } from "../lib/duel/questionSql";
 
 const prisma = new PrismaClient();
 
@@ -39,14 +45,21 @@ async function main() {
   const args = process.argv.slice(2);
   const path = args.find((a) => !a.startsWith("--"));
   const checkOnly = args.includes("--check");
+  const sqlOnly = args.includes("--sql");
 
   if (!path) {
-    console.error("Usage: tsx prisma/seed-duel-questions.ts <file.csv|file.json> [--check]");
+    console.error(
+      "Usage: tsx prisma/seed-duel-questions.ts <file.csv|file.json> [--check | --sql]"
+    );
     process.exit(1);
   }
 
+  // In --sql mode the report goes to stderr so that stdout stays pure SQL and
+  // can be redirected straight into a file.
+  const say = sqlOnly ? console.error : console.log;
+
   const records = readRecords(path);
-  console.log(`Read ${records.length} row(s) from ${path}`);
+  say(`Read ${records.length} row(s) from ${path}`);
 
   const { questions, issues } = buildQuestions(records);
 
@@ -59,7 +72,7 @@ async function main() {
     console.error("");
   }
 
-  console.log(`${questions.length} question(s) valid`);
+  say(`${questions.length} question(s) valid`);
 
   // A plain object rather than a Map: the project compiles to ES5 and
   // spreading a Map needs downlevelIteration.
@@ -67,15 +80,20 @@ async function main() {
   for (const q of questions) byTopic[q.topic] = (byTopic[q.topic] ?? 0) + 1;
   Object.keys(byTopic)
     .sort((a, b) => byTopic[b] - byTopic[a])
-    .forEach((topic) => console.log(`  ${topic}: ${byTopic[topic]}`));
+    .forEach((topic) => say(`  ${topic}: ${byTopic[topic]}`));
 
   if (checkOnly) {
-    console.log("\n--check: nothing written.");
+    say("\n--check: nothing written.");
     return;
   }
   if (questions.length === 0) {
     console.error("\nNothing valid to load.");
     process.exit(1);
+  }
+  if (sqlOnly) {
+    process.stdout.write(questionsToSql(questions));
+    console.error(`\n--sql: ${questions.length} question(s) written to stdout.`);
+    return;
   }
 
   let created = 0;

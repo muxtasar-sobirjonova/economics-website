@@ -16,7 +16,8 @@
     "prepare": "husky",
     "postinstall": "prisma generate",
     "duel:check": "tsx prisma/seed-duel-questions.ts --check",
-    "duel:seed": "tsx prisma/seed-duel-questions.ts"
+    "duel:seed": "tsx prisma/seed-duel-questions.ts",
+    "duel:sql": "tsx prisma/seed-duel-questions.ts --sql"
   },
   "dependencies": {
     "@ai-sdk/openai": "^4.0.13",
