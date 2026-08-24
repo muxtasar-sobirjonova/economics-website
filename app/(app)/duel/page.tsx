@@ -15,7 +15,11 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic";
 
-export default async function DuelPage() {
+export default async function DuelPage({
+  searchParams,
+}: {
+  searchParams?: { face?: string };
+}) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
 
@@ -83,7 +87,7 @@ export default async function DuelPage() {
           )}
         </section>
 
-        <DuelClient rating={rating} played={played} />
+        <DuelClient rating={rating} played={played} faceRunId={searchParams?.face} />
 
         <RecentDuels duels={recent} />
 

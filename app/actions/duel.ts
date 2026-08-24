@@ -14,12 +14,21 @@ import type { SubmittedAnswer } from "@/lib/duel/grading";
 
 export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: string };
 
-export async function startDuelAction(): Promise<ActionResult<StartedDuel>> {
+export async function startDuelAction(
+  faceRunId?: string
+): Promise<ActionResult<StartedDuel>> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: "Sign in to play." };
 
   try {
-    return { ok: true, data: await startDuel(session.user.id) };
+    // An unusable challenge id is ignored by the engine, not rejected here —
+    // a stale link should still get the player a duel.
+    return {
+      ok: true,
+      data: await startDuel(session.user.id, {
+        faceRunId: typeof faceRunId === "string" && faceRunId ? faceRunId : undefined,
+      }),
+    };
   } catch (e) {
     console.error("startDuel failed", e);
     const message = e instanceof Error ? e.message : "Could not start a duel.";

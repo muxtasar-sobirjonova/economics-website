@@ -96,6 +96,15 @@ export function DuelBoard({
       </div>
 
       <div className="p-s5">
+        {index === 0 && (duel.reused || duel.resumed || duel.challengerName) && (
+          <p className="text-meta text-muted mb-s4 pb-s3 border-b border-line">
+            {duel.challengerName
+              ? `${duel.challengerName} challenged you with this set.`
+              : duel.resumed
+                ? "Picking up where you left off — the clock has been running since you started."
+                : "The bank is short, so some of these have come round again."}
+          </p>
+        )}
         <h2 className="text-h3 font-semibold text-ink">{question.questionText}</h2>
 
         <div className="grid gap-s3 mt-s5">

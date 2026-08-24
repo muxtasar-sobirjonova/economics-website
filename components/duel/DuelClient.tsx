@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { startDuelAction, submitDuelAction } from "@/app/actions/duel";
 import type { StartedDuel, DuelOutcome } from "@/lib/duel/engine";
@@ -16,13 +16,21 @@ type Phase =
   | { name: "done"; outcome: DuelOutcome; duel: StartedDuel }
   | { name: "error"; message: string };
 
-export function DuelClient({ rating, played }: { rating: number; played: number }) {
+export function DuelClient({
+  rating,
+  played,
+  faceRunId,
+}: {
+  rating: number;
+  played: number;
+  faceRunId?: string;
+}) {
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
   const router = useRouter();
 
-  const begin = async () => {
+  const begin = async (challenge?: string) => {
     setPhase({ name: "loading" });
-    const res = await startDuelAction();
+    const res = await startDuelAction(challenge);
     if (!res.ok) return setPhase({ name: "error", message: res.error });
     if (res.data.questions.length === 0) {
       return setPhase({ name: "error", message: "No questions in the bank yet." });
@@ -41,11 +49,18 @@ export function DuelClient({ rating, played }: { rating: number; played: number 
     [router]
   );
 
+  // A shared link lands the player straight into the set rather than on a
+  // button they then have to find.
+  useEffect(() => {
+    if (faceRunId) void begin(faceRunId);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [faceRunId]);
+
   if (phase.name === "playing") {
     return <DuelBoard duel={phase.duel} onFinish={finish} />;
   }
   if (phase.name === "done") {
-    return <DuelResult outcome={phase.outcome} duel={phase.duel} onAgain={begin} />;
+    return <DuelResult outcome={phase.outcome} duel={phase.duel} onAgain={() => begin()} />;
   }
 
   return (
@@ -67,7 +82,7 @@ export function DuelClient({ rating, played }: { rating: number; played: number 
       )}
 
       <button
-        onClick={begin}
+        onClick={() => begin()}
         disabled={phase.name === "loading" || phase.name === "grading"}
         className="mt-s5 inline-flex items-center justify-center min-h-[48px] px-s6 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors disabled:opacity-60"
       >

@@ -33,6 +33,10 @@ export interface StartedDuel {
   reused: boolean;
   /** True when a real opponent is already waiting on this set. */
   facingOpponent: boolean;
+  /** True when this is an unfinished run being picked up again. */
+  resumed: boolean;
+  /** Who challenged you, when the set was opened from a shared link. */
+  challengerName: string | null;
 }
 
 async function ensureRating(userId: string) {
@@ -50,7 +54,15 @@ async function ensureRating(userId: string) {
  * immediately on submit, and it clears the queue oldest-first so nobody is
  * left waiting forever. Only when there is nothing to answer is a new set cut.
  */
-export async function startDuel(userId: string): Promise<StartedDuel> {
+export interface StartOptions {
+  /** A finished run shared by its player: face exactly that set. */
+  faceRunId?: string;
+}
+
+export async function startDuel(
+  userId: string,
+  options: StartOptions = {}
+): Promise<StartedDuel> {
   const rating = await ensureRating(userId);
 
   const existing = await prisma.duelRun.findFirst({
@@ -62,53 +74,67 @@ export async function startDuel(userId: string): Promise<StartedDuel> {
   let setId: string;
   let reused = false;
   let facingOpponent = false;
+  let resumed = false;
+  let challengerName: string | null = null;
   let runId: string;
 
   if (existing) {
     // An unfinished run is resumed rather than abandoned, so a refresh does
-    // not cost the player a duel they have already started.
+    // not cost the player a duel they have already started. The clock is not
+    // reset with it — otherwise reloading would buy thinking time.
     setId = existing.setId;
     runId = existing.id;
     facingOpponent = true;
+    resumed = true;
   } else {
-    const waiting = await prisma.duelRun.findFirst({
-      where: {
-        status: DuelRunStatus.OPEN,
-        finishedAt: { not: null },
-        userId: { not: userId },
-        set: { runs: { none: { userId } } },
-      },
-      orderBy: { finishedAt: "asc" },
-      select: { setId: true },
-    });
+    const invited = options.faceRunId
+      ? await findChallenge(userId, options.faceRunId)
+      : null;
 
-    if (waiting) {
-      setId = waiting.setId;
+    if (invited) {
+      setId = invited.setId;
       facingOpponent = true;
+      challengerName = invited.challengerName;
     } else {
-      const [seenRuns, active] = await Promise.all([
-        prisma.duelRun.findMany({
-          where: { userId },
-          select: { set: { select: { questionIds: true } } },
-        }),
-        prisma.duelQuestion.findMany({ where: { active: true }, select: { id: true } }),
-      ]);
+      const waiting = await prisma.duelRun.findFirst({
+        where: {
+          status: DuelRunStatus.OPEN,
+          finishedAt: { not: null },
+          userId: { not: userId },
+          set: { runs: { none: { userId } } },
+        },
+        orderBy: { finishedAt: "asc" },
+        select: { setId: true },
+      });
 
-      const seen: string[] = [];
-      seenRuns.forEach((r) => seen.push(...r.set.questionIds));
+      if (waiting) {
+        setId = waiting.setId;
+        facingOpponent = true;
+      } else {
+        const [seenRuns, active] = await Promise.all([
+          prisma.duelRun.findMany({
+            where: { userId },
+            select: { set: { select: { questionIds: true } } },
+          }),
+          prisma.duelQuestion.findMany({ where: { active: true }, select: { id: true } }),
+        ]);
 
-      const picked = pickQuestionIds(
-        active.map((q) => q.id),
-        seen,
-        QUESTIONS_PER_DUEL
-      );
-      if (picked.ids.length === 0) {
-        throw new Error("The question bank is empty.");
+        const seen: string[] = [];
+        seenRuns.forEach((r) => seen.push(...r.set.questionIds));
+
+        const picked = pickQuestionIds(
+          active.map((q) => q.id),
+          seen,
+          QUESTIONS_PER_DUEL
+        );
+        if (picked.ids.length === 0) {
+          throw new Error("The question bank is empty.");
+        }
+
+        reused = picked.reused;
+        const set = await prisma.duelSet.create({ data: { questionIds: picked.ids } });
+        setId = set.id;
       }
-
-      reused = picked.reused;
-      const set = await prisma.duelSet.create({ data: { questionIds: picked.ids } });
-      setId = set.id;
     }
 
     const run = await prisma.duelRun.create({
@@ -124,7 +150,38 @@ export async function startDuel(userId: string): Promise<StartedDuel> {
     rating: rating.rating,
     reused,
     facingOpponent,
+    resumed,
+    challengerName,
   };
+}
+
+/**
+ * Resolve a shared challenge link.
+ *
+ * Silently declines rather than throwing: a link can be stale, already
+ * settled, sent to the wrong person or forwarded back to its author, and none
+ * of those deserve an error page. The caller falls through to a normal duel.
+ */
+async function findChallenge(userId: string, runId: string) {
+  const run = await prisma.duelRun.findUnique({
+    where: { id: runId },
+    select: {
+      setId: true,
+      userId: true,
+      status: true,
+      finishedAt: true,
+      user: { select: { name: true } },
+      set: { select: { runs: { where: { userId }, select: { id: true } } } },
+    },
+  });
+
+  if (!run) return null;
+  if (run.userId === userId) return null;              // your own link
+  if (!run.finishedAt) return null;                    // they have not played it
+  if (run.status !== DuelRunStatus.OPEN) return null;  // already settled
+  if (run.set.runs.length > 0) return null;            // you have faced this set
+
+  return { setId: run.setId, challengerName: run.user.name };
 }
 
 /**

@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { StartedDuel, DuelOutcome } from "@/lib/duel/engine";
 import { DuelReviewList } from "@/components/duel/DuelReviewList";
+import { ChallengeLink } from "@/components/duel/ChallengeLink";
 
 /* ── Result ───────────────────────────────────────────────────────────── */
 
@@ -63,6 +64,8 @@ export function DuelResult({
           </Link>
         </div>
       </div>
+
+      {!s && <ChallengeLink runId={outcome.runId} />}
 
       {outcome.review ? (
         <DuelReviewList lines={outcome.review} />
