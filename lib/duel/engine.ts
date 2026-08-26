@@ -39,6 +39,8 @@ export interface StartedDuel {
   challengerName: string | null;
   /** The run you are chasing, if someone has already played this set. */
   opponent: OpponentPace | null;
+  /** Set when you were paired with someone sitting at the same set right now. */
+  liveOpponentName: string | null;
 }
 
 export interface OpponentPace {
@@ -67,6 +69,12 @@ async function ensureRating(userId: string) {
  * immediately on submit, and it clears the queue oldest-first so nobody is
  * left waiting forever. Only when there is nothing to answer is a new set cut.
  */
+/**
+ * How recently someone must have started for them to count as still playing.
+ * Long enough to cover ten questions at twenty seconds each, plus reading.
+ */
+const LIVE_WINDOW_MS = 5 * 60 * 1000;
+
 export interface StartOptions {
   /** A finished run shared by its player: face exactly that set. */
   faceRunId?: string;
@@ -89,6 +97,7 @@ export async function startDuel(
   let facingOpponent = false;
   let resumed = false;
   let challengerName: string | null = null;
+  let liveOpponentName: string | null = null;
   let runId: string;
 
   if (existing) {
@@ -104,10 +113,19 @@ export async function startDuel(
       ? await findChallenge(userId, options.faceRunId)
       : null;
 
+    const live = invited ? null : await findLiveSet(userId);
+
     if (invited) {
       setId = invited.setId;
       facingOpponent = true;
       challengerName = invited.challengerName;
+    } else if (live) {
+      // Someone is at this set right now. Preferred over a run that finished
+      // earlier: both of you are here, so it settles in minutes rather than
+      // whenever the next person happens to turn up.
+      setId = live.setId;
+      facingOpponent = true;
+      liveOpponentName = live.name;
     } else {
       const waiting = await prisma.duelRun.findFirst({
         where: {
@@ -171,7 +189,41 @@ export async function startDuel(
     resumed,
     challengerName,
     opponent,
+    liveOpponentName,
   };
+}
+
+/**
+ * Find someone playing right now and sit down opposite them.
+ *
+ * Without this, two people who press start within seconds of each other are
+ * dealt separate sets and never meet — which is the one thing a duel is
+ * supposed to do. The pairing is still asynchronous underneath; they simply
+ * happen to be answering the same ten questions at the same time.
+ *
+ * Only a set with exactly one run so far, or a third player would join a pair
+ * and one of the three would be left unmatched.
+ */
+async function findLiveSet(userId: string) {
+  const candidate = await prisma.duelRun.findFirst({
+    where: {
+      finishedAt: null,
+      status: DuelRunStatus.OPEN,
+      userId: { not: userId },
+      startedAt: { gt: new Date(Date.now() - LIVE_WINDOW_MS) },
+      set: { runs: { none: { userId } } },
+    },
+    // Freshest first: most likely to still be at the board.
+    orderBy: { startedAt: "desc" },
+    select: {
+      setId: true,
+      user: { select: { name: true } },
+      set: { select: { _count: { select: { runs: true } } } },
+    },
+  });
+
+  if (!candidate || candidate.set._count.runs !== 1) return null;
+  return { setId: candidate.setId, name: candidate.user.name };
 }
 
 /**
@@ -577,6 +629,29 @@ export async function getRecentDuels(userId: string, limit = 8): Promise<RecentD
       delta: iAmA ? d.deltaA : d.deltaB,
       at: d.createdAt,
     };
+  });
+}
+
+/** How many people are mid-duel, for the lobby. */
+export async function countLivePlayers(excludeUserId: string): Promise<number> {
+  return prisma.duelRun.count({
+    where: {
+      finishedAt: null,
+      status: DuelRunStatus.OPEN,
+      userId: { not: excludeUserId },
+      startedAt: { gt: new Date(Date.now() - LIVE_WINDOW_MS) },
+    },
+  });
+}
+
+/** Runs finished and waiting for anyone to face them. */
+export async function countWaitingSets(excludeUserId: string): Promise<number> {
+  return prisma.duelRun.count({
+    where: {
+      status: DuelRunStatus.OPEN,
+      finishedAt: { not: null },
+      userId: { not: excludeUserId },
+    },
   });
 }
 

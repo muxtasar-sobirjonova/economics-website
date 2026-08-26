@@ -2,7 +2,13 @@ import { Metadata } from "next";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { getDuelLadder, getRecentDuels, type RecentDuel } from "@/lib/duel/engine";
+import {
+  getDuelLadder,
+  getRecentDuels,
+  countLivePlayers,
+  countWaitingSets,
+  type RecentDuel,
+} from "@/lib/duel/engine";
 import { START_RATING, PROVISIONAL_GAMES } from "@/lib/duel/elo";
 import { DuelClient } from "@/components/duel/DuelClient";
 import { DuelLadder } from "@/components/duel/DuelLadder";
@@ -29,15 +35,19 @@ export default async function DuelPage({
   // page they came to use.
   let ladder: Awaited<ReturnType<typeof getDuelLadder>> = [];
   let recent: RecentDuel[] = [];
+  let livePlayers = 0;
+  let waitingSets = 0;
   let me: { rating: number; played: number; won: number; lost: number; drawn: number } | null = null;
   try {
-    [ladder, me, recent] = await Promise.all([
+    [ladder, me, recent, livePlayers, waitingSets] = await Promise.all([
       getDuelLadder(20),
       prisma.playerRating.findUnique({
         where: { userId },
         select: { rating: true, played: true, won: true, lost: true, drawn: true },
       }),
       getRecentDuels(userId, 6),
+      countLivePlayers(userId),
+      countWaitingSets(userId),
     ]);
   } catch (e) {
     console.error("duel page load failed", e);
@@ -87,7 +97,13 @@ export default async function DuelPage({
           )}
         </section>
 
-        <DuelClient rating={rating} played={played} faceRunId={searchParams?.face} />
+        <DuelClient
+          rating={rating}
+          played={played}
+          faceRunId={searchParams?.face}
+          livePlayers={livePlayers}
+          waitingSets={waitingSets}
+        />
 
         <RecentDuels duels={recent} />
 

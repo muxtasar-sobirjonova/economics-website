@@ -161,15 +161,31 @@ export function DuelBoard({
       )}
 
       <div className="p-s5">
-        {index === 0 && (duel.reused || duel.resumed || duel.challengerName) && (
-          <p className="text-meta text-muted mb-s4 pb-s3 border-b border-line">
-            {duel.challengerName
-              ? `${duel.challengerName} challenged you with this set.`
-              : duel.resumed
-                ? "Picking up where you left off — the clock has been running since you started."
-                : "The bank is short, so some of these have come round again."}
-          </p>
-        )}
+        {index === 0 &&
+          (duel.liveOpponentName || duel.reused || duel.resumed || duel.challengerName) && (
+            <p className="text-meta mb-s4 pb-s3 border-b border-line">
+              {duel.liveOpponentName ? (
+                <span className="flex items-center gap-s2">
+                  <span
+                    className="w-[7px] h-[7px] rounded-full animate-ringpulse shrink-0"
+                    style={{ background: "var(--success)" }}
+                    aria-hidden
+                  />
+                  <span className="text-ink">
+                    {duel.liveOpponentName} is answering these right now.
+                  </span>
+                </span>
+              ) : (
+                <span className="text-muted">
+                  {duel.challengerName
+                    ? `${duel.challengerName} challenged you with this set.`
+                    : duel.resumed
+                      ? "Picking up where you left off — the clock has been running since you started."
+                      : "The bank is short, so some of these have come round again."}
+                </span>
+              )}
+            </p>
+          )}
 
         <h2 className="text-h3 font-semibold text-ink">{question.questionText}</h2>
 

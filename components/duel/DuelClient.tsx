@@ -20,10 +20,14 @@ export function DuelClient({
   rating,
   played,
   faceRunId,
+  livePlayers = 0,
+  waitingSets = 0,
 }: {
   rating: number;
   played: number;
   faceRunId?: string;
+  livePlayers?: number;
+  waitingSets?: number;
 }) {
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
   const router = useRouter();
@@ -73,6 +77,29 @@ export function DuelClient({
       ) : (
         <>
           <h2 className="text-h2 font-semibold text-ink">Ten questions. One opponent.</h2>
+
+          {/* Whether anyone is about is the thing that decides "now or later". */}
+          {livePlayers > 0 ? (
+            <p className="flex items-center justify-center gap-s2 text-meta mt-s3">
+              <span
+                className="w-[7px] h-[7px] rounded-full animate-ringpulse"
+                style={{ background: "var(--success)" }}
+                aria-hidden
+              />
+              <span className="text-ink">
+                {livePlayers === 1
+                  ? "Someone is playing right now — start and you face them."
+                  : `${livePlayers} people are playing right now — start and you face one of them.`}
+              </span>
+            </p>
+          ) : waitingSets > 0 ? (
+            <p className="text-meta text-muted mt-s3">
+              {waitingSets === 1
+                ? "One run is waiting for a challenger. Start and it is yours."
+                : `${waitingSets} runs are waiting for a challenger.`}
+            </p>
+          ) : null}
+
           <p className="text-meta text-muted mt-s3 max-w-[52ch] mx-auto">
             {played === 0
               ? "Everyone starts at 1000. Your first ten duels move your rating twice as fast, so the ladder finds you quickly."
