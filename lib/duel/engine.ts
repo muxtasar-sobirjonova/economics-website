@@ -37,6 +37,19 @@ export interface StartedDuel {
   resumed: boolean;
   /** Who challenged you, when the set was opened from a shared link. */
   challengerName: string | null;
+  /** The run you are chasing, if someone has already played this set. */
+  opponent: OpponentPace | null;
+}
+
+export interface OpponentPace {
+  name: string | null;
+  score: number;
+  /**
+   * Per question, in set order. Whether they got it and how long they took —
+   * never what they picked. Knowing an opponent answered correctly does not
+   * narrow four options down; knowing their answer would give it away.
+   */
+  pace: { correct: boolean; ms: number }[];
 }
 
 async function ensureRating(userId: string) {
@@ -144,14 +157,57 @@ export async function startDuel(
     runId = run.id;
   }
 
+  const [questions, opponent] = await Promise.all([
+    serveQuestions(setId),
+    loadOpponentPace(setId, userId),
+  ]);
+
   return {
     runId,
-    questions: await serveQuestions(setId),
+    questions,
     rating: rating.rating,
     reused,
     facingOpponent,
     resumed,
     challengerName,
+    opponent,
+  };
+}
+
+/**
+ * The ghost you are racing.
+ *
+ * A duel is played against a run that already happened, so the opponent's
+ * whole performance is sitting in the database while you play. Showing their
+ * pace turns a solo quiz into a race — the same thing a chess clock does —
+ * and costs nothing, because the data is already there.
+ */
+async function loadOpponentPace(setId: string, userId: string): Promise<OpponentPace | null> {
+  const run = await prisma.duelRun.findFirst({
+    where: {
+      setId,
+      userId: { not: userId },
+      finishedAt: { not: null },
+      status: DuelRunStatus.OPEN,
+    },
+    orderBy: { finishedAt: "asc" },
+    select: {
+      score: true,
+      answers: true,
+      user: { select: { name: true } },
+      set: { select: { questionIds: true } },
+    },
+  });
+  if (!run) return null;
+
+  const byId = new Map(parseGraded(run.answers).map((g) => [g.questionId, g]));
+  return {
+    name: run.user.name,
+    score: run.score,
+    pace: run.set.questionIds.map((id) => {
+      const g = byId.get(id);
+      return { correct: g?.isCorrect ?? false, ms: g?.ms ?? 0 };
+    }),
   };
 }
 
