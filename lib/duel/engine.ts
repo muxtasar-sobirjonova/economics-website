@@ -535,6 +535,26 @@ async function readOutcome(userId: string, runId: string): Promise<DuelOutcome> 
 }
 
 /**
+ * Everything about a settled run: score, opponent, rating change, review.
+ *
+ * The player who submits first never sees a result — their duel settles later,
+ * while they are elsewhere. This is how they get the same screen afterwards
+ * instead of only a line in a list.
+ */
+export async function getDuelOutcome(
+  userId: string,
+  runId: string
+): Promise<DuelOutcome | null> {
+  const run = await prisma.duelRun.findUnique({
+    where: { id: runId },
+    select: { userId: true, finishedAt: true },
+  });
+  if (!run || run.userId !== userId || !run.finishedAt) return null;
+
+  return readOutcome(userId, runId);
+}
+
+/**
  * The two runs side by side, with the answers.
  *
  * Only ever returned for a settled duel. While a set is still waiting for a

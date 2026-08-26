@@ -4,7 +4,7 @@ import Link from "next/link";
 import type { StartedDuel, DuelOutcome } from "@/lib/duel/engine";
 import { DuelReviewList } from "@/components/duel/DuelReviewList";
 import { ChallengeLink } from "@/components/duel/ChallengeLink";
-import { DuelTowers } from "@/components/duel/DuelTowers";
+import { DuelScoreboard } from "@/components/duel/DuelScoreboard";
 
 /* ── Result ───────────────────────────────────────────────────────────── */
 
@@ -18,45 +18,11 @@ export function DuelResult({
   onAgain: () => void;
 }) {
   const s = outcome.settled;
-  const tone = !s ? "muted" : s.result === "won" ? "success" : s.result === "lost" ? "danger" : "reward";
 
   return (
     <section className="flex flex-col gap-s4">
       <div className="rounded-lg border border-line bg-surface shadow-sh1 p-s6 text-center">
-        <span className="font-mono text-label uppercase" style={{ color: `var(--${tone})` }}>
-          {!s ? "Waiting for a challenger" : s.result === "won" ? "You won" : s.result === "lost" ? "You lost" : "Drawn"}
-        </span>
-
-        {s ? (
-          <div className="mt-s4">
-            <DuelTowers
-              yourScore={outcome.score}
-              theirScore={s.opponentScore}
-              total={outcome.total}
-              opponentName={s.opponentName || "Anonymous"}
-            />
-          </div>
-        ) : (
-          <div className="font-mono text-display text-ink tabular leading-none mt-s3">
-            {outcome.score}
-            <span className="text-h2 text-faint">/{outcome.total}</span>
-          </div>
-        )}
-
-        {s ? (
-          <>
-            <p className="font-mono text-h3 mt-s3" style={{ color: `var(--${tone})` }}>
-              {s.delta > 0 ? "+" : ""}
-              {s.delta} → {s.rating}
-            </p>
-          </>
-        ) : (
-          <p className="text-meta text-muted mt-s4 max-w-[48ch] mx-auto">
-            Nobody has faced this set yet. Your run is parked — the next player
-            dealt these ten questions plays against you, and your rating moves
-            then. Nothing is lost by leaving.
-          </p>
-        )}
+        <DuelScoreboard outcome={outcome} />
 
         <div className="flex flex-wrap gap-s3 justify-center mt-s5">
           <button
