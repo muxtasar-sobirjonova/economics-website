@@ -52,6 +52,7 @@ model User {
   leaderboardRank  LeaderboardRank?
   duelRuns         DuelRun[]
   duelRating       PlayerRating?
+  dailyAnswers     DailyAnswer[]
 
   @@index([lessonsCompleted, lastLessonCompletedAt, createdAt])
 }
@@ -461,4 +462,24 @@ model PlayerRating {
   updatedAt DateTime @default(now()) @updatedAt
 
   @@index([rating])
+}
+
+/// One shared question a day, for the days nobody else is playing.
+model DailyAnswer {
+  id         String   @id @default(cuid())
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  /// The calendar day as YYYY-MM-DD, not a timestamp: "one a day" is a
+  /// question about dates, and comparing timestamps would let a player at
+  /// 23:59 answer twice within a minute.
+  day        String
+  questionId String
+  chosen     String?
+  isCorrect  Boolean  @default(false)
+  ms         Int      @default(0)
+  createdAt  DateTime @default(now())
+
+  @@unique([userId, day])
+  @@index([day])
 }

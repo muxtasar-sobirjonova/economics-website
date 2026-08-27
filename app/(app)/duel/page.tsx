@@ -7,12 +7,18 @@ import {
   getRecentDuels,
   countLivePlayers,
   countWaitingSets,
+  getRatingHistory,
+  getDailyState,
   type RecentDuel,
+  type RatingPoint,
+  type DailyState,
 } from "@/lib/duel/engine";
 import { START_RATING, PROVISIONAL_GAMES } from "@/lib/duel/elo";
 import { DuelClient } from "@/components/duel/DuelClient";
 import { DuelLadder } from "@/components/duel/DuelLadder";
 import { RecentDuels } from "@/components/duel/RecentDuels";
+import { RatingGraph } from "@/components/duel/RatingGraph";
+import { DailyQuestion } from "@/components/duel/DailyQuestion";
 
 export const metadata: Metadata = {
   title: "Duel | That's So Econ",
@@ -37,9 +43,11 @@ export default async function DuelPage({
   let recent: RecentDuel[] = [];
   let livePlayers = 0;
   let waitingSets = 0;
+  let history: RatingPoint[] = [];
+  let daily: DailyState | null = null;
   let me: { rating: number; played: number; won: number; lost: number; drawn: number } | null = null;
   try {
-    [ladder, me, recent, livePlayers, waitingSets] = await Promise.all([
+    [ladder, me, recent, livePlayers, waitingSets, history, daily] = await Promise.all([
       getDuelLadder(20),
       prisma.playerRating.findUnique({
         where: { userId },
@@ -48,6 +56,8 @@ export default async function DuelPage({
       getRecentDuels(userId, 6),
       countLivePlayers(userId),
       countWaitingSets(userId),
+      getRatingHistory(userId),
+      getDailyState(userId),
     ]);
   } catch (e) {
     console.error("duel page load failed", e);
@@ -104,6 +114,10 @@ export default async function DuelPage({
           livePlayers={livePlayers}
           waitingSets={waitingSets}
         />
+
+        {daily && <DailyQuestion initial={daily} />}
+
+        <RatingGraph points={history} />
 
         <RecentDuels duels={recent} />
 

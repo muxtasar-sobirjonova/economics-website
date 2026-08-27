@@ -12,10 +12,12 @@ export function DuelResult({
   outcome,
   duel,
   onAgain,
+  onRematch,
 }: {
   outcome: DuelOutcome;
   duel: StartedDuel;
   onAgain: () => void;
+  onRematch?: (opponentId: string) => void;
 }) {
   const s = outcome.settled;
 
@@ -25,11 +27,24 @@ export function DuelResult({
         <DuelScoreboard outcome={outcome} />
 
         <div className="flex flex-wrap gap-s3 justify-center mt-s5">
+          {s && onRematch ? (
+            <button
+              onClick={() => onRematch(s.opponentId)}
+              className="inline-flex items-center min-h-[48px] px-s5 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors"
+            >
+              Rematch {s.opponentName || "them"}
+            </button>
+          ) : null}
+
           <button
             onClick={onAgain}
-            className="inline-flex items-center min-h-[48px] px-s5 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors"
+            className={`inline-flex items-center min-h-[48px] px-s5 rounded-md text-ui font-semibold transition-colors ${
+              s && onRematch
+                ? "border border-line text-muted hover:text-ink"
+                : "bg-accent text-on-accent hover:bg-accent-strong"
+            }`}
           >
-            Play again
+            {s && onRematch ? "Someone else" : "Play again"}
           </button>
           <Link
             href="/duel"

@@ -32,9 +32,9 @@ export function DuelClient({
   const [phase, setPhase] = useState<Phase>({ name: "idle" });
   const router = useRouter();
 
-  const begin = async (challenge?: string) => {
+  const begin = async (challenge?: string, rematchUserId?: string) => {
     setPhase({ name: "loading" });
-    const res = await startDuelAction(challenge);
+    const res = await startDuelAction(challenge, rematchUserId);
     if (!res.ok) return setPhase({ name: "error", message: res.error });
     if (res.data.questions.length === 0) {
       return setPhase({ name: "error", message: "No questions in the bank yet." });
@@ -64,7 +64,14 @@ export function DuelClient({
     return <DuelBoard duel={phase.duel} onFinish={finish} />;
   }
   if (phase.name === "done") {
-    return <DuelResult outcome={phase.outcome} duel={phase.duel} onAgain={() => begin()} />;
+    return (
+      <DuelResult
+        outcome={phase.outcome}
+        duel={phase.duel}
+        onAgain={() => begin()}
+        onRematch={(userId) => begin(undefined, userId)}
+      />
+    );
   }
 
   return (

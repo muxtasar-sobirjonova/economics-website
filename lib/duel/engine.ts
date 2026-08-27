@@ -4,6 +4,7 @@ import { QUESTIONS_PER_DUEL, gradeRun, elapsedMs, type SubmittedAnswer } from ".
 import { pickQuestionIds, shuffle } from "./selection";
 import { START_RATING, resolveDuel } from "./elo";
 import { buildReview, parseGraded, type ReviewLine } from "./review";
+import { dayKey, pickDailyQuestionId } from "./daily";
 
 /**
  * The duel engine.
@@ -78,6 +79,8 @@ const LIVE_WINDOW_MS = 5 * 60 * 1000;
 export interface StartOptions {
   /** A finished run shared by its player: face exactly that set. */
   faceRunId?: string;
+  /** Prefer a set this particular player is waiting on. */
+  rematchUserId?: string;
 }
 
 export async function startDuel(
@@ -113,12 +116,23 @@ export async function startDuel(
       ? await findChallenge(userId, options.faceRunId)
       : null;
 
-    const live = invited ? null : await findLiveSet(userId);
+    // A rematch is a preference, not a promise: if they have nothing waiting
+    // you still get a duel, and the screen says so rather than refusing.
+    const rematch =
+      !invited && options.rematchUserId
+        ? await findSetWaitingFrom(userId, options.rematchUserId)
+        : null;
+
+    const live = invited || rematch ? null : await findLiveSet(userId);
 
     if (invited) {
       setId = invited.setId;
       facingOpponent = true;
       challengerName = invited.challengerName;
+    } else if (rematch) {
+      setId = rematch.setId;
+      facingOpponent = true;
+      challengerName = rematch.name;
     } else if (live) {
       // Someone is at this set right now. Preferred over a run that finished
       // earlier: both of you are here, so it settles in minutes rather than
@@ -191,6 +205,24 @@ export async function startDuel(
     opponent,
     liveOpponentName,
   };
+}
+
+/** A run this specific player has finished and nobody has faced yet. */
+async function findSetWaitingFrom(userId: string, opponentId: string) {
+  if (opponentId === userId) return null;
+
+  const run = await prisma.duelRun.findFirst({
+    where: {
+      userId: opponentId,
+      status: DuelRunStatus.OPEN,
+      finishedAt: { not: null },
+      set: { runs: { none: { userId } } },
+    },
+    orderBy: { finishedAt: "asc" },
+    select: { setId: true, user: { select: { name: true } } },
+  });
+
+  return run ? { setId: run.setId, name: run.user.name } : null;
 }
 
 /**
@@ -324,6 +356,7 @@ export interface DuelOutcome {
   total: number;
   /** Absent while no opponent has faced this set yet. */
   settled: {
+    opponentId: string;
     opponentName: string | null;
     opponentScore: number;
     result: "won" | "lost" | "drew";
@@ -515,6 +548,7 @@ async function readOutcome(userId: string, runId: string): Promise<DuelOutcome> 
     const iAmA = duel.runAId === runId;
     const them = iAmA ? duel.runB : duel.runA;
     settled = {
+      opponentId: them.userId,
       opponentName: them.user.name,
       opponentScore: them.score,
       result:
@@ -652,6 +686,47 @@ export async function getRecentDuels(userId: string, limit = 8): Promise<RecentD
   });
 }
 
+export interface RatingPoint {
+  rating: number;
+  delta: number;
+  at: Date;
+  result: "won" | "lost" | "drew";
+}
+
+/**
+ * The rating as a line rather than a number.
+ *
+ * Reconstructed by walking the deltas forward from the starting rating, which
+ * is exact: every point a rating has ever moved came from one settled duel.
+ */
+export async function getRatingHistory(userId: string, limit = 40): Promise<RatingPoint[]> {
+  const duels = await prisma.duel.findMany({
+    where: { OR: [{ runA: { userId } }, { runB: { userId } }] },
+    orderBy: { createdAt: "asc" },
+    take: limit,
+    select: {
+      createdAt: true,
+      winnerId: true,
+      deltaA: true,
+      deltaB: true,
+      runA: { select: { userId: true } },
+    },
+  });
+
+  let rating = START_RATING;
+  return duels.map((d) => {
+    const delta = d.runA.userId === userId ? d.deltaA : d.deltaB;
+    rating += delta;
+    return {
+      rating,
+      delta,
+      at: d.createdAt,
+      result:
+        d.winnerId === null ? ("drew" as const) : d.winnerId === userId ? ("won" as const) : ("lost" as const),
+    };
+  });
+}
+
 /** How many people are mid-duel, for the lobby. */
 export async function countLivePlayers(excludeUserId: string): Promise<number> {
   return prisma.duelRun.count({
@@ -673,6 +748,112 @@ export async function countWaitingSets(excludeUserId: string): Promise<number> {
       userId: { not: excludeUserId },
     },
   });
+}
+
+export interface DailyState {
+  day: string;
+  question: { id: string; topic: string; questionText: string; options: string[] } | null;
+  /** Filled once the player has answered today. */
+  answered: {
+    chosen: string | null;
+    isCorrect: boolean;
+    correctAnswer: string;
+    explanation: string | null;
+  } | null;
+  /** How everyone did today. Only meaningful once you have answered. */
+  totals: { played: number; correct: number };
+}
+
+/**
+ * One question a day, the same for everyone.
+ *
+ * The duel needs a second person; most days there will not be one. This does
+ * not — it is the reason to open the page when the ladder is empty.
+ *
+ * The answer is only revealed after the player has committed to one, and the
+ * options are shuffled per view like everywhere else.
+ */
+export async function getDailyState(userId: string): Promise<DailyState> {
+  const day = dayKey();
+
+  const active = await prisma.duelQuestion.findMany({
+    where: { active: true },
+    select: { id: true },
+  });
+  const questionId = pickDailyQuestionId(active.map((q) => q.id), day);
+  if (!questionId) return { day, question: null, answered: null, totals: { played: 0, correct: 0 } };
+
+  const [row, mine, played, correct] = await Promise.all([
+    prisma.duelQuestion.findUnique({
+      where: { id: questionId },
+      select: {
+        id: true, topic: true, questionText: true, options: true,
+        correctAnswer: true, explanation: true,
+      },
+    }),
+    prisma.dailyAnswer.findUnique({ where: { userId_day: { userId, day } } }),
+    prisma.dailyAnswer.count({ where: { day } }),
+    prisma.dailyAnswer.count({ where: { day, isCorrect: true } }),
+  ]);
+  if (!row) return { day, question: null, answered: null, totals: { played: 0, correct: 0 } };
+
+  return {
+    day,
+    question: {
+      id: row.id,
+      topic: row.topic,
+      questionText: row.questionText,
+      options: shuffle(row.options),
+    },
+    answered: mine
+      ? {
+          chosen: mine.chosen,
+          isCorrect: mine.isCorrect,
+          correctAnswer: row.correctAnswer,
+          explanation: row.explanation,
+        }
+      : null,
+    totals: { played, correct },
+  };
+}
+
+/**
+ * Record today's answer. The unique index on (userId, day) is what actually
+ * enforces one attempt — two tabs cannot both slip through a check in code.
+ */
+export async function answerDaily(
+  userId: string,
+  chosen: string | null,
+  ms: number
+): Promise<DailyState> {
+  const day = dayKey();
+  const state = await getDailyState(userId);
+
+  if (state.question && !state.answered) {
+    const row = await prisma.duelQuestion.findUnique({
+      where: { id: state.question.id },
+      select: { correctAnswer: true },
+    });
+    const isCorrect = typeof chosen === "string" && chosen === row?.correctAnswer;
+
+    try {
+      await prisma.dailyAnswer.create({
+        data: {
+          userId,
+          day,
+          questionId: state.question.id,
+          chosen: typeof chosen === "string" ? chosen : null,
+          isCorrect,
+          ms: Number.isFinite(ms) && ms > 0 ? Math.min(Math.round(ms), 300_000) : 0,
+        },
+      });
+    } catch (e) {
+      // Already answered today: the index did its job, so read it back.
+      if (!(e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002")) throw e;
+    }
+  }
+
+  return getDailyState(userId);
 }
 
 /** The ladder. */
