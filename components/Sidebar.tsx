@@ -13,6 +13,7 @@ import {
   IconBriefcase,
   IconMicroscope,
   IconSwords,
+  IconConfetti,
 } from "@tabler/icons-react";
 import { AuthStatus } from "@/components/AuthStatus";
 import { SidebarSkyline } from "@/components/SidebarSkyline";
@@ -99,6 +100,7 @@ export default function Sidebar() {
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
     { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
     { name: "Duel", href: "/duel", matchHref: "/duel", icon: IconSwords },
+    { name: "Compete", href: "/compete", matchHref: "/compete", icon: IconConfetti },
   ];
 
   /* Directories of people to reach outside the course — they answer a
