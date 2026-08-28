@@ -1,5 +1,9 @@
 {
   "compilerOptions": {
+    // Type-checking only — Next compiles with SWC and noEmit is set. Without
+    // this, tsc assumes ES5 and rejects iterating a Set or a Map, which has
+    // caught three otherwise-correct changes in this project.
+    "target": "ES2017",
     "lib": ["dom", "dom.iterable", "esnext"],
     "allowJs": true,
     "skipLibCheck": true,

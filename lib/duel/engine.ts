@@ -156,16 +156,25 @@ export async function startDuel(
         setId = waiting.setId;
         facingOpponent = true;
       } else {
-        const [seenRuns, active] = await Promise.all([
+        const [seenRuns, seenInCompetitions, active] = await Promise.all([
           prisma.duelRun.findMany({
             where: { userId },
             select: { set: { select: { questionIds: true } } },
+          }),
+          // A question met in a competition is a question this player already
+          // knows the answer to. Counting it as seen is what keeps a
+          // competition from quietly corrupting the rated ladder.
+          prisma.competitionAnswer.findMany({
+            where: { userId },
+            select: { questionId: true },
+            distinct: ["questionId"],
           }),
           prisma.duelQuestion.findMany({ where: { active: true }, select: { id: true } }),
         ]);
 
         const seen: string[] = [];
         seenRuns.forEach((r) => seen.push(...r.set.questionIds));
+        seenInCompetitions.forEach((a) => seen.push(a.questionId));
 
         const picked = pickQuestionIds(
           active.map((q) => q.id),

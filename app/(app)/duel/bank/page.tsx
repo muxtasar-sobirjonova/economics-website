@@ -3,9 +3,12 @@ import Link from "next/link";
 import { auth } from "@/auth";
 import { redirect, notFound } from "next/navigation";
 import { prisma } from "@/lib/prisma";
-import { isAdmin } from "@/lib/admin";
+import { StaffPermission } from "@prisma/client";
+import { actorFor } from "@/lib/staff";
+import { can } from "@/lib/permissions";
 import { assess, sortByAttention, summarise, CHANCE_RATE } from "@/lib/duel/calibration";
 import { BankTable } from "@/components/duel/BankTable";
+import { QuestionEditor } from "@/components/duel/QuestionEditor";
 
 export const metadata: Metadata = { title: "Question bank | That's So Econ" };
 export const dynamic = "force-dynamic";
@@ -16,7 +19,8 @@ export default async function BankPage() {
 
   // Not "forbidden": a page whose existence is itself a hint should simply
   // not be there for anyone who may not use it.
-  if (!isAdmin(session.user.email)) notFound();
+  const actor = await actorFor(session.user.id, session.user.email);
+  if (!can(actor, StaffPermission.MANAGE_QUESTIONS)) notFound();
 
   const rows = await prisma.duelQuestion.findMany({
     select: {
@@ -69,6 +73,8 @@ export default async function BankPage() {
             tone={s.meanRate !== null && s.meanRate < CHANCE_RATE + 0.05 ? "danger" : undefined}
           />
         </section>
+
+        <QuestionEditor topics={[...new Set(rows.map((r) => r.topic))].sort()} />
 
         <BankTable rows={assessed} />
       </div>
