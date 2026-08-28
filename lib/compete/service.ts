@@ -5,6 +5,7 @@ import { can } from "@/lib/permissions";
 import { shuffle } from "@/lib/duel/selection";
 import { generateCode, normaliseCode } from "./code";
 import { rank, progress, type Ranked } from "./scoring";
+import { buildReview, parseGraded, type ReviewLine } from "@/lib/duel/review";
 import { parseSetup, SETUP_ERROR_COPY, type SetupInput } from "./setup";
 
 /**
@@ -245,4 +246,256 @@ export async function listCompetitions(userId: string) {
   });
 
   return { open: open.map(shape), mine: mine.map(shape) };
+}
+
+/* ── Playing ─────────────────────────────────────────────────────────────── */
+
+export interface PlayQuestion {
+  id: string;
+  topic: string;
+  questionText: string;
+  options: string[];
+}
+
+export interface PlaySession {
+  competitionId: string;
+  code: string;
+  title: string;
+  secondsPerQuestion: number;
+  questions: PlayQuestion[];
+  /** Ids already answered, so a reload resumes rather than restarts. */
+  answeredIds: string[];
+  standings: Ranked[];
+  finished: boolean;
+}
+
+/**
+ * Everything the player needs to play.
+ *
+ * The correct answer is never selected, exactly as in a duel: not fetched and
+ * stripped later, never fetched. Options are shuffled per player so the room
+ * cannot call out "it's the third one".
+ */
+export async function getPlaySession(userId: string, rawCode: string): Promise<PlaySession | null> {
+  const code = normaliseCode(rawCode);
+  if (!code) return null;
+
+  const row = await prisma.competition.findUnique({
+    where: { code },
+    select: {
+      id: true, code: true, title: true, questionIds: true, secondsPerQuestion: true, status: true,
+      players: {
+        select: {
+          userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
+          user: { select: { name: true } },
+        },
+      },
+    },
+  });
+  if (!row) return null;
+
+  const me = row.players.find((p) => p.userId === userId);
+  if (!me) return null;
+
+  const [questionRows, mine] = await Promise.all([
+    prisma.duelQuestion.findMany({
+      where: { id: { in: row.questionIds } },
+      select: { id: true, topic: true, questionText: true, options: true },
+    }),
+    prisma.competitionAnswer.findMany({
+      where: { competitionId: row.id, userId },
+      select: { questionId: true },
+    }),
+  ]);
+
+  const byId = new Map(questionRows.map((q) => [q.id, q]));
+  const questions = row.questionIds
+    .map((id) => byId.get(id))
+    .filter((q): q is NonNullable<typeof q> => Boolean(q))
+    .map((q) => ({ ...q, options: shuffle(q.options) }));
+
+  return {
+    competitionId: row.id,
+    code: row.code,
+    title: row.title,
+    secondsPerQuestion: row.secondsPerQuestion,
+    questions,
+    answeredIds: mine.map((a) => a.questionId),
+    standings: rank(
+      row.players.map((p) => ({
+        userId: p.userId, name: p.user.name, score: p.score,
+        totalMs: p.totalMs, answered: p.answered, finished: p.finishedAt !== null,
+      }))
+    ),
+    finished: me.finishedAt !== null,
+  };
+}
+
+/**
+ * Record one answer.
+ *
+ * The clock is the server's: time is measured from the previous answer, or
+ * from when play began for the first one. The client is not asked how long it
+ * took, because ties break on time and a client that reports its own time will
+ * eventually report zero.
+ */
+export async function answerCompetition(
+  userId: string,
+  competitionId: string,
+  questionId: string,
+  chosen: string | null
+): Promise<Outcome<{ standings: Ranked[]; answered: number; finished: boolean }>> {
+  const comp = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: { id: true, status: true, questionIds: true, secondsPerQuestion: true, startedAt: true },
+  });
+  if (!comp) return { ok: false, error: "No such competition." };
+  if (comp.status !== CompetitionStatus.RUNNING) {
+    return { ok: false, error: "That competition is not running." };
+  }
+  if (!comp.questionIds.includes(questionId)) {
+    return { ok: false, error: "That question is not in this competition." };
+  }
+
+  const seat = await prisma.competitionPlayer.findUnique({
+    where: { competitionId_userId: { competitionId, userId } },
+    select: { id: true, joinedAt: true },
+  });
+  if (!seat) return { ok: false, error: "You are not in this competition." };
+
+  const last = await prisma.competitionAnswer.findFirst({
+    where: { competitionId, userId },
+    orderBy: { createdAt: "desc" },
+    select: { createdAt: true },
+  });
+
+  const since = last?.createdAt ?? (comp.startedAt && comp.startedAt > seat.joinedAt ? comp.startedAt : seat.joinedAt);
+  const cap = comp.secondsPerQuestion * 1000;
+  const elapsed = Date.now() - since.getTime();
+  const ms = Math.min(Math.max(Number.isFinite(elapsed) ? elapsed : cap, 0), cap);
+
+  const question = await prisma.duelQuestion.findUnique({
+    where: { id: questionId },
+    select: { correctAnswer: true },
+  });
+  const isCorrect = typeof chosen === "string" && chosen === question?.correctAnswer;
+
+  try {
+    await prisma.$transaction(async (tx) => {
+      await tx.competitionAnswer.create({
+        data: { competitionId, userId, questionId, chosen, isCorrect, ms },
+      });
+      await tx.competitionPlayer.update({
+        where: { competitionId_userId: { competitionId, userId } },
+        data: {
+          answered: { increment: 1 },
+          score: { increment: isCorrect ? 1 : 0 },
+          totalMs: { increment: ms },
+        },
+      });
+    });
+  } catch (e) {
+    // Already answered. The unique index is the guard; scoring twice for one
+    // question is exactly what it exists to stop.
+    if (!(e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002")) {
+      console.error("answerCompetition failed", e);
+      return { ok: false, error: "Could not record that answer." };
+    }
+  }
+
+  const player = await prisma.competitionPlayer.findUnique({
+    where: { competitionId_userId: { competitionId, userId } },
+    select: { answered: true, finishedAt: true },
+  });
+
+  if (player && player.finishedAt === null && player.answered >= comp.questionIds.length) {
+    await prisma.competitionPlayer.update({
+      where: { competitionId_userId: { competitionId, userId } },
+      data: { finishedAt: new Date() },
+    });
+  }
+
+  const players = await prisma.competitionPlayer.findMany({
+    where: { competitionId },
+    select: {
+      userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
+      user: { select: { name: true } },
+    },
+  });
+
+  return {
+    ok: true,
+    data: {
+      standings: rank(
+        players.map((p) => ({
+          userId: p.userId, name: p.user.name, score: p.score,
+          totalMs: p.totalMs, answered: p.answered, finished: p.finishedAt !== null,
+        }))
+      ),
+      answered: player?.answered ?? 0,
+      finished: (player?.answered ?? 0) >= comp.questionIds.length,
+    },
+  };
+}
+
+/** Live standings on their own, for polling. */
+export async function getStandings(competitionId: string): Promise<Ranked[]> {
+  const players = await prisma.competitionPlayer.findMany({
+    where: { competitionId },
+    select: {
+      userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
+      user: { select: { name: true } },
+    },
+  });
+  return rank(
+    players.map((p) => ({
+      userId: p.userId, name: p.user.name, score: p.score,
+      totalMs: p.totalMs, answered: p.answered, finished: p.finishedAt !== null,
+    }))
+  );
+}
+
+/**
+ * The questions with their answers — only once the whole competition has
+ * ended. A player who finishes early is still in a room where others are
+ * playing, and handing them the answers hands them to the room.
+ */
+export async function getCompetitionReview(
+  userId: string,
+  competitionId: string
+): Promise<ReviewLine[] | null> {
+  const comp = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: { status: true, questionIds: true },
+  });
+  if (!comp || comp.status !== CompetitionStatus.ENDED) return null;
+
+  const [rows, mine] = await Promise.all([
+    prisma.duelQuestion.findMany({
+      where: { id: { in: comp.questionIds } },
+      select: {
+        id: true, topic: true, questionText: true, options: true,
+        correctAnswer: true, explanation: true,
+      },
+    }),
+    prisma.competitionAnswer.findMany({
+      where: { competitionId, userId },
+      select: { questionId: true, chosen: true, isCorrect: true, ms: true },
+    }),
+  ]);
+
+  const byId = new Map(rows.map((r) => [r.id, r]));
+  const ordered = comp.questionIds
+    .map((id) => byId.get(id))
+    .filter((r): r is NonNullable<typeof r> => Boolean(r));
+
+  const graded = parseGraded(
+    mine.map((a) => ({
+      questionId: a.questionId, chosen: a.chosen,
+      correctAnswer: "", isCorrect: a.isCorrect, ms: a.ms,
+    }))
+  );
+
+  // No opponent column here: a competition has a room, not one other player.
+  return buildReview(ordered, graded, []);
 }

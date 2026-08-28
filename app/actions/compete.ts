@@ -7,8 +7,11 @@ import {
   joinCompetition,
   startCompetition,
   endCompetition,
+  answerCompetition,
+  getStandings,
   type Outcome,
 } from "@/lib/compete/service";
+import type { Ranked } from "@/lib/compete/scoring";
 import type { SetupInput } from "@/lib/compete/setup";
 
 /**
@@ -58,4 +61,33 @@ export async function endCompetitionAction(id: string): Promise<Outcome<null>> {
   const result = await endCompetition(user.id, typeof id === "string" ? id : "");
   revalidatePath("/compete");
   return result;
+}
+
+export async function answerCompetitionAction(
+  competitionId: string,
+  questionId: string,
+  chosen: string | null
+): Promise<Outcome<{ standings: Ranked[]; answered: number; finished: boolean }>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+
+  return answerCompetition(
+    user.id,
+    typeof competitionId === "string" ? competitionId : "",
+    typeof questionId === "string" ? questionId : "",
+    typeof chosen === "string" ? chosen : null
+  );
+}
+
+/** Polled while a competition runs, so it stays deliberately cheap. */
+export async function standingsAction(competitionId: string): Promise<Outcome<Ranked[]>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+
+  try {
+    return { ok: true, data: await getStandings(typeof competitionId === "string" ? competitionId : "") };
+  } catch (e) {
+    console.error("standings failed", e);
+    return { ok: false, error: "Could not read the standings." };
+  }
 }
