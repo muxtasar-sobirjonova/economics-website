@@ -53,6 +53,10 @@ model User {
   duelRuns         DuelRun[]
   duelRating       PlayerRating?
   dailyAnswers     DailyAnswer[]
+  staff            Staff?
+  hostedCompetitions Competition[]      @relation("CompetitionHost")
+  competitionPlays   CompetitionPlayer[]
+  competitionAnswers CompetitionAnswer[]
 
   @@index([lessonsCompleted, lastLessonCompletedAt, createdAt])
 }
@@ -482,4 +486,111 @@ model DailyAnswer {
 
   @@unique([userId, day])
   @@index([day])
+}
+
+
+// ─── Staff and competitions ──────────────────────────────────────────────────
+
+/// What a delegated admin is allowed to do. An admin may only grant rights
+/// they hold themselves, so nobody can promote past their own level.
+enum StaffPermission {
+  HOST_COMPETITIONS
+  MANAGE_QUESTIONS
+  MANAGE_ADMINS
+}
+
+/// Rights delegated from the owner.
+///
+/// The owner is not in this table — they are named in ADMIN_EMAILS and always
+/// hold everything. Keeping the root outside the database means a mistake made
+/// in the interface can never lock the owner out of fixing it.
+model Staff {
+  userId      String            @id
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  permissions StaffPermission[]
+  /// Who granted these, for an audit trail. Not a relation: the granter may
+  /// later be deleted, and the record of who did it should outlive them.
+  grantedById String?
+  note        String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @default(now()) @updatedAt
+}
+
+enum CompetitionStatus {
+  /// Open for joining, not yet playing.
+  LOBBY
+  RUNNING
+  ENDED
+}
+
+enum CompetitionAccess {
+  /// Listed on the competitions page for anyone signed in.
+  OPEN
+  /// Reachable only by its code.
+  LINK
+}
+
+model Competition {
+  id                 String            @id @default(cuid())
+  /// Short, shareable, unambiguous. Unique so a join code names one event.
+  code               String            @unique
+  title              String
+  hostId             String
+  host               User              @relation("CompetitionHost", fields: [hostId], references: [id], onDelete: Cascade)
+
+  status             CompetitionStatus @default(LOBBY)
+  access             CompetitionAccess @default(OPEN)
+
+  /// Fixed at creation: everyone in one competition answers the same set in
+  /// the same order, or the standings compare nothing.
+  questionIds        String[]
+  topic              String?
+  secondsPerQuestion Int               @default(25)
+
+  createdAt          DateTime          @default(now())
+  startedAt          DateTime?
+  endedAt            DateTime?
+
+  players            CompetitionPlayer[]
+  answers            CompetitionAnswer[]
+
+  @@index([status, createdAt])
+  @@index([hostId])
+}
+
+model CompetitionPlayer {
+  id            String      @id @default(cuid())
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  score         Int         @default(0)
+  totalMs       Int         @default(0)
+  answered      Int         @default(0)
+  joinedAt      DateTime    @default(now())
+  finishedAt    DateTime?
+
+  @@unique([competitionId, userId])
+  @@index([competitionId, score])
+}
+
+model CompetitionAnswer {
+  id            String      @id @default(cuid())
+  competitionId String
+  competition   Competition @relation(fields: [competitionId], references: [id], onDelete: Cascade)
+  userId        String
+  user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  questionId    String
+
+  chosen        String?
+  isCorrect     Boolean     @default(false)
+  ms            Int         @default(0)
+  createdAt     DateTime    @default(now())
+
+  /// One answer per question per player, enforced here rather than in code so
+  /// a double submit cannot score twice.
+  @@unique([competitionId, userId, questionId])
+  @@index([competitionId])
+  @@index([userId])
 }
