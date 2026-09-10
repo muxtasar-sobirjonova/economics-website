@@ -30,6 +30,7 @@ export default async function CompetePage() {
   const userId = session.user.id;
   const actor = await actorFor(userId, session.user.email);
   const mayHost = can(actor, StaffPermission.HOST_COMPETITIONS);
+  const mayWrite = can(actor, StaffPermission.MANAGE_QUESTIONS);
 
   const [{ open, mine }, topicRows] = await Promise.all([
     listCompetitions(userId),
@@ -66,7 +67,19 @@ export default async function CompetePage() {
           <JoinByCode />
         </section>
 
-        {mayHost && <CreateCompetition topics={topics} />}
+        {(mayHost || mayWrite) && (
+          <div className="flex flex-wrap gap-s3">
+            {mayHost && <CreateCompetition topics={topics} />}
+            {mayWrite && (
+              <Link
+                href="/compete/problems"
+                className="inline-flex items-center justify-center min-h-[48px] px-s5 rounded-md border border-line text-ui text-ink hover:border-accent transition-colors"
+              >
+                Problems &amp; papers
+              </Link>
+            )}
+          </div>
+        )}
 
         <Section title="Open now" empty="Nothing is running. If you have a code, use it above." rows={open} />
 
@@ -85,6 +98,7 @@ function Section({
   empty: string;
   rows: {
     code: string; title: string; status: keyof typeof STATUS_COPY;
+    format: "QUIZ" | "PROBLEMS";
     topic: string | null; questionCount: number; hostName: string | null; players: number;
   }[];
 }) {
@@ -112,7 +126,8 @@ function Section({
                   <span className="min-w-0">
                     <span className="block text-ui text-ink truncate pb-[2px]">{c.title}</span>
                     <span className="block font-mono text-label uppercase text-faint truncate">
-                      {c.hostName || "Anonymous"} · {c.questionCount} questions
+                      {c.hostName || "Anonymous"} · {c.questionCount}{" "}
+                      {c.format === "PROBLEMS" ? "problems" : "questions"}
                       {c.topic ? ` · ${c.topic}` : ""} · {c.players} in
                     </span>
                   </span>

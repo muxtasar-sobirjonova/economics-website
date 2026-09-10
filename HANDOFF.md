@@ -58,11 +58,12 @@ Checks before every commit: `npx tsc --noEmit`, `npx next lint`,
 
 ### Migrations
 
-| Migration                     | Ran?                        |
-| ----------------------------- | --------------------------- |
-| `20260824_add_duel_mode`      | ✅ yes — `/duel` works live |
-| `20260828_add_competitions`   | ✅ yes — `/compete` loads   |
-| `20260827_add_daily_question` | ⚠️ **unverified**           |
+| Migration                           | Ran?                        |
+| ----------------------------------- | --------------------------- |
+| `20260824_add_duel_mode`            | ✅ yes — `/duel` works live |
+| `20260828_add_competitions`         | ✅ yes — `/compete` loads   |
+| `20260827_add_daily_question`       | ⚠️ **unverified**           |
+| `20260909_add_problem_competitions` | ❌ **not run yet**          |
 
 The daily question is loaded inside a `try/catch` on `/duel`, so a missing
 `DailyAnswer` table fails silently and the block simply does not render. Check:
@@ -75,6 +76,14 @@ order by table_name;
 
 Five rows expected. If `DailyAnswer` is missing, run
 `prisma/migrations/20260827_add_daily_question/migration.sql`.
+
+`20260909_add_problem_competitions` has **never been run**. Nothing under
+`/compete/problems` works until it is: paste
+`prisma/migrations/20260909_add_problem_competitions/migration.sql` into the
+Supabase SQL editor. It adds the `Problem` table, four enums, and columns on
+`Competition` and `CompetitionAnswer`; it is guarded statement by statement and
+changes no existing row's meaning — `format` defaults to `QUIZ`, so every
+competition that already exists stays the quiz it was.
 
 ### Environment
 
@@ -233,6 +242,113 @@ finishes early is still in a room where others are answering.
 
 ---
 
+## Problem competitions
+
+A second kind of room, on the same codes and lobbies: **written answers out of
+a paper** rather than four options. `/compete/problems` writes them,
+`/compete/<code>` sits them.
+
+**Why a separate `Problem` table.** The rated ladder is built on four options, a
+shuffle and a twenty second clock. A problem fits none of that, and keeping it
+in a table the duel engine never queries means no later change can serve one
+into a rated duel by accident — the same reasoning that kept `DuelQuestion`
+apart from `QuizQuestion`. It also means problems sit outside the "seen" set
+entirely, so the trap that competitions had to have closed does not exist here.
+
+**Paced as a paper.** One clock for the whole set (`durationMinutes`, or none
+at all and the host closes it), every problem reachable at any time, answers
+editable until they are handed in, autosave as you type. A problem is not a
+twenty second question, and pacing it like one would mark people on reading
+speed. Time up hands the paper in rather than discarding it.
+
+**No live scoreboard while it runs.** A quiz can show one because nothing is
+known until it ends; here the key marks a numeric answer the moment a paper is
+handed in, so a score column would tell the room which answers were right while
+they are still writing them. The panel shows names and how far along, and says
+marks open when the host ends it.
+
+### Marking
+
+Three modes, per problem, the host's choice — `lib/compete/problem.ts`:
+
+| Mode   | Who marks                                                                                                                                                                 |
+| ------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `AUTO` | The key. What the key cannot read waits for the host, rather than scoring zero — "roughly forty" is not the same as wrong.                                                |
+| `AI`   | The key first (right by the key takes full marks with no call at all); only a wrong or unreadable answer goes to the model, which can give part marks for a sound method. |
+| `HOST` | Nothing is marked until a person reads it.                                                                                                                                |
+
+**A mark is never invented.** An answer nothing has marked is `PENDING`, which
+every screen says out loud. A model that is down, unpaid or rate limited must
+not hand a class a page of zeroes, because a zero from an outage is
+indistinguishable from a zero a student earned.
+
+**The host has the last word on every mark**, including the model's, and the
+model's reason for it is shown next to the answer.
+
+**Batched, not one pass.** Thirty players by ten problems is three hundred
+model calls and a serverless function has seconds. `gradeNextBatch` does six at
+a time, in parallel, resumable; the host's screen calls it until nothing is
+pending, and stops if a whole batch comes back unmarked rather than looping
+against a wall.
+
+**Provider.** `lib/compete/grader.ts` is the only place a model is called.
+Anthropic if `ANTHROPIC_API_KEY` is set, OpenAI if only `OPENAI_API_KEY` is,
+neither is an ordinary state — marking is simply all by hand. Temperature is
+zero: a mark that changes when the host presses the button again is not a mark.
+`COMPETE_GRADER_MODEL` overrides the model name.
+
+**⚠️ The student's answer is an instruction to the model unless it is stopped
+from being one.** A free text box feeding a model that decides the mark is the
+obvious attack and it takes no skill. Three things stand against it and none is
+enough alone: the answer is fenced in `<student_answer>` tags with any such tag
+inside it neutralised; the system prompt names the fence and says it is
+material, never instruction; and the mark that comes back is clamped to the
+problem's own maximum. The real defence is the fourth: the host can change any
+mark, and nothing is final. `tests/competeProblem.test.ts` holds this down.
+
+### Reading a written answer — `lib/compete/answerCheck.ts`
+
+Pure, and where all the risk in auto-marking lives.
+
+- A comma before exactly three digits is a thousands separator; any other comma
+  is a decimal point. `1,200` is twelve hundred and `12,5` is twelve and a
+  half, and the same class types both.
+- Units and currency are stripped, so `1200 so'm`, `$1,200` and `1200` are one
+  answer. Accounting negatives `(250)` and fractions `1/2` are read.
+- Prose in a numeric box returns null, not "wrong". Null means "this needs a
+  reader" and the caller decides which.
+- Every apostrophe folds onto one: a phone keyboard produces at least five
+  characters for the mark in `o'sish`, and comparing them as typed would mark
+  the same word wrong on a different phone.
+
+### Showing a problem — `lib/compete/markdown.ts` + `components/compete/Rich.tsx`
+
+A small Markdown: paragraphs, lists, tables, quotes, code, images, and maths
+through KaTeX. It produces a **typed tree, never a string of HTML**, so nothing
+an author writes can become markup. Maths is the one exception and KaTeX makes
+its own markup, with `trust` off.
+
+Three rules that exist because economics is not prose:
+
+- `$…$` is maths, `$100` is money. A maths span may not open or close against a
+  space, so "$100 and $200" stays text.
+- Italic is `*this*` and **never** `_this_` — underscore emphasis would turn
+  "P_1 and Q_2" into one italic run, silently, in most problems.
+- No regex lookbehind anywhere: half a classroom is on an older iPhone, and a
+  lookbehind in the bundle is a syntax error on Safari before 16.4 — a blank
+  page, not a broken formula.
+
+The editor previews as you type, which is the point: whether a problem survived
+being copied out of a PDF is a question about how it _looks_.
+
+### Pictures
+
+`/problems/<file>.png` in `public/`, or an https address. `data:` and
+`javascript:` are refused. There is no upload — a diagram is a file committed
+to the repo, which needs no storage service and no new dependency.
+
+---
+
 ## Permissions
 
 Telegram-shaped. `lib/permissions.ts` (pure, tested) and `lib/staff.ts`.
@@ -286,10 +402,12 @@ rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
 ## Tests
 
-171 passing. The pattern is to test **the pure half**: Elo, grading, question
+256 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
-question selection, and the CSS token guard.
+question selection, the CSS token guard, and — new with problem rooms — reading
+a written answer, validating a problem, the marking decision, and the Markdown
+parser.
 
 Two tests once failed on assertions rather than code — a semicolon count across
 a whole file and a spread threshold that sat on a sample minimum. In both cases
@@ -299,13 +417,16 @@ the fix was to **assert the property**, not loosen the number.
 
 ## What is worth doing next
 
-1. **Write questions.** The bank is the constraint. Everything else is second.
-2. **Wait a week, then read `/duel/bank`.** It will say whether keys are wrong
+1. **Run `20260909_add_problem_competitions`.** Problem rooms are code-complete
+   and cannot work until it is in the database.
+2. **Write questions and problems.** Both banks are the constraint. Everything
+   else is second.
+3. **Wait a week, then read `/duel/bank`.** It will say whether keys are wrong
    or the bank is merely hard, and whether the 20-second timer needs changing.
-3. Per-topic accuracy on a profile — the data is already in `DuelRun.answers`
+4. Per-topic accuracy on a profile — the data is already in `DuelRun.answers`
    plus `DuelQuestion.topic`, no migration needed.
-4. Daily streak — free from `DailyAnswer`.
-5. Notification when a duel settles — needs a `lastSeenAt` column.
+5. Daily streak — free from `DailyAnswer`.
+6. Notification when a duel settles — needs a `lastSeenAt` column.
 
 Deliberately **not** yet: time controls (bullet/blitz/rapid), topic-filtered
 rated duels, tournaments. All three fragment a player pool that is already too

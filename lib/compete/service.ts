@@ -1,4 +1,4 @@
-import { CompetitionStatus, Prisma, StaffPermission } from "@prisma/client";
+import { CompetitionStatus, CompetitionFormat, Prisma, StaffPermission } from "@prisma/client";
 import { prisma } from "@/lib/prisma";
 import { actorFor } from "@/lib/staff";
 import { can } from "@/lib/permissions";
@@ -24,9 +24,14 @@ export interface CompetitionView {
   title: string;
   status: CompetitionStatus;
   access: "OPEN" | "LINK";
+  /** A quiz room answers the bank; a problem room answers written papers. */
+  format: CompetitionFormat;
   topic: string | null;
   questionCount: number;
   secondsPerQuestion: number;
+  /** One clock for the whole set, for a problem room. Null means the host's call. */
+  durationMinutes: number | null;
+  startsClosingAt: Date | null;
   hostName: string | null;
   isHost: boolean;
   joined: boolean;
@@ -106,6 +111,7 @@ export async function getCompetition(
     select: {
       id: true, code: true, title: true, status: true, access: true, topic: true,
       questionIds: true, secondsPerQuestion: true, hostId: true, startedAt: true, endedAt: true,
+      format: true, problemIds: true, durationMinutes: true,
       host: { select: { name: true } },
       players: {
         select: {
@@ -134,9 +140,16 @@ export async function getCompetition(
     title: row.title,
     status: row.status,
     access: row.access,
+    format: row.format,
     topic: row.topic,
-    questionCount: row.questionIds.length,
+    questionCount:
+      row.format === CompetitionFormat.PROBLEMS ? row.problemIds.length : row.questionIds.length,
     secondsPerQuestion: row.secondsPerQuestion,
+    durationMinutes: row.durationMinutes,
+    startsClosingAt:
+      row.startedAt && row.durationMinutes
+        ? new Date(row.startedAt.getTime() + row.durationMinutes * 60_000)
+        : null,
     hostName: row.host.name,
     isHost: row.hostId === userId,
     joined: row.players.some((p) => p.userId === userId),
@@ -219,6 +232,7 @@ export async function listCompetitions(userId: string) {
       take: 12,
       select: {
         code: true, title: true, status: true, topic: true, questionIds: true,
+        format: true, problemIds: true,
         host: { select: { name: true } },
         _count: { select: { players: true } },
       },
@@ -229,6 +243,7 @@ export async function listCompetitions(userId: string) {
       take: 8,
       select: {
         code: true, title: true, status: true, topic: true, questionIds: true,
+        format: true, problemIds: true,
         host: { select: { name: true } },
         _count: { select: { players: true } },
       },
@@ -239,8 +254,10 @@ export async function listCompetitions(userId: string) {
     code: c.code,
     title: c.title,
     status: c.status,
+    format: c.format,
     topic: c.topic,
-    questionCount: c.questionIds.length,
+    questionCount:
+      c.format === CompetitionFormat.PROBLEMS ? c.problemIds.length : c.questionIds.length,
     hostName: c.host.name,
     players: c._count.players,
   });
@@ -383,7 +400,13 @@ export async function answerCompetition(
   try {
     await prisma.$transaction(async (tx) => {
       await tx.competitionAnswer.create({
-        data: { competitionId, userId, questionId, chosen, isCorrect, ms },
+        // A quiz answer is worth one mark, settled the moment it is given.
+        // Written in the same columns a problem uses, so a room's marks are
+        // one currency however it was answered.
+        data: {
+          competitionId, userId, questionId, chosen, isCorrect, ms,
+          points: isCorrect ? 1 : 0, maxPoints: 1,
+        },
       });
       await tx.competitionPlayer.update({
         where: { competitionId_userId: { competitionId, userId } },

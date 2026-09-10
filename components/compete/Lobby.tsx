@@ -18,11 +18,21 @@ import type { CompetitionView } from "@/lib/compete/service";
  */
 const POLL_MS = 2500;
 
-export function Lobby({ view }: { view: CompetitionView }) {
+export function Lobby({
+  view,
+  joinUrl,
+  qr,
+}: {
+  view: CompetitionView;
+  /** The absolute address, worked out on the server from the request. */
+  joinUrl: string;
+  /** A data URI, or null when it could not be drawn. */
+  qr: string | null;
+}) {
   const router = useRouter();
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
-  const [copied, setCopied] = useState(false);
+  const [copied, setCopied] = useState<"link" | "code" | null>(null);
 
   // Only while it matters — an ended competition is not going to change.
   useEffect(() => {
@@ -40,15 +50,30 @@ export function Lobby({ view }: { view: CompetitionView }) {
     });
   };
 
-  const copyCode = async () => {
-    const url = `${window.location.origin}/compete/${view.code}`;
+  const copy = async (what: "link" | "code") => {
     try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2500);
+      await navigator.clipboard.writeText(what === "link" ? joinUrl : view.code);
+      setCopied(what);
+      setTimeout(() => setCopied(null), 2500);
     } catch {
-      setCopied(false);
+      // Clipboard access is refused in plenty of ordinary situations. The code
+      // is on the screen either way, which is what it is there for.
+      setCopied(null);
     }
+  };
+
+  /** The phone share sheet where there is one, the clipboard where there is not. */
+  const share = async () => {
+    if (typeof navigator !== "undefined" && navigator.share) {
+      try {
+        await navigator.share({ title: view.title, url: joinUrl });
+        return;
+      } catch {
+        // Dismissed. Nothing to report.
+        return;
+      }
+    }
+    await copy("link");
   };
 
   return (
@@ -61,15 +86,42 @@ export function Lobby({ view }: { view: CompetitionView }) {
 
         <div className="flex flex-wrap gap-s3 justify-center mt-s4">
           <button
-            onClick={copyCode}
+            onClick={() => void copy("code")}
             className="inline-flex items-center min-h-[44px] px-s4 rounded-md border border-line text-meta text-muted hover:text-ink transition-colors"
           >
-            {copied ? "Copied" : "Copy the link"}
+            {copied === "code" ? "Copied" : "Copy the code"}
+          </button>
+          <button
+            onClick={() => void share()}
+            className="inline-flex items-center min-h-[44px] px-s4 rounded-md border border-line text-meta text-muted hover:text-ink transition-colors"
+          >
+            {copied === "link" ? "Copied" : "Share the link"}
           </button>
         </div>
 
+        {qr && (
+          <div className="mt-s5 flex flex-col items-center gap-s2">
+            {/* eslint-disable-next-line @next/next/no-img-element -- a data URI
+                drawn on the server; there is nothing for next/image to fetch. */}
+            <img
+              src={qr}
+              alt={`Scan to join ${view.title}`}
+              width={200}
+              height={200}
+              className="w-[200px] h-[200px] rounded-md border border-line bg-white p-s2"
+            />
+            <span className="text-label uppercase text-faint">Or point a phone at this</span>
+          </div>
+        )}
+
         <p className="text-meta text-muted mt-s4">
-          {view.questionCount} questions · {view.secondsPerQuestion}s each
+          {view.questionCount}{" "}
+          {view.format === "PROBLEMS" ? "problems" : "questions"} ·{" "}
+          {view.format === "PROBLEMS"
+            ? view.durationMinutes
+              ? `${view.durationMinutes} minutes for the set`
+              : "no clock"
+            : `${view.secondsPerQuestion}s each`}
           {view.topic ? ` · ${view.topic}` : ""} ·{" "}
           {view.access === "LINK" ? "code only" : "listed publicly"}
         </p>

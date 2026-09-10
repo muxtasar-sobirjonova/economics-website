@@ -36,27 +36,28 @@ model User {
   lessonsCompleted      Int       @default(0)
   lastLessonCompletedAt DateTime?
 
-  activeTrack      Track?
-  trackProgress    TrackProgress[]
-  progress         UserProgress?
-  quizAttempts     QuizAttempt[]
-  mistakeReviews   MistakeReview[]
-  agendaHistory    AgendaCompletion[]
-  dailyCompletions DailyCompletion[]
-  completedLessons CompletedLesson[]
-  quizResults      QuizResult[]
-  accounts         Account[]
-  sessions         Session[]
-  notes            Note[]
-  bookmarks        Bookmark[]
-  leaderboardRank  LeaderboardRank?
-  duelRuns         DuelRun[]
-  duelRating       PlayerRating?
-  dailyAnswers     DailyAnswer[]
-  staff            Staff?
-  hostedCompetitions Competition[]      @relation("CompetitionHost")
+  activeTrack        Track?
+  trackProgress      TrackProgress[]
+  progress           UserProgress?
+  quizAttempts       QuizAttempt[]
+  mistakeReviews     MistakeReview[]
+  agendaHistory      AgendaCompletion[]
+  dailyCompletions   DailyCompletion[]
+  completedLessons   CompletedLesson[]
+  quizResults        QuizResult[]
+  accounts           Account[]
+  sessions           Session[]
+  notes              Note[]
+  bookmarks          Bookmark[]
+  leaderboardRank    LeaderboardRank?
+  duelRuns           DuelRun[]
+  duelRating         PlayerRating?
+  dailyAnswers       DailyAnswer[]
+  staff              Staff?
+  hostedCompetitions Competition[]       @relation("CompetitionHost")
   competitionPlays   CompetitionPlayer[]
   competitionAnswers CompetitionAnswer[]
+  authoredProblems   Problem[]           @relation("ProblemAuthor")
 
   @@index([lessonsCompleted, lastLessonCompletedAt, createdAt])
 }
@@ -470,9 +471,9 @@ model PlayerRating {
 
 /// One shared question a day, for the days nobody else is playing.
 model DailyAnswer {
-  id         String   @id @default(cuid())
-  userId     String
-  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  id     String @id @default(cuid())
+  userId String
+  user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   /// The calendar day as YYYY-MM-DD, not a timestamp: "one a day" is a
   /// question about dates, and comparing timestamps would let a player at
@@ -487,7 +488,6 @@ model DailyAnswer {
   @@unique([userId, day])
   @@index([day])
 }
-
 
 // ─── Staff and competitions ──────────────────────────────────────────────────
 
@@ -531,28 +531,43 @@ enum CompetitionAccess {
 }
 
 model Competition {
-  id                 String            @id @default(cuid())
+  id     String @id @default(cuid())
   /// Short, shareable, unambiguous. Unique so a join code names one event.
-  code               String            @unique
-  title              String
-  hostId             String
-  host               User              @relation("CompetitionHost", fields: [hostId], references: [id], onDelete: Cascade)
+  code   String @unique
+  title  String
+  hostId String
+  host   User   @relation("CompetitionHost", fields: [hostId], references: [id], onDelete: Cascade)
 
-  status             CompetitionStatus @default(LOBBY)
-  access             CompetitionAccess @default(OPEN)
+  status CompetitionStatus @default(LOBBY)
+  access CompetitionAccess @default(OPEN)
 
   /// Fixed at creation: everyone in one competition answers the same set in
   /// the same order, or the standings compare nothing.
   questionIds        String[]
   topic              String?
-  secondsPerQuestion Int               @default(25)
+  secondsPerQuestion Int      @default(25)
 
-  createdAt          DateTime          @default(now())
-  startedAt          DateTime?
-  endedAt            DateTime?
+  /// What the room is answering. A quiz is the multiple choice bank; a problem
+  /// set is written answers out of `Problem`. One competition is one or the
+  /// other: the two are paced differently, and a room that mixed them would
+  /// have to explain two clocks at once.
+  format          CompetitionFormat @default(QUIZ)
+  /// Ids into `Problem`, in the order the host arranged them. Not a relation:
+  /// the order is the host's, and a join would return them in the table's.
+  problemIds      String[]
+  /// One clock for the whole set, in minutes. Null means the host decides when
+  /// it ends. Only read for a problem set — a quiz is paced per question.
+  durationMinutes Int?
+  /// When the marks were last settled. Null while any answer is still waiting
+  /// on the model or on the host, which is what the results screen says.
+  gradedAt        DateTime?
 
-  players            CompetitionPlayer[]
-  answers            CompetitionAnswer[]
+  createdAt DateTime  @default(now())
+  startedAt DateTime?
+  endedAt   DateTime?
+
+  players CompetitionPlayer[]
+  answers CompetitionAnswer[]
 
   @@index([status, createdAt])
   @@index([hostId])
@@ -565,11 +580,11 @@ model CompetitionPlayer {
   userId        String
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  score         Int         @default(0)
-  totalMs       Int         @default(0)
-  answered      Int         @default(0)
-  joinedAt      DateTime    @default(now())
-  finishedAt    DateTime?
+  score      Int       @default(0)
+  totalMs    Int       @default(0)
+  answered   Int       @default(0)
+  joinedAt   DateTime  @default(now())
+  finishedAt DateTime?
 
   @@unique([competitionId, userId])
   @@index([competitionId, score])
@@ -583,14 +598,109 @@ model CompetitionAnswer {
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
   questionId    String
 
-  chosen        String?
-  isCorrect     Boolean     @default(false)
-  ms            Int         @default(0)
-  createdAt     DateTime    @default(now())
+  chosen    String?
+  /// What was written in the box, for a problem. `chosen` is the quiz's column
+  /// and stays null here; keeping them apart means a marker can never mistake
+  /// a written answer for a selected option.
+  text      String?
+  isCorrect Boolean @default(false)
+  ms        Int     @default(0)
+
+  /// Marks. A quiz answer is worth one and is settled on submit; a problem is
+  /// worth what the host set it at, and may wait for a marker.
+  points    Int       @default(0)
+  maxPoints Int       @default(1)
+  gradedBy  GradedBy  @default(AUTO)
+  /// One or two sentences the student reads next to their answer.
+  feedback  String?
+  gradedAt  DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
 
   /// One answer per question per player, enforced here rather than in code so
   /// a double submit cannot score twice.
   @@unique([competitionId, userId, questionId])
   @@index([competitionId])
   @@index([userId])
+}
+
+/// A quiz room answers the multiple choice bank; a problem room answers papers.
+enum CompetitionFormat {
+  QUIZ
+  PROBLEMS
+}
+
+enum ProblemAnswerKind {
+  /// One number, marked against a value and a tolerance.
+  NUMERIC
+  /// A word or a phrase, marked against a list of accepted spellings.
+  SHORT
+  /// Working, an argument, a derivation. No key exists.
+  OPEN
+}
+
+/// Who awards the mark. See lib/compete/problem.ts — the meanings are enforced
+/// there, not here.
+enum ProblemGrading {
+  AUTO
+  AI
+  HOST
+}
+
+/// What a mark on the board is currently resting on.
+enum GradedBy {
+  /// Written, and nothing has marked it yet. It counts for nothing until
+  /// something does, and the results screen says so rather than implying a zero.
+  PENDING
+  AUTO
+  AI
+  HOST
+}
+
+/// A problem out of a paper.
+///
+/// Deliberately not part of DuelQuestion. The rated ladder is built on four
+/// options, a shuffle and a twenty second clock; a problem fits none of that,
+/// and keeping it in a table the duel engine never queries means no later
+/// change can serve one into a rated duel by accident.
+model Problem {
+  id    String @id @default(cuid())
+  title String @default("Problem")
+  topic String @default("General")
+
+  /// Markdown with `$…$` maths, rendered rather than injected as HTML.
+  statement String
+  /// A diagram out of the paper: a file under `public/problems/` or https.
+  imageUrl  String?
+
+  answerKind       ProblemAnswerKind @default(OPEN)
+  numericValue     Float?
+  numericTolerance Float             @default(0)
+  acceptedAnswers  String[]
+  /// Placeholder in the box — "in thousands", "one word".
+  answerHint       String?
+
+  /// The worked answer. Read by the model when it marks, and by everyone once
+  /// the competition has ended — never before, and never by a player mid-room.
+  solution String?
+
+  /// The host's call, per problem. A five mark problem and a one mark problem
+  /// in the same set is the whole reason marks are not just a count.
+  maxPoints   Int            @default(5)
+  gradingMode ProblemGrading @default(HOST)
+
+  /// Nullable so a problem outlives the account that wrote it.
+  authorId String?
+  author   User?   @relation("ProblemAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+
+  /// A broken problem is retired, never deleted: rooms that used it still
+  /// have to review against something.
+  active    Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @default(now()) @updatedAt
+
+  @@index([topic])
+  @@index([active])
+  @@index([authorId])
 }

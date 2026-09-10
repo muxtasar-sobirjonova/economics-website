@@ -44,7 +44,7 @@ export function CreateCompetition({ topics }: { topics: { name: string; count: n
   }
 
   return (
-    <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s5 flex flex-col gap-s4">
+    <section className="w-full rounded-lg border border-line bg-surface shadow-sh1 p-s5 flex flex-col gap-s4">
       <h2 className="text-h3 font-semibold text-ink">Open a competition</h2>
 
       <label className="flex flex-col gap-s2">
