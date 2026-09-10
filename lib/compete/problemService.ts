@@ -127,6 +127,29 @@ export async function listProblems(includeRetired = false): Promise<ProblemSumma
   return rows.map(({ solution, ...r }) => ({ ...r, hasSolution: Boolean(solution) }));
 }
 
+/**
+ * The bank, or an honest admission that it is not there.
+ *
+ * The problem tables arrive in a migration that is pasted into Supabase by
+ * hand, so "not run yet" is a real state a page has to survive. Reported
+ * rather than swallowed: a bank that is empty because a table is missing looks
+ * exactly like a bank nobody has written to yet, and that confusion has
+ * already cost this project a table that silently never existed.
+ */
+export async function listProblemsSafe(
+  includeRetired = false
+): Promise<{ problems: ProblemSummary[]; available: boolean }> {
+  try {
+    return { problems: await listProblems(includeRetired), available: true };
+  } catch (e) {
+    console.error(
+      "listProblems failed — has 20260909_add_problem_competitions been run?",
+      e
+    );
+    return { problems: [], available: false };
+  }
+}
+
 /** One problem, with everything, for the editor. Never for a player. */
 export async function getProblemForEditor(
   userId: string,

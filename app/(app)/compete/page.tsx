@@ -7,7 +7,8 @@ import { prisma } from "@/lib/prisma";
 import { actorFor } from "@/lib/staff";
 import { can } from "@/lib/permissions";
 import { listCompetitions } from "@/lib/compete/service";
-import { CreateCompetition } from "@/components/compete/CreateCompetition";
+import { listProblemsSafe } from "@/lib/compete/problemService";
+import { HostPanel } from "@/components/compete/HostPanel";
 import { JoinByCode } from "@/components/compete/JoinByCode";
 
 export const metadata: Metadata = {
@@ -32,15 +33,20 @@ export default async function CompetePage() {
   const mayHost = can(actor, StaffPermission.HOST_COMPETITIONS);
   const mayWrite = can(actor, StaffPermission.MANAGE_QUESTIONS);
 
-  const [{ open, mine }, topicRows] = await Promise.all([
+  const runsRooms = mayHost || mayWrite;
+
+  const [{ open, mine }, topicRows, bank] = await Promise.all([
     listCompetitions(userId),
-    mayHost
+    runsRooms
       ? prisma.duelQuestion.groupBy({
           by: ["topic"],
           where: { active: true },
           _count: { _all: true },
         })
       : Promise.resolve([]),
+    runsRooms
+      ? listProblemsSafe()
+      : Promise.resolve({ problems: [], available: true }),
   ]);
 
   const topics = topicRows
@@ -67,18 +73,14 @@ export default async function CompetePage() {
           <JoinByCode />
         </section>
 
-        {(mayHost || mayWrite) && (
-          <div className="flex flex-wrap gap-s3">
-            {mayHost && <CreateCompetition topics={topics} />}
-            {mayWrite && (
-              <Link
-                href="/compete/problems"
-                className="inline-flex items-center justify-center min-h-[48px] px-s5 rounded-md border border-line text-ui text-ink hover:border-accent transition-colors"
-              >
-                Problems &amp; papers
-              </Link>
-            )}
-          </div>
+        {runsRooms && (
+          <HostPanel
+            topics={topics}
+            problems={bank.problems}
+            problemsAvailable={bank.available}
+            mayHost={mayHost}
+            mayWrite={mayWrite}
+          />
         )}
 
         <Section title="Open now" empty="Nothing is running. If you have a code, use it above." rows={open} />

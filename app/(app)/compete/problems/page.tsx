@@ -5,7 +5,7 @@ import { redirect, notFound } from "next/navigation";
 import { StaffPermission } from "@prisma/client";
 import { actorFor } from "@/lib/staff";
 import { can } from "@/lib/permissions";
-import { listProblems } from "@/lib/compete/problemService";
+import { listProblemsSafe } from "@/lib/compete/problemService";
 import { ProblemBank } from "@/components/compete/ProblemBank";
 
 export const metadata: Metadata = { title: "Problems | That's So Econ" };
@@ -26,7 +26,7 @@ export default async function ProblemsPage() {
   if (!can(actor, StaffPermission.MANAGE_QUESTIONS)) notFound();
 
   const mayHost = can(actor, StaffPermission.HOST_COMPETITIONS);
-  const problems = await listProblems(true);
+  const { problems, available } = await listProblemsSafe(true);
 
   const active = problems.filter((p) => p.active);
   const marks = active.reduce((sum, p) => sum + p.maxPoints, 0);
@@ -44,12 +44,20 @@ export default async function ProblemsPage() {
           <h1 className="text-h1 font-semibold text-ink mt-s2 pb-[3px]">Problems</h1>
           <p className="text-meta text-muted mt-s2 max-w-[58ch]">
             Written problems, out of a paper. {active.length} live, worth {marks}{" "}
-            marks between them. Tick them in the order you want them answered,
-            then open a room.
+            marks between them. Rooms are opened from{" "}
+            <Link href="/compete" className="text-accent hover:text-accent-strong">
+              the competitions page
+            </Link>
+            ; this is where they are written and retired.
           </p>
         </header>
 
-        <ProblemBank problems={problems} mayHost={mayHost} />
+        <ProblemBank
+          problems={problems}
+          mayHost={mayHost}
+          mayWrite
+          available={available}
+        />
       </div>
     </div>
   );

@@ -63,7 +63,7 @@ export function QuestionEditor({ topics }: { topics: string[] }) {
   }
 
   return (
-    <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s5 flex flex-col gap-s4">
+    <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s4 md:p-s5 flex flex-col gap-s4">
       <h2 className="text-h3 font-semibold text-ink">Write a question</h2>
 
       <label className="flex flex-col gap-s2">

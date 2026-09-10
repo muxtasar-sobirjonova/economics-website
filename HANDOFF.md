@@ -248,6 +248,17 @@ A second kind of room, on the same codes and lobbies: **written answers out of
 a paper** rather than four options. `/compete/problems` writes them,
 `/compete/<code>` sits them.
 
+**Both kinds of room are opened from `/compete`**, in one panel with a
+Quiz/Problem set toggle (`HostPanel`). Writing a question and writing a problem
+are _inside_ that panel, not on a page of their own: a host finds out the bank
+is missing what they wanted at the moment they are setting a room up, and a
+page they have to leave to fix it is a room opened without it. `/compete/problems`
+still exists, for seeing and retiring what has been written.
+
+Both forms are `next/dynamic` with `ssr: false`. They pull in KaTeX, and a
+student opening `/compete` to join a room should not download a maths
+typesetter to read a list. That keeps the route at ~99 kB rather than ~220 kB.
+
 **Why a separate `Problem` table.** The rated ladder is built on four options, a
 shuffle and a twenty second clock. A problem fits none of that, and keeping it
 in a table the duel engine never queries means no later change can serve one
