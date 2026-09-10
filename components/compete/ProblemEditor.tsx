@@ -291,6 +291,21 @@ export function ProblemEditor({
         />
       </label>
 
+      {/* The solution is read by students after the room ends and by the model
+          while it marks, so how it reads matters as much as the problem's own
+          text. A formula that did not survive being pasted is easier to see
+          than to spot in the source. */}
+      {draft.solution.trim() && (
+        <div className="rounded-md border border-line bg-bg-sunk p-s4">
+          <span className="text-label uppercase text-faint">
+            How the solution will look
+          </span>
+          <div className="mt-s3">
+            <Rich source={draft.solution} />
+          </div>
+        </div>
+      )}
+
       <fieldset className="flex flex-col gap-s3 border-0 p-0 m-0">
         <legend className="text-label uppercase text-faint">Who marks it</legend>
         <div className="flex flex-wrap gap-s2">
