@@ -17,6 +17,9 @@ import {
 import {
   reportAway,
   unlockPlayer,
+  blockPlayer,
+  disqualifyPlayer,
+  reinstatePlayer,
   type FocusState,
 } from "@/lib/compete/focusService";
 import type { ProblemInput } from "@/lib/compete/problem";
@@ -154,6 +157,46 @@ export async function unlockPlayerAction(
   if (!user) return { ok: false, error: "Sign in first." };
 
   const result = await unlockPlayer(user.id, str(competitionId), str(playerId));
+  if (result.ok) revalidatePath("/compete");
+  return result;
+}
+
+/** The host stopping a paper by hand, with a reason the student reads. */
+export async function blockPlayerAction(
+  competitionId: string,
+  playerId: string,
+  reason: string
+): Promise<Outcome<null>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+
+  const result = await blockPlayer(user.id, str(competitionId), str(playerId), reason);
+  if (result.ok) revalidatePath("/compete");
+  return result;
+}
+
+/** The verdict after the room ended. Never a delete — see focusService.ts. */
+export async function disqualifyPlayerAction(
+  competitionId: string,
+  playerId: string,
+  reason: string
+): Promise<Outcome<null>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+
+  const result = await disqualifyPlayer(user.id, str(competitionId), str(playerId), reason);
+  if (result.ok) revalidatePath("/compete");
+  return result;
+}
+
+export async function reinstatePlayerAction(
+  competitionId: string,
+  playerId: string
+): Promise<Outcome<null>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+
+  const result = await reinstatePlayer(user.id, str(competitionId), str(playerId));
   if (result.ok) revalidatePath("/compete");
   return result;
 }

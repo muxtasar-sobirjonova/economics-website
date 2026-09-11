@@ -6,6 +6,7 @@ import { answerCompetitionAction, standingsAction } from "@/app/actions/compete"
 import type { PlaySession } from "@/lib/compete/service";
 import type { Ranked } from "@/lib/compete/scoring";
 import { Standings } from "@/components/compete/Standings";
+import { useFocusGuard, FocusNotice, LockedPaper } from "@/components/compete/FocusGuard";
 
 /** Others are answering while you are; the table keeps up without a socket. */
 const POLL_MS = 4000;
@@ -22,6 +23,14 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
   const [done, setDone] = useState(session.finished || remaining.length === 0);
 
   const lockedRef = useRef(false);
+
+  const guard = useFocusGuard({
+    competitionId: session.competitionId,
+    policy: session.focusPolicy,
+    initialLocked: session.locked,
+    active: !done,
+  });
+
   const question = remaining[index];
   const total = session.questions.length;
   const answeredSoFar = session.answeredIds.length + index;
@@ -54,7 +63,7 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
 
   // One interval per question; running out submits nothing rather than a guess.
   useEffect(() => {
-    if (done || !question) return;
+    if (done || !question || guard.locked) return;
     const id = setInterval(() => {
       setLeft((s) => {
         if (s <= 1) {
@@ -69,7 +78,7 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
       });
     }, 1000);
     return () => clearInterval(id);
-  }, [done, question, send]);
+  }, [done, question, send, guard.locked]);
 
   // Everyone else's progress, whether or not you are answering.
   useEffect(() => {
@@ -97,6 +106,20 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
     </section>
   );
 
+  if (guard.locked) {
+    return (
+      <div className="flex flex-col gap-s4">
+        <LockedPaper
+          answered={session.answeredIds.length}
+          total={total}
+          reason={session.lockReason}
+          byHost={session.lockedByHost}
+        />
+        {table}
+      </div>
+    );
+  }
+
   if (done || !question) {
     return (
       <div className="flex flex-col gap-s4">
@@ -116,6 +139,8 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
 
   return (
     <div className="flex flex-col gap-s4">
+      <FocusNotice notice={guard.notice} onDismiss={guard.dismiss} />
+
       <section className="rounded-lg border border-line bg-surface shadow-sh1 overflow-hidden">
         <div className="flex items-center justify-between gap-s3 px-s5 py-s3 border-b border-line bg-bg-sunk">
           <span className="font-mono text-label uppercase text-faint">

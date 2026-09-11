@@ -172,7 +172,12 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
   if (guard.locked) {
     return (
       <div className="flex flex-col gap-s4">
-        <LockedPaper answered={answered} total={total} />
+        <LockedPaper
+          answered={answered}
+          total={total}
+          reason={session.lockReason}
+          byHost={session.lockedByHost}
+        />
         <RoomProgress room={session.room} total={total} />
       </div>
     );

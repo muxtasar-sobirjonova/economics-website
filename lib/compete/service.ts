@@ -118,6 +118,7 @@ export async function getCompetition(
       players: {
         select: {
           userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
+          disqualifiedAt: true, disqualifyReason: true,
           user: { select: { name: true } },
         },
       },
@@ -133,6 +134,8 @@ export async function getCompetition(
       totalMs: p.totalMs,
       answered: p.answered,
       finished: p.finishedAt !== null,
+        disqualified: p.disqualifiedAt !== null,
+        disqualifyReason: p.disqualifyReason,
     }))
   );
 
@@ -299,6 +302,11 @@ export interface PlaySession {
   answeredIds: string[];
   standings: Ranked[];
   finished: boolean;
+  /** The guard, which watches quiz rooms on the same terms as problem rooms. */
+  focusPolicy: "NONE" | "WARN" | "LOCK";
+  locked: boolean;
+  lockReason: string | null;
+  lockedByHost: boolean;
 }
 
 /**
@@ -316,9 +324,12 @@ export async function getPlaySession(userId: string, rawCode: string): Promise<P
     where: { code },
     select: {
       id: true, code: true, title: true, questionIds: true, secondsPerQuestion: true, status: true,
+      focusPolicy: true,
       players: {
         select: {
           userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
+          disqualifiedAt: true, disqualifyReason: true,
+          lockedAt: true, lockReason: true, lockedById: true,
           user: { select: { name: true } },
         },
       },
@@ -357,9 +368,15 @@ export async function getPlaySession(userId: string, rawCode: string): Promise<P
       row.players.map((p) => ({
         userId: p.userId, name: p.user.name, score: p.score,
         totalMs: p.totalMs, answered: p.answered, finished: p.finishedAt !== null,
+        disqualified: p.disqualifiedAt !== null,
+        disqualifyReason: p.disqualifyReason,
       }))
     ),
     finished: me.finishedAt !== null,
+    focusPolicy: row.focusPolicy as "NONE" | "WARN" | "LOCK",
+    locked: me.lockedAt !== null,
+    lockReason: me.lockReason,
+    lockedByHost: me.lockedById != null,
   };
 }
 
@@ -458,6 +475,7 @@ export async function answerCompetition(
     where: { competitionId },
     select: {
       userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
+          disqualifiedAt: true, disqualifyReason: true,
       user: { select: { name: true } },
     },
   });
@@ -469,6 +487,8 @@ export async function answerCompetition(
         players.map((p) => ({
           userId: p.userId, name: p.user.name, score: p.score,
           totalMs: p.totalMs, answered: p.answered, finished: p.finishedAt !== null,
+        disqualified: p.disqualifiedAt !== null,
+        disqualifyReason: p.disqualifyReason,
         }))
       ),
       answered: player?.answered ?? 0,
@@ -483,6 +503,7 @@ export async function getStandings(competitionId: string): Promise<Ranked[]> {
     where: { competitionId },
     select: {
       userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
+          disqualifiedAt: true, disqualifyReason: true,
       user: { select: { name: true } },
     },
   });
@@ -490,6 +511,8 @@ export async function getStandings(competitionId: string): Promise<Ranked[]> {
     players.map((p) => ({
       userId: p.userId, name: p.user.name, score: p.score,
       totalMs: p.totalMs, answered: p.answered, finished: p.finishedAt !== null,
+        disqualified: p.disqualifiedAt !== null,
+        disqualifyReason: p.disqualifyReason,
     }))
   );
 }

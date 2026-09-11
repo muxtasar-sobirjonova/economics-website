@@ -114,7 +114,18 @@ export function FocusNotice({
  * student reading it is about to panic, and a locked screen with no way
  * forward is how a room ends in an argument.
  */
-export function LockedPaper({ answered, total }: { answered: number; total: number }) {
+export function LockedPaper({
+  answered,
+  total,
+  reason,
+  byHost,
+}: {
+  answered: number;
+  total: number;
+  /** Why, in the host's words or the guard's. Always shown. */
+  reason: string | null;
+  byHost: boolean;
+}) {
   return (
     <section
       className="rounded-lg border bg-surface shadow-sh1 p-s6 text-center"
@@ -124,12 +135,20 @@ export function LockedPaper({ answered, total }: { answered: number; total: numb
         Your paper is paused
       </h2>
       <p className="text-ui text-ink mt-s3 max-w-[46ch] mx-auto">
-        You left this page while the competition was running, so it stopped.
+        {byHost ? "The host stopped your paper." : "Your paper stopped itself."}
       </p>
+      {reason && (
+        <p
+          className="text-ui mt-s3 max-w-[46ch] mx-auto px-s4 py-s3 rounded-md"
+          style={{ background: "var(--danger-soft)", color: "var(--text)" }}
+        >
+          {reason}
+        </p>
+      )}
       <p className="text-meta text-muted mt-s3 max-w-[46ch] mx-auto">
         <strong className="text-ink">Nothing you wrote is lost.</strong> All{" "}
-        {answered} of your {total} answers are saved. Tell the host and they can
-        let you carry on from where you were.
+        {answered} of your {total} answers are saved. Talk to the host — they
+        can let you carry on from where you were.
       </p>
     </section>
   );

@@ -597,13 +597,27 @@ model CompetitionPlayer {
   /// Every time this player's page lost focus: [{ at, ms }]. A document
   /// rather than a table, the same call DuelRun.answers made — only the
   /// host's record screen reads it, and it is capped in code.
-  awayLog   Json      @default("[]")
+  awayLog    Json      @default("[]")
   /// Kept beside the log so a standings query never has to parse it.
-  awayCount Int       @default(0)
-  awayMs    Int       @default(0)
+  awayCount  Int       @default(0)
+  awayMs     Int       @default(0)
   /// Frozen, not finished. The host can clear this and they carry on from
   /// where they were; nothing they wrote is submitted or lost.
-  lockedAt  DateTime?
+  lockedAt   DateTime?
+  /// Why, in words the student reads on the frozen screen. Written by the host
+  /// when they stop someone by hand, and by the guard when it stops them
+  /// itself. A paper that stops without saying why is how a room ends in an
+  /// argument nobody can settle afterwards.
+  lockReason String?
+  /// Null when the guard did it, the host's id when a person did. The two are
+  /// answered differently when a student asks.
+  lockedById String?
+
+  /// The verdict after the room ended. Separate from the lock on purpose: a
+  /// lock is a pause anyone can lift, and this is a result. Never a delete —
+  /// the paper, the marks and the record all stay as the evidence for it.
+  disqualifiedAt   DateTime?
+  disqualifyReason String?
 
   @@unique([competitionId, userId])
   @@index([competitionId, score])

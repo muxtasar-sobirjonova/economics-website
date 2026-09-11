@@ -113,6 +113,17 @@ export function judge(
   };
 }
 
+/**
+ * Why the guard stopped someone, in the words they will read.
+ *
+ * Written by the machine, so it states what was observed and nothing more.
+ * A host stopping someone by hand writes their own reason instead.
+ */
+export function lockReasonFor(verdict: FocusVerdict): string {
+  const times = verdict.strikes === 1 ? "once" : `${verdict.strikes} times`;
+  return `Left the page ${times} while the paper was running.`;
+}
+
 /** What the student is told when they come back. Never accusing — reporting. */
 export function noticeFor(verdict: FocusVerdict, policy: FocusPolicy): string | null {
   if (policy === "NONE" || verdict.strikes === 0) return null;

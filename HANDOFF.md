@@ -65,6 +65,7 @@ Checks before every commit: `npx tsc --noEmit`, `npx next lint`,
 | `20260827_add_daily_question`       | ⚠️ **unverified**           |
 | `20260909_add_problem_competitions` | ✅ yes                      |
 | `20260911_add_focus_guard`          | ❌ **not run yet**          |
+| `20260911_add_block_reasons`        | ❌ **not run yet**          |
 
 The daily question is loaded inside a `try/catch` on `/duel`, so a missing
 `DailyAnswer` table fails silently and the block simply does not render. Check:
@@ -78,7 +79,8 @@ order by table_name;
 Five rows expected. If `DailyAnswer` is missing, run
 `prisma/migrations/20260827_add_daily_question/migration.sql`.
 
-`20260911_add_focus_guard` has **never been run**. Until it is, opening any
+`20260911_add_focus_guard` and `20260911_add_block_reasons` have **never been
+run**, and both are needed together. Until it is, opening any
 room fails: `Competition.focusPolicy` is selected on every read. Paste
 `prisma/migrations/20260911_add_focus_guard/migration.sql` into the Supabase
 SQL editor. It adds one enum and six columns, all defaulted, and changes no
@@ -399,6 +401,31 @@ Pasting into an answer box is refused while a room is watched, and copying the
 problem text out with it: those are the short roads from a model's answer into
 the box, and from the problem into a model.
 
+### Stopping someone, and disqualifying them
+
+The guard locks automatically under `LOCK`; the host can stop anyone by hand at
+any time, under any policy. Both write the same two columns, and the difference
+is `lockedById`: null when the guard did it, a user id when a person did. The
+student's frozen screen says which.
+
+**Every stop carries a reason and the student reads it.** The host types theirs;
+the guard writes its own (`lockReasonFor`). A paper that stops without saying
+why is how a room ends in an argument nobody can settle a week later. The
+button that sends it is disabled until a reason is typed.
+
+**Disqualification is a separate thing from a lock**, because a lock is a pause
+anyone can lift and a disqualification is a result. It happens after the room
+ends, on the same screen, and it is **never a delete**: the paper, its marks
+and the focus record all stay. They are the evidence for the decision, and a
+decision whose evidence went with it cannot be defended later. `rank()` sorts a
+disqualified player last and the standings show them struck through with the
+reason beside them — still on the board, visibly out of it. Reinstating is one
+button.
+
+The host's panel lists **everyone**, not only the people the browser noticed. A
+host who sees two students on one screen, or a phone under a desk, has to be
+able to act on it, and the browser will never report either.
+
 ### Papers are settled when a room ends
 
 `endCompetition` now hands in every paper still open in a problem room
@@ -469,7 +496,7 @@ rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
 ## Tests
 
-278 passing. The pattern is to test **the pure half**: Elo, grading, question
+282 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
 question selection, the CSS token guard, and — new with problem rooms — reading
@@ -484,8 +511,8 @@ the fix was to **assert the property**, not loosen the number.
 
 ## What is worth doing next
 
-1. **Run `20260911_add_focus_guard`.** Nothing opens a room until it is in the
-   database.
+1. **Run `20260911_add_focus_guard` and `20260911_add_block_reasons`.** Nothing
+   opens a room until both are in the database.
 2. **Write questions and problems.** Both banks are the constraint. Everything
    else is second.
 3. **Wait a week, then read `/duel/bank`.** It will say whether keys are wrong

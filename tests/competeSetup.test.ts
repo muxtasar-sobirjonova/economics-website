@@ -1,4 +1,5 @@
 import { describe, it, expect } from "vitest";
+import { rank } from "@/lib/compete/scoring";
 import {
   parseSetup, MIN_QUESTIONS, MAX_QUESTIONS, MIN_SECONDS, MAX_SECONDS, MAX_TITLE,
   MAX_ALLOWANCE,
@@ -82,5 +83,44 @@ describe("parseSetup — watching the page", () => {
     expect(setupOf(parseSetup({ ...ok, focusAllowance: -4 }))?.focusAllowance).toBe(0);
     expect(setupOf(parseSetup({ ...ok, focusAllowance: 999 }))?.focusAllowance).toBe(MAX_ALLOWANCE);
     expect(setupOf(parseSetup({ ...ok, focusAllowance: "3" }))?.focusAllowance).toBe(3);
+  });
+});
+
+describe("rank — disqualification", () => {
+  const base = { totalMs: 1000, answered: 5, finished: true };
+
+  it("sends a disqualified player to the bottom, whatever they scored", () => {
+    const rows = rank([
+      { userId: "a", name: "A", score: 10, ...base, disqualified: true },
+      { userId: "b", name: "B", score: 4, ...base },
+      { userId: "c", name: "C", score: 2, ...base },
+    ]);
+    expect(rows.map((r) => r.userId)).toEqual(["b", "c", "a"]);
+    expect(rows[2].rank).toBe(3);
+  });
+
+  it("keeps them on the board rather than removing them", () => {
+    // The row is the evidence for the decision; deleting it deletes that too.
+    const rows = rank([{ userId: "a", name: "A", score: 10, ...base, disqualified: true }]);
+    expect(rows).toHaveLength(1);
+    expect(rows[0].score).toBe(10);
+  });
+
+  it("does not give two disqualified players a shared rank", () => {
+    const rows = rank([
+      { userId: "a", name: "A", score: 5, ...base, disqualified: true },
+      { userId: "b", name: "B", score: 5, ...base, disqualified: true },
+      { userId: "c", name: "C", score: 1, ...base },
+    ]);
+    expect(rows.map((r) => r.rank)).toEqual([1, 2, 3]);
+  });
+
+  it("still shares a rank between two who are genuinely level", () => {
+    const rows = rank([
+      { userId: "a", name: "A", score: 5, ...base },
+      { userId: "b", name: "B", score: 5, ...base },
+      { userId: "c", name: "C", score: 1, ...base },
+    ]);
+    expect(rows.map((r) => r.rank)).toEqual([1, 1, 3]);
   });
 });

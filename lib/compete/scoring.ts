@@ -13,6 +13,9 @@ export interface Standing {
   totalMs: number;
   answered: number;
   finished: boolean;
+  /** The host's verdict after the room ended. Ranked last, never removed. */
+  disqualified?: boolean;
+  disqualifyReason?: string | null;
 }
 
 export interface Ranked extends Standing {
@@ -26,6 +29,10 @@ export interface Ranked extends Standing {
 export function rank(players: Standing[]): Ranked[] {
   const sorted = [...players].sort(
     (a, b) =>
+      // Disqualified goes to the bottom whatever it scored — that is the
+      // point of it — but stays on the board. Removing the row would remove
+      // the evidence for the decision along with it.
+      Number(a.disqualified ?? false) - Number(b.disqualified ?? false) ||
       b.score - a.score ||
       a.totalMs - b.totalMs ||
       (a.name ?? "").localeCompare(b.name ?? "")
@@ -35,7 +42,14 @@ export function rank(players: Standing[]): Ranked[] {
   let lastRank = 0;
   sorted.forEach((p, i) => {
     const prev = sorted[i - 1];
-    const level = prev && prev.score === p.score && prev.totalMs === p.totalMs;
+    // Two disqualified players are not "level" with each other in any sense
+    // worth printing a shared rank for.
+    const level =
+      prev &&
+      !p.disqualified &&
+      !prev.disqualified &&
+      prev.score === p.score &&
+      prev.totalMs === p.totalMs;
     lastRank = level ? lastRank : i + 1;
     out.push({ ...p, rank: lastRank });
   });

@@ -275,8 +275,11 @@ export interface ProblemSession {
   /** When the room closes, or null when the host closes it by hand. */
   deadline: Date | null;
   submitted: boolean;
-  /** Frozen by the focus guard. Not finished — the host can let them carry on. */
+  /** Frozen by the guard or by the host. Not finished — it can be lifted. */
   locked: boolean;
+  lockReason: string | null;
+  /** True when a person stopped them, false when the guard did. */
+  lockedByHost: boolean;
   focusPolicy: "NONE" | "WARN" | "LOCK";
   /** Strikes still allowed. Infinity is not JSON, so an unwatched room sends -1. */
   focusRemaining: number;
@@ -300,6 +303,7 @@ export async function getProblemSession(
       players: {
         select: {
           userId: true, answered: true, finishedAt: true, lockedAt: true, awayLog: true,
+          lockReason: true, lockedById: true,
           user: { select: { name: true } },
         },
       },
@@ -343,6 +347,8 @@ export async function getProblemSession(
     deadline: deadlineOf(comp.startedAt, comp.durationMinutes),
     submitted: me.finishedAt !== null,
     locked: me.lockedAt !== null,
+    lockReason: me.lockReason,
+    lockedByHost: me.lockedById != null,
     focusPolicy: comp.focusPolicy as "NONE" | "WARN" | "LOCK",
     focusRemaining: (() => {
       const verdict = judge(parseAwayLog(me.awayLog), comp.focusPolicy as FocusPolicy, comp.focusAllowance);

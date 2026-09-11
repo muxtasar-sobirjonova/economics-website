@@ -100,7 +100,12 @@ export default async function CompetitionPage({ params }: { params: { code: stri
       return shell(
         <>
           {focus && (
-            <FocusRecord competitionId={view.id} policy={focus.policy} rows={focus.rows} />
+            <FocusRecord
+              competitionId={view.id}
+              policy={focus.policy}
+              rows={focus.rows}
+              ended
+            />
           )}
           {sheet && progress && (
             <MarkingRoom competitionId={view.id} sheet={sheet} progress={progress} />

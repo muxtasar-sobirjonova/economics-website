@@ -23,12 +23,17 @@ export function Standings({
         const isMe = r.userId === meId;
         const pct = questionCount > 0 ? Math.round((r.answered / questionCount) * 100) : 0;
 
+        const out = r.disqualified === true;
+
         return (
           <li
             key={r.userId}
             className={`relative grid grid-cols-[2rem_1fr_auto] gap-s3 items-center px-s4 ${
               compact ? "py-s2" : "py-s3"
             } border-t border-line first:border-t-0 ${isMe ? "bg-accent-soft" : ""}`}
+            // Still on the board, visibly out of it. Removing the row would
+            // remove the evidence for the decision along with it.
+            style={out ? { opacity: 0.55 } : undefined}
           >
             {isMe && <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-accent" aria-hidden />}
 
@@ -43,7 +48,21 @@ export function Standings({
                 }`}
               >
                 {isMe ? `You · ${r.name || "Anonymous"}` : r.name || "Anonymous"}
+                {out && (
+                  <span
+                    className="ml-s2 text-label uppercase px-s2 py-[1px] rounded-sm whitespace-nowrap"
+                    style={{ background: "var(--danger-soft)", color: "var(--danger)" }}
+                  >
+                    disqualified
+                  </span>
+                )}
               </span>
+
+              {out && r.disqualifyReason && !compact && (
+                <span className="block text-meta text-muted break-words">
+                  {r.disqualifyReason}
+                </span>
+              )}
               {/* How far through they are — the thing that makes a live table
                   readable, since a low score may just mean they started late. */}
               <span className="block h-[3px] rounded-full bg-bg-sunk mt-1 max-w-[160px]" aria-hidden>
@@ -59,7 +78,12 @@ export function Standings({
             </span>
 
             <span className="text-right shrink-0">
-              <span className="block font-mono text-ui text-ink tabular">{r.score}</span>
+              <span
+                className="block font-mono text-ui text-ink tabular"
+                style={out ? { textDecoration: "line-through" } : undefined}
+              >
+                {r.score}
+              </span>
               <span className="block font-mono text-label uppercase text-faint">
                 {r.finished ? "done" : `${r.answered}/${questionCount}`}
               </span>
