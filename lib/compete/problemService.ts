@@ -11,6 +11,7 @@ import { can } from "@/lib/permissions";
 import { generateCode, normaliseCode } from "./code";
 import { parseProblem, PROBLEM_ERROR_COPY, type ProblemInput } from "./problem";
 import { markAnswer, hostMark, type MarkableProblem, type AskModel } from "./marking";
+import { cleanText } from "./answerCheck";
 import { gradeWithModel, graderAvailable } from "./grader";
 import { judge, parseAwayLog, type FocusPolicy } from "./focus";
 import type { Outcome } from "./service";
@@ -76,6 +77,51 @@ export async function saveProblem(
   } catch (e) {
     console.error("saveProblem failed", e);
     return { ok: false, error: "Could not save that problem." };
+  }
+}
+
+/**
+ * A whole paper at once.
+ *
+ * Each record goes through `parseProblem`, the same gate a typed one goes
+ * through, so nothing arrives in the bank by a back door. A block that fails
+ * is reported by its number and the rest are still saved: a typo in problem
+ * seven should not cost the other nine.
+ */
+export async function importProblems(
+  userId: string,
+  email: string | null | undefined,
+  records: ProblemInput[]
+): Promise<Outcome<{ added: number; issues: { block: number; problem: string }[] }>> {
+  const actor = await actorFor(userId, email);
+  if (!can(actor, StaffPermission.MANAGE_QUESTIONS)) {
+    return { ok: false, error: "You cannot write problems." };
+  }
+  if (records.length === 0) return { ok: false, error: "Nothing to read." };
+  if (records.length > 60) {
+    return { ok: false, error: "That is more than 60 problems. Paste them in two goes." };
+  }
+
+  const ready: Parameters<typeof prisma.problem.create>[0]["data"][] = [];
+  const issues: { block: number; problem: string }[] = [];
+
+  records.forEach((record, i) => {
+    const parsed = parseProblem(record);
+    if ("error" in parsed) {
+      issues.push({ block: i + 1, problem: PROBLEM_ERROR_COPY[parsed.error] });
+      return;
+    }
+    ready.push({ ...parsed.problem, authorId: userId });
+  });
+
+  if (ready.length === 0) return { ok: true, data: { added: 0, issues } };
+
+  try {
+    await prisma.problem.createMany({ data: ready });
+    return { ok: true, data: { added: ready.length, issues } };
+  } catch (e) {
+    console.error("importProblems failed", e);
+    return { ok: false, error: "Could not save those problems." };
   }
 }
 
@@ -810,6 +856,71 @@ export async function overrideMark(
   return { ok: true, data: { points: mark.points } };
 }
 
+/**
+ * One mark, applied to everyone who wrote the same thing.
+ *
+ * Thirty papers means the same answer arrives a dozen times, and marking it a
+ * dozen times is both slower and less consistent than marking it once. Matched
+ * on the answer as the student typed it after the same cleaning the key uses,
+ * so "3025" and " 3025 " are one answer and nobody is marked twice for the
+ * difference.
+ *
+ * Deliberately limited to one problem: an identical string means something
+ * only within the question that was asked.
+ */
+export async function markIdentical(
+  userId: string,
+  competitionId: string,
+  problemId: string,
+  sample: string,
+  points: unknown,
+  feedback: unknown
+): Promise<Outcome<{ marked: number }>> {
+  const comp = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: { hostId: true, problemIds: true },
+  });
+  if (!comp || comp.hostId !== userId) return { ok: false, error: "Not your competition." };
+  if (!comp.problemIds.includes(problemId)) {
+    return { ok: false, error: "That problem is not in this set." };
+  }
+
+  const problem = await prisma.problem.findUnique({
+    where: { id: problemId },
+    select: { maxPoints: true },
+  });
+  const mark = hostMark(points, problem?.maxPoints ?? 0, feedback);
+
+  const wanted = cleanText(sample);
+  if (!wanted) return { ok: false, error: "An empty answer is marked on its own." };
+
+  const answers = await prisma.competitionAnswer.findMany({
+    where: { competitionId, questionId: problemId },
+    select: { id: true, userId: true, text: true },
+  });
+
+  const matching = answers.filter((a) => cleanText(a.text ?? "") === wanted);
+  if (matching.length === 0) return { ok: true, data: { marked: 0 } };
+
+  await prisma.competitionAnswer.updateMany({
+    where: { id: { in: matching.map((a) => a.id) } },
+    data: {
+      points: mark.points,
+      maxPoints: problem?.maxPoints ?? 0,
+      isCorrect: mark.isCorrect,
+      feedback: mark.feedback,
+      gradedBy: GradedBy.HOST,
+      gradedAt: new Date(),
+    },
+  });
+
+  for (const player of new Set(matching.map((a) => a.userId))) {
+    await recomputeScore(competitionId, player);
+  }
+
+  return { ok: true, data: { marked: matching.length } };
+}
+
 /* ── Reading the marks back ──────────────────────────────────────────────── */
 
 export interface MarkedAnswer {
@@ -855,7 +966,19 @@ export async function getMarkingSheet(
 
   const byId = new Map(problems.map((p) => [p.id, p]));
 
-  return answers.map((a) => ({
+  const order = new Map(comp.problemIds.map((id, i) => [id, i]));
+
+  return answers
+    // By problem, in the order the paper asked them, then by name inside it.
+    // Marking thirty answers to one question in a row is faster than jumping
+    // between questions, and far more consistent.
+    .sort(
+      (a, b) =>
+        (order.get(a.questionId) ?? 0) - (order.get(b.questionId) ?? 0) ||
+        Number(a.gradedBy !== "PENDING") - Number(b.gradedBy !== "PENDING") ||
+        (a.user.name ?? "").localeCompare(b.user.name ?? "")
+    )
+    .map((a) => ({
     answerId: a.id,
     playerId: a.userId,
     playerName: a.user.name,

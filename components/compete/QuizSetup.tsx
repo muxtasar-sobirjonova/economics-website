@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { createCompetitionAction } from "@/app/actions/compete";
 import { QuestionEditor } from "@/components/duel/QuestionEditor";
 import { FocusChoice } from "@/components/compete/FocusChoice";
+import { BulkPaste } from "@/components/compete/BulkPaste";
 import {
   MIN_QUESTIONS, MAX_QUESTIONS, MIN_SECONDS, MAX_SECONDS, MAX_TITLE,
   MIN_EXAM_MINUTES, MAX_EXAM_MINUTES,
@@ -38,6 +39,7 @@ export function QuizSetup({
   const [questionCount, setQuestionCount] = useState(12);
   const [secondsPerQuestion, setSeconds] = useState(25);
   const [access, setAccess] = useState<"OPEN" | "LINK">("OPEN");
+  const [pasting, setPasting] = useState(false);
   const [exam, setExam] = useState(false);
   const [minutes, setMinutes] = useState(20);
   const [focusPolicy, setFocusPolicy] = useState<FocusPolicy>("NONE");
@@ -197,7 +199,20 @@ export function QuizSetup({
             into this room and into rated duels. Anyone who meets it in a
             competition will never be served it in a duel.
           </p>
-          <QuestionEditor topics={topics.map((t) => t.name)} />
+          {pasting ? (
+            <BulkPaste kind="QUESTIONS" onDone={() => setPasting(false)} />
+          ) : (
+            <div className="flex flex-wrap gap-s3">
+              <QuestionEditor topics={topics.map((t) => t.name)} />
+              <button
+                type="button"
+                onClick={() => setPasting(true)}
+                className="inline-flex items-center justify-center min-h-[48px] px-s5 rounded-md border border-line text-ui text-ink hover:border-accent transition-colors"
+              >
+                Paste a whole sheet
+              </button>
+            </div>
+          )}
         </div>
       )}
 

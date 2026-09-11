@@ -5,10 +5,12 @@ import { useRouter } from "next/navigation";
 import {
   createProblemCompetitionAction,
   retireProblemAction,
+  getProblemAction,
 } from "@/app/actions/problems";
 import type { ProblemSummary } from "@/lib/compete/problemService";
 import { MAX_PROBLEMS, MIN_MINUTES, MAX_MINUTES } from "@/lib/compete/problemService";
-import { ProblemEditor } from "@/components/compete/ProblemEditor";
+import { ProblemEditor, type Draft } from "@/components/compete/ProblemEditor";
+import { BulkPaste } from "@/components/compete/BulkPaste";
 import { FocusChoice } from "@/components/compete/FocusChoice";
 import type { FocusPolicy } from "@/lib/compete/setup";
 import { plainText } from "@/lib/compete/markdown";
@@ -58,7 +60,12 @@ export function ProblemPicker({
 }) {
   const router = useRouter();
   const [picked, setPicked] = useState<string[]>([]);
+  /** Null when closed, undefined-id draft when writing a new one, a loaded
+      draft when fixing an existing one. */
+  const [editing, setEditing] = useState<Draft | null>(null);
   const [writing, setWriting] = useState(false);
+  const [pasting, setPasting] = useState(false);
+  const [loadError, setLoadError] = useState<string | null>(null);
   const [topicFilter, setTopicFilter] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
@@ -101,6 +108,22 @@ export function ProblemPicker({
       router.refresh();
     });
 
+  /**
+   * Open one for fixing.
+   *
+   * The key and the solution are not in the list — the list is rendered for
+   * anyone who can host, and those are for whoever can write. So they are
+   * fetched when the editor actually opens.
+   */
+  const edit = (id: string) =>
+    start(async () => {
+      setLoadError(null);
+      const res = await getProblemAction(id);
+      if (!res.ok) return setLoadError(res.error);
+      setWriting(false);
+      setEditing(res.data);
+    });
+
   if (!available) {
     return (
       <p className="text-meta text-muted max-w-[58ch]">
@@ -117,16 +140,39 @@ export function ProblemPicker({
     <div className="flex flex-col gap-s4">
       {/* Writing one. First, because an empty bank is the usual state. */}
       {mayWrite &&
-        (writing ? (
+        (editing ? (
+          <ProblemEditor
+            // Keyed by id so opening a second problem rebuilds the form rather
+            // than leaving the first one's answers in it.
+            key={editing.id}
+            initial={editing}
+            topics={topics}
+            onDone={() => setEditing(null)}
+          />
+        ) : writing ? (
           <ProblemEditor topics={topics} onDone={() => setWriting(false)} />
+        ) : pasting ? (
+          <BulkPaste kind="PROBLEMS" onDone={() => setPasting(false)} />
         ) : (
-          <button
-            onClick={() => setWriting(true)}
-            className="inline-flex items-center justify-center min-h-[48px] px-s5 rounded-md border border-line text-ui text-ink hover:border-accent transition-colors self-start"
-          >
-            Write a problem
-          </button>
+          <div className="flex flex-wrap gap-s3">
+            <button
+              onClick={() => setWriting(true)}
+              className="inline-flex items-center justify-center min-h-[48px] px-s5 rounded-md border border-line text-ui text-ink hover:border-accent transition-colors"
+            >
+              Write a problem
+            </button>
+            <button
+              onClick={() => setPasting(true)}
+              className="inline-flex items-center justify-center min-h-[48px] px-s5 rounded-md border border-line text-ui text-ink hover:border-accent transition-colors"
+            >
+              Paste a whole paper
+            </button>
+          </div>
         ))}
+
+      {loadError && (
+        <p className="text-meta" style={{ color: "var(--danger)" }}>{loadError}</p>
+      )}
 
       {/* The bank. */}
       <div className="flex flex-wrap items-center gap-s3">
@@ -199,14 +245,25 @@ export function ProblemPicker({
                   </span>
                 </span>
 
-                {manage && mayWrite ? (
-                  <button
-                    onClick={() => retire(p.id, !p.active)}
-                    disabled={pending}
-                    className="text-label uppercase text-faint hover:text-ink transition-colors min-h-[44px] px-s2 shrink-0"
-                  >
-                    {p.active ? "Retire" : "Restore"}
-                  </button>
+                {mayWrite ? (
+                  <span className="flex flex-col items-end shrink-0">
+                    <button
+                      onClick={() => edit(p.id)}
+                      disabled={pending}
+                      className="text-label uppercase text-accent hover:text-accent-strong transition-colors min-h-[44px] px-s2"
+                    >
+                      Edit
+                    </button>
+                    {manage && (
+                      <button
+                        onClick={() => retire(p.id, !p.active)}
+                        disabled={pending}
+                        className="text-label uppercase text-faint hover:text-ink transition-colors min-h-[44px] px-s2"
+                      >
+                        {p.active ? "Retire" : "Restore"}
+                      </button>
+                    )}
+                  </span>
                 ) : (
                   <span />
                 )}

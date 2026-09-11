@@ -2,7 +2,11 @@
 
 import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { gradeBatchAction, overrideMarkAction } from "@/app/actions/problems";
+import {
+  gradeBatchAction,
+  overrideMarkAction,
+  markIdenticalAction,
+} from "@/app/actions/problems";
 import type { MarkedAnswer, MarkingProgress } from "@/lib/compete/problemService";
 import { Rich } from "@/components/compete/Rich";
 
@@ -111,11 +115,28 @@ export function MarkingRoom({
         <span className="text-meta text-faint">{rows.length} shown</span>
       </div>
 
-      <ul className="list-none m-0 p-0 flex flex-col gap-s3">
-        {rows.map((answer) => (
-          <AnswerCard key={answer.answerId} competitionId={competitionId} answer={answer} />
-        ))}
-      </ul>
+      {groupByProblem(rows).map((group) => (
+        <section key={group.problemId} className="flex flex-col gap-s3">
+          <div className="flex flex-wrap items-baseline gap-s3">
+            <h3 className="text-h3 font-semibold text-ink break-words">{group.title}</h3>
+            <span className="h-px bg-line flex-1 min-w-[20px]" />
+            <span className="text-label uppercase text-faint shrink-0">
+              {group.answers.length} answer{group.answers.length === 1 ? "" : "s"}
+            </span>
+          </div>
+
+          <ul className="list-none m-0 p-0 flex flex-col gap-s3">
+            {group.answers.map((answer) => (
+              <AnswerCard
+                key={answer.answerId}
+                competitionId={competitionId}
+                answer={answer}
+                sameCount={group.same.get(fold(answer.text)) ?? 1}
+              />
+            ))}
+          </ul>
+        </section>
+      ))}
 
       {rows.length === 0 && (
         <p className="text-meta text-muted">Nothing is waiting to be marked.</p>
@@ -124,12 +145,49 @@ export function MarkingRoom({
   );
 }
 
+/**
+ * The same answer, written the same way.
+ *
+ * Folded the way the key folds one, so " 3025 " and "3025" are one answer and
+ * the host is not asked to mark the difference between two spaces.
+ */
+function fold(text: string): string {
+  return text.trim().replace(/\s+/g, " ").toLowerCase();
+}
+
+function groupByProblem(rows: MarkedAnswer[]) {
+  const groups = new Map<string, { problemId: string; title: string; answers: MarkedAnswer[] }>();
+
+  for (const row of rows) {
+    const group = groups.get(row.problemId) ?? {
+      problemId: row.problemId,
+      title: row.problemTitle,
+      answers: [],
+    };
+    group.answers.push(row);
+    groups.set(row.problemId, group);
+  }
+
+  // How many papers wrote each answer, so a card can offer to mark them all.
+  return [...groups.values()].map((group) => {
+    const same = new Map<string, number>();
+    for (const a of group.answers) {
+      const key = fold(a.text);
+      if (key) same.set(key, (same.get(key) ?? 0) + 1);
+    }
+    return { ...group, same };
+  });
+}
+
 function AnswerCard({
   competitionId,
   answer,
+  sameCount,
 }: {
   competitionId: string;
   answer: MarkedAnswer;
+  /** How many papers wrote this same answer, this one included. */
+  sameCount: number;
 }) {
   const router = useRouter();
   const [points, setPoints] = useState(String(answer.points));
@@ -138,6 +196,24 @@ function AnswerCard({
   const [pending, start] = useTransition();
 
   const tone = TONE[answer.gradedBy] ?? TONE.PENDING;
+
+  /** The same mark, to every paper that wrote this answer to this problem. */
+  const saveAll = () => {
+    start(async () => {
+      const res = await markIdenticalAction(
+        competitionId,
+        answer.problemId,
+        answer.text,
+        Number(points),
+        feedback.trim() || null
+      );
+      if (res.ok) {
+        setSaved(true);
+        setTimeout(() => setSaved(false), 2000);
+        router.refresh();
+      }
+    });
+  };
 
   const save = () => {
     start(async () => {
@@ -222,6 +298,17 @@ function AnswerCard({
           >
             {pending ? "Saving…" : saved ? "Saved" : "Set the mark"}
           </button>
+
+          {sameCount > 1 && answer.text.trim() !== "" && (
+            <button
+              onClick={saveAll}
+              disabled={pending}
+              className="inline-flex items-center min-h-[48px] px-s4 rounded-md border text-ui transition-colors disabled:opacity-60"
+              style={{ borderColor: "var(--accent)", color: "var(--accent-strong)" }}
+            >
+              {pending ? "…" : `Same for all ${sameCount}`}
+            </button>
+          )}
         </div>
       </div>
     </li>

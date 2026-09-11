@@ -5,6 +5,8 @@ import { auth } from "@/auth";
 import {
   saveProblem,
   retireProblem,
+  getProblemForEditor,
+  importProblems,
   createProblemCompetition,
   saveProblemDraft,
   setFlag,
@@ -12,6 +14,7 @@ import {
   gradeNextBatch,
   markingProgress,
   overrideMark,
+  markIdentical,
   type ProblemSetupInput,
   type MarkingProgress,
 } from "@/lib/compete/problemService";
@@ -23,6 +26,7 @@ import {
   reinstatePlayer,
   type FocusState,
 } from "@/lib/compete/focusService";
+import { parseProblemImport } from "@/lib/compete/bulkImport";
 import type { ProblemInput } from "@/lib/compete/problem";
 import type { Outcome } from "@/lib/compete/service";
 
@@ -212,4 +216,95 @@ export async function setFlagAction(
   if (!user) return { ok: false, error: "Sign in first." };
 
   return setFlag(user.id, str(competitionId), str(problemId), flagged === true);
+}
+
+/**
+ * One problem, with its key and its solution, for the editor.
+ *
+ * Fetched on demand rather than sent down with the list: the list is rendered
+ * for anyone who may host a room, and the answer key is for whoever may write
+ * one. Two different rights, so two different reads.
+ */
+export async function getProblemAction(id: string): Promise<Outcome<ProblemDraft>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+
+  const row = await getProblemForEditor(user.id, user.email, str(id));
+  if (!row) return { ok: false, error: "Could not open that problem." };
+
+  return {
+    ok: true,
+    data: {
+      id: row.id,
+      title: row.title,
+      topic: row.topic,
+      statement: row.statement,
+      imageUrl: row.imageUrl ?? "",
+      answerKind: row.answerKind,
+      // Numbers become strings here because the form holds strings: a field
+      // the author is halfway through typing is not a number yet.
+      numericValue: row.numericValue === null ? "" : String(row.numericValue),
+      numericTolerance: String(row.numericTolerance),
+      acceptedAnswers: row.acceptedAnswers.join(" | "),
+      answerHint: row.answerHint ?? "",
+      solution: row.solution ?? "",
+      maxPoints: row.maxPoints,
+      gradingMode: row.gradingMode,
+    },
+  };
+}
+
+/** The editor's shape, which is all strings where the form holds strings. */
+export interface ProblemDraft {
+  id: string;
+  title: string;
+  topic: string;
+  statement: string;
+  imageUrl: string;
+  answerKind: "NUMERIC" | "SHORT" | "OPEN";
+  numericValue: string;
+  numericTolerance: string;
+  acceptedAnswers: string;
+  answerHint: string;
+  solution: string;
+  maxPoints: number;
+  gradingMode: "AUTO" | "AI" | "HOST";
+}
+
+/** A pasted paper, read and saved in one go. */
+export async function importProblemsAction(
+  text: string
+): Promise<Outcome<{ added: number; issues: { block: number; problem: string }[] }>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+
+  const { records, issues } = parseProblemImport(str(text));
+  const result = await importProblems(user.id, user.email, records);
+  if (!result.ok) return result;
+
+  revalidatePath("/compete/problems");
+  // The reading issues and the validating ones are one list to the author:
+  // they do not care which half of the pipeline objected.
+  return {
+    ok: true,
+    data: { added: result.data.added, issues: [...issues, ...result.data.issues] },
+  };
+}
+
+/** One mark, applied to every paper that wrote the same answer to one problem. */
+export async function markIdenticalAction(
+  competitionId: string,
+  problemId: string,
+  sample: string,
+  points: number,
+  feedback: string | null
+): Promise<Outcome<{ marked: number }>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+
+  const result = await markIdentical(
+    user.id, str(competitionId), str(problemId), str(sample), points, feedback
+  );
+  if (result.ok) revalidatePath("/compete");
+  return result;
 }

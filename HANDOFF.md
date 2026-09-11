@@ -359,6 +359,54 @@ Three rules that exist because economics is not prose:
 The editor previews as you type, which is the point: whether a problem survived
 being copied out of a PDF is a question about how it _looks_.
 
+### Pasting a whole paper
+
+`lib/compete/bulkImport.ts` reads a pasted document into records. Ten problems
+out of a PDF is ten trips through a form otherwise, and that is where an
+evening goes.
+
+**It validates nothing.** It turns text into the same shape the form produces,
+and `parseProblem` and `buildQuestions` hold it to exactly the standard a typed
+one is held to. One place decides what a valid problem is, and it is not the
+importer — the tests assert that by running every parsed record back through
+the real validator.
+
+Problems: `---` on its own line separates them, a leading `##` heading becomes
+the title _and is taken out of the statement_ (left in, it prints twice), and
+`@answer @tolerance @points @topic @hint @solution @image @marker` follow. A
+directive's value runs to the end of its line and on through the lines after it
+until the next one starts, so a four-line solution needs nothing escaped.
+
+Questions: `*` marks the right option and `-` the rest, `>` is the explanation,
+`Topic:` sets the topic. Marking every option is what makes a line an option
+rather than part of the question. Upserted on the hash of the question text, so
+re-pasting a corrected sheet fixes rows rather than doubling the bank.
+
+`BulkPaste.tsx` reads as you type and says what it found **before** anything is
+saved — the moment to discover the separators are wrong is before sixty
+problems land in the bank. A block that fails is reported by its number and the
+rest are still saved: a typo in problem seven should not cost the other nine.
+
+### Problems can be corrected
+
+The editor was only ever opened blank, and `getProblemForEditor` was written
+and never called — so a wrong answer key could be retired but not fixed. There
+is an Edit button on every row now; the key and the solution are fetched when
+it opens rather than sent down with the list, because the list is rendered for
+anyone who may host a room and the key is for whoever may write one.
+
+### Marking a room
+
+The sheet is ordered **by problem, in the order the paper asked them**. Marking
+thirty answers to one question in a row is faster than jumping between
+questions and far more consistent — the same standard is still in the reader's
+head.
+
+`markIdentical` applies one mark to every paper that wrote the same answer to
+the same problem, folded the way the key folds one, so " 3025 " and "3025" are
+one answer. Limited to a single problem on purpose: an identical string means
+something only within the question that was asked.
+
 ### Two shapes of quiz room
 
 A quiz room is either a **fast round** — a clock on every question, one shot,
@@ -578,7 +626,7 @@ rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
 ## Tests
 
-289 passing. The pattern is to test **the pure half**: Elo, grading, question
+313 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
 question selection, the CSS token guard, and — new with problem rooms — reading

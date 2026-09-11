@@ -6,6 +6,7 @@ import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 import { actorFor } from "@/lib/staff";
 import { can } from "@/lib/permissions";
+import { parseQuestionImport } from "@/lib/compete/bulkImport";
 import { buildQuestions } from "@/lib/duel/questionImport";
 
 /**
@@ -115,4 +116,71 @@ export async function saveQuestionAction(
     console.error("saveQuestion failed", e);
     return { ok: false, error: "Could not save that question." };
   }
+}
+
+/**
+ * A pasted sheet of multiple choice questions.
+ *
+ * Read by `parseQuestionImport`, then held to exactly the standard the CSV
+ * importer and the form hold one to — `buildQuestions` is the only thing that
+ * decides what a usable question is, here as everywhere else.
+ *
+ * Upserted on the id the text hashes to, so re-pasting a corrected sheet fixes
+ * the rows it already loaded instead of doubling the bank.
+ */
+export async function importQuestionsAction(
+  text: string
+): Promise<{
+  ok: boolean;
+  error?: string;
+  added?: number;
+  issues?: { block: number; problem: string }[];
+}> {
+  const session = await auth();
+  if (!(await mayManageQuestions(session?.user?.id, session?.user?.email))) {
+    return { ok: false, error: "Not allowed." };
+  }
+
+  const { records, issues: reading } = parseQuestionImport(
+    typeof text === "string" ? text : ""
+  );
+  if (records.length === 0) {
+    return { ok: false, error: reading[0]?.problem ?? "Nothing to read." };
+  }
+  if (records.length > 100) {
+    return { ok: false, error: "That is more than 100 questions. Paste them in two goes." };
+  }
+
+  const { questions, issues: validating } = buildQuestions(
+    records as unknown as Record<string, unknown>[]
+  );
+
+  try {
+    for (const q of questions) {
+      await prisma.duelQuestion.upsert({
+        where: { id: q.id },
+        create: { ...q, explanation: q.explanation ?? undefined },
+        update: {
+          topic: q.topic,
+          options: q.options,
+          correctAnswer: q.correctAnswer,
+          explanation: q.explanation ?? undefined,
+        },
+      });
+    }
+  } catch (e) {
+    console.error("importQuestionsAction failed", e);
+    return { ok: false, error: "Could not save those questions." };
+  }
+
+  revalidatePath("/duel/bank");
+  revalidatePath("/compete");
+
+  return {
+    ok: true,
+    added: questions.length,
+    // `buildQuestions` counts a header row, so its row numbers are one ahead
+    // of the blocks the author pasted.
+    issues: [...reading, ...validating.map((i) => ({ block: i.row - 1, problem: i.problem }))],
+  };
 }
