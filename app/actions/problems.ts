@@ -14,6 +14,11 @@ import {
   type ProblemSetupInput,
   type MarkingProgress,
 } from "@/lib/compete/problemService";
+import {
+  reportAway,
+  unlockPlayer,
+  type FocusState,
+} from "@/lib/compete/focusService";
 import type { ProblemInput } from "@/lib/compete/problem";
 import type { Outcome } from "@/lib/compete/service";
 
@@ -119,6 +124,36 @@ export async function overrideMarkAction(
   if (!user) return { ok: false, error: "Sign in first." };
 
   const result = await overrideMark(user.id, str(competitionId), str(answerId), points, feedback);
+  if (result.ok) revalidatePath("/compete");
+  return result;
+}
+
+/**
+ * "I left the page."
+ *
+ * Called by the page itself, so the duration is the page's word. The server
+ * stamps the time, clamps the duration and decides what it means — see
+ * lib/compete/focusService.ts for what this can and cannot be trusted to know.
+ */
+export async function reportAwayAction(
+  competitionId: string,
+  ms: number
+): Promise<Outcome<FocusState>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+
+  return reportAway(user.id, str(competitionId), ms);
+}
+
+/** The host letting a frozen paper carry on. */
+export async function unlockPlayerAction(
+  competitionId: string,
+  playerId: string
+): Promise<Outcome<null>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+
+  const result = await unlockPlayer(user.id, str(competitionId), str(playerId));
   if (result.ok) revalidatePath("/compete");
   return result;
 }

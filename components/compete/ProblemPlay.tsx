@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { saveDraftAction, submitProblemsAction } from "@/app/actions/problems";
 import type { ProblemSession } from "@/lib/compete/problemService";
 import { Rich } from "@/components/compete/Rich";
+import { useFocusGuard, FocusNotice, LockedPaper } from "@/components/compete/FocusGuard";
 
 /**
  * Answering a paper.
@@ -55,6 +56,21 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
 
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const submittedRef = useRef(false);
+
+  const guard = useFocusGuard({
+    competitionId: session.competitionId,
+    policy: session.focusPolicy,
+    initialLocked: session.locked,
+    active: !session.submitted,
+  });
+
+  /** Pasting is the short road from a model's answer to this box. */
+  const watched = session.focusPolicy !== "NONE";
+  const refusePaste = (e: React.ClipboardEvent) => {
+    if (!watched) return;
+    e.preventDefault();
+    setError("Pasting is off in this room. Type your answer.");
+  };
 
   const problem = session.problems[index];
   const total = session.problems.length;
@@ -120,8 +136,11 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
   // for an hour and lost it to a clock will not sit another one.
   useEffect(() => {
     if (!deadline || session.submitted || submittedRef.current || now === null) return;
+    // A frozen paper is handed in by the host ending the room, not by its own
+    // clock: submitting it here would take the decision away from them.
+    if (guard.locked) return;
     if (now >= deadline) void handIn();
-  }, [now, deadline, session.submitted, handIn]);
+  }, [now, deadline, session.submitted, handIn, guard.locked]);
 
   // A closed laptop should not cost the last paragraph.
   useEffect(() => {
@@ -150,6 +169,15 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
     );
   }
 
+  if (guard.locked) {
+    return (
+      <div className="flex flex-col gap-s4">
+        <LockedPaper answered={answered} total={total} />
+        <RoomProgress room={session.room} total={total} />
+      </div>
+    );
+  }
+
   if (!problem) return null;
 
   const left = deadline && now !== null ? deadline - now : null;
@@ -159,6 +187,8 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
 
   return (
     <div className="flex flex-col gap-s4">
+      <FocusNotice notice={guard.notice} onDismiss={guard.dismiss} />
+
       {/* Where you are, and how long is left. */}
       <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s4 flex flex-wrap items-center gap-s4">
         <div className="flex-1 min-w-0">
@@ -226,7 +256,9 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
         <div className="p-s5 flex flex-col gap-s4">
           <h2 className="text-h3 font-semibold text-ink">{problem.title}</h2>
 
-          <Rich source={problem.statement} />
+          <div onCopy={(e) => watched && e.preventDefault()}>
+            <Rich source={problem.statement} />
+          </div>
 
           {problem.imageUrl && (
             // A scanned diagram has no dimensions to give next/image.
@@ -249,6 +281,7 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
                 value={draft}
                 onChange={(e) => edit(problem.id, e.target.value)}
                 onBlur={() => void flush()}
+                onPaste={refusePaste}
                 rows={8}
                 maxLength={4000}
                 placeholder="Show your working."
@@ -259,6 +292,7 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
                 value={draft}
                 onChange={(e) => edit(problem.id, e.target.value)}
                 onBlur={() => void flush()}
+                onPaste={refusePaste}
                 inputMode={problem.answerKind === "NUMERIC" ? "decimal" : "text"}
                 autoComplete="off"
                 maxLength={200}

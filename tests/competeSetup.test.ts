@@ -1,6 +1,7 @@
 import { describe, it, expect } from "vitest";
 import {
   parseSetup, MIN_QUESTIONS, MAX_QUESTIONS, MIN_SECONDS, MAX_SECONDS, MAX_TITLE,
+  MAX_ALLOWANCE,
 } from "@/lib/compete/setup";
 
 const ok = { title: "Chapter 3 showdown", questionCount: 12, secondsPerQuestion: 25 };
@@ -12,6 +13,7 @@ describe("parseSetup", () => {
     expect(setupOf(parseSetup(ok))).toEqual({
       title: "Chapter 3 showdown", topic: null, questionCount: 12,
       secondsPerQuestion: 25, access: "OPEN",
+      focusPolicy: "NONE", focusAllowance: 2,
     });
   });
 
@@ -58,5 +60,27 @@ describe("parseSetup", () => {
     expect(setupOf(parseSetup({ ...ok, access: "LINK" }))?.access).toBe("LINK");
     expect(setupOf(parseSetup({ ...ok, access: "EVERYONE_FOREVER" }))?.access).toBe("OPEN");
     expect(setupOf(parseSetup({ ...ok, access: undefined }))?.access).toBe("OPEN");
+  });
+});
+
+describe("parseSetup — watching the page", () => {
+  it("watches nobody unless the host said to", () => {
+    // The strict end is never a default: a room that froze people because a
+    // value arrived misspelt is worse than one that watched nobody.
+    expect(setupOf(parseSetup(ok))?.focusPolicy).toBe("NONE");
+    expect(setupOf(parseSetup({ ...ok, focusPolicy: "lock" }))?.focusPolicy).toBe("NONE");
+    expect(setupOf(parseSetup({ ...ok, focusPolicy: 7 }))?.focusPolicy).toBe("NONE");
+  });
+
+  it("takes the two policies it knows", () => {
+    expect(setupOf(parseSetup({ ...ok, focusPolicy: "WARN" }))?.focusPolicy).toBe("WARN");
+    expect(setupOf(parseSetup({ ...ok, focusPolicy: "LOCK" }))?.focusPolicy).toBe("LOCK");
+  });
+
+  it("holds the allowance inside a range", () => {
+    expect(setupOf(parseSetup({ ...ok, focusAllowance: 0 }))?.focusAllowance).toBe(0);
+    expect(setupOf(parseSetup({ ...ok, focusAllowance: -4 }))?.focusAllowance).toBe(0);
+    expect(setupOf(parseSetup({ ...ok, focusAllowance: 999 }))?.focusAllowance).toBe(MAX_ALLOWANCE);
+    expect(setupOf(parseSetup({ ...ok, focusAllowance: "3" }))?.focusAllowance).toBe(3);
   });
 });

@@ -85,6 +85,8 @@ export async function createCompetition(
           topic: setup.topic,
           secondsPerQuestion: setup.secondsPerQuestion,
           questionIds,
+          focusPolicy: setup.focusPolicy,
+          focusAllowance: setup.focusAllowance,
         },
       });
       return { ok: true, data: { code } };
@@ -220,6 +222,19 @@ export async function endCompetition(userId: string, competitionId: string): Pro
     where: { id: competitionId },
     data: { status: CompetitionStatus.ENDED, endedAt: new Date() },
   });
+
+  // A paper nobody submitted is not a paper worth nothing: it is a laptop that
+  // was closed, a clock that ran out with the tab in the background, or a
+  // paper the focus guard froze. Without this they are never marked at all.
+  const full = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: { format: true },
+  });
+  if (full?.format === CompetitionFormat.PROBLEMS) {
+    const { settleEveryone } = await import("./problemService");
+    await settleEveryone(competitionId);
+  }
+
   return { ok: true, data: null };
 }
 
@@ -376,9 +391,10 @@ export async function answerCompetition(
 
   const seat = await prisma.competitionPlayer.findUnique({
     where: { competitionId_userId: { competitionId, userId } },
-    select: { id: true, joinedAt: true },
+    select: { id: true, joinedAt: true, lockedAt: true },
   });
   if (!seat) return { ok: false, error: "You are not in this competition." };
+  if (seat.lockedAt) return { ok: false, error: "Your paper is paused. Ask the host." };
 
   const last = await prisma.competitionAnswer.findFirst({
     where: { competitionId, userId },

@@ -12,6 +12,7 @@ import { generateCode, normaliseCode } from "./code";
 import { parseProblem, PROBLEM_ERROR_COPY, type ProblemInput } from "./problem";
 import { markAnswer, hostMark, type MarkableProblem, type AskModel } from "./marking";
 import { gradeWithModel, graderAvailable } from "./grader";
+import { judge, parseAwayLog, type FocusPolicy } from "./focus";
 import type { Outcome } from "./service";
 
 /**
@@ -173,6 +174,8 @@ export interface ProblemSetupInput {
   problemIds?: unknown;
   durationMinutes?: unknown;
   access?: unknown;
+  focusPolicy?: unknown;
+  focusAllowance?: unknown;
 }
 
 export async function createProblemCompetition(
@@ -228,6 +231,13 @@ export async function createProblemCompetition(
           problemIds,
           questionIds: [],
           durationMinutes,
+          // Unrecognised means not watched: the strict end is never a default.
+          focusPolicy:
+            input.focusPolicy === "LOCK" ? "LOCK" : input.focusPolicy === "WARN" ? "WARN" : "NONE",
+          focusAllowance: Math.min(
+            Math.max(Math.round(Number(input.focusAllowance)) || 2, 0),
+            10
+          ),
         },
       });
       return { ok: true, data: { code } };
@@ -265,6 +275,11 @@ export interface ProblemSession {
   /** When the room closes, or null when the host closes it by hand. */
   deadline: Date | null;
   submitted: boolean;
+  /** Frozen by the focus guard. Not finished — the host can let them carry on. */
+  locked: boolean;
+  focusPolicy: "NONE" | "WARN" | "LOCK";
+  /** Strikes still allowed. Infinity is not JSON, so an unwatched room sends -1. */
+  focusRemaining: number;
   /** Names and how far along, never marks: marks would leak the answers. */
   room: { userId: string; name: string | null; answered: number; submitted: boolean }[];
 }
@@ -281,9 +296,10 @@ export async function getProblemSession(
     select: {
       id: true, code: true, title: true, problemIds: true, format: true,
       durationMinutes: true, startedAt: true,
+      focusPolicy: true, focusAllowance: true,
       players: {
         select: {
-          userId: true, answered: true, finishedAt: true,
+          userId: true, answered: true, finishedAt: true, lockedAt: true, awayLog: true,
           user: { select: { name: true } },
         },
       },
@@ -326,6 +342,12 @@ export async function getProblemSession(
     totalPoints: problems.reduce((sum, p) => sum + p.maxPoints, 0),
     deadline: deadlineOf(comp.startedAt, comp.durationMinutes),
     submitted: me.finishedAt !== null,
+    locked: me.lockedAt !== null,
+    focusPolicy: comp.focusPolicy as "NONE" | "WARN" | "LOCK",
+    focusRemaining: (() => {
+      const verdict = judge(parseAwayLog(me.awayLog), comp.focusPolicy as FocusPolicy, comp.focusAllowance);
+      return Number.isFinite(verdict.remaining) ? verdict.remaining : -1;
+    })(),
     room: comp.players
       .map((p) => ({
         userId: p.userId,
@@ -375,10 +397,11 @@ export async function saveProblemDraft(
 
   const seat = await prisma.competitionPlayer.findUnique({
     where: { competitionId_userId: { competitionId, userId } },
-    select: { finishedAt: true },
+    select: { finishedAt: true, lockedAt: true },
   });
   if (!seat) return { ok: false, error: "You are not in this competition." };
   if (seat.finishedAt) return { ok: false, error: "You have already handed this in." };
+  if (seat.lockedAt) return { ok: false, error: "Your paper is paused. Ask the host." };
 
   const body = typeof text === "string" ? text.slice(0, 4000) : "";
 
@@ -429,10 +452,39 @@ export async function submitProblems(
 
   const seat = await prisma.competitionPlayer.findUnique({
     where: { competitionId_userId: { competitionId, userId } },
-    select: { finishedAt: true, joinedAt: true },
+    select: { finishedAt: true, joinedAt: true, lockedAt: true },
   });
   if (!seat) return { ok: false, error: "You are not in this competition." };
   if (seat.finishedAt) return { ok: true, data: { pending: 0 } };
+  // Frozen means frozen. The host lets them carry on, or ending the room hands
+  // in whatever they had — see settleEveryone.
+  if (seat.lockedAt) return { ok: false, error: "Your paper is paused. Ask the host." };
+
+  return { ok: true, data: { pending: await settlePaper(competitionId, userId) } };
+}
+
+/**
+ * Mark one paper and hand it in.
+ *
+ * Split out of `submitProblems` because it has a second caller: a room that
+ * ends with papers still open. Without that, a student who closed their laptop
+ * — or whose paper was frozen — would never be marked at all, and their
+ * answers would sit in the database as a row nobody ever scored.
+ *
+ * The model is deliberately not called here. Submitting should wait for a
+ * database write, not for a queue of language model calls; the host's marking
+ * pass asks the model afterwards.
+ */
+export async function settlePaper(competitionId: string, userId: string): Promise<number> {
+  const comp = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: { problemIds: true, startedAt: true },
+  });
+  const seat = await prisma.competitionPlayer.findUnique({
+    where: { competitionId_userId: { competitionId, userId } },
+    select: { joinedAt: true, finishedAt: true },
+  });
+  if (!comp || !seat || seat.finishedAt) return 0;
 
   const [problems, answers] = await Promise.all([
     prisma.problem.findMany({ where: { id: { in: comp.problemIds } } }),
@@ -483,7 +535,25 @@ export async function submitProblems(
   });
 
   await recomputeScore(competitionId, userId);
-  return { ok: true, data: { pending } };
+  return pending;
+}
+
+/**
+ * Hand in every paper still open.
+ *
+ * Called when the host ends a problem room. A paper nobody submitted is not a
+ * paper worth nothing — it is a laptop that was closed, a clock that ran out
+ * with the tab in the background, or a paper the guard froze.
+ */
+export async function settleEveryone(competitionId: string): Promise<void> {
+  const open = await prisma.competitionPlayer.findMany({
+    where: { competitionId, finishedAt: null },
+    select: { userId: true },
+  });
+
+  // One at a time: thirty papers of twenty problems each is a lot of writes,
+  // and a host pressing "end it" can wait a moment longer for all of them.
+  for (const player of open) await settlePaper(competitionId, player.userId);
 }
 
 /** One player's marks, added up. Recomputed rather than incremented. */

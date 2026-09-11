@@ -13,6 +13,9 @@ export const MAX_SECONDS = 90;
 export const MAX_TITLE = 80;
 
 export type Access = "OPEN" | "LINK";
+export type FocusPolicy = "NONE" | "WARN" | "LOCK";
+
+export const MAX_ALLOWANCE = 10;
 
 export interface SetupInput {
   title?: unknown;
@@ -20,6 +23,8 @@ export interface SetupInput {
   questionCount?: unknown;
   secondsPerQuestion?: unknown;
   access?: unknown;
+  focusPolicy?: unknown;
+  focusAllowance?: unknown;
 }
 
 export interface Setup {
@@ -28,6 +33,8 @@ export interface Setup {
   questionCount: number;
   secondsPerQuestion: number;
   access: Access;
+  focusPolicy: FocusPolicy;
+  focusAllowance: number;
 }
 
 export type SetupError =
@@ -75,6 +82,12 @@ export function parseSetup(input: SetupInput): { setup: Setup } | { error: Setup
       secondsPerQuestion,
       // Anything unrecognised falls back to the safer of the two.
       access: input.access === "LINK" ? "LINK" : "OPEN",
+      // Unrecognised means not watched. The strict end is never the default:
+      // a room that froze people because a value was misspelt would be worse
+      // than one that watched nobody.
+      focusPolicy:
+        input.focusPolicy === "LOCK" ? "LOCK" : input.focusPolicy === "WARN" ? "WARN" : "NONE",
+      focusAllowance: Math.min(Math.max(num(input.focusAllowance) ?? 2, 0), MAX_ALLOWANCE),
     },
   };
 }

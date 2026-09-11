@@ -562,6 +562,14 @@ model Competition {
   /// on the model or on the host, which is what the results screen says.
   gradedAt        DateTime?
 
+  /// Whether leaving the page is watched, and what happens when it is. See
+  /// lib/compete/focus.ts — this catches the cheap routes and nothing else,
+  /// and the host reads a record rather than a verdict.
+  focusPolicy    FocusPolicy @default(NONE)
+  /// Absences long enough to count that a player may have before the paper
+  /// freezes. Only read under the LOCK policy.
+  focusAllowance Int         @default(2)
+
   createdAt DateTime  @default(now())
   startedAt DateTime?
   endedAt   DateTime?
@@ -585,6 +593,17 @@ model CompetitionPlayer {
   answered   Int       @default(0)
   joinedAt   DateTime  @default(now())
   finishedAt DateTime?
+
+  /// Every time this player's page lost focus: [{ at, ms }]. A document
+  /// rather than a table, the same call DuelRun.answers made — only the
+  /// host's record screen reads it, and it is capped in code.
+  awayLog   Json      @default("[]")
+  /// Kept beside the log so a standings query never has to parse it.
+  awayCount Int       @default(0)
+  awayMs    Int       @default(0)
+  /// Frozen, not finished. The host can clear this and they carry on from
+  /// where they were; nothing they wrote is submitted or lost.
+  lockedAt  DateTime?
 
   @@unique([competitionId, userId])
   @@index([competitionId, score])
@@ -703,4 +722,14 @@ model Problem {
   @@index([topic])
   @@index([active])
   @@index([authorId])
+}
+
+/// What happens when someone leaves the page mid-paper.
+enum FocusPolicy {
+  /// Not watched.
+  NONE
+  /// Recorded, and the student is told it was seen. Nothing freezes.
+  WARN
+  /// Recorded, and the paper freezes once the allowance is used up.
+  LOCK
 }

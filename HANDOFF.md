@@ -63,7 +63,8 @@ Checks before every commit: `npx tsc --noEmit`, `npx next lint`,
 | `20260824_add_duel_mode`            | ✅ yes — `/duel` works live |
 | `20260828_add_competitions`         | ✅ yes — `/compete` loads   |
 | `20260827_add_daily_question`       | ⚠️ **unverified**           |
-| `20260909_add_problem_competitions` | ❌ **not run yet**          |
+| `20260909_add_problem_competitions` | ✅ yes                      |
+| `20260911_add_focus_guard`          | ❌ **not run yet**          |
 
 The daily question is loaded inside a `try/catch` on `/duel`, so a missing
 `DailyAnswer` table fails silently and the block simply does not render. Check:
@@ -77,13 +78,15 @@ order by table_name;
 Five rows expected. If `DailyAnswer` is missing, run
 `prisma/migrations/20260827_add_daily_question/migration.sql`.
 
-`20260909_add_problem_competitions` has **never been run**. Nothing under
-`/compete/problems` works until it is: paste
-`prisma/migrations/20260909_add_problem_competitions/migration.sql` into the
-Supabase SQL editor. It adds the `Problem` table, four enums, and columns on
-`Competition` and `CompetitionAnswer`; it is guarded statement by statement and
-changes no existing row's meaning — `format` defaults to `QUIZ`, so every
-competition that already exists stays the quiz it was.
+`20260911_add_focus_guard` has **never been run**. Until it is, opening any
+room fails: `Competition.focusPolicy` is selected on every read. Paste
+`prisma/migrations/20260911_add_focus_guard/migration.sql` into the Supabase
+SQL editor. It adds one enum and six columns, all defaulted, and changes no
+existing row's meaning — `focusPolicy` defaults to `NONE`, so rooms that
+already exist are watched exactly as much as they were: not at all.
+
+`20260909_add_problem_competitions` has **been run**: the `Problem` table, four
+enums, and the columns on `Competition` and `CompetitionAnswer` are all live.
 
 ### Environment
 
@@ -352,6 +355,59 @@ Three rules that exist because economics is not prose:
 The editor previews as you type, which is the point: whether a problem survived
 being copied out of a PDF is a question about how it _looks_.
 
+### The focus guard
+
+Watching whether someone stayed on the page. `lib/compete/focus.ts` (pure) and
+`lib/compete/focusService.ts`.
+
+**What it cannot do, stated first because the whole design follows from it.** A
+student with a phone beside the laptop can ask a model anything, and nothing
+that runs in a browser will ever see that. This catches the cheap routes — a
+second tab, another window, a pasted answer — and it is **evidence for a host,
+never proof**. Anyone planning a real exam around it has been misled, which is
+why the room-creation form says so in as many words.
+
+Three policies, the host's call per room: `NONE`, `WARN` (recorded, and the
+student is told), `LOCK` (recorded, and the paper freezes past an allowance).
+Anything unrecognised resolves to `NONE` — the strict end is never a default,
+because a room that froze people over a misspelt value is worse than one that
+watched nobody.
+
+Two rules exist because the alternative is worse than the problem:
+
+- **An absence under ten seconds is recorded but never counts.** A
+  notification, an incoming call, a screen lock and an OS dialog are
+  indistinguishable from switching tabs. Ending a forty-five minute paper over
+  a Telegram message would be far worse than the cheating it was meant to
+  catch. The host still sees "left 14 times" when not one of them counted.
+- **Locked is not finished.** The paper freezes; it is not submitted. The host
+  clears the lock _and the record behind it_ — clearing only the lock would
+  snap it shut on the next absence — and the student carries on from where they
+  were.
+
+Signals are `visibilitychange` and `blur`, coalesced through one "away since"
+mark so one absence is never reported twice. Full screen was deliberately left
+out: iOS Safari refuses it, one key dismisses it everywhere else, and a paper
+that demanded it would read as a broken site.
+
+**The duration is the client's word and cannot be otherwise** — only the page
+sees itself lose focus, and a patched client reports nothing. The server stamps
+the _time_ itself, clamps the duration, and caps the log at 200 entries so a
+chatty client cannot grow a row without limit.
+
+Pasting into an answer box is refused while a room is watched, and copying the
+problem text out with it: those are the short roads from a model's answer into
+the box, and from the problem into a model.
+
+### Papers are settled when a room ends
+
+`endCompetition` now hands in every paper still open in a problem room
+(`settleEveryone` → `settlePaper`). Without it a student who closed their
+laptop — or whose paper the guard froze — was never marked at all, and their
+answers sat in the database as rows nobody ever scored. The client-side
+deadline only fires in a page that is still open, which is exactly the case
+that needed covering.
+
 ### Pictures
 
 `/problems/<file>.png` in `public/`, or an https address. `data:` and
@@ -413,7 +469,7 @@ rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
 ## Tests
 
-256 passing. The pattern is to test **the pure half**: Elo, grading, question
+278 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
 question selection, the CSS token guard, and — new with problem rooms — reading
@@ -428,8 +484,8 @@ the fix was to **assert the property**, not loosen the number.
 
 ## What is worth doing next
 
-1. **Run `20260909_add_problem_competitions`.** Problem rooms are code-complete
-   and cannot work until it is in the database.
+1. **Run `20260911_add_focus_guard`.** Nothing opens a room until it is in the
+   database.
 2. **Write questions and problems.** Both banks are the constraint. Everything
    else is second.
 3. **Wait a week, then read `/duel/bank`.** It will say whether keys are wrong

@@ -4,8 +4,10 @@ import { useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
 import { createCompetitionAction } from "@/app/actions/compete";
 import { QuestionEditor } from "@/components/duel/QuestionEditor";
+import { FocusChoice } from "@/components/compete/FocusChoice";
 import {
   MIN_QUESTIONS, MAX_QUESTIONS, MIN_SECONDS, MAX_SECONDS, MAX_TITLE,
+  type FocusPolicy,
 } from "@/lib/compete/setup";
 
 /**
@@ -35,6 +37,8 @@ export function QuizSetup({
   const [questionCount, setQuestionCount] = useState(12);
   const [secondsPerQuestion, setSeconds] = useState(25);
   const [access, setAccess] = useState<"OPEN" | "LINK">("OPEN");
+  const [focusPolicy, setFocusPolicy] = useState<FocusPolicy>("NONE");
+  const [focusAllowance, setFocusAllowance] = useState(2);
 
   const all = topics.reduce((n, t) => n + t.count, 0);
   const available = topic ? (topics.find((t) => t.name === topic)?.count ?? 0) : all;
@@ -44,6 +48,7 @@ export function QuizSetup({
     start(async () => {
       const res = await createCompetitionAction({
         title, topic, questionCount, secondsPerQuestion, access,
+        focusPolicy, focusAllowance,
       });
       if (!res.ok) return setError(res.error);
       router.push(`/compete/${res.data.code}`);
@@ -118,6 +123,13 @@ export function QuizSetup({
         {topic ? ` in ${topic}` : ""}. Competitions are unrated — nothing here
         moves anyone&apos;s duel rating.
       </p>
+
+      <FocusChoice
+        policy={focusPolicy}
+        setPolicy={setFocusPolicy}
+        allowance={focusAllowance}
+        setAllowance={setFocusAllowance}
+      />
 
       {/* A rule and a label, not another padded box: the editor below is
           already a card, and on a 375px screen every nested padding comes out

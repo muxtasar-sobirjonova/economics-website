@@ -9,6 +9,8 @@ import {
 import type { ProblemSummary } from "@/lib/compete/problemService";
 import { MAX_PROBLEMS, MIN_MINUTES, MAX_MINUTES } from "@/lib/compete/problemService";
 import { ProblemEditor } from "@/components/compete/ProblemEditor";
+import { FocusChoice } from "@/components/compete/FocusChoice";
+import type { FocusPolicy } from "@/lib/compete/setup";
 import { plainText } from "@/lib/compete/markdown";
 
 /**
@@ -65,6 +67,8 @@ export function ProblemPicker({
   const [minutes, setMinutes] = useState(45);
   const [timed, setTimed] = useState(true);
   const [access, setAccess] = useState<"OPEN" | "LINK">("OPEN");
+  const [focusPolicy, setFocusPolicy] = useState<FocusPolicy>("NONE");
+  const [focusAllowance, setFocusAllowance] = useState(2);
 
   const topics = useMemo(() => [...new Set(problems.map((p) => p.topic))].sort(), [problems]);
   const byId = useMemo(() => new Map(problems.map((p) => [p.id, p])), [problems]);
@@ -83,6 +87,8 @@ export function ProblemPicker({
         problemIds: picked,
         durationMinutes: timed ? minutes : null,
         access,
+        focusPolicy,
+        focusAllowance,
       });
       if (!res.ok) return setError(res.error);
       router.push(`/compete/${res.data.code}`);
@@ -273,6 +279,13 @@ export function ProblemPicker({
               </button>
             </label>
           </div>
+
+          <FocusChoice
+            policy={focusPolicy}
+            setPolicy={setFocusPolicy}
+            allowance={focusAllowance}
+            setAllowance={setFocusAllowance}
+          />
 
           {error && <p className="text-meta" style={{ color: "var(--danger)" }}>{error}</p>}
 

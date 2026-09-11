@@ -21,6 +21,8 @@ import { CompetitionPlay } from "@/components/compete/CompetitionPlay";
 import { ProblemPlay } from "@/components/compete/ProblemPlay";
 import { ProblemReview } from "@/components/compete/ProblemReview";
 import { MarkingRoom } from "@/components/compete/MarkingRoom";
+import { FocusRecord } from "@/components/compete/FocusRecord";
+import { focusRecord } from "@/lib/compete/focusService";
 import { Standings } from "@/components/compete/Standings";
 import { HostControls } from "@/components/compete/HostControls";
 import { DuelReviewList } from "@/components/duel/DuelReviewList";
@@ -88,14 +90,18 @@ export default async function CompetitionPage({ params }: { params: { code: stri
     if (isProblems) {
       // The host's marking screen is loaded only for the host, so a player who
       // reads this page never has the sheet — or the solutions — in their HTML.
-      const [review, sheet, progress] = await Promise.all([
+      const [review, sheet, progress, focus] = await Promise.all([
         getProblemReview(userId, view.id),
         view.isHost ? getMarkingSheet(userId, view.id) : Promise.resolve(null),
         view.isHost ? markingProgress(userId, view.id) : Promise.resolve(null),
+        view.isHost ? focusRecord(userId, view.id) : Promise.resolve(null),
       ]);
 
       return shell(
         <>
+          {focus && (
+            <FocusRecord competitionId={view.id} policy={focus.policy} rows={focus.rows} />
+          )}
           {sheet && progress && (
             <MarkingRoom competitionId={view.id} sheet={sheet} progress={progress} />
           )}
@@ -126,9 +132,14 @@ export default async function CompetitionPage({ params }: { params: { code: stri
   if (isProblems) {
     const play = view.joined ? await getProblemSession(userId, view.code) : null;
 
+    const focus = view.isHost ? await focusRecord(userId, view.id) : null;
+
     return shell(
       <>
         {view.isHost && <HostControls id={view.id} progress={view.progress} />}
+        {focus && (
+          <FocusRecord competitionId={view.id} policy={focus.policy} rows={focus.rows} />
+        )}
         {play ? (
           <ProblemPlay session={play} />
         ) : (
@@ -147,9 +158,14 @@ export default async function CompetitionPage({ params }: { params: { code: stri
 
   const play = view.joined ? await getPlaySession(userId, view.code) : null;
 
+  const quizFocus = view.isHost ? await focusRecord(userId, view.id) : null;
+
   return shell(
     <>
       {view.isHost && <HostControls id={view.id} progress={view.progress} />}
+      {quizFocus && (
+        <FocusRecord competitionId={view.id} policy={quizFocus.policy} rows={quizFocus.rows} />
+      )}
 
       {play ? (
         <CompetitionPlay session={play} meId={userId} />
