@@ -618,19 +618,35 @@ export async function settleEveryone(competitionId: string): Promise<void> {
   for (const player of open) await settlePaper(competitionId, player.userId);
 }
 
-/** One player's marks, added up. Recomputed rather than incremented. */
-export async function recomputeScore(competitionId: string, userId: string): Promise<number> {
+/**
+ * One player's marks, added up.
+ *
+ * Recomputed rather than incremented, because an answer here can be changed:
+ * a counter that only ever went up would drift the moment somebody edited one.
+ *
+ * Serves both shapes of room. A written answer counts as answered when there
+ * is text in it; a chosen option counts when one is chosen. Rows that exist
+ * only to carry a review flag have neither, and count as neither.
+ */
+export async function recomputeScore(
+  competitionId: string,
+  userId: string
+): Promise<{ score: number; answered: number }> {
   const rows = await prisma.competitionAnswer.findMany({
     where: { competitionId, userId },
-    select: { points: true, text: true },
+    select: { points: true, text: true, chosen: true },
   });
 
   const score = rows.reduce((sum, r) => sum + r.points, 0);
+  const answered = rows.filter(
+    (r) => (r.text ?? "") !== "" || r.chosen !== null
+  ).length;
+
   await prisma.competitionPlayer.update({
     where: { competitionId_userId: { competitionId, userId } },
-    data: { score, answered: rows.filter((r) => (r.text ?? "") !== "").length },
+    data: { score, answered },
   });
-  return score;
+  return { score, answered };
 }
 
 /* ── Marking ─────────────────────────────────────────────────────────────── */

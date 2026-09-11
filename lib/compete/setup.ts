@@ -17,6 +17,18 @@ export type FocusPolicy = "NONE" | "WARN" | "LOCK";
 
 export const MAX_ALLOWANCE = 10;
 
+/**
+ * A quiz room can be sat two ways.
+ *
+ * `durationMinutes` null is the fast quiz it has always been: a clock on every
+ * question, one shot, forward only. A number turns it into an exam — one clock
+ * for the whole paper, every question reachable, answers changeable until it
+ * is handed in. The field already existed for written papers and means the
+ * same thing here, so neither shape needed a column of its own.
+ */
+export const MIN_EXAM_MINUTES = 5;
+export const MAX_EXAM_MINUTES = 240;
+
 export interface SetupInput {
   title?: unknown;
   topic?: unknown;
@@ -25,6 +37,7 @@ export interface SetupInput {
   access?: unknown;
   focusPolicy?: unknown;
   focusAllowance?: unknown;
+  durationMinutes?: unknown;
 }
 
 export interface Setup {
@@ -35,6 +48,8 @@ export interface Setup {
   access: Access;
   focusPolicy: FocusPolicy;
   focusAllowance: number;
+  /** Null is the fast quiz; a number is an exam. */
+  durationMinutes: number | null;
 }
 
 export type SetupError =
@@ -72,6 +87,10 @@ export function parseSetup(input: SetupInput): { setup: Setup } | { error: Setup
 
   const topicRaw = typeof input.topic === "string" ? input.topic.trim() : "";
 
+  // Absent, null or unreadable all mean the fast quiz.
+  const rawMinutes = num(input.durationMinutes);
+  const examMinutes = rawMinutes !== null && rawMinutes > 0 ? rawMinutes : null;
+
   return {
     setup: {
       title,
@@ -88,6 +107,12 @@ export function parseSetup(input: SetupInput): { setup: Setup } | { error: Setup
       focusPolicy:
         input.focusPolicy === "LOCK" ? "LOCK" : input.focusPolicy === "WARN" ? "WARN" : "NONE",
       focusAllowance: Math.min(Math.max(num(input.focusAllowance) ?? 2, 0), MAX_ALLOWANCE),
+      // Out of range is clamped rather than refused: a host dragging a slider
+      // cannot produce one, and a caller that sent nonsense meant a number.
+      durationMinutes:
+        examMinutes === null
+          ? null
+          : Math.min(Math.max(examMinutes, MIN_EXAM_MINUTES), MAX_EXAM_MINUTES),
     },
   };
 }

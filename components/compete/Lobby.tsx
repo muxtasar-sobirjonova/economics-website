@@ -117,11 +117,11 @@ export function Lobby({
         <p className="text-meta text-muted mt-s4">
           {view.questionCount}{" "}
           {view.format === "PROBLEMS" ? "problems" : "questions"} ·{" "}
-          {view.format === "PROBLEMS"
-            ? view.durationMinutes
-              ? `${view.durationMinutes} minutes for the set`
-              : "no clock"
-            : `${view.secondsPerQuestion}s each`}
+          {view.durationMinutes
+            ? `${view.durationMinutes} minutes for the whole paper`
+            : view.format === "PROBLEMS"
+              ? "no clock"
+              : `${view.secondsPerQuestion}s each`}
           {view.topic ? ` · ${view.topic}` : ""} ·{" "}
           {view.access === "LINK" ? "code only" : "listed publicly"}
         </p>

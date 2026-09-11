@@ -87,6 +87,7 @@ export async function createCompetition(
           questionIds,
           focusPolicy: setup.focusPolicy,
           focusAllowance: setup.focusAllowance,
+          durationMinutes: setup.durationMinutes,
         },
       });
       return { ok: true, data: { code } };
@@ -231,11 +232,17 @@ export async function endCompetition(userId: string, competitionId: string): Pro
   // paper the focus guard froze. Without this they are never marked at all.
   const full = await prisma.competition.findUnique({
     where: { id: competitionId },
-    select: { format: true },
+    select: { format: true, durationMinutes: true },
   });
   if (full?.format === CompetitionFormat.PROBLEMS) {
     const { settleEveryone } = await import("./problemService");
     await settleEveryone(competitionId);
+  } else if (full && full.durationMinutes !== null) {
+    // A multiple choice exam: everything is already graded, but a paper that
+    // was never handed in has a clock that never stopped and a score that was
+    // never totalled into a standing.
+    const { settleExam } = await import("./examService");
+    await settleExam(competitionId);
   }
 
   return { ok: true, data: null };

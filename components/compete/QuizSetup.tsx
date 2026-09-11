@@ -7,6 +7,7 @@ import { QuestionEditor } from "@/components/duel/QuestionEditor";
 import { FocusChoice } from "@/components/compete/FocusChoice";
 import {
   MIN_QUESTIONS, MAX_QUESTIONS, MIN_SECONDS, MAX_SECONDS, MAX_TITLE,
+  MIN_EXAM_MINUTES, MAX_EXAM_MINUTES,
   type FocusPolicy,
 } from "@/lib/compete/setup";
 
@@ -37,6 +38,8 @@ export function QuizSetup({
   const [questionCount, setQuestionCount] = useState(12);
   const [secondsPerQuestion, setSeconds] = useState(25);
   const [access, setAccess] = useState<"OPEN" | "LINK">("OPEN");
+  const [exam, setExam] = useState(false);
+  const [minutes, setMinutes] = useState(20);
   const [focusPolicy, setFocusPolicy] = useState<FocusPolicy>("NONE");
   const [focusAllowance, setFocusAllowance] = useState(2);
 
@@ -49,6 +52,7 @@ export function QuizSetup({
       const res = await createCompetitionAction({
         title, topic, questionCount, secondsPerQuestion, access,
         focusPolicy, focusAllowance,
+        durationMinutes: exam ? minutes : null,
       });
       if (!res.ok) return setError(res.error);
       router.push(`/compete/${res.data.code}`);
@@ -67,6 +71,42 @@ export function QuizSetup({
           className="bg-raised border border-line rounded-md px-s3 py-s2 text-ui text-ink placeholder:text-faint min-h-[44px]"
         />
       </label>
+
+      <fieldset className="flex flex-col gap-s3 border-0 p-0 m-0">
+        <legend className="text-label uppercase text-faint">How it is sat</legend>
+        <div className="flex flex-wrap gap-s2">
+          {[
+            { on: !exam, set: () => setExam(false), label: "Fast round", detail: "a clock on every question" },
+            { on: exam, set: () => setExam(true), label: "Exam", detail: "one clock for the paper" },
+          ].map((mode) => (
+            <button
+              key={mode.label}
+              type="button"
+              onClick={mode.set}
+              aria-pressed={mode.on}
+              className="min-h-[48px] px-s4 py-s2 rounded-md border text-left transition-colors"
+              style={
+                mode.on
+                  ? { borderColor: "var(--accent)", background: "var(--accent-soft)" }
+                  : { borderColor: "var(--border)" }
+              }
+            >
+              <span
+                className="block text-ui font-semibold"
+                style={{ color: mode.on ? "var(--accent-strong)" : "var(--text)" }}
+              >
+                {mode.label}
+              </span>
+              <span className="block text-label uppercase text-faint">{mode.detail}</span>
+            </button>
+          ))}
+        </div>
+        <p className="text-meta text-muted max-w-[58ch]">
+          {exam
+            ? "Every question reachable at any time, answers changeable until they hand in, and questions can be marked to come back to. What a paper exam has always allowed."
+            : "One question at a time against its own clock, and no going back. Quick, loud, and unforgiving — right for a warm-up, wrong for a real round."}
+        </p>
+      </fieldset>
 
       <div className="grid sm:grid-cols-2 gap-s4">
         <label className="flex flex-col gap-s2">
@@ -106,16 +146,29 @@ export function QuizSetup({
           />
         </label>
 
-        <label className="flex flex-col gap-s2">
-          <span className="text-label uppercase text-faint">
-            Seconds a question · {secondsPerQuestion}
-          </span>
-          <input
-            type="range" min={MIN_SECONDS} max={MAX_SECONDS} step={5} value={secondsPerQuestion}
-            onChange={(e) => setSeconds(Number(e.target.value))}
-            className="min-h-[44px] accent-[var(--accent)]"
-          />
-        </label>
+        {exam ? (
+          <label className="flex flex-col gap-s2">
+            <span className="text-label uppercase text-faint">
+              Minutes for the whole paper · {minutes}
+            </span>
+            <input
+              type="range" min={MIN_EXAM_MINUTES} max={MAX_EXAM_MINUTES} step={5} value={minutes}
+              onChange={(e) => setMinutes(Number(e.target.value))}
+              className="min-h-[44px] accent-[var(--accent)]"
+            />
+          </label>
+        ) : (
+          <label className="flex flex-col gap-s2">
+            <span className="text-label uppercase text-faint">
+              Seconds a question · {secondsPerQuestion}
+            </span>
+            <input
+              type="range" min={MIN_SECONDS} max={MAX_SECONDS} step={5} value={secondsPerQuestion}
+              onChange={(e) => setSeconds(Number(e.target.value))}
+              className="min-h-[44px] accent-[var(--accent)]"
+            />
+          </label>
+        )}
       </div>
 
       <p className="text-meta text-muted">

@@ -18,6 +18,8 @@ import {
 } from "@/lib/compete/problemService";
 import { Lobby } from "@/components/compete/Lobby";
 import { CompetitionPlay } from "@/components/compete/CompetitionPlay";
+import { QuizExam } from "@/components/compete/QuizExam";
+import { getExamSession } from "@/lib/compete/examService";
 import { ProblemPlay } from "@/components/compete/ProblemPlay";
 import { ProblemReview } from "@/components/compete/ProblemReview";
 import { MarkingRoom } from "@/components/compete/MarkingRoom";
@@ -51,8 +53,12 @@ export default async function CompetitionPage({ params }: { params: { code: stri
           <p className="text-meta text-muted mt-s2">
             Hosted by {view.isHost ? "you" : view.hostName || "Anonymous"} ·{" "}
             {view.questionCount} {isProblems ? "problems" : "questions"}
-            {isProblems && view.durationMinutes ? ` · ${view.durationMinutes} minutes` : ""} ·
-            unrated
+            {view.durationMinutes
+              ? ` · ${view.durationMinutes} minutes`
+              : isProblems
+                ? ""
+                : ` · ${view.secondsPerQuestion}s each`}{" "}
+            · unrated
           </p>
         </header>
         {children}
@@ -161,7 +167,15 @@ export default async function CompetitionPage({ params }: { params: { code: stri
     );
   }
 
-  const play = view.joined ? await getPlaySession(userId, view.code) : null;
+  // A quiz room with a clock on the whole paper is an exam; without one it is
+  // the fast per-question quiz. One column decides it, and nothing else here
+  // has to know which.
+  const isExamRoom = view.durationMinutes !== null;
+
+  const [play, exam] = await Promise.all([
+    view.joined && !isExamRoom ? getPlaySession(userId, view.code) : Promise.resolve(null),
+    view.joined && isExamRoom ? getExamSession(userId, view.code) : Promise.resolve(null),
+  ]);
 
   const quizFocus = view.isHost ? await focusRecord(userId, view.id) : null;
 
@@ -172,7 +186,9 @@ export default async function CompetitionPage({ params }: { params: { code: stri
         <FocusRecord competitionId={view.id} policy={quizFocus.policy} rows={quizFocus.rows} />
       )}
 
-      {play ? (
+      {exam ? (
+        <QuizExam session={exam} meId={userId} />
+      ) : play ? (
         <CompetitionPlay session={play} meId={userId} />
       ) : (
         <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s6 text-center">

@@ -7,6 +7,7 @@ import type { ProblemSession } from "@/lib/compete/problemService";
 import { Rich } from "@/components/compete/Rich";
 import { useFocusGuard } from "@/components/compete/FocusGuard";
 import { useArena, useLeaveWarning, StrikeModal, PausedModal } from "@/components/compete/Arena";
+import { Navigator } from "@/components/compete/Navigator";
 
 /**
  * Answering a paper.
@@ -274,51 +275,17 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
           <span className="font-mono text-label uppercase text-faint">
             {answered} of {total} answered
           </span>
-          <div className="flex gap-s2 mt-s2 flex-wrap">
-            {session.problems.map((p, i) => {
-              const done = (drafts[p.id] ?? "").trim() !== "";
-              const here = i === index;
-              const flagged = flags[p.id] === true;
-              const viewed = seen.has(p.id);
-
-              // Four states, in the order they override one another: where you
-              // are, answered, looked at, not yet opened. The flag sits on top
-              // of any of them, because it is a note about a question rather
-              // than a state of it.
-              const face = here
-                ? { background: "var(--accent)", color: "var(--on-accent)", borderColor: "var(--accent)" }
-                : done
-                  ? { background: "var(--success-soft)", color: "var(--success)", borderColor: "var(--success)" }
-                  : viewed
-                    ? { background: "var(--raised)", color: "var(--text)", borderColor: "var(--border-strong)" }
-                    : { background: "var(--raised)", color: "var(--faint)", borderColor: "var(--border)" };
-
-              return (
-                <button
-                  key={p.id}
-                  onClick={() => goTo(i)}
-                  aria-label={`Problem ${i + 1}${done ? ", answered" : viewed ? ", seen" : ", not opened"}${flagged ? ", marked for review" : ""}`}
-                  aria-current={here ? "true" : undefined}
-                  className="relative w-11 h-11 rounded-md border font-mono text-meta transition-colors"
-                  style={{ ...face, fontWeight: here || done ? 600 : 400 }}
-                >
-                  {i + 1}
-                  {flagged && (
-                    <span
-                      aria-hidden
-                      className="absolute top-[3px] right-[3px] w-[7px] h-[7px] rounded-full"
-                      style={{ background: "var(--reward)" }}
-                    />
-                  )}
-                </button>
-              );
-            })}
-          </div>
-
-          <p className="text-label uppercase text-faint mt-s2">
-            <Key tone="var(--success)" /> answered · <Key tone="var(--border-strong)" /> seen ·{" "}
-            <Key tone="var(--reward)" /> marked
-          </p>
+          <Navigator
+            tiles={session.problems.map((p) => ({
+              id: p.id,
+              answered: (drafts[p.id] ?? "").trim() !== "",
+              flagged: flags[p.id] === true,
+            }))}
+            index={index}
+            seen={seen}
+            onGo={goTo}
+            noun="Problem"
+          />
         </div>
 
         {/* Being watched is a deterrent only if it is visible. Shown as a count
@@ -506,17 +473,6 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
 
       <RoomProgress room={session.room} total={total} />
     </div>
-  );
-}
-
-/** One swatch in the navigator's legend. */
-function Key({ tone }: { tone: string }) {
-  return (
-    <span
-      aria-hidden
-      className="inline-block w-[9px] h-[9px] rounded-sm align-middle"
-      style={{ background: tone }}
-    />
   );
 }
 

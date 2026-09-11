@@ -11,6 +11,7 @@ import {
   getStandings,
   type Outcome,
 } from "@/lib/compete/service";
+import { answerExam, flagExam, submitExam } from "@/lib/compete/examService";
 import type { Ranked } from "@/lib/compete/scoring";
 import type { SetupInput } from "@/lib/compete/setup";
 
@@ -90,4 +91,39 @@ export async function standingsAction(competitionId: string): Promise<Outcome<Ra
     console.error("standings failed", e);
     return { ok: false, error: "Could not read the standings." };
   }
+}
+
+/* ── Exam mode ─────────────────────────────────────────────────────────────
+   A quiz room with one clock for the whole paper. Same room, same bank; the
+   difference is that an answer can be changed until it is handed in. */
+
+export async function answerExamAction(
+  competitionId: string,
+  questionId: string,
+  chosen: string | null
+): Promise<Outcome<{ answered: number }>> {
+  const session = await auth();
+  if (!session?.user?.id) return { ok: false, error: "Sign in first." };
+
+  return answerExam(session.user.id, String(competitionId), String(questionId), chosen);
+}
+
+export async function flagExamAction(
+  competitionId: string,
+  questionId: string,
+  flagged: boolean
+): Promise<Outcome<null>> {
+  const session = await auth();
+  if (!session?.user?.id) return { ok: false, error: "Sign in first." };
+
+  return flagExam(session.user.id, String(competitionId), String(questionId), flagged === true);
+}
+
+export async function submitExamAction(competitionId: string): Promise<Outcome<null>> {
+  const session = await auth();
+  if (!session?.user?.id) return { ok: false, error: "Sign in first." };
+
+  const result = await submitExam(session.user.id, String(competitionId));
+  if (result.ok) revalidatePath("/compete");
+  return result;
 }

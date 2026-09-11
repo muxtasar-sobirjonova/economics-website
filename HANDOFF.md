@@ -359,6 +359,39 @@ Three rules that exist because economics is not prose:
 The editor previews as you type, which is the point: whether a problem survived
 being copied out of a PDF is a question about how it _looks_.
 
+### Two shapes of quiz room
+
+A quiz room is either a **fast round** — a clock on every question, one shot,
+forward only, which is what it has always been — or an **exam**: one clock for
+the whole paper, every question reachable, answers changeable until they are
+handed in, questions markable to come back to.
+
+**Which one it is, is decided by `durationMinutes`.** Null is the fast round; a
+number is an exam. The column already existed for written papers and means the
+same thing here, so the second shape needed no migration and no new column.
+`isExam()` in `examService.ts` is the one place that decision is made.
+
+Everything the fast quiz is careful about still holds in the exam: the correct
+answer is never selected when serving, options are shuffled per player, the
+clock is the server's, and answers match by question id rather than position.
+
+Two things are different, and both follow from answers being changeable:
+
+- **Grading happens as each choice arrives**, not at the end — but the reply
+  says only how many are answered. A response that differed between a right
+  and a wrong answer would be an answer key delivered one request at a time.
+- **`recomputeScore` recomputes rather than increments.** A counter that only
+  went up would drift the first time somebody changed their mind. It serves
+  both room shapes: written text counts as answered when there is text, a
+  chosen option when one is chosen, and a row holding only a review flag as
+  neither.
+
+Ending an exam calls `settleExam`, for the same reason a written room calls
+`settleEveryone` — a paper never handed in has a clock that never stopped.
+
+`QuizExam.tsx` picks optimistically: the tile turns green before the round trip
+and rolls back with the reason if the write is refused.
+
 ### The arena
 
 A live room takes the whole screen: `useArena` puts `data-arena="on"` on
@@ -545,7 +578,7 @@ rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
 ## Tests
 
-286 passing. The pattern is to test **the pure half**: Elo, grading, question
+289 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
 question selection, the CSS token guard, and — new with problem rooms — reading

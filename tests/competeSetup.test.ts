@@ -2,7 +2,7 @@ import { describe, it, expect } from "vitest";
 import { rank, accuracy } from "@/lib/compete/scoring";
 import {
   parseSetup, MIN_QUESTIONS, MAX_QUESTIONS, MIN_SECONDS, MAX_SECONDS, MAX_TITLE,
-  MAX_ALLOWANCE,
+  MAX_ALLOWANCE, MIN_EXAM_MINUTES, MAX_EXAM_MINUTES,
 } from "@/lib/compete/setup";
 
 const ok = { title: "Chapter 3 showdown", questionCount: 12, secondsPerQuestion: 25 };
@@ -14,7 +14,7 @@ describe("parseSetup", () => {
     expect(setupOf(parseSetup(ok))).toEqual({
       title: "Chapter 3 showdown", topic: null, questionCount: 12,
       secondsPerQuestion: 25, access: "OPEN",
-      focusPolicy: "NONE", focusAllowance: 2,
+      focusPolicy: "NONE", focusAllowance: 2, durationMinutes: null,
     });
   });
 
@@ -157,5 +157,28 @@ describe("rank — accuracy as the third tie-breaker", () => {
   it("gives nobody credit for answering nothing", () => {
     expect(accuracy({ score: 0, answered: 0 })).toBe(0);
     expect(accuracy({ score: 3, answered: 6 })).toBe(0.5);
+  });
+});
+
+describe("parseSetup — the two shapes of a quiz room", () => {
+  it("is a fast round unless a clock for the paper is given", () => {
+    // Absent, null and unreadable all mean the per-question quiz that came
+    // first; nothing silently turns an old room into an exam.
+    expect(setupOf(parseSetup(ok))?.durationMinutes).toBeNull();
+    expect(setupOf(parseSetup({ ...ok, durationMinutes: null }))?.durationMinutes).toBeNull();
+    expect(setupOf(parseSetup({ ...ok, durationMinutes: "soon" }))?.durationMinutes).toBeNull();
+    expect(setupOf(parseSetup({ ...ok, durationMinutes: 0 }))?.durationMinutes).toBeNull();
+  });
+
+  it("becomes an exam when one is", () => {
+    expect(setupOf(parseSetup({ ...ok, durationMinutes: 20 }))?.durationMinutes).toBe(20);
+    expect(setupOf(parseSetup({ ...ok, durationMinutes: "45" }))?.durationMinutes).toBe(45);
+  });
+
+  it("clamps a clock nobody could have dragged a slider to", () => {
+    expect(setupOf(parseSetup({ ...ok, durationMinutes: 1 }))?.durationMinutes)
+      .toBe(MIN_EXAM_MINUTES);
+    expect(setupOf(parseSetup({ ...ok, durationMinutes: 99999 }))?.durationMinutes)
+      .toBe(MAX_EXAM_MINUTES);
   });
 });
