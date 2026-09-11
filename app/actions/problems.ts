@@ -7,6 +7,7 @@ import {
   retireProblem,
   createProblemCompetition,
   saveProblemDraft,
+  setFlag,
   submitProblems,
   gradeNextBatch,
   markingProgress,
@@ -199,4 +200,16 @@ export async function reinstatePlayerAction(
   const result = await reinstatePlayer(user.id, str(competitionId), str(playerId));
   if (result.ok) revalidatePath("/compete");
   return result;
+}
+
+/** Marking a question for review, or clearing the mark. */
+export async function setFlagAction(
+  competitionId: string,
+  problemId: string,
+  flagged: boolean
+): Promise<Outcome<null>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+
+  return setFlag(user.id, str(competitionId), str(problemId), flagged === true);
 }

@@ -2,10 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
-import { saveDraftAction, submitProblemsAction } from "@/app/actions/problems";
+import { saveDraftAction, submitProblemsAction, setFlagAction } from "@/app/actions/problems";
 import type { ProblemSession } from "@/lib/compete/problemService";
 import { Rich } from "@/components/compete/Rich";
-import { useFocusGuard, FocusNotice, LockedPaper } from "@/components/compete/FocusGuard";
+import { useFocusGuard } from "@/components/compete/FocusGuard";
+import { useArena, useLeaveWarning, StrikeModal, PausedModal } from "@/components/compete/Arena";
 
 /**
  * Answering a paper.
@@ -38,6 +39,15 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
   const [drafts, setDrafts] = useState<Record<string, string>>(() =>
     Object.fromEntries(session.problems.map((p) => [p.id, p.draft]))
   );
+  const [flags, setFlags] = useState<Record<string, boolean>>(() =>
+    Object.fromEntries(session.problems.map((p) => [p.id, p.flagged]))
+  );
+  /** Which have been on screen. Kept here rather than stored: it is only worth
+      anything during the sitting, and a column for it would be a column to
+      migrate. */
+  const [seen, setSeen] = useState<Set<string>>(
+    () => new Set(session.problems.length > 0 ? [session.problems[0].id] : [])
+  );
   const [saving, setSaving] = useState(false);
   const [savedAt, setSavedAt] = useState<number | null>(null);
   const [error, setError] = useState<string | null>(null);
@@ -56,6 +66,9 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
 
   const timers = useRef<Record<string, ReturnType<typeof setTimeout>>>({});
   const submittedRef = useRef(false);
+
+  useArena(!session.submitted);
+  useLeaveWarning(!session.submitted);
 
   const guard = useFocusGuard({
     competitionId: session.competitionId,
@@ -101,6 +114,25 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
     timers.current[problemId] = setTimeout(() => void push(problemId, text), SAVE_DEBOUNCE_MS);
   };
 
+  const goTo = useCallback(
+    (next: number) => {
+      const target = Math.min(Math.max(next, 0), session.problems.length - 1);
+      const id = session.problems[target]?.id;
+      if (id) setSeen((s) => (s.has(id) ? s : new Set(s).add(id)));
+      setIndex(target);
+    },
+    [session.problems]
+  );
+
+  const toggleFlag = useCallback(
+    (problemId: string) => {
+      const next = !flags[problemId];
+      setFlags((f) => ({ ...f, [problemId]: next }));
+      void setFlagAction(session.competitionId, problemId, next);
+    },
+    [flags, session.competitionId]
+  );
+
   /** Everything outstanding, now — before handing in, and before leaving a box. */
   const flush = useCallback(async () => {
     const pending = Object.keys(timers.current);
@@ -142,6 +174,35 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
     if (now >= deadline) void handIn();
   }, [now, deadline, session.submitted, handIn, guard.locked]);
 
+  /**
+   * Keys, but never while someone is writing.
+   *
+   * The answer box is a text field: an arrow key belongs to the cursor and an
+   * `f` belongs to the word being typed. Shortcuts only apply when the focus
+   * is somewhere else, which is exactly when they are wanted.
+   */
+  useEffect(() => {
+    if (session.submitted || guard.locked) return;
+
+    const onKey = (e: KeyboardEvent) => {
+      const el = e.target as HTMLElement | null;
+      const typing =
+        el &&
+        (el.tagName === "INPUT" || el.tagName === "TEXTAREA" || el.isContentEditable);
+      if (typing || e.metaKey || e.ctrlKey || e.altKey) return;
+
+      if (e.key === "ArrowRight") { void flush(); goTo(index + 1); }
+      else if (e.key === "ArrowLeft") { void flush(); goTo(index - 1); }
+      else if (e.key.toLowerCase() === "f" && problem) toggleFlag(problem.id);
+      else return;
+
+      e.preventDefault();
+    };
+
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [session.submitted, guard.locked, index, problem, goTo, toggleFlag, flush]);
+
   // A closed laptop should not cost the last paragraph.
   useEffect(() => {
     const save = () => {
@@ -171,15 +232,17 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
 
   if (guard.locked) {
     return (
-      <div className="flex flex-col gap-s4">
-        <LockedPaper
-          answered={answered}
-          total={total}
+      <>
+        <div className="flex flex-col gap-s4 arena-blur" aria-hidden>
+          <RoomProgress room={session.room} total={total} />
+        </div>
+        <PausedModal
           reason={session.lockReason}
           byHost={session.lockedByHost}
+          answered={answered}
+          total={total}
         />
-        <RoomProgress room={session.room} total={total} />
-      </div>
+      </>
     );
   }
 
@@ -187,12 +250,23 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
 
   const left = deadline && now !== null ? deadline - now : null;
   const urgent = left !== null && left <= 60_000;
+  const soon = left !== null && left <= 5 * 60_000;
+  // Amber with five minutes left, red with one. A clock that only changes as
+  // it expires tells you something you can no longer act on.
+  const clockColour = urgent ? "var(--danger)" : soon ? "var(--reward)" : "var(--text)";
   const draft = drafts[problem.id] ?? "";
   const isLong = problem.answerKind === "OPEN";
 
   return (
     <div className="flex flex-col gap-s4">
-      <FocusNotice notice={guard.notice} onDismiss={guard.dismiss} />
+      {guard.notice && (
+        <StrikeModal
+          notice={guard.notice}
+          strikes={guard.strikes}
+          remaining={guard.remaining}
+          onDismiss={guard.dismiss}
+        />
+      )}
 
       {/* Where you are, and how long is left. */}
       <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s4 flex flex-wrap items-center gap-s4">
@@ -204,42 +278,80 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
             {session.problems.map((p, i) => {
               const done = (drafts[p.id] ?? "").trim() !== "";
               const here = i === index;
+              const flagged = flags[p.id] === true;
+              const viewed = seen.has(p.id);
+
+              // Four states, in the order they override one another: where you
+              // are, answered, looked at, not yet opened. The flag sits on top
+              // of any of them, because it is a note about a question rather
+              // than a state of it.
+              const face = here
+                ? { background: "var(--accent)", color: "var(--on-accent)", borderColor: "var(--accent)" }
+                : done
+                  ? { background: "var(--success-soft)", color: "var(--success)", borderColor: "var(--success)" }
+                  : viewed
+                    ? { background: "var(--raised)", color: "var(--text)", borderColor: "var(--border-strong)" }
+                    : { background: "var(--raised)", color: "var(--faint)", borderColor: "var(--border)" };
+
               return (
                 <button
                   key={p.id}
-                  onClick={() => setIndex(i)}
-                  aria-label={`Problem ${i + 1}${done ? ", answered" : ""}`}
+                  onClick={() => goTo(i)}
+                  aria-label={`Problem ${i + 1}${done ? ", answered" : viewed ? ", seen" : ", not opened"}${flagged ? ", marked for review" : ""}`}
                   aria-current={here ? "true" : undefined}
-                  className="w-11 h-11 rounded-md border font-mono text-meta transition-colors"
-                  style={{
-                    borderColor: here ? "var(--accent)" : "var(--border)",
-                    background: here
-                      ? "var(--accent)"
-                      : done
-                        ? "var(--success-soft)"
-                        : "var(--raised)",
-                    color: here
-                      ? "var(--on-accent)"
-                      : done
-                        ? "var(--success)"
-                        : "var(--muted)",
-                    fontWeight: here || done ? 600 : 400,
-                  }}
+                  className="relative w-11 h-11 rounded-md border font-mono text-meta transition-colors"
+                  style={{ ...face, fontWeight: here || done ? 600 : 400 }}
                 >
                   {i + 1}
+                  {flagged && (
+                    <span
+                      aria-hidden
+                      className="absolute top-[3px] right-[3px] w-[7px] h-[7px] rounded-full"
+                      style={{ background: "var(--reward)" }}
+                    />
+                  )}
                 </button>
               );
             })}
           </div>
+
+          <p className="text-label uppercase text-faint mt-s2">
+            <Key tone="var(--success)" /> answered · <Key tone="var(--border-strong)" /> seen ·{" "}
+            <Key tone="var(--reward)" /> marked
+          </p>
         </div>
+
+        {/* Being watched is a deterrent only if it is visible. Shown as a count
+            of what is left rather than of what is used: the number that
+            matters to someone deciding whether to look away. */}
+        {session.focusPolicy !== "NONE" && (
+          <div className="text-right shrink-0">
+            <span className="block font-mono text-label uppercase text-faint">
+              Watched
+            </span>
+            <span
+              className="block font-mono text-meta tabular"
+              style={{
+                color:
+                  guard.remaining === 0 ? "var(--danger)" : "var(--muted)",
+              }}
+            >
+              {session.focusPolicy === "WARN"
+                ? `${guard.strikes} recorded`
+                : guard.remaining >= 0
+                  ? `${guard.remaining} left`
+                  : `${session.focusRemaining} left`}
+            </span>
+          </div>
+        )}
 
         {deadline && (
           <div className="text-right shrink-0">
             <span className="block font-mono text-label uppercase text-faint">Left</span>
             <span
-              className="block font-mono text-h2 tabular leading-none"
+              className={`block font-mono text-h2 tabular leading-none ${urgent ? "animate-timerpulse" : ""}`}
               // --text, not --ink: the Tailwind class is text-ink and the variable is not.
-              style={{ color: urgent ? "var(--danger)" : "var(--text)" }}
+              style={{ color: clockColour }}
             >
               {left === null ? "—:——" : clock(left)}
             </span>
@@ -323,24 +435,42 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
               {error}
             </p>
           )}
+
+          {/* Discoverable rather than folklore. Hidden where there is no
+              keyboard to press. */}
+          <p className="text-label uppercase text-faint hidden md:block">
+            ← → move · F marks for review
+          </p>
         </div>
       </section>
 
       {/* Moving, and handing in. */}
       <div className="flex flex-wrap items-center gap-s3">
         <button
-          onClick={() => { void flush(); setIndex((i) => Math.max(0, i - 1)); }}
+          onClick={() => { void flush(); goTo(index - 1); }}
           disabled={index === 0}
           className="inline-flex items-center min-h-[48px] px-s5 rounded-md border border-line text-ui text-muted hover:text-ink transition-colors disabled:opacity-40"
         >
           Back
         </button>
         <button
-          onClick={() => { void flush(); setIndex((i) => Math.min(total - 1, i + 1)); }}
+          onClick={() => { void flush(); goTo(index + 1); }}
           disabled={index === total - 1}
           className="inline-flex items-center min-h-[48px] px-s5 rounded-md border border-line text-ui text-ink hover:border-accent transition-colors disabled:opacity-40"
         >
           Next
+        </button>
+        <button
+          onClick={() => toggleFlag(problem.id)}
+          aria-pressed={flags[problem.id] === true}
+          className="inline-flex items-center min-h-[48px] px-s4 rounded-md border text-ui transition-colors"
+          style={
+            flags[problem.id]
+              ? { borderColor: "var(--reward)", color: "var(--reward)" }
+              : { borderColor: "var(--border)", color: "var(--muted)" }
+          }
+        >
+          {flags[problem.id] ? "Marked" : "Mark for review"}
         </button>
         <span className="flex-1" />
         {confirming ? (
@@ -376,6 +506,17 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
 
       <RoomProgress room={session.room} total={total} />
     </div>
+  );
+}
+
+/** One swatch in the navigator's legend. */
+function Key({ tone }: { tone: string }) {
+  return (
+    <span
+      aria-hidden
+      className="inline-block w-[9px] h-[9px] rounded-sm align-middle"
+      style={{ background: tone }}
+    />
   );
 }
 

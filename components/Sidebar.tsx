@@ -138,7 +138,7 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="hidden md:flex w-[248px] text-white flex-col h-full shrink-0 group border-r border-[rgba(0,0,0,.25)] relative z-40 bg-gradient-to-b from-[#5A4F94] via-[#4C4380] to-[#3A3163]">
+    <aside className="app-chrome hidden md:flex w-[248px] text-white flex-col h-full shrink-0 group border-r border-[rgba(0,0,0,.25)] relative z-40 bg-gradient-to-b from-[#5A4F94] via-[#4C4380] to-[#3A3163]">
       {/* Scrollable area */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden py-7 px-5 flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {/* Logo Header */}

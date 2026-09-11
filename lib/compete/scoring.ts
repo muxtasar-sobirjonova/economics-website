@@ -23,6 +23,19 @@ export interface Ranked extends Standing {
 }
 
 /**
+ * Accuracy: marks won against marks attempted.
+ *
+ * The third tie-breaker. Two players level on score and on the clock are
+ * separated by who guessed less — answering four and getting four beats
+ * answering ten and getting four, on the same total. Nobody who answered
+ * nothing has accuracy; they sort last among equals rather than first, which
+ * a naive 0/0 = 1 would do.
+ */
+export function accuracy(p: Pick<Standing, "score" | "answered">): number {
+  return p.answered > 0 ? p.score / p.answered : 0;
+}
+
+/**
  * Ranks share a number when they are genuinely level, and the next rank skips
  * accordingly — two firsts are followed by a third, not a second.
  */
@@ -35,6 +48,7 @@ export function rank(players: Standing[]): Ranked[] {
       Number(a.disqualified ?? false) - Number(b.disqualified ?? false) ||
       b.score - a.score ||
       a.totalMs - b.totalMs ||
+      accuracy(b) - accuracy(a) ||
       (a.name ?? "").localeCompare(b.name ?? "")
   );
 
@@ -49,7 +63,8 @@ export function rank(players: Standing[]): Ranked[] {
       !p.disqualified &&
       !prev.disqualified &&
       prev.score === p.score &&
-      prev.totalMs === p.totalMs;
+      prev.totalMs === p.totalMs &&
+      accuracy(prev) === accuracy(p);
     lastRank = level ? lastRank : i + 1;
     out.push({ ...p, rank: lastRank });
   });

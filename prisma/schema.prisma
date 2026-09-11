@@ -632,6 +632,10 @@ model CompetitionAnswer {
   questionId    String
 
   chosen    String?
+  /// Marked for review by the player. Carries no weight in the marking — it is
+  /// a note to themselves that the navigator draws, and it survives a reload
+  /// because that is the whole point of making one.
+  flagged   Boolean @default(false)
   /// What was written in the box, for a problem. `chosen` is the quiz's column
   /// and stays null here; keeping them apart means a marker can never mistake
   /// a written answer for a selected option.

@@ -264,6 +264,8 @@ export interface PlayProblem {
   maxPoints: number;
   /** What this player has in the box, saved. */
   draft: string;
+  /** Marked for review by them. A note to themselves; it carries no marks. */
+  flagged: boolean;
 }
 
 export interface ProblemSession {
@@ -326,17 +328,22 @@ export async function getProblemSession(
     }),
     prisma.competitionAnswer.findMany({
       where: { competitionId: comp.id, userId },
-      select: { questionId: true, text: true },
+      select: { questionId: true, text: true, flagged: true },
     }),
   ]);
 
   const drafts = new Map(mine.map((a) => [a.questionId, a.text ?? ""]));
+  const flags = new Map(mine.map((a) => [a.questionId, a.flagged]));
   const byId = new Map(rows.map((r) => [r.id, r]));
 
   const problems = comp.problemIds
     .map((id) => byId.get(id))
     .filter((p): p is NonNullable<typeof p> => Boolean(p))
-    .map((p) => ({ ...p, draft: drafts.get(p.id) ?? "" }));
+    .map((p) => ({
+      ...p,
+      draft: drafts.get(p.id) ?? "",
+      flagged: flags.get(p.id) ?? false,
+    }));
 
   return {
     competitionId: comp.id,
@@ -435,6 +442,55 @@ export async function saveProblemDraft(
   } catch (e) {
     console.error("saveProblemDraft failed", e);
     return { ok: false, error: "Could not save that." };
+  }
+}
+
+/**
+ * Marking a question for review.
+ *
+ * Its own call rather than a field on the draft save, because a flag is
+ * toggled between questions while the box is untouched, and folding it into
+ * the autosave would mean writing an unchanged answer to set a bookmark.
+ */
+export async function setFlag(
+  userId: string,
+  competitionId: string,
+  problemId: string,
+  flagged: boolean
+): Promise<Outcome<null>> {
+  const comp = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: { status: true, problemIds: true },
+  });
+  if (!comp || !comp.problemIds.includes(problemId)) {
+    return { ok: false, error: "That problem is not in this set." };
+  }
+  if (comp.status !== CompetitionStatus.RUNNING) {
+    return { ok: false, error: "That competition is not running." };
+  }
+
+  const seat = await prisma.competitionPlayer.findUnique({
+    where: { competitionId_userId: { competitionId, userId } },
+    select: { finishedAt: true, lockedAt: true },
+  });
+  if (!seat) return { ok: false, error: "You are not in this competition." };
+  if (seat.finishedAt || seat.lockedAt) return { ok: false, error: "Your paper is closed." };
+
+  try {
+    await prisma.competitionAnswer.upsert({
+      where: { competitionId_userId_questionId: { competitionId, userId, questionId: problemId } },
+      // An empty answer row exists only to hold the flag until something is
+      // written in it; `settlePaper` reads it as the blank it is.
+      create: {
+        competitionId, userId, questionId: problemId, text: "",
+        flagged, gradedBy: GradedBy.PENDING, points: 0, maxPoints: 0,
+      },
+      update: { flagged },
+    });
+    return { ok: true, data: null };
+  } catch (e) {
+    console.error("setFlag failed", e);
+    return { ok: false, error: "Could not mark that." };
   }
 }
 

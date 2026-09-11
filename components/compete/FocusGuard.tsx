@@ -23,6 +23,10 @@ type Policy = "NONE" | "WARN" | "LOCK";
 export interface Guard {
   notice: string | null;
   locked: boolean;
+  /** Absences that counted, for the warning the student reads. */
+  strikes: number;
+  /** Strikes still allowed. -1 when the room records but never pauses. */
+  remaining: number;
   dismiss: () => void;
 }
 
@@ -40,6 +44,8 @@ export function useFocusGuard({
 }): Guard {
   const [notice, setNotice] = useState<string | null>(null);
   const [locked, setLocked] = useState(initialLocked);
+  const [strikes, setStrikes] = useState(0);
+  const [remaining, setRemaining] = useState(-1);
   const awaySince = useRef<number | null>(null);
 
   const returned = useCallback(async () => {
@@ -50,6 +56,10 @@ export function useFocusGuard({
     const res = await reportAwayAction(competitionId, Date.now() - left);
     if (!res.ok) return;
 
+    setStrikes(res.data.verdict.strikes);
+    // Infinity does not survive JSON, and a room that never pauses should say
+    // nothing about what is left rather than something wrong.
+    setRemaining(Number.isFinite(res.data.verdict.remaining) ? res.data.verdict.remaining : -1);
     if (res.data.notice) setNotice(res.data.notice);
     if (res.data.verdict.locked) setLocked(true);
   }, [competitionId]);
@@ -75,7 +85,7 @@ export function useFocusGuard({
     };
   }, [policy, active, locked, returned]);
 
-  return { notice, locked, dismiss: () => setNotice(null) };
+  return { notice, locked, strikes, remaining, dismiss: () => setNotice(null) };
 }
 
 /** What they read when they come back. Reporting, never accusing. */

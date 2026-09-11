@@ -6,7 +6,8 @@ import { answerCompetitionAction, standingsAction } from "@/app/actions/compete"
 import type { PlaySession } from "@/lib/compete/service";
 import type { Ranked } from "@/lib/compete/scoring";
 import { Standings } from "@/components/compete/Standings";
-import { useFocusGuard, FocusNotice, LockedPaper } from "@/components/compete/FocusGuard";
+import { useFocusGuard } from "@/components/compete/FocusGuard";
+import { useArena, useLeaveWarning, StrikeModal, PausedModal } from "@/components/compete/Arena";
 
 /** Others are answering while you are; the table keeps up without a socket. */
 const POLL_MS = 4000;
@@ -23,6 +24,9 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
   const [done, setDone] = useState(session.finished || remaining.length === 0);
 
   const lockedRef = useRef(false);
+
+  useArena(!done);
+  useLeaveWarning(!done);
 
   const guard = useFocusGuard({
     competitionId: session.competitionId,
@@ -80,6 +84,31 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
     return () => clearInterval(id);
   }, [done, question, send, guard.locked]);
 
+  /**
+   * A letter picks an option.
+   *
+   * The room is timed to the second, and reaching for a mouse costs more of
+   * that than reading the option does. The letters are drawn on the buttons so
+   * this is discoverable rather than folklore.
+   */
+  useEffect(() => {
+    if (done || !question || guard.locked) return;
+
+    const onKey = (e: KeyboardEvent) => {
+      if (e.metaKey || e.ctrlKey || e.altKey) return;
+      const at = "abcdef".indexOf(e.key.toLowerCase());
+      if (at < 0 || at >= question.options.length) return;
+      e.preventDefault();
+      choose(question.options[at]);
+    };
+
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+    // `choose` is recreated every render and guards itself against a second
+    // press, so it is deliberately not a dependency.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [done, question, guard.locked]);
+
   // Everyone else's progress, whether or not you are answering.
   useEffect(() => {
     const id = setInterval(async () => {
@@ -108,15 +137,17 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
 
   if (guard.locked) {
     return (
-      <div className="flex flex-col gap-s4">
-        <LockedPaper
-          answered={session.answeredIds.length}
-          total={total}
+      <>
+        <div className="flex flex-col gap-s4 arena-blur" aria-hidden>
+          {table}
+        </div>
+        <PausedModal
           reason={session.lockReason}
           byHost={session.lockedByHost}
+          answered={session.answeredIds.length}
+          total={total}
         />
-        {table}
-      </div>
+      </>
     );
   }
 
@@ -136,10 +167,20 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
   }
 
   const urgent = left <= 5;
+  // A per-question clock is short enough that a third of it is the warning.
+  const soon = left <= Math.max(8, Math.round(session.secondsPerQuestion / 3));
+  const clockColour = urgent ? "var(--danger)" : soon ? "var(--reward)" : "var(--muted)";
 
   return (
     <div className="flex flex-col gap-s4">
-      <FocusNotice notice={guard.notice} onDismiss={guard.dismiss} />
+      {guard.notice && (
+        <StrikeModal
+          notice={guard.notice}
+          strikes={guard.strikes}
+          remaining={guard.remaining}
+          onDismiss={guard.dismiss}
+        />
+      )}
 
       <section className="rounded-lg border border-line bg-surface shadow-sh1 overflow-hidden">
         <div className="flex items-center justify-between gap-s3 px-s5 py-s3 border-b border-line bg-bg-sunk">
@@ -147,8 +188,8 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
             {question.topic} · {answeredSoFar + 1} of {total}
           </span>
           <span
-            className="font-mono text-meta tabular"
-            style={{ color: urgent ? "var(--danger)" : "var(--muted)" }}
+            className={`font-mono text-meta tabular ${urgent ? "animate-timerpulse" : ""}`}
+            style={{ color: clockColour }}
           >
             {left}s
           </span>
@@ -159,7 +200,7 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
             className="h-full transition-[width] duration-1000 ease-linear"
             style={{
               width: `${(left / session.secondsPerQuestion) * 100}%`,
-              background: urgent ? "var(--danger)" : "var(--accent)",
+              background: urgent ? "var(--danger)" : soon ? "var(--reward)" : "var(--accent)",
             }}
           />
         </div>
@@ -168,7 +209,7 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
           <h2 className="text-h3 font-semibold text-ink">{question.questionText}</h2>
 
           <div className="grid gap-s3 mt-s5">
-            {question.options.map((option) => {
+            {question.options.map((option, i) => {
               const chosen = locked === option;
               return (
                 <button
@@ -176,14 +217,25 @@ export function CompetitionPlay({ session, meId }: { session: PlaySession; meId:
                   onClick={() => choose(option)}
                   disabled={locked !== null}
                   aria-pressed={chosen}
-                  className={`text-left px-s4 py-s3 min-h-[52px] rounded-md border text-ui transition-all duration-150 ${
+                  aria-keyshortcuts={String.fromCharCode(65 + i)}
+                  className={`flex items-center gap-s3 text-left px-s4 py-s3 min-h-[52px] rounded-md border text-ui transition-all duration-150 ${
                     chosen
                       ? "border-accent bg-accent-soft text-accent-strong font-semibold"
                       : "border-line bg-raised text-ink hover:border-accent hover:bg-accent-soft"
                   }`}
                   style={{ opacity: locked !== null && !chosen ? 0.35 : 1 }}
                 >
-                  {option}
+                  <span
+                    aria-hidden
+                    className="w-7 h-7 shrink-0 rounded-sm grid place-items-center font-mono text-label border"
+                    style={{
+                      borderColor: chosen ? "var(--accent)" : "var(--border)",
+                      color: chosen ? "var(--accent-strong)" : "var(--faint)",
+                    }}
+                  >
+                    {String.fromCharCode(65 + i)}
+                  </span>
+                  <span className="min-w-0">{option}</span>
                 </button>
               );
             })}

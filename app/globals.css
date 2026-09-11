@@ -428,3 +428,42 @@ body {
 @media (prefers-reduced-motion: reduce) {
   .animate-ringpulse, .animate-roadflow, .animate-bob { animation: none !important; }
 }
+
+/* ── The arena ──────────────────────────────────────────────────────────────
+   A live competition takes the whole screen. The site's own navigation is a
+   row of ways to leave an exam you are sitting, and the guard counts leaving,
+   so the honest thing is to take the exits away rather than punish using them.
+
+   Driven by `data-arena` on <html>, set by the play screen and cleared when it
+   unmounts. A class rather than a prop because the chrome is rendered by a
+   layout well above the page, and threading state up through a server layout
+   to hide it would cost more than one selector. */
+[data-arena="on"] .app-chrome {
+  display: none !important;
+}
+
+/* The shell reserves room for the mobile header and the bottom bar. With both
+   gone that reservation is just a gap at the top of the paper. */
+[data-arena="on"] main {
+  padding-top: 0 !important;
+  padding-bottom: 0 !important;
+}
+
+/* Behind a strike modal. Blurring the paper is the point: it stops the clock
+   being useful while the warning is unread. */
+.arena-blur {
+  filter: blur(6px);
+  pointer-events: none;
+  user-select: none;
+}
+
+/* The last minute of a paper. */
+@keyframes timerpulse {
+  0%, 100% { opacity: 1; }
+  50%      { opacity: .45; }
+}
+.animate-timerpulse { animation: timerpulse 1s ease-in-out infinite; }
+
+@media (prefers-reduced-motion: reduce) {
+  .animate-timerpulse { animation: none !important; }
+}

@@ -66,6 +66,7 @@ Checks before every commit: `npx tsc --noEmit`, `npx next lint`,
 | `20260909_add_problem_competitions` | ✅ yes                      |
 | `20260911_add_focus_guard`          | ❌ **not run yet**          |
 | `20260911_add_block_reasons`        | ❌ **not run yet**          |
+| `20260911_add_review_flag`          | ❌ **not run yet**          |
 
 The daily question is loaded inside a `try/catch` on `/duel`, so a missing
 `DailyAnswer` table fails silently and the block simply does not render. Check:
@@ -79,8 +80,9 @@ order by table_name;
 Five rows expected. If `DailyAnswer` is missing, run
 `prisma/migrations/20260827_add_daily_question/migration.sql`.
 
-`20260911_add_focus_guard` and `20260911_add_block_reasons` have **never been
-run**, and both are needed together. Until it is, opening any
+`20260911_add_focus_guard`, `20260911_add_block_reasons` and
+`20260911_add_review_flag` have **never been run**, and all three are needed
+together. Until it is, opening any
 room fails: `Competition.focusPolicy` is selected on every read. Paste
 `prisma/migrations/20260911_add_focus_guard/migration.sql` into the Supabase
 SQL editor. It adds one enum and six columns, all defaulted, and changes no
@@ -357,6 +359,53 @@ Three rules that exist because economics is not prose:
 The editor previews as you type, which is the point: whether a problem survived
 being copied out of a PDF is a question about how it _looks_.
 
+### The arena
+
+A live room takes the whole screen: `useArena` puts `data-arena="on"` on
+`<html>` and one rule in `globals.css` hides everything tagged `.app-chrome` —
+the sidebar, the mobile header, the bottom bar. A class rather than a prop,
+because the chrome is rendered by a layout well above the page and threading
+state up through a server layout to hide it would cost more than one selector.
+
+**Why the navigation goes away rather than being policed.** Every link in a
+sidebar is a way out of an exam somebody is sitting, and the guard counts going
+out. Fining a student for using a control the page itself put in front of them
+is indefensible; removing the exits is not.
+
+`useLeaveWarning` arms the browser's own "leave site?" prompt while a paper is
+open. Nothing is lost to a reload — every answer is already saved — but a
+reload mid-exam is almost never deliberate.
+
+A strike arrives as a **modal over a blurred paper**, dismissible, because a
+warning nobody can close is a lock wearing the wrong label. A frozen paper
+arrives as one that cannot be dismissed, because there is nothing the student
+can do about it.
+
+**What was asked for and deliberately not built:** blocking F12, the context
+menu and `Ctrl+Shift+I`. None of it stops anyone who cares — DevTools opens
+from a menu — and blocking `Ctrl+A`/`Ctrl+C` window-wide stops a student
+copying their own draft. Paste into an answer box and copy of the problem text
+are blocked, which is where the actual road from a model to the box runs.
+
+### The exam controls
+
+- A **navigator tile** has four states — where you are, answered, seen, not yet
+  opened — with a flag dot on top of any of them. "Seen" is client state: it is
+  only worth anything during the sitting, and a column for it would be a column
+  to migrate.
+- **Mark for review** is its own server call rather than a field on the draft
+  save, because a flag is toggled between questions while the box is untouched,
+  and folding it in would write an unchanged answer to set a bookmark.
+- **Keys.** `←`/`→` move, `F` flags, and `A`–`D` pick an option in a quiz. All
+  of them stand down while the focus is in a text field: an arrow key belongs
+  to the cursor there, and an `f` belongs to the word.
+- **The clock** turns amber with five minutes left and pulses red with one. A
+  clock that only changes as it expires reports something you can no longer act
+  on.
+- **Accuracy is the third tie-breaker**, after score and time: four from four
+  beats four from ten. `accuracy()` gives 0 for nobody-answered rather than the
+  1 that 0/0 would suggest.
+
 ### The focus guard
 
 Watching whether someone stayed on the page. `lib/compete/focus.ts` (pure) and
@@ -496,7 +545,7 @@ rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
 ## Tests
 
-282 passing. The pattern is to test **the pure half**: Elo, grading, question
+286 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
 question selection, the CSS token guard, and — new with problem rooms — reading
@@ -511,8 +560,8 @@ the fix was to **assert the property**, not loosen the number.
 
 ## What is worth doing next
 
-1. **Run `20260911_add_focus_guard` and `20260911_add_block_reasons`.** Nothing
-   opens a room until both are in the database.
+1. **Run the three `20260911_` migrations.** Nothing opens a room until they
+   are all in the database.
 2. **Write questions and problems.** Both banks are the constraint. Everything
    else is second.
 3. **Wait a week, then read `/duel/bank`.** It will say whether keys are wrong

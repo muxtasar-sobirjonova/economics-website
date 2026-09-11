@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { rank } from "@/lib/compete/scoring";
+import { rank, accuracy } from "@/lib/compete/scoring";
 import {
   parseSetup, MIN_QUESTIONS, MAX_QUESTIONS, MIN_SECONDS, MAX_SECONDS, MAX_TITLE,
   MAX_ALLOWANCE,
@@ -122,5 +122,40 @@ describe("rank — disqualification", () => {
       { userId: "c", name: "C", score: 1, ...base },
     ]);
     expect(rows.map((r) => r.rank)).toEqual([1, 1, 3]);
+  });
+});
+
+describe("rank — accuracy as the third tie-breaker", () => {
+  const level = { totalMs: 1000, finished: true };
+
+  it("separates two players level on score and on the clock", () => {
+    // Four from four beats four from ten: the same total, less guessing.
+    const rows = rank([
+      { userId: "guesser", name: "A", score: 4, answered: 10, ...level },
+      { userId: "sharp", name: "B", score: 4, answered: 4, ...level },
+    ]);
+    expect(rows.map((r) => r.userId)).toEqual(["sharp", "guesser"]);
+    expect(rows.map((r) => r.rank)).toEqual([1, 2]);
+  });
+
+  it("does not let score or the clock be overridden by accuracy", () => {
+    const rows = rank([
+      { userId: "low", name: "A", score: 2, answered: 2, ...level },
+      { userId: "high", name: "B", score: 9, answered: 10, ...level },
+    ]);
+    expect(rows[0].userId).toBe("high");
+  });
+
+  it("still shares a rank between two who match on all three", () => {
+    const rows = rank([
+      { userId: "a", name: "A", score: 5, answered: 5, ...level },
+      { userId: "b", name: "B", score: 5, answered: 5, ...level },
+    ]);
+    expect(rows.map((r) => r.rank)).toEqual([1, 1]);
+  });
+
+  it("gives nobody credit for answering nothing", () => {
+    expect(accuracy({ score: 0, answered: 0 })).toBe(0);
+    expect(accuracy({ score: 3, answered: 6 })).toBe(0.5);
   });
 });
