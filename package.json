@@ -17,7 +17,8 @@
     "postinstall": "prisma generate",
     "duel:check": "tsx prisma/seed-duel-questions.ts --check",
     "duel:seed": "tsx prisma/seed-duel-questions.ts",
-    "duel:sql": "tsx prisma/seed-duel-questions.ts --sql"
+    "duel:sql": "tsx prisma/seed-duel-questions.ts --sql",
+    "problems:sql": "tsx prisma/seed-problems.ts"
   },
   "dependencies": {
     "@ai-sdk/anthropic": "^4.0.50",

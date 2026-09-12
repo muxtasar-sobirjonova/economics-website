@@ -377,10 +377,26 @@ marks — ready to paste through **Paste a whole paper**:
 | `raf2021-vehicle.txt`  | EY                        | 4        |
 | `vaccine-pricing.txt`  | IEO 2020                  | 4        |
 
-**Gitignored, like the duel bank.** They carry model answers and marking
-rubrics, and this repository is public: a problem whose solution is on GitHub
-measures who read GitHub. The database is the source of truth once they are
-loaded.
+**Gitignored, like the duel bank**, along with the `problems.sql` they generate.
+They carry model answers and marking rubrics, and this repository is public: a
+problem whose solution is on GitHub measures who read GitHub. The database is
+the source of truth once they are loaded.
+
+Load them the way the question bank is loaded — there is no route from this
+machine to Postgres:
+
+```bash
+npm run problems:sql -- content/cases --out problems.sql
+```
+
+Then paste `problems.sql` into the Supabase SQL editor. Use `--out`, not a
+shell redirect: `npm run` prints its own banner to stdout and it lands in the
+file. Every file goes through the browser's own importer and then through
+`parseProblem`, so a problem loaded this way is held to exactly the standard
+one typed into the form is. Safe to run twice: a problem's id is a hash of its
+statement, so a corrected file updates rows instead of doubling the bank, and
+`active` is never overwritten — retiring one is a decision a re-import must not
+undo.
 
 **Every card is an OPEN problem marked by the model, worth 10.** Ten of the 25
 are "multiple choice" in the source, but their rubric awards 6 for the option
@@ -659,7 +675,7 @@ rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
 ## Tests
 
-316 passing. The pattern is to test **the pure half**: Elo, grading, question
+328 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
 question selection, the CSS token guard, and — new with problem rooms — reading
