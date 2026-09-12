@@ -349,7 +349,11 @@ its own markup, with `trust` off.
 Three rules that exist because economics is not prose:
 
 - `$…$` is maths, `$100` is money. A maths span may not open or close against a
-  space, so "$100 and $200" stays text.
+  space, so "$100 and $200" stays text — **and** a span beginning with a digit
+  is maths only if it contains a TeX marker. Without that second rule,
+  "Capex = 650 km × $12–24M = ~$7.8B" sets "12–24M = ~" as a formula, which is
+  the normal case in a business problem rather than an edge one. The cost is
+  `$2x$`, which now reads as text; write `$2 \times x$`.
 - Italic is `*this*` and **never** `_this_` — underscore emphasis would turn
   "P_1 and Q_2" into one italic run, silently, in most problems.
 - No regex lookbehind anywhere: half a classroom is on an older iPhone, and a
@@ -358,6 +362,35 @@ Three rules that exist because economics is not prose:
 
 The editor previews as you type, which is the point: whether a problem survived
 being copied out of a PDF is a question about how it _looks_.
+
+### The case cards
+
+`content/cases/` holds six competition cases turned into 25 problems — 250
+marks — ready to paste through **Paste a whole paper**:
+
+| File                   | Source                    | Problems |
+| ---------------------- | ------------------------- | -------- |
+| `bank-for-youth.txt`   | Changellenge / CL Capital | 5        |
+| `campus-ppp.txt`       | IEO 2023 (Grant Thornton) | 4        |
+| `hyperloop.txt`        | McKinsey & Company        | 4        |
+| `jd-logistics-esg.txt` | IEO 2022                  | 4        |
+| `raf2021-vehicle.txt`  | EY                        | 4        |
+| `vaccine-pricing.txt`  | IEO 2020                  | 4        |
+
+**Gitignored, like the duel bank.** They carry model answers and marking
+rubrics, and this repository is public: a problem whose solution is on GitHub
+measures who read GitHub. The database is the source of truth once they are
+loaded.
+
+**Every card is an OPEN problem marked by the model, worth 10.** Ten of the 25
+are "multiple choice" in the source, but their rubric awards 6 for the option
+and 4 for the justification — so they are written as open problems that list
+the options and ask for a letter plus a reason. A `SHORT` key would have given
+full marks for a bare letter, which is not what the card says.
+
+The rubric is written into `@solution`, because the grader marks against the
+author's solution. `@topic` is the case, so a host can filter the bank to one
+case and open it as a paper.
 
 ### Pasting a whole paper
 
@@ -626,7 +659,7 @@ rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
 ## Tests
 
-313 passing. The pattern is to test **the pure half**: Elo, grading, question
+316 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
 question selection, the CSS token guard, and — new with problem rooms — reading

@@ -48,7 +48,49 @@ export type Block =
  * iPhone, and a lookbehind in a bundle is a syntax error on Safari before
  * 16.4 — not a broken formula, a blank page.
  */
-const INLINE_MATH = /\$([^\s$\n](?:(?:\\\$|[^$\n])*?[^\s$\n])?)\$/;
+const INLINE_MATH = /\$([^\s$\n](?:(?:\\\$|[^$\n])*?[^\s$\n])?)\$/g;
+
+/**
+ * The rule above is not enough on its own, and economics is why.
+ *
+ * "Capex = 650 km × $12–24M = ~$7.8B" has two dollar signs with no space
+ * against either, so it satisfies every test so far and renders "12–24M = ~"
+ * as a formula. Money written twice on one line is the normal case in a
+ * business problem, not an edge one.
+ *
+ * What separates them: money starts with a digit and carries no TeX. A formula
+ * that starts with a digit — "$0 = 150 - 2P_{max}$" — almost always does. So a
+ * span beginning with a digit is maths only if it contains a TeX marker.
+ *
+ * The cost is `$2x$`, which now reads as text. That is the right trade: a
+ * price rendered as a formula is silent and wrong on every line it touches,
+ * and the fix for `2x` is to write `$2 \times x$`.
+ */
+function looksLikeMaths(content: string): boolean {
+  if (!/^\d/.test(content)) return true;
+  return /[\\^_{}]/.test(content);
+}
+
+/** The first maths span that is one, rather than the first that looks like one. */
+function findMaths(text: string): { before: string; captured: string; after: string } | null {
+  INLINE_MATH.lastIndex = 0;
+
+  let m: RegExpExecArray | null;
+  while ((m = INLINE_MATH.exec(text)) !== null) {
+    if (!looksLikeMaths(m[1])) {
+      // Step past this opening dollar rather than past the whole span: the
+      // closing one may open a real formula.
+      INLINE_MATH.lastIndex = m.index + 1;
+      continue;
+    }
+    return {
+      before: text.slice(0, m.index),
+      captured: m[1],
+      after: text.slice(m.index + m[0].length),
+    };
+  }
+  return null;
+}
 
 /**
  * Italic is `*this*` and never `_this_`.
@@ -82,7 +124,7 @@ function splitOnce(
 export function parseInline(text: string): Inline[] {
   if (!text) return [];
 
-  const math = splitOnce(text, INLINE_MATH);
+  const math = findMaths(text);
   if (math) {
     return [
       ...parseInline(math.before),

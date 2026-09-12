@@ -41,6 +41,28 @@ describe("parseInline — maths against money", () => {
   it("lets an author escape a dollar", () => {
     expect(textOf(parseInline("A \\$5 note"))).toBe("A $5 note");
   });
+
+  it("leaves two prices on one line alone", () => {
+    // The trap a business case walks into constantly: two dollar signs with no
+    // space against either satisfies every other rule, and "12–24M = ~" would
+    // be set as a formula on a line that is only ever about money.
+    const line = "Capex = 650 km × $12–24M = ~$7.8B to ~$15.6B (midpoint ~$11.7B).";
+    expect(kinds(parseInline(line))).toEqual(["text"]);
+    expect(textOf(parseInline(line))).toBe(line);
+  });
+
+  it("still reads a formula that happens to start with a number", () => {
+    // Money starts with a digit and carries no TeX; a formula that starts with
+    // one almost always does.
+    const nodes = parseInline("$0 = 150 - 2P_{max} \\implies P_{max} = 75$");
+    expect(kinds(nodes)).toEqual(["math"]);
+  });
+
+  it("finds a real formula after a price on the same line", () => {
+    const nodes = parseInline("At $16/dose the demand is $Q_d = 100 - 2P$ here.");
+    expect(kinds(nodes)).toEqual(["text", "math", "text"]);
+    expect(nodes[1]).toEqual({ t: "math", v: "Q_d = 100 - 2P" });
+  });
 });
 
 describe("parseInline — emphasis", () => {
