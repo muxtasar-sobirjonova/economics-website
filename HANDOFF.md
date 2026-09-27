@@ -365,19 +365,33 @@ being copied out of a PDF is a question about how it _looks_.
 
 ### The case cards
 
-`content/cases/` holds six competition cases turned into 25 problems — 250
-marks — ready to paste through **Paste a whole paper**:
+`content/cases/` holds the written problems in two folders: `levels/` — three
+papers of 51 cards each, by difficulty — and `studies/`, six competition cases.
+**178 problems, 1,780 marks.**
 
-| File                   | Source                    | Problems |
-| ---------------------- | ------------------------- | -------- |
-| `bank-for-youth.txt`   | Changellenge / CL Capital | 5        |
-| `campus-ppp.txt`       | IEO 2023 (Grant Thornton) | 4        |
-| `hyperloop.txt`        | McKinsey & Company        | 4        |
-| `jd-logistics-esg.txt` | IEO 2022                  | 4        |
-| `raf2021-vehicle.txt`  | EY                        | 4        |
-| `vaccine-pricing.txt`  | IEO 2020                  | 4        |
+`levels/` comes from `questions/`, which carries 153 cards as JSON: 50 of them
+multiple choice, every one worth 10 with a rubric, marker notes, and the
+Cambridge paper it was adapted from. `scratchpad/convert_cards.py` turns that
+JSON into the paste format — the JSON is the source of truth, not the text it
+generates.
 
-**Gitignored, like the duel bank**, along with the `problems.sql` they generate.
+Two fields are deliberately kept **out of the statement** and put in the
+solution, which only opens once a room has ended: the **source**, because it
+names the exact paper and question number, and the **syllabus link**, because it
+names the method. Either one, read mid-exam, is the answer.
+
+`studies/` holds the six competition cases as 25 problems:
+
+| File                           | Source                    | Problems |
+| ------------------------------ | ------------------------- | -------- |
+| `studies/bank-for-youth.txt`   | Changellenge / CL Capital | 5        |
+| `studies/campus-ppp.txt`       | IEO 2023 (Grant Thornton) | 4        |
+| `studies/hyperloop.txt`        | McKinsey & Company        | 4        |
+| `studies/jd-logistics-esg.txt` | IEO 2022                  | 4        |
+| `studies/raf2021-vehicle.txt`  | EY                        | 4        |
+| `studies/vaccine-pricing.txt`  | IEO 2020                  | 4        |
+
+**Gitignored, like the duel bank**, along with the SQL they generate.
 They carry model answers and marking rubrics, and this repository is public: a
 problem whose solution is on GitHub measures who read GitHub. The database is
 the source of truth once they are loaded.
@@ -386,10 +400,18 @@ Load them the way the question bank is loaded — there is no route from this
 machine to Postgres:
 
 ```bash
-npm run problems:sql -- content/cases --out problems.sql
+npm run problems:sql -- content/cases/levels/easy.txt --out sql/problems-easy.sql
+npm run problems:sql -- content/cases/studies --out sql/problems-cases.sql
+npm run problems:sql -- content/cases --out sql/problems-all.sql
 ```
 
-Then paste `problems.sql` into the Supabase SQL editor. Use `--out`, not a
+The target is a file or a directory, and directories recurse — one level, the
+case studies, or everything. Paste the result into the Supabase SQL editor.
+Generate it per level rather than as one 500 KB statement: a browser editor
+takes 150 KB comfortably, and a failure names the file it was in.
+
+`/questions/`, `/content/cases/` and `/sql/` are all gitignored for the same
+reason. Use `--out`, not a
 shell redirect: `npm run` prints its own banner to stdout and it lands in the
 file. Every file goes through the browser's own importer and then through
 `parseProblem`, so a problem loaded this way is held to exactly the standard

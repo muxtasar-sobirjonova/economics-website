@@ -22,12 +22,18 @@ import { parseProblemImport } from "../lib/compete/bulkImport";
 import { parseProblem, PROBLEM_ERROR_COPY } from "../lib/compete/problem";
 import { problemsToSql, problemId, type ProblemRow } from "../lib/compete/problemSql";
 
+/** A file, or every paper under a directory — subdirectories included, so a
+ *  bank can be filed by level or by case without changing the command. */
 function filesIn(target: string): string[] {
   if (statSync(target).isFile()) return [target];
+
   return readdirSync(target)
-    .filter((f) => f.endsWith(".txt") || f.endsWith(".md"))
     .sort()
-    .map((f) => join(target, f));
+    .flatMap((entry) => {
+      const full = join(target, entry);
+      if (statSync(full).isDirectory()) return filesIn(full);
+      return entry.endsWith(".txt") || entry.endsWith(".md") ? [full] : [];
+    });
 }
 
 function main() {
