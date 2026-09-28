@@ -27,6 +27,7 @@ import { FocusRecord } from "@/components/compete/FocusRecord";
 import { focusRecord } from "@/lib/compete/focusService";
 import { Standings } from "@/components/compete/Standings";
 import { HostControls } from "@/components/compete/HostControls";
+import { HostTools } from "@/components/compete/HostTools";
 import { DuelReviewList } from "@/components/duel/DuelReviewList";
 
 export const metadata: Metadata = { title: "Competition | That's So Econ" };
@@ -73,6 +74,8 @@ export default async function CompetitionPage({ params }: { params: { code: stri
   if (view.status === "ENDED") {
     const podium = view.standings.slice(0, 3);
 
+    const tools = view.isHost ? <HostTools competitionId={view.id} /> : null;
+
     const board = (
       <>
         <section className="rounded-lg border border-line bg-surface shadow-sh1 overflow-hidden">
@@ -105,6 +108,7 @@ export default async function CompetitionPage({ params }: { params: { code: stri
 
       return shell(
         <>
+          {tools}
           {focus && (
             <FocusRecord
               competitionId={view.id}
@@ -129,6 +133,7 @@ export default async function CompetitionPage({ params }: { params: { code: stri
     const review = await getCompetitionReview(userId, view.id);
     return shell(
       <>
+        {tools}
         {board}
         {review ? (
           <DuelReviewList lines={review} />
@@ -147,7 +152,7 @@ export default async function CompetitionPage({ params }: { params: { code: stri
 
     return shell(
       <>
-        {view.isHost && <HostControls id={view.id} progress={view.progress} />}
+        {view.isHost && <HostControls id={view.id} progress={view.progress} clock={view.durationMinutes} />}
         {focus && (
           <FocusRecord competitionId={view.id} policy={focus.policy} rows={focus.rows} />
         )}
@@ -181,7 +186,7 @@ export default async function CompetitionPage({ params }: { params: { code: stri
 
   return shell(
     <>
-      {view.isHost && <HostControls id={view.id} progress={view.progress} />}
+      {view.isHost && <HostControls id={view.id} progress={view.progress} clock={view.durationMinutes} />}
       {quizFocus && (
         <FocusRecord competitionId={view.id} policy={quizFocus.policy} rows={quizFocus.rows} />
       )}

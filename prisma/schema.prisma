@@ -731,6 +731,11 @@ model Problem {
   authorId String?
   author   User?   @relation("ProblemAuthor", fields: [authorId], references: [id], onDelete: SetNull)
 
+  /// How many rooms have been opened with it. Not a popularity score — it is
+  /// how a host avoids setting the same paper to the same class twice, and how
+  /// the random draw knows which half of the bank has never been used.
+  timesUsed Int @default(0)
+
   /// A broken problem is retired, never deleted: rooms that used it still
   /// have to review against something.
   active    Boolean  @default(true)

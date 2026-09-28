@@ -35,7 +35,7 @@ export default async function CompetePage() {
 
   const runsRooms = mayHost || mayWrite;
 
-  const [{ open, mine }, topicRows, bank] = await Promise.all([
+  const [{ open, mine, played }, topicRows, bank] = await Promise.all([
     listCompetitions(userId),
     runsRooms
       ? prisma.duelQuestion.groupBy({
@@ -86,6 +86,69 @@ export default async function CompetePage() {
         <Section title="Open now" empty="Nothing is running. If you have a code, use it above." rows={open} />
 
         {mine.length > 0 && <Section title="Yours" empty="" rows={mine} />}
+
+        {/*
+          Rooms this person sat, which the page did not list at all: it showed
+          what is open and what you host, and a student is neither. The mark is
+          the reason they came looking, so it is on the row.
+        */}
+        {played.length > 0 && (
+          <section>
+            <div className="flex items-baseline gap-s4 mb-s3">
+              <h2 className="text-h2 font-semibold text-ink whitespace-nowrap">You played</h2>
+              <span className="h-px bg-line flex-1" />
+            </div>
+
+            <ul className="list-none m-0 p-0 rounded-lg border border-line bg-surface shadow-sh1 overflow-hidden">
+              {played.map((c) => (
+                <li key={c.code}>
+                  <Link
+                    href={`/compete/${c.code}`}
+                    className="grid grid-cols-[1fr_auto] gap-s3 items-center px-s4 py-s3 border-t border-line first:border-t-0 hover:bg-bg-sunk transition-colors"
+                  >
+                    <span className="min-w-0">
+                      <span className="block text-ui text-ink truncate pb-[2px]">{c.title}</span>
+                      <span className="block font-mono text-label uppercase text-faint truncate">
+                        {c.hostName || "Anonymous"} · {c.questionCount}{" "}
+                        {c.format === "PROBLEMS" ? "problems" : "questions"}
+                        {c.myDisqualified
+                          ? " · disqualified"
+                          : c.status === "ENDED"
+                            ? ""
+                            : " · still open"}
+                      </span>
+                    </span>
+
+                    <span className="text-right shrink-0">
+                      {/* Only once the room has ended: a mark shown while others
+                          are still writing is a mark shown to the room. */}
+                      {c.status === "ENDED" ? (
+                        <>
+                          <span
+                            className="block font-mono text-ui tabular"
+                            style={{
+                              color: c.myDisqualified ? "var(--danger)" : "var(--text)",
+                              textDecoration: c.myDisqualified ? "line-through" : undefined,
+                            }}
+                          >
+                            {c.myScore}
+                          </span>
+                          <span className="block font-mono text-label uppercase text-faint">
+                            marks
+                          </span>
+                        </>
+                      ) : (
+                        <span className="font-mono text-label uppercase text-faint">
+                          {c.myFinished ? "handed in" : "open"}
+                        </span>
+                      )}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </section>
+        )}
       </div>
     </div>
   );

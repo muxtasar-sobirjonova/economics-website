@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useTransition } from "react";
 import { useRouter } from "next/navigation";
-import { endCompetitionAction } from "@/app/actions/compete";
+import { endCompetitionAction, extendCompetitionAction } from "@/app/actions/compete";
 
 /**
  * The host's bar while a competition runs.
@@ -14,9 +14,12 @@ import { endCompetitionAction } from "@/app/actions/compete";
 export function HostControls({
   id,
   progress,
+  clock,
 }: {
   id: string;
   progress: { total: number; finished: number; playing: number; completion: number };
+  /** Minutes on the whole-paper clock, or null when there is no clock to add to. */
+  clock?: number | null;
 }) {
   const router = useRouter();
   const [pending, start] = useTransition();
@@ -46,6 +49,21 @@ export function HostControls({
           />
         </span>
       </div>
+
+      {/*
+        A lesson that overran used to mean watching papers submit themselves.
+        Only adds — shortening a clock mid-paper would end a room under
+        someone's hands, and the button that ends a room already says so.
+      */}
+      {clock != null && (
+        <button
+          onClick={() => start(async () => { await extendCompetitionAction(id); router.refresh(); })}
+          disabled={pending}
+          className="inline-flex items-center min-h-[44px] px-s4 rounded-md border border-line text-ui text-ink hover:border-accent transition-colors disabled:opacity-60"
+        >
+          {pending ? "…" : `+10 min (now ${clock})`}
+        </button>
+      )}
 
       {confirming ? (
         <div className="flex flex-wrap gap-s2">

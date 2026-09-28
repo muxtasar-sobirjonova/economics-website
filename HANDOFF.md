@@ -67,6 +67,7 @@ Checks before every commit: `npx tsc --noEmit`, `npx next lint`,
 | `20260911_add_focus_guard`          | ❌ **not run yet**          |
 | `20260911_add_block_reasons`        | ❌ **not run yet**          |
 | `20260911_add_review_flag`          | ❌ **not run yet**          |
+| `20260928_add_problem_usage`        | ❌ **not run yet**          |
 
 The daily question is loaded inside a `try/catch` on `/duel`, so a missing
 `DailyAnswer` table fails silently and the block simply does not render. Check:
@@ -458,6 +459,36 @@ saved — the moment to discover the separators are wrong is before sixty
 problems land in the bank. A block that fails is reported by its number and the
 rest are still saved: a typo in problem seven should not cost the other nine.
 
+### What a room leaves behind
+
+- **A student can find what they sat.** `listCompetitions` returns a third list,
+  `played` — rooms this person has a seat in and does not host — with their own
+  mark on the row. The page listed what is open and what you host, and a student
+  is neither. The mark shows only once the room has ended: shown earlier it is a
+  mark shown to the room.
+- **Results as a spreadsheet.** `resultsCsv` builds it server-side behind the
+  host check and the page saves it from a Blob — a download route would be a
+  second place to get that check wrong. `lib/compete/csv.ts` is pure and tested,
+  because one comma in one name shifts every mark after it into the wrong
+  column, silently. Fields starting `=`, `+`, `-` or `@` are quote-prefixed so a
+  student called "-Ali" is not read as a formula, and the file carries a BOM so
+  Excel reads `so'm` as `so'm`.
+- **Set it again** copies a finished room into a new one with a new code —
+  never a reset in place, because the first sitting's marks and focus record are
+  what the second is compared against. The title gains "again", then "again 2".
+- **+10 minutes** while a paper is being written. Only ever adds: shortening a
+  clock mid-paper would end a room under someone's hands, and the button that
+  ends a room already says so.
+- **`Problem.timesUsed`** counts how often a problem has been set. The picker
+  shows "never set" or "set 3 times", the list orders least-used first inside a
+  topic, and the random draw spends the never-set half of the bank before it
+  repeats anything. Its migration backfills from the competitions that already
+  exist, so the counter starts honest.
+- **A numeric answer is echoed back as it will be read** — "1,200 so'm" shows
+  "Read as: 1200" under the box, from the same `parseNumber` the key marks with.
+  Prose shows "not a number yet — a marker will read this one", which is exactly
+  what happens to it.
+
 ### The bank at 178 problems
 
 The picker was written for 25 and had only a topic filter. At 178 it needed
@@ -737,7 +768,7 @@ rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
 ## Tests
 
-337 passing. The pattern is to test **the pure half**: Elo, grading, question
+353 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
 question selection, the CSS token guard, and — new with problem rooms — reading
@@ -752,8 +783,9 @@ the fix was to **assert the property**, not loosen the number.
 
 ## What is worth doing next
 
-1. **Run the three `20260911_` migrations.** Nothing opens a room until they
-   are all in the database.
+1. **Run the three `20260911_` migrations and `20260928_add_problem_usage`.**
+   Nothing opens a room until the first three are in the database; the fourth
+   adds a counter and backfills it from the rooms that already exist.
 2. **Write questions and problems.** Both banks are the constraint. Everything
    else is second.
 3. **Wait a week, then read `/duel/bank`.** It will say whether keys are wrong

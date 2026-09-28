@@ -15,6 +15,8 @@ import { cleanText } from "./answerCheck";
 import { gradeWithModel, graderAvailable, graderModelName } from "./grader";
 import { judge, parseAwayLog, type FocusPolicy } from "./focus";
 import { plainText } from "./markdown";
+import { resultsToCsv, csvFilename } from "./csv";
+import { rank } from "./scoring";
 import type { Outcome } from "./service";
 
 /**
@@ -160,6 +162,8 @@ export interface ProblemSummary {
    * row. Trimmed on the server, where the full text already is.
    */
   preview: string;
+  /** How many rooms have been set with it. */
+  timesUsed: number;
   maxPoints: number;
   answerKind: string;
   gradingMode: string;
@@ -171,11 +175,13 @@ export interface ProblemSummary {
 export async function listProblems(includeRetired = false): Promise<ProblemSummary[]> {
   const rows = await prisma.problem.findMany({
     where: includeRetired ? {} : { active: true },
-    orderBy: [{ topic: "asc" }, { createdAt: "desc" }],
+    // Least used first inside a topic: the bank rotates on its own rather than
+    // handing back the same first page every time a host opens it.
+    orderBy: [{ topic: "asc" }, { timesUsed: "asc" }, { createdAt: "desc" }],
     take: 300,
     select: {
       id: true, title: true, topic: true, statement: true, maxPoints: true,
-      answerKind: true, gradingMode: true, active: true, solution: true,
+      answerKind: true, gradingMode: true, active: true, solution: true, timesUsed: true,
     },
   });
 
@@ -298,6 +304,13 @@ export async function createProblemCompetition(
           ),
         },
       });
+      // Counted so a host can see which problems a class has already been set,
+      // and so the random draw can prefer the half of the bank nobody has used.
+      await prisma.problem.updateMany({
+        where: { id: { in: problemIds } },
+        data: { timesUsed: { increment: 1 } },
+      });
+
       return { ok: true, data: { code } };
     } catch (e) {
       if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") continue;
@@ -943,6 +956,88 @@ export async function markIdentical(
   }
 
   return { ok: true, data: { marked: matching.length } };
+}
+
+/**
+ * A room's results, for a spreadsheet.
+ *
+ * Built here rather than on the page because it reads answers per player and
+ * per problem — the kind of query a component should never be issuing — and
+ * because the host check belongs with the data, not with the button.
+ */
+export async function resultsCsv(
+  userId: string,
+  competitionId: string
+): Promise<Outcome<{ csv: string; filename: string }>> {
+  const comp = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: {
+      hostId: true, title: true, code: true, format: true,
+      problemIds: true, questionIds: true,
+      players: {
+        select: {
+          userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
+          disqualifiedAt: true, disqualifyReason: true,
+          user: { select: { name: true } },
+        },
+      },
+    },
+  });
+  if (!comp || comp.hostId !== userId) return { ok: false, error: "Not your competition." };
+
+  const isProblems = comp.format === CompetitionFormat.PROBLEMS;
+  const ids = isProblems ? comp.problemIds : comp.questionIds;
+
+  const [problems, answers] = await Promise.all([
+    isProblems
+      ? prisma.problem.findMany({
+          where: { id: { in: ids } },
+          select: { id: true, title: true },
+        })
+      : Promise.resolve([]),
+    prisma.competitionAnswer.findMany({
+      where: { competitionId },
+      select: { userId: true, questionId: true, points: true, gradedBy: true },
+    }),
+  ]);
+
+  const titleOf = new Map(problems.map((p) => [p.id, p.title]));
+  const marks = new Map(
+    answers.map((a) => [`${a.userId}:${a.questionId}`, a] as const)
+  );
+
+  const ranked = rank(
+    comp.players.map((p) => ({
+      userId: p.userId, name: p.user.name, score: p.score, totalMs: p.totalMs,
+      answered: p.answered, finished: p.finishedAt !== null,
+      disqualified: p.disqualifiedAt !== null, disqualifyReason: p.disqualifyReason,
+    }))
+  );
+
+  const csv = resultsToCsv(
+    ranked.map((r) => ({
+      rank: r.rank,
+      name: r.name,
+      score: r.score,
+      answered: r.answered,
+      totalMs: r.totalMs,
+      finished: r.finished,
+      disqualified: r.disqualified,
+      disqualifyReason: r.disqualifyReason,
+      perProblem: ids.map((id) => {
+        const a = marks.get(`${r.userId}:${id}`);
+        // Unmarked is blank, not nought: a teacher reading the column has to
+        // be able to tell "wrong" from "nobody has looked at it".
+        return !a || a.gradedBy === GradedBy.PENDING ? null : a.points;
+      }),
+    })),
+    {
+      title: comp.title,
+      problemTitles: ids.map((id, i) => titleOf.get(id) ?? `Q${i + 1}`),
+    }
+  );
+
+  return { ok: true, data: { csv, filename: csvFilename(comp.title, comp.code) } };
 }
 
 /* ── Reading the marks back ──────────────────────────────────────────────── */

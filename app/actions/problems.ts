@@ -15,6 +15,7 @@ import {
   markingProgress,
   overrideMark,
   markIdentical,
+  resultsCsv,
   type ProblemSetupInput,
   type MarkingProgress,
 } from "@/lib/compete/problemService";
@@ -307,4 +308,20 @@ export async function markIdenticalAction(
   );
   if (result.ok) revalidatePath("/compete");
   return result;
+}
+
+/**
+ * The room's results as a spreadsheet.
+ *
+ * Returned as a string for the page to save, rather than served from a route:
+ * it is a few kilobytes, it is already behind the host check, and a download
+ * URL would be a second place to get that check wrong.
+ */
+export async function resultsCsvAction(
+  competitionId: string
+): Promise<Outcome<{ csv: string; filename: string }>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+
+  return resultsCsv(user.id, str(competitionId));
 }

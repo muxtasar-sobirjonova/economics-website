@@ -248,9 +248,119 @@ export async function endCompetition(userId: string, competitionId: string): Pro
   return { ok: true, data: null };
 }
 
+/** How long one press of "give them longer" adds. */
+export const EXTEND_MINUTES = 10;
+
+/**
+ * More time, while they are still writing.
+ *
+ * The clock is fixed when a room opens, and a lesson that overran used to mean
+ * watching papers submit themselves. Only ever adds: a host who could shorten
+ * a clock mid-paper could end a room under someone's hands, and the button for
+ * ending a room already exists and says so.
+ */
+export async function extendCompetition(
+  userId: string,
+  competitionId: string,
+  minutes = EXTEND_MINUTES
+): Promise<Outcome<{ durationMinutes: number }>> {
+  const row = await hostOnly(userId, competitionId);
+  if (!row) return { ok: false, error: "Not your competition." };
+
+  const comp = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: { durationMinutes: true, status: true },
+  });
+  if (!comp) return { ok: false, error: "No such competition." };
+  if (comp.status === CompetitionStatus.ENDED) {
+    return { ok: false, error: "That competition has finished." };
+  }
+  if (comp.durationMinutes === null) {
+    return { ok: false, error: "This room has no clock to extend." };
+  }
+
+  const added = Math.min(Math.max(Math.round(minutes) || EXTEND_MINUTES, 1), 120);
+  const durationMinutes = Math.min(comp.durationMinutes + added, 600);
+
+  await prisma.competition.update({
+    where: { id: competitionId },
+    data: { durationMinutes },
+  });
+
+  return { ok: true, data: { durationMinutes } };
+}
+
+/**
+ * The same paper again, in a fresh room.
+ *
+ * A new competition rather than a reset of the old one: the marks, the answers
+ * and the focus record of the first sitting are what the second one is being
+ * compared against, and reopening a room in place would overwrite all of it.
+ * Everything about how it is sat carries over; nothing about who sat it does.
+ */
+export async function reopenCompetition(
+  userId: string,
+  competitionId: string
+): Promise<Outcome<{ code: string }>> {
+  const source = await prisma.competition.findUnique({
+    where: { id: competitionId },
+    select: {
+      hostId: true, title: true, access: true, topic: true,
+      questionIds: true, problemIds: true, format: true,
+      secondsPerQuestion: true, durationMinutes: true,
+      focusPolicy: true, focusAllowance: true,
+    },
+  });
+  if (!source || source.hostId !== userId) return { ok: false, error: "Not your competition." };
+
+  // "Round one" reopened is not "Round one" — a register with two of those in
+  // it is a register nobody can read.
+  const title = /\bagain( \d+)?$/.test(source.title)
+    ? source.title.replace(/\bagain( \d+)?$/, (m, n) => `again ${Number(n ?? 1) + 1}`)
+    : `${source.title} again`;
+
+  for (let attempt = 0; attempt < CODE_ATTEMPTS; attempt++) {
+    const code = generateCode();
+    try {
+      await prisma.competition.create({
+        data: {
+          code,
+          title: title.slice(0, 80),
+          hostId: userId,
+          access: source.access,
+          topic: source.topic,
+          format: source.format,
+          questionIds: source.questionIds,
+          problemIds: source.problemIds,
+          secondsPerQuestion: source.secondsPerQuestion,
+          durationMinutes: source.durationMinutes,
+          focusPolicy: source.focusPolicy,
+          focusAllowance: source.focusAllowance,
+        },
+      });
+
+      // A second sitting is a second use of every problem on the paper.
+      if (source.problemIds.length > 0) {
+        await prisma.problem.updateMany({
+          where: { id: { in: source.problemIds } },
+          data: { timesUsed: { increment: 1 } },
+        });
+      }
+
+      return { ok: true, data: { code } };
+    } catch (e) {
+      if (e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002") continue;
+      console.error("reopenCompetition failed", e);
+      return { ok: false, error: "Could not open it again." };
+    }
+  }
+
+  return { ok: false, error: "Could not find a free code. Try again." };
+}
+
 /** Everything worth listing on the competitions page. */
 export async function listCompetitions(userId: string) {
-  const [open, mine] = await Promise.all([
+  const [open, mine, played] = await Promise.all([
     prisma.competition.findMany({
       where: { access: "OPEN", status: { in: [CompetitionStatus.LOBBY, CompetitionStatus.RUNNING] } },
       orderBy: { createdAt: "desc" },
@@ -273,6 +383,30 @@ export async function listCompetitions(userId: string) {
         _count: { select: { players: true } },
       },
     }),
+
+    /**
+     * Rooms this player sat.
+     *
+     * Without this a student cannot find the paper they wrote last week, or
+     * what it scored — the page listed rooms that are open and rooms you host,
+     * and a student is neither. Their own seat comes back with it, because the
+     * mark is the reason they are looking.
+     */
+    prisma.competition.findMany({
+      where: { players: { some: { userId } }, NOT: { hostId: userId } },
+      orderBy: { createdAt: "desc" },
+      take: 12,
+      select: {
+        code: true, title: true, status: true, topic: true, questionIds: true,
+        format: true, problemIds: true,
+        host: { select: { name: true } },
+        _count: { select: { players: true } },
+        players: {
+          where: { userId },
+          select: { score: true, finishedAt: true, disqualifiedAt: true },
+        },
+      },
+    }),
   ]);
 
   const shape = (c: (typeof open)[number]) => ({
@@ -287,7 +421,19 @@ export async function listCompetitions(userId: string) {
     players: c._count.players,
   });
 
-  return { open: open.map(shape), mine: mine.map(shape) };
+  return {
+    open: open.map(shape),
+    mine: mine.map(shape),
+    played: played.map((c) => {
+      const me = c.players[0];
+      return {
+        ...shape(c),
+        myScore: me?.score ?? 0,
+        myFinished: me?.finishedAt !== null && me?.finishedAt !== undefined,
+        myDisqualified: me?.disqualifiedAt != null,
+      };
+    }),
+  };
 }
 
 /* ── Playing ─────────────────────────────────────────────────────────────── */

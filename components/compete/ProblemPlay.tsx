@@ -8,6 +8,7 @@ import { Rich } from "@/components/compete/Rich";
 import { useFocusGuard } from "@/components/compete/FocusGuard";
 import { useArena, useLeaveWarning, StrikeModal, PausedModal } from "@/components/compete/Arena";
 import { Navigator } from "@/components/compete/Navigator";
+import { parseNumber } from "@/lib/compete/answerCheck";
 
 /**
  * Answering a paper.
@@ -257,6 +258,7 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
   const clockColour = urgent ? "var(--danger)" : soon ? "var(--reward)" : "var(--text)";
   const draft = drafts[problem.id] ?? "";
   const isLong = problem.answerKind === "OPEN";
+  const read = problem.answerKind === "NUMERIC" ? parseNumber(draft) : null;
 
   return (
     <div className="flex flex-col gap-s4">
@@ -383,6 +385,20 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
                 placeholder={problem.answerKind === "NUMERIC" ? "A number" : "A word or a phrase"}
                 className="bg-raised border border-line rounded-md px-s4 py-s3 text-h3 text-ink placeholder:text-faint placeholder:text-ui min-h-[56px]"
               />
+            )}
+
+            {/*
+              What the marker will read, while there is still time to change it.
+              A student who writes "1,200 so'm" cannot otherwise tell whether
+              that counts, and the anxiety is the point being removed — the same
+              function the key marks with is the one answering here.
+            */}
+            {problem.answerKind === "NUMERIC" && draft.trim() !== "" && (
+              <span className="text-meta" style={{ color: read === null ? "var(--reward)" : "var(--muted)" }}>
+                {read === null
+                  ? "Read as: not a number yet — a marker will read this one."
+                  : `Read as: ${read}`}
+              </span>
             )}
 
             <span className="flex items-center justify-between gap-s3 min-h-[20px]">

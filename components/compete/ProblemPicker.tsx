@@ -119,6 +119,9 @@ export function ProblemPicker({
       const j = Math.floor(Math.random() * (i + 1));
       [pool[i], pool[j]] = [pool[j], pool[i]];
     }
+    // Shuffled first, then least-used first: random within a usage band, so
+    // the unused half of the bank is spent before anything is set twice.
+    pool.sort((a, b) => a.timesUsed - b.timesUsed);
     const room = Math.max(0, MAX_PROBLEMS - picked.length);
     setPicked((list) => [...list, ...pool.slice(0, Math.min(count, room)).map((p) => p.id)]);
   };
@@ -252,7 +255,7 @@ export function ProblemPicker({
       {mayHost && (
         <div className="flex flex-wrap items-center gap-s2">
           <span className="text-label uppercase text-faint">
-            Or take at random from these {matching.length}
+            Or take at random — never-set first
           </span>
           {[5, 10, 20].map((n) => (
             <button
@@ -311,7 +314,10 @@ export function ProblemPicker({
                   </span>
                   <span className="block font-mono text-label uppercase text-faint mt-1">
                     {p.topic} · {p.maxPoints} marks · {KIND_LABEL[p.answerKind] ?? "written"} ·
-                    marked by {MODE_LABEL[p.gradingMode] ?? "you"}
+                    marked by {MODE_LABEL[p.gradingMode] ?? "you"} ·{" "}
+                    {p.timesUsed === 0
+                      ? "never set"
+                      : `set ${p.timesUsed} time${p.timesUsed === 1 ? "" : "s"}`}
                     {p.gradingMode === "AI" && !p.hasSolution ? " · no solution" : ""}
                     {p.active ? "" : " · retired"}
                   </span>

@@ -7,6 +7,8 @@ import {
   joinCompetition,
   startCompetition,
   endCompetition,
+  extendCompetition,
+  reopenCompetition,
   answerCompetition,
   getStandings,
   type Outcome,
@@ -124,6 +126,31 @@ export async function submitExamAction(competitionId: string): Promise<Outcome<n
   if (!session?.user?.id) return { ok: false, error: "Sign in first." };
 
   const result = await submitExam(session.user.id, String(competitionId));
+  if (result.ok) revalidatePath("/compete");
+  return result;
+}
+
+/** More time, while they are still writing. Only ever adds. */
+export async function extendCompetitionAction(
+  competitionId: string,
+  minutes?: number
+): Promise<Outcome<{ durationMinutes: number }>> {
+  const session = await auth();
+  if (!session?.user?.id) return { ok: false, error: "Sign in first." };
+
+  const result = await extendCompetition(session.user.id, String(competitionId), minutes);
+  if (result.ok) revalidatePath("/compete");
+  return result;
+}
+
+/** The same paper again, in a fresh room with a new code. */
+export async function reopenCompetitionAction(
+  competitionId: string
+): Promise<Outcome<{ code: string }>> {
+  const session = await auth();
+  if (!session?.user?.id) return { ok: false, error: "Sign in first." };
+
+  const result = await reopenCompetition(session.user.id, String(competitionId));
   if (result.ok) revalidatePath("/compete");
   return result;
 }
