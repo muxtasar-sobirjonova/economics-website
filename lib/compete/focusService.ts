@@ -171,7 +171,7 @@ export async function focusRecord(
   const players = await prisma.competitionPlayer.findMany({
     where: { competitionId },
     select: {
-      userId: true, awayLog: true, lockedAt: true, lockReason: true, lockedById: true,
+      userId: true, alias: true, awayLog: true, lockedAt: true, lockReason: true, lockedById: true,
       disqualifiedAt: true, disqualifyReason: true, finishedAt: true,
       user: { select: { name: true } },
     },
@@ -185,7 +185,9 @@ export async function focusRecord(
       const verdict = judge(log, policy, comp.focusAllowance);
       return {
         userId: p.userId,
-        name: p.user.name,
+        // The host sees both. A mark has to be attached to a person, and a
+        // disqualification has to be defensible a week later.
+        name: p.alias ? `${p.user.name ?? "Anonymous"} (${p.alias})` : p.user.name,
         strikes: verdict.strikes,
         total: verdict.total,
         awayMs: verdict.awayMs,

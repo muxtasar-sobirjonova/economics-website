@@ -42,7 +42,10 @@ export function QuizSetup({
   const [pasting, setPasting] = useState(false);
   const [exam, setExam] = useState(false);
   const [minutes, setMinutes] = useState(20);
-  const [focusPolicy, setFocusPolicy] = useState<FocusPolicy>("NONE");
+  // Opens on the strict setting: a room is invigilated unless the host says
+  // otherwise. The parser still falls back to NONE for anything it cannot
+  // read — a misspelt value must never switch watching on.
+  const [focusPolicy, setFocusPolicy] = useState<FocusPolicy>("LOCK");
   const [focusAllowance, setFocusAllowance] = useState(2);
 
   const all = topics.reduce((n, t) => n + t.count, 0);
@@ -105,7 +108,7 @@ export function QuizSetup({
         </div>
         <p className="text-meta text-muted max-w-[58ch]">
           {exam
-            ? "Every question reachable at any time, answers changeable until they hand in, and questions can be marked to come back to. What a paper exam has always allowed."
+            ? "Every question reachable at any time, answers changeable until they submit, and questions can be marked to come back to. What a paper exam has always allowed."
             : "One question at a time against its own clock, and no going back. Quick, loud, and unforgiving — right for a warm-up, wrong for a real round."}
         </p>
       </fieldset>

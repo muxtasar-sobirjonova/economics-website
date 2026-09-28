@@ -588,6 +588,13 @@ model CompetitionPlayer {
   userId        String
   user          User        @relation(fields: [userId], references: [id], onDelete: Cascade)
 
+  /// What the room calls them.
+  ///
+  /// Players see this and never the account name; the host sees both, because
+  /// a mark has to be attached to a person and a disqualification has to be
+  /// defensible. Null means they did not pick one and their own name stands.
+  alias String?
+
   score      Int       @default(0)
   totalMs    Int       @default(0)
   answered   Int       @default(0)

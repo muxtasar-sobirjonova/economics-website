@@ -74,6 +74,7 @@ export async function getExamSession(
           userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
           disqualifiedAt: true, disqualifyReason: true,
           lockedAt: true, lockReason: true, lockedById: true, awayLog: true,
+          alias: true,
           user: { select: { name: true } },
         },
       },
@@ -132,7 +133,7 @@ export async function getExamSession(
     })(),
     standings: rank(
       row.players.map((p) => ({
-        userId: p.userId, name: p.user.name, score: p.score, totalMs: p.totalMs,
+        userId: p.userId, name: p.alias ?? p.user.name, score: p.score, totalMs: p.totalMs,
         answered: p.answered, finished: p.finishedAt !== null,
         disqualified: p.disqualifiedAt !== null, disqualifyReason: p.disqualifyReason,
       }))
@@ -181,7 +182,7 @@ export async function answerExam(
     select: { finishedAt: true, lockedAt: true },
   });
   if (!seat) return { ok: false, error: "You are not in this competition." };
-  if (seat.finishedAt) return { ok: false, error: "You have already handed this in." };
+  if (seat.finishedAt) return { ok: false, error: "You have already submitted." };
   if (seat.lockedAt) return { ok: false, error: "Your paper is paused. Ask the host." };
 
   const question = await prisma.duelQuestion.findUnique({

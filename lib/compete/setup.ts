@@ -18,6 +18,15 @@ export type FocusPolicy = "NONE" | "WARN" | "LOCK";
 export const MAX_ALLOWANCE = 10;
 
 /**
+ * Absences allowed before a paper freezes.
+ *
+ * Two, so the third one locks: a warning, another warning, then the paper
+ * stops. Every switch counts from the moment it happens — see
+ * STRIKE_AFTER_MS in focus.ts.
+ */
+export const DEFAULT_ALLOWANCE = 2;
+
+/**
  * A quiz room can be sat two ways.
  *
  * `durationMinutes` null is the fast quiz it has always been: a clock on every
@@ -106,7 +115,7 @@ export function parseSetup(input: SetupInput): { setup: Setup } | { error: Setup
       // than one that watched nobody.
       focusPolicy:
         input.focusPolicy === "LOCK" ? "LOCK" : input.focusPolicy === "WARN" ? "WARN" : "NONE",
-      focusAllowance: Math.min(Math.max(num(input.focusAllowance) ?? 2, 0), MAX_ALLOWANCE),
+      focusAllowance: Math.min(Math.max(num(input.focusAllowance) ?? DEFAULT_ALLOWANCE, 0), MAX_ALLOWANCE),
       // Out of range is clamped rather than refused: a host dragging a slider
       // cannot produce one, and a caller that sent nonsense meant a number.
       durationMinutes:
@@ -115,4 +124,20 @@ export function parseSetup(input: SetupInput): { setup: Setup } | { error: Setup
           : Math.min(Math.max(examMinutes, MIN_EXAM_MINUTES), MAX_EXAM_MINUTES),
     },
   };
+}
+
+/** The longest a room name may be. Longer wraps a leaderboard row. */
+export const MAX_ALIAS = 24;
+
+/**
+ * What the room will call someone.
+ *
+ * Trimmed, capped, and collapsed to single spaces — a name padded out to take
+ * two rows on the board is a name that should take one. Empty means they did
+ * not choose, and their own name stands.
+ */
+export function cleanAlias(raw: unknown): string | null {
+  const text =
+    typeof raw === "string" ? raw.replace(/\s+/g, " ").trim().slice(0, MAX_ALIAS) : "";
+  return text || null;
 }

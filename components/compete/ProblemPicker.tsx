@@ -76,7 +76,10 @@ export function ProblemPicker({
   const [minutes, setMinutes] = useState(45);
   const [timed, setTimed] = useState(true);
   const [access, setAccess] = useState<"OPEN" | "LINK">("OPEN");
-  const [focusPolicy, setFocusPolicy] = useState<FocusPolicy>("NONE");
+  // Opens on the strict setting: a room is invigilated unless the host says
+  // otherwise. The parser still falls back to NONE for anything it cannot
+  // read — a misspelt value must never switch watching on.
+  const [focusPolicy, setFocusPolicy] = useState<FocusPolicy>("LOCK");
   const [focusAllowance, setFocusAllowance] = useState(2);
 
   const topics = useMemo(() => [...new Set(problems.map((p) => p.topic))].sort(), [problems]);

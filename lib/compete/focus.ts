@@ -15,13 +15,12 @@
  *
  * Two rules exist because the alternative is worse than the problem:
  *
- * 1. **A brief loss of focus is not a strike.** A notification, an incoming
- *    call, a screen lock and an OS dialog all look exactly like switching to
- *    another window. Ending a forty-five minute paper over a Telegram message
- *    would be far worse than the cheating it was meant to catch, so only an
- *    absence longer than `STRIKE_AFTER_MS` counts against anyone. Shorter ones
- *    are still recorded — the host sees "left 14 times" even when not one of
- *    them was a strike.
+ * 1. **Every switch counts, from the moment it happens.** This was once
+ *    softened by a ten second grace, so that a notification could not cost
+ *    somebody a paper. The host asked for the strict reading and has it: an
+ *    incoming call counts too. That is defensible only because a lock is never
+ *    final — see rule 2 — and because the host reads the durations beside the
+ *    count and can tell a call from a trip to another tab.
  *
  * 2. **Being locked is not being finished.** A locked paper freezes; it is not
  *    submitted. The host can let someone carry on, and they resume where they
@@ -36,8 +35,19 @@ export type FocusPolicy =
   /** Recorded, and the paper freezes once the allowance is used up. */
   | "LOCK";
 
-/** Below this, an absence is a notification rather than a decision. */
-export const STRIKE_AFTER_MS = 10_000;
+/**
+ * How long an absence must last before it counts.
+ *
+ * Zero: leaving the page counts the moment it happens, which is what an
+ * invigilated room was asked for. Anything under `IGNORE_BELOW_MS` never
+ * reaches this function at all — that floor exists to swallow focus jitter,
+ * not to forgive a look at another tab.
+ *
+ * It was ten seconds, to keep a notification from costing somebody a paper.
+ * The host asked for the strict reading and gets it; the cost is that an
+ * incoming call now counts too, which is why a lock can always be lifted.
+ */
+export const STRIKE_AFTER_MS = 0;
 
 /** A client that wants to grow a row without limit gets this far and no further. */
 export const MAX_LOG = 200;
@@ -94,6 +104,7 @@ export function judge(
   policy: FocusPolicy,
   allowance: number
 ): FocusVerdict {
+  // `>` rather than `>=` would drop everything at a threshold of zero.
   const strikes = log.filter((e) => e.ms >= STRIKE_AFTER_MS).length;
   const awayMs = log.reduce((sum, e) => sum + e.ms, 0);
 

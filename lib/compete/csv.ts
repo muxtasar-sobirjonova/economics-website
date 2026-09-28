@@ -65,7 +65,7 @@ export function resultsToCsv(
       r.score,
       r.answered,
       duration(r.totalMs),
-      r.disqualified ? "Disqualified" : r.finished ? "Handed in" : "Unfinished",
+      r.disqualified ? "Disqualified" : r.finished ? "Submitted" : "Unfinished",
       ...problemTitles.map((_, i) => r.perProblem?.[i] ?? ""),
       r.disqualifyReason ?? "",
     ]

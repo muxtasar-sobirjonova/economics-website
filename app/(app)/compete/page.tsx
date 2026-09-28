@@ -139,7 +139,7 @@ export default async function CompetePage() {
                         </>
                       ) : (
                         <span className="font-mono text-label uppercase text-faint">
-                          {c.myFinished ? "handed in" : "open"}
+                          {c.myFinished ? "submitted" : "open"}
                         </span>
                       )}
                     </span>

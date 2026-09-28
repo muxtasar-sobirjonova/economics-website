@@ -157,6 +157,19 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
     router.refresh();
   }, [flush, router, session.competitionId]);
 
+  /**
+   * The room, not just this paper.
+   *
+   * Without this the page only learned anything when its own author acted: a
+   * host ending the room, or lifting a lock, reached the screen on the next
+   * reload and not before. Four seconds is what the host's own bar uses.
+   */
+  useEffect(() => {
+    if (session.submitted) return;
+    const id = setInterval(() => router.refresh(), 4000);
+    return () => clearInterval(id);
+  }, [router, session.submitted]);
+
   // The clock. Started here rather than in render, and only while there is one
   // to tick.
   useEffect(() => {
@@ -221,7 +234,7 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
     return (
       <div className="flex flex-col gap-s4">
         <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s6 text-center">
-          <h2 className="text-h3 font-semibold text-ink">Handed in</h2>
+          <h2 className="text-h3 font-semibold text-ink">Submitted</h2>
           <p className="text-meta text-muted mt-s3 max-w-[46ch] mx-auto">
             {answered} of {total} answered. Marks and the worked solutions open
             when the host ends the competition.
@@ -468,7 +481,7 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
               disabled={handingIn}
               className="inline-flex items-center min-h-[48px] px-s5 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors disabled:opacity-60"
             >
-              {handingIn ? "Handing in…" : "Yes, hand it in"}
+              {handingIn ? "Submitting…" : "Yes, submit"}
             </button>
             <button
               onClick={() => setConfirming(false)}
@@ -482,7 +495,7 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
             onClick={() => { void flush(); setConfirming(true); }}
             className="inline-flex items-center min-h-[48px] px-s6 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors"
           >
-            Hand it in
+            Submit
           </button>
         )}
       </div>
@@ -523,7 +536,7 @@ function RoomProgress({
           >
             <span className="text-ui text-ink truncate">{p.name || "Anonymous"}</span>
             <span className="font-mono text-label uppercase text-faint shrink-0">
-              {p.submitted ? "handed in" : `${p.answered}/${total}`}
+              {p.submitted ? "submitted" : `${p.answered}/${total}`}
             </span>
           </li>
         ))}

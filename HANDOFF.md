@@ -68,6 +68,7 @@ Checks before every commit: `npx tsc --noEmit`, `npx next lint`,
 | `20260911_add_block_reasons`        | ❌ **not run yet**          |
 | `20260911_add_review_flag`          | ❌ **not run yet**          |
 | `20260928_add_problem_usage`        | ❌ **not run yet**          |
+| `20260928_add_player_alias`         | ❌ **not run yet**          |
 
 The daily question is loaded inside a `try/catch` on `/duel`, so a missing
 `DailyAnswer` table fails silently and the block simply does not render. Check:
@@ -459,6 +460,28 @@ saved — the moment to discover the separators are wrong is before sixty
 problems land in the bank. A block that fails is reported by its number and the
 rest are still saved: a typo in problem seven should not cost the other nine.
 
+### Joining under another name
+
+`CompetitionPlayer.alias` — what the room calls somebody. **Players see the
+alias and never the account name**, so a class can compete without everyone
+reading everyone else's full name off a leaderboard. **The host sees both**,
+written `Real Name (alias)`: a mark has to be attached to a person and a
+disqualification has to be defensible a week later.
+
+Offered in two places, because most people arrive from a link or a scanned code
+rather than through the box on the competitions page. Rejoining with a name
+changes it; rejoining without one keeps what was there.
+
+`cleanAlias` is in `setup.ts` rather than `service.ts` so a client component can
+import it without pulling Prisma in with it.
+
+### A paper follows its room
+
+`ProblemPlay` and `QuizExam` refresh every four seconds while a paper is open,
+and `useFocusGuard` re-reads the lock from the server rather than trusting its
+own copy. Without both, a host lifting a lock left the student frozen in front
+of a screen telling them to ask the host, who already had.
+
 ### What a room leaves behind
 
 - **A student can find what they sat.** `listCompetitions` returns a third list,
@@ -649,11 +672,13 @@ watched nobody.
 
 Two rules exist because the alternative is worse than the problem:
 
-- **An absence under ten seconds is recorded but never counts.** A
-  notification, an incoming call, a screen lock and an OS dialog are
-  indistinguishable from switching tabs. Ending a forty-five minute paper over
-  a Telegram message would be far worse than the cheating it was meant to
-  catch. The host still sees "left 14 times" when not one of them counted.
+- **Every switch counts, the moment it happens.** This began as a ten second
+  grace, so a notification could not cost somebody a paper; the host asked for
+  the strict reading and has it, and an incoming call now counts too. Two
+  absences are allowed and the third freezes the paper. Only jitter under
+  `IGNORE_BELOW_MS` (400ms) is dropped, and that is a noise floor rather than
+  forgiveness. This is defensible only because of the next rule, and because
+  the host reads the durations beside the count.
 - **Locked is not finished.** The paper freezes; it is not submitted. The host
   clears the lock _and the record behind it_ — clearing only the lock would
   snap it shut on the next absence — and the student carries on from where they
@@ -768,7 +793,7 @@ rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
 ## Tests
 
-353 passing. The pattern is to test **the pure half**: Elo, grading, question
+358 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
 question selection, the CSS token guard, and — new with problem rooms — reading

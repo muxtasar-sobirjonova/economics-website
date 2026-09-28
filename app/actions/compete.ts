@@ -39,11 +39,18 @@ export async function createCompetitionAction(input: SetupInput): Promise<Outcom
   return result;
 }
 
-export async function joinCompetitionAction(code: string): Promise<Outcome<{ code: string }>> {
+export async function joinCompetitionAction(
+  code: string,
+  alias?: string
+): Promise<Outcome<{ code: string }>> {
   const user = await requireUser();
   if (!user) return { ok: false, error: "Sign in first." };
 
-  const result = await joinCompetition(user.id, typeof code === "string" ? code : "");
+  const result = await joinCompetition(
+    user.id,
+    typeof code === "string" ? code : "",
+    alias
+  );
   if (result.ok) revalidatePath(`/compete/${result.data.code}`);
   return result;
 }

@@ -23,7 +23,7 @@ const COPY: Record<FocusPolicy, { label: string; detail: string }> = {
   LOCK: {
     label: "Pause the paper",
     detail:
-      "The same record, and the paper freezes once the allowance is used up. Nothing is lost and you can let anyone carry on.",
+      "The same record, and the paper freezes once the allowance is used up — two warnings, then it stops. Nothing is lost and you can let anyone carry on.",
   },
 };
 
@@ -93,7 +93,7 @@ export function FocusChoice({
           another window on the same device, and it cannot see a phone lying
           beside the laptop. Nothing that runs in a browser can.
           {policy === "LOCK" &&
-            " Absences under ten seconds are recorded but never pause anyone — a notification is not an accusation."}
+            " Leaving counts the moment it happens, so a notification or an incoming call counts too — which is why you can always let somebody carry on."}
         </p>
       )}
     </fieldset>

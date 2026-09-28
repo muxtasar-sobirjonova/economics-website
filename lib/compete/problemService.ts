@@ -10,6 +10,7 @@ import { actorFor } from "@/lib/staff";
 import { can } from "@/lib/permissions";
 import { generateCode, normaliseCode } from "./code";
 import { parseProblem, PROBLEM_ERROR_COPY, type ProblemInput } from "./problem";
+import { DEFAULT_ALLOWANCE, MAX_ALLOWANCE } from "./setup";
 import { markAnswer, hostMark, type MarkableProblem, type AskModel } from "./marking";
 import { cleanText } from "./answerCheck";
 import { gradeWithModel, graderAvailable, graderModelName } from "./grader";
@@ -299,8 +300,8 @@ export async function createProblemCompetition(
           focusPolicy:
             input.focusPolicy === "LOCK" ? "LOCK" : input.focusPolicy === "WARN" ? "WARN" : "NONE",
           focusAllowance: Math.min(
-            Math.max(Math.round(Number(input.focusAllowance)) || 2, 0),
-            10
+            Math.max(Math.round(Number(input.focusAllowance)) || DEFAULT_ALLOWANCE, 0),
+            MAX_ALLOWANCE
           ),
         },
       });
@@ -377,6 +378,7 @@ export async function getProblemSession(
         select: {
           userId: true, answered: true, finishedAt: true, lockedAt: true, awayLog: true,
           lockReason: true, lockedById: true,
+          alias: true,
           user: { select: { name: true } },
         },
       },
@@ -435,7 +437,7 @@ export async function getProblemSession(
     room: comp.players
       .map((p) => ({
         userId: p.userId,
-        name: p.user.name,
+        name: p.alias ?? p.user.name,
         answered: p.answered,
         submitted: p.finishedAt !== null,
       }))
@@ -484,7 +486,7 @@ export async function saveProblemDraft(
     select: { finishedAt: true, lockedAt: true },
   });
   if (!seat) return { ok: false, error: "You are not in this competition." };
-  if (seat.finishedAt) return { ok: false, error: "You have already handed this in." };
+  if (seat.finishedAt) return { ok: false, error: "You have already submitted." };
   if (seat.lockedAt) return { ok: false, error: "Your paper is paused. Ask the host." };
 
   const body = typeof text === "string" ? text.slice(0, 4000) : "";
@@ -976,7 +978,7 @@ export async function resultsCsv(
       problemIds: true, questionIds: true,
       players: {
         select: {
-          userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
+          userId: true, alias: true, score: true, totalMs: true, answered: true, finishedAt: true,
           disqualifiedAt: true, disqualifyReason: true,
           user: { select: { name: true } },
         },
@@ -1008,7 +1010,9 @@ export async function resultsCsv(
 
   const ranked = rank(
     comp.players.map((p) => ({
-      userId: p.userId, name: p.user.name, score: p.score, totalMs: p.totalMs,
+      userId: p.userId,
+      name: p.alias ? `${p.user.name ?? "Anonymous"} (${p.alias})` : p.user.name,
+      score: p.score, totalMs: p.totalMs,
       answered: p.answered, finished: p.finishedAt !== null,
       disqualified: p.disqualifiedAt !== null, disqualifyReason: p.disqualifyReason,
     }))
@@ -1067,7 +1071,7 @@ export async function getMarkingSheet(
   });
   if (!comp || comp.hostId !== userId) return null;
 
-  const [answers, problems] = await Promise.all([
+  const [answers, problems, seats] = await Promise.all([
     prisma.competitionAnswer.findMany({
       where: { competitionId },
       orderBy: [{ gradedBy: "asc" }, { createdAt: "asc" }],
@@ -1081,7 +1085,15 @@ export async function getMarkingSheet(
       where: { id: { in: comp.problemIds } },
       select: { id: true, title: true, statement: true, maxPoints: true },
     }),
+    // An answer belongs to a user, not to a seat, so the room's chosen names
+    // are read alongside and joined here.
+    prisma.competitionPlayer.findMany({
+      where: { competitionId },
+      select: { userId: true, alias: true },
+    }),
   ]);
+
+  const aliasOf = new Map(seats.map((s) => [s.userId, s.alias]));
 
   const byId = new Map(problems.map((p) => [p.id, p]));
 
@@ -1100,7 +1112,10 @@ export async function getMarkingSheet(
     .map((a) => ({
     answerId: a.id,
     playerId: a.userId,
-    playerName: a.user.name,
+    // The host sees both, for the same reason the focus record does.
+    playerName: aliasOf.get(a.userId)
+      ? `${a.user.name ?? "Anonymous"} (${aliasOf.get(a.userId)})`
+      : a.user.name,
     problemId: a.questionId,
     problemTitle: byId.get(a.questionId)?.title ?? "Problem",
     statement: byId.get(a.questionId)?.statement ?? "",

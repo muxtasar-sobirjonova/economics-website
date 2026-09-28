@@ -8,6 +8,7 @@ import {
   endCompetitionAction,
 } from "@/app/actions/compete";
 import type { CompetitionView } from "@/lib/compete/service";
+import { MAX_ALIAS } from "@/lib/compete/setup";
 
 /**
  * The room before it starts.
@@ -33,6 +34,7 @@ export function Lobby({
   const [pending, start] = useTransition();
   const [error, setError] = useState<string | null>(null);
   const [copied, setCopied] = useState<"link" | "code" | null>(null);
+  const [alias, setAlias] = useState("");
 
   // Only while it matters — an ended competition is not going to change.
   useEffect(() => {
@@ -189,13 +191,35 @@ export function Lobby({
           You are in. The host starts it — this page will follow along.
         </p>
       ) : (
-        <button
-          onClick={() => act(() => joinCompetitionAction(view.code))}
-          disabled={pending}
-          className="inline-flex items-center justify-center min-h-[48px] px-s6 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors disabled:opacity-60"
-        >
-          {pending ? "Joining…" : "Take a seat"}
-        </button>
+        <div className="flex flex-col gap-s3">
+          {/*
+            Most people arrive here from a link or a scanned code rather than
+            through the box on the competitions page, so the choice of name has
+            to be offered here too — otherwise the only ones who get it are the
+            ones who typed the code.
+          */}
+          <label className="flex flex-col gap-s2">
+            <span className="text-label uppercase text-faint">
+              Join as (optional) · shown to the room instead of your name
+            </span>
+            <input
+              value={alias}
+              onChange={(e) => setAlias(e.target.value)}
+              maxLength={MAX_ALIAS}
+              placeholder="Leave it empty to use your own name"
+              autoComplete="off"
+              className="bg-raised border border-line rounded-md px-s3 py-s2 text-ui text-ink placeholder:text-faint min-h-[44px]"
+            />
+          </label>
+
+          <button
+            onClick={() => act(() => joinCompetitionAction(view.code, alias))}
+            disabled={pending}
+            className="inline-flex items-center justify-center min-h-[48px] px-s6 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors disabled:opacity-60"
+          >
+              {pending ? "Joining…" : "Take a seat"}
+          </button>
+        </div>
       )}
     </div>
   );

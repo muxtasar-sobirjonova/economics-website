@@ -123,6 +123,19 @@ export function QuizExam({ session, meId }: { session: ExamSession; meId: string
     router.refresh();
   }, [handingIn, router, session.competitionId]);
 
+  /**
+   * The room, not just this paper.
+   *
+   * Without this the page only learned anything when its own author acted: a
+   * host ending the room, or lifting a lock, reached the screen on the next
+   * reload and not before. Four seconds is what the host's own bar uses.
+   */
+  useEffect(() => {
+    if (session.submitted) return;
+    const id = setInterval(() => router.refresh(), 4000);
+    return () => clearInterval(id);
+  }, [router, session.submitted]);
+
   // The clock, started here rather than in render: reading it twice across a
   // server and a client is a hydration mismatch a second wide.
   useEffect(() => {
@@ -200,7 +213,7 @@ export function QuizExam({ session, meId }: { session: ExamSession; meId: string
     return (
       <div className="flex flex-col gap-s4">
         <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s6 text-center">
-          <h2 className="text-h3 font-semibold text-ink">Handed in</h2>
+          <h2 className="text-h3 font-semibold text-ink">Submitted</h2>
           <p className="text-meta text-muted mt-s3 max-w-[46ch] mx-auto">
             {answered} of {total} answered. Right and wrong open when the host
             ends the competition — showing them now would show them to the room.
@@ -326,7 +339,7 @@ export function QuizExam({ session, meId }: { session: ExamSession; meId: string
 
           <p className="text-meta text-faint mt-s5">
             {mine != null
-              ? "Change it as often as you like until you hand in."
+              ? "Change it as often as you like until you submit."
               : "Right and wrong stay hidden until the host ends it."}
           </p>
           <p className="text-label uppercase text-faint mt-s2 hidden md:block">
@@ -376,7 +389,7 @@ export function QuizExam({ session, meId }: { session: ExamSession; meId: string
               disabled={handingIn}
               className="inline-flex items-center min-h-[48px] px-s5 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors disabled:opacity-60"
             >
-              {handingIn ? "Handing in…" : "Yes, hand it in"}
+              {handingIn ? "Submitting…" : "Yes, submit"}
             </button>
             <button
               onClick={() => setConfirming(false)}
@@ -390,7 +403,7 @@ export function QuizExam({ session, meId }: { session: ExamSession; meId: string
             onClick={() => setConfirming(true)}
             className="inline-flex items-center min-h-[48px] px-s6 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors"
           >
-            Hand it in
+            Submit
           </button>
         )}
       </div>

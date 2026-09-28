@@ -63,7 +63,7 @@ describe("resultsToCsv", () => {
       ],
       { title: "t" }
     );
-    expect(csv).toContain("Handed in");
+    expect(csv).toContain("Submitted");
     expect(csv).toContain("Unfinished");
     expect(csv).toContain("Disqualified");
     expect(csv).toContain("Two papers matched");

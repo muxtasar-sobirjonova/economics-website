@@ -7,28 +7,37 @@ import {
 
 const away = (ms: number, at = Date.now()): AwayEvent => ({ at, ms });
 
-/** A notification, a call, a screen lock — all of these look like leaving. */
+/** A glance at another tab, and a proper trip away from the paper. */
 const blip = () => away(2_000);
 const trip = () => away(45_000);
 
 describe("judge — what counts as a strike", () => {
-  it("does not punish a brief absence", () => {
-    const v = judge([blip(), blip(), blip()], "LOCK", 1);
-    expect(v.strikes).toBe(0);
-    expect(v.locked).toBe(false);
+  it("counts a switch the moment it happens, however brief", () => {
+    // The room is invigilated: looking away is looking away. Absences too
+    // short to be deliberate are dropped before they reach here, by
+    // IGNORE_BELOW_MS in focusService.
+    const v = judge([blip(), blip(), blip()], "LOCK", 2);
+    expect(v.strikes).toBe(3);
+    expect(v.locked).toBe(true);
   });
 
-  it("still records a brief absence, so the host can see the pattern", () => {
-    // Fourteen two-second absences is not innocent, and the host reads this.
-    const v = judge(Array.from({ length: 14 }, blip), "LOCK", 1);
+  it("records every absence alongside the count", () => {
+    const v = judge(Array.from({ length: 14 }, blip), "LOCK", 2);
     expect(v.total).toBe(14);
     expect(v.awayMs).toBe(28_000);
-    expect(v.strikes).toBe(0);
+    expect(v.strikes).toBe(14);
   });
 
   it("counts an absence at the threshold", () => {
     expect(judge([away(STRIKE_AFTER_MS)], "LOCK", 5).strikes).toBe(1);
-    expect(judge([away(STRIKE_AFTER_MS - 1)], "LOCK", 5).strikes).toBe(0);
+  });
+
+  it("locks on the third, with two allowed", () => {
+    // What the host asked for: a warning, another warning, then the paper
+    // stops.
+    expect(judge([trip()], "LOCK", 2).locked).toBe(false);
+    expect(judge([trip(), trip()], "LOCK", 2).locked).toBe(false);
+    expect(judge([trip(), trip(), trip()], "LOCK", 2).locked).toBe(true);
   });
 });
 
@@ -109,7 +118,10 @@ describe("appendAway", () => {
 describe("noticeFor", () => {
   it("says nothing when nothing is watched or nothing happened", () => {
     expect(noticeFor(judge([trip()], "NONE", 0), "NONE")).toBeNull();
-    expect(noticeFor(judge([blip()], "WARN", 0), "WARN")).toBeNull();
+    // Nothing happened is an empty record now: under the strict rule even a
+    // glance at another tab is something that happened.
+    expect(noticeFor(judge([], "WARN", 0), "WARN")).toBeNull();
+    expect(noticeFor(judge([blip()], "WARN", 0), "WARN")).not.toBeNull();
   });
 
   it("tells a warned student they were seen, without accusing them", () => {

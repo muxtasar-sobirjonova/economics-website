@@ -48,6 +48,18 @@ export function useFocusGuard({
   const [remaining, setRemaining] = useState(-1);
   const awaySince = useRef<number | null>(null);
 
+  /**
+   * The server has the last word on whether a paper is frozen.
+   *
+   * A host who lets somebody carry on clears the lock there; without this the
+   * page kept its own copy and the student stayed frozen in front of a screen
+   * telling them to ask the host, who already had.
+   */
+  useEffect(() => {
+    setLocked(initialLocked);
+    if (!initialLocked) setNotice(null);
+  }, [initialLocked]);
+
   const returned = useCallback(async () => {
     const left = awaySince.current;
     awaySince.current = null;

@@ -3,6 +3,7 @@ import { rank, accuracy } from "@/lib/compete/scoring";
 import {
   parseSetup, MIN_QUESTIONS, MAX_QUESTIONS, MIN_SECONDS, MAX_SECONDS, MAX_TITLE,
   MAX_ALLOWANCE, MIN_EXAM_MINUTES, MAX_EXAM_MINUTES,
+  cleanAlias, MAX_ALIAS,
 } from "@/lib/compete/setup";
 
 const ok = { title: "Chapter 3 showdown", questionCount: 12, secondsPerQuestion: 25 };
@@ -180,5 +181,28 @@ describe("parseSetup — the two shapes of a quiz room", () => {
       .toBe(MIN_EXAM_MINUTES);
     expect(setupOf(parseSetup({ ...ok, durationMinutes: 99999 }))?.durationMinutes)
       .toBe(MAX_EXAM_MINUTES);
+  });
+});
+
+describe("cleanAlias", () => {
+  it("takes a name the room can show", () => {
+    expect(cleanAlias("Team Bravo")).toBe("Team Bravo");
+  });
+
+  it("means 'use my own name' when nothing is chosen", () => {
+    expect(cleanAlias("")).toBeNull();
+    expect(cleanAlias("   ")).toBeNull();
+    expect(cleanAlias(undefined)).toBeNull();
+    expect(cleanAlias(42)).toBeNull();
+  });
+
+  it("collapses a name padded out to take two rows", () => {
+    expect(cleanAlias("  Team     Bravo  ")).toBe("Team Bravo");
+    expect(cleanAlias("A\n\nB")).toBe("A B");
+  });
+
+  it("caps a name that would wrap the board", () => {
+    const long = cleanAlias("x".repeat(200));
+    expect(long).toHaveLength(MAX_ALIAS);
   });
 });

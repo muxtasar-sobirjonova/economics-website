@@ -96,7 +96,7 @@ export function FocusRecord({
                   {row.locked && <Badge tone="danger">paused</Badge>}
                   {row.disqualified && <Badge tone="danger">disqualified</Badge>}
                   {!row.locked && !row.disqualified && row.submitted && (
-                    <Badge tone="success">handed in</Badge>
+                    <Badge tone="success">submitted</Badge>
                   )}
                 </span>
 

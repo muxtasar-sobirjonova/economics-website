@@ -58,7 +58,7 @@ const KIND_COPY: Record<Kind, string> = {
 };
 
 const MODE_COPY: Record<Mode, string> = {
-  AUTO: "The key marks it, the moment a paper is handed in. Anything the key cannot read waits for you.",
+  AUTO: "The key marks it, the moment a paper is submitted. Anything the key cannot read waits for you.",
   AI: "The key first; the model reads the rest and may give part marks. Every mark is yours to change.",
   HOST: "Nothing is marked until you read it.",
 };

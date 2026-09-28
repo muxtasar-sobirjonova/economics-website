@@ -6,7 +6,7 @@ import { shuffle } from "@/lib/duel/selection";
 import { generateCode, normaliseCode } from "./code";
 import { rank, progress, type Ranked } from "./scoring";
 import { buildReview, parseGraded, type ReviewLine } from "@/lib/duel/review";
-import { parseSetup, SETUP_ERROR_COPY, type SetupInput } from "./setup";
+import { parseSetup, SETUP_ERROR_COPY, cleanAlias, type SetupInput } from "./setup";
 
 /**
  * Competitions.
@@ -120,6 +120,7 @@ export async function getCompetition(
         select: {
           userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
           disqualifiedAt: true, disqualifyReason: true,
+          alias: true,
           user: { select: { name: true } },
         },
       },
@@ -130,7 +131,7 @@ export async function getCompetition(
   const standings = rank(
     row.players.map((p) => ({
       userId: p.userId,
-      name: p.user.name,
+      name: p.alias ?? p.user.name,
       score: p.score,
       totalMs: p.totalMs,
       answered: p.answered,
@@ -172,7 +173,11 @@ export async function getCompetition(
  * Joining while it is already running is allowed on purpose: a competition
  * that punishes arriving late is a competition people quietly leave.
  */
-export async function joinCompetition(userId: string, rawCode: string): Promise<Outcome<{ code: string }>> {
+export async function joinCompetition(
+  userId: string,
+  rawCode: string,
+  alias?: unknown
+): Promise<Outcome<{ code: string }>> {
   const code = normaliseCode(rawCode);
   if (!code) return { ok: false, error: "That code is not valid." };
 
@@ -183,13 +188,24 @@ export async function joinCompetition(userId: string, rawCode: string): Promise<
   if (!row) return { ok: false, error: "No competition with that code." };
   if (row.status === CompetitionStatus.ENDED) return { ok: false, error: "That competition has finished." };
 
+  const chosen = cleanAlias(alias);
+
   try {
-    await prisma.competitionPlayer.create({ data: { competitionId: row.id, userId } });
+    await prisma.competitionPlayer.create({
+      data: { competitionId: row.id, userId, alias: chosen },
+    });
   } catch (e) {
     // Already seated. The unique index is the check; this is not an error.
     if (!(e instanceof Prisma.PrismaClientKnownRequestError && e.code === "P2002")) {
       console.error("joinCompetition failed", e);
       return { ok: false, error: "Could not join." };
+    }
+    // Rejoining with a name changes it; rejoining without one keeps it.
+    if (chosen) {
+      await prisma.competitionPlayer.update({
+        where: { competitionId_userId: { competitionId: row.id, userId } },
+        data: { alias: chosen },
+      });
     }
   }
 
@@ -483,6 +499,7 @@ export async function getPlaySession(userId: string, rawCode: string): Promise<P
           userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
           disqualifiedAt: true, disqualifyReason: true,
           lockedAt: true, lockReason: true, lockedById: true,
+          alias: true,
           user: { select: { name: true } },
         },
       },
@@ -519,7 +536,7 @@ export async function getPlaySession(userId: string, rawCode: string): Promise<P
     answeredIds: mine.map((a) => a.questionId),
     standings: rank(
       row.players.map((p) => ({
-        userId: p.userId, name: p.user.name, score: p.score,
+        userId: p.userId, name: p.alias ?? p.user.name, score: p.score,
         totalMs: p.totalMs, answered: p.answered, finished: p.finishedAt !== null,
         disqualified: p.disqualifiedAt !== null,
         disqualifyReason: p.disqualifyReason,
@@ -629,7 +646,8 @@ export async function answerCompetition(
     select: {
       userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
           disqualifiedAt: true, disqualifyReason: true,
-      user: { select: { name: true } },
+      alias: true,
+          user: { select: { name: true } },
     },
   });
 
@@ -638,7 +656,7 @@ export async function answerCompetition(
     data: {
       standings: rank(
         players.map((p) => ({
-          userId: p.userId, name: p.user.name, score: p.score,
+          userId: p.userId, name: p.alias ?? p.user.name, score: p.score,
           totalMs: p.totalMs, answered: p.answered, finished: p.finishedAt !== null,
         disqualified: p.disqualifiedAt !== null,
         disqualifyReason: p.disqualifyReason,
@@ -657,12 +675,13 @@ export async function getStandings(competitionId: string): Promise<Ranked[]> {
     select: {
       userId: true, score: true, totalMs: true, answered: true, finishedAt: true,
           disqualifiedAt: true, disqualifyReason: true,
-      user: { select: { name: true } },
+      alias: true,
+          user: { select: { name: true } },
     },
   });
   return rank(
     players.map((p) => ({
-      userId: p.userId, name: p.user.name, score: p.score,
+      userId: p.userId, name: p.alias ?? p.user.name, score: p.score,
       totalMs: p.totalMs, answered: p.answered, finished: p.finishedAt !== null,
         disqualified: p.disqualifiedAt !== null,
         disqualifyReason: p.disqualifyReason,
