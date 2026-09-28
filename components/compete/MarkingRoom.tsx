@@ -8,6 +8,7 @@ import {
   markIdenticalAction,
 } from "@/app/actions/problems";
 import type { MarkedAnswer, MarkingProgress } from "@/lib/compete/problemService";
+import { estimateMarkingCost } from "@/lib/compete/aiGrading";
 import { Rich } from "@/components/compete/Rich";
 
 /**
@@ -19,8 +20,21 @@ import { Rich } from "@/components/compete/Rich";
  * student cannot argue with.
  */
 
-/** Enough batches to clear a large room, and a wall to stop an accidental loop. */
-const MAX_ROUNDS = 60;
+/**
+ * How many answers one press may mark.
+ *
+ * Marking spends real money, so a press has a ceiling and the button says what
+ * it will cost before it is pressed. A room bigger than this takes two presses,
+ * which is the point — the second one is a decision rather than a surprise.
+ */
+const PER_RUN = 200;
+const MAX_ROUNDS = Math.ceil(PER_RUN / 6);
+
+/** Cents, when it is cents. Nobody needs four decimal places on a button. */
+function money(dollars: number): string {
+  if (dollars < 0.01) return "under a cent";
+  return dollars < 1 ? `${Math.round(dollars * 100)}¢` : `$${dollars.toFixed(2)}`;
+}
 
 const TONE: Record<string, { label: string; colour: string }> = {
   PENDING: { label: "not marked", colour: "var(--muted)" },
@@ -47,6 +61,7 @@ export function MarkingRoom({
   const runModel = async () => {
     setRunning(true);
     setNote(null);
+    let marked = 0;
 
     for (let round = 0; round < MAX_ROUNDS; round++) {
       const res = await gradeBatchAction(competitionId);
@@ -60,6 +75,12 @@ export function MarkingRoom({
         setNote("Everything the model marks is marked.");
         break;
       }
+      // The ceiling for one press. What is left waits for a second one.
+      if (marked + res.data.graded >= PER_RUN) {
+        setNote(`${res.data.pending} left. Press again to carry on.`);
+        break;
+      }
+      marked += res.data.graded;
       // Nothing marked while answers still wait means it is refusing them, not
       // working through them. Stopping beats spending a hundred more calls.
       if (res.data.stalled) {
@@ -93,13 +114,22 @@ export function MarkingRoom({
         </div>
 
         {progress.modelAvailable && left > 0 && (
-          <button
-            onClick={() => void runModel()}
-            disabled={running}
-            className="inline-flex items-center min-h-[48px] px-s5 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors disabled:opacity-60"
-          >
-            {running ? `Marking… ${left} left` : `Mark ${left} with the model`}
-          </button>
+          <span className="flex flex-col items-end gap-s2 shrink-0">
+            <button
+              onClick={() => void runModel()}
+              disabled={running}
+              className="inline-flex items-center min-h-[48px] px-s5 rounded-md bg-accent text-on-accent text-ui font-semibold hover:bg-accent-strong transition-colors disabled:opacity-60"
+            >
+              {running
+                ? `Marking… ${left} left`
+                : `Mark ${Math.min(left, PER_RUN)} with the model`}
+            </button>
+            {/* Priced before it is pressed. An estimate, and it says so. */}
+            <span className="text-label uppercase text-faint">
+              about {money(estimateMarkingCost(Math.min(left, PER_RUN), progress.model, { cached: true }))}
+              {left > PER_RUN ? ` · ${left - PER_RUN} after that` : ""}
+            </span>
+          </span>
         )}
       </section>
 

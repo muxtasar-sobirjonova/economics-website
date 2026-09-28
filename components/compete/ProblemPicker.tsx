@@ -13,7 +13,6 @@ import { ProblemEditor, type Draft } from "@/components/compete/ProblemEditor";
 import { BulkPaste } from "@/components/compete/BulkPaste";
 import { FocusChoice } from "@/components/compete/FocusChoice";
 import type { FocusPolicy } from "@/lib/compete/setup";
-import { plainText } from "@/lib/compete/markdown";
 
 /**
  * Choosing the problems for a room, and writing the ones that do not exist yet.
@@ -67,6 +66,9 @@ export function ProblemPicker({
   const [pasting, setPasting] = useState(false);
   const [loadError, setLoadError] = useState<string | null>(null);
   const [topicFilter, setTopicFilter] = useState("");
+  const [query, setQuery] = useState("");
+  /** Drawn a screenful at a time: 178 rows at once is a page nobody scrolls. */
+  const [shownCount, setShownCount] = useState(40);
   const [error, setError] = useState<string | null>(null);
   const [pending, start] = useTransition();
 
@@ -80,8 +82,46 @@ export function ProblemPicker({
   const topics = useMemo(() => [...new Set(problems.map((p) => p.topic))].sort(), [problems]);
   const byId = useMemo(() => new Map(problems.map((p) => [p.id, p])), [problems]);
 
-  const shown = topicFilter ? problems.filter((p) => p.topic === topicFilter) : problems;
+  /**
+   * What the filters leave.
+   *
+   * Searched over the title and the opening of the statement — the two things
+   * the row actually shows. A picked problem always survives the filter: it is
+   * in the set being built, and watching it vanish because the search changed
+   * is how a set gets opened with the wrong questions in it.
+   */
+  const matching = useMemo(() => {
+    const needle = query.trim().toLowerCase();
+    return problems.filter((p) => {
+      if (picked.includes(p.id)) return true;
+      if (topicFilter && p.topic !== topicFilter) return false;
+      if (!needle) return true;
+      return (
+        p.title.toLowerCase().includes(needle) ||
+        p.preview.toLowerCase().includes(needle)
+      );
+    });
+  }, [problems, topicFilter, query, picked]);
+
+  const shown = matching.slice(0, shownCount);
   const marks = picked.reduce((sum, id) => sum + (byId.get(id)?.maxPoints ?? 0), 0);
+
+  /**
+   * Fill the set from what is on screen.
+   *
+   * With a bank this size, ticking five boxes by hand to run a round is the
+   * slow half of opening one. Draws from the current filter so "five Easy" and
+   * "five from this case" both work, and never from a retired problem.
+   */
+  const pickRandom = (count: number) => {
+    const pool = matching.filter((p) => p.active && !picked.includes(p.id));
+    for (let i = pool.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [pool[i], pool[j]] = [pool[j], pool[i]];
+    }
+    const room = Math.max(0, MAX_PROBLEMS - picked.length);
+    setPicked((list) => [...list, ...pool.slice(0, Math.min(count, room)).map((p) => p.id)]);
+  };
 
   const toggle = (id: string) =>
     setPicked((list) => (list.includes(id) ? list.filter((x) => x !== id) : [...list, id]));
@@ -177,13 +217,15 @@ export function ProblemPicker({
       {/* The bank. */}
       <div className="flex flex-wrap items-center gap-s3">
         <span className="text-label uppercase text-faint">
-          {problems.length} in the bank
+          {matching.length === problems.length
+            ? `${problems.length} in the bank`
+            : `${matching.length} of ${problems.length}`}
         </span>
         <span className="h-px bg-line flex-1 min-w-[20px]" />
         {topics.length > 1 && (
           <select
             value={topicFilter}
-            onChange={(e) => setTopicFilter(e.target.value)}
+            onChange={(e) => { setTopicFilter(e.target.value); setShownCount(40); }}
             className="bg-raised border border-line rounded-md px-s3 py-s2 text-meta text-ink min-h-[44px]"
           >
             <option value="">Every topic ({problems.length})</option>
@@ -196,10 +238,40 @@ export function ProblemPicker({
         )}
       </div>
 
+      <label className="flex flex-col gap-s2">
+        <span className="sr-only">Search the bank</span>
+        <input
+          value={query}
+          onChange={(e) => { setQuery(e.target.value); setShownCount(40); }}
+          placeholder="Search by title or opening line"
+          autoComplete="off"
+          className="bg-raised border border-line rounded-md px-s4 py-s2 text-ui text-ink placeholder:text-faint min-h-[48px]"
+        />
+      </label>
+
+      {mayHost && (
+        <div className="flex flex-wrap items-center gap-s2">
+          <span className="text-label uppercase text-faint">
+            Or take at random from these {matching.length}
+          </span>
+          {[5, 10, 20].map((n) => (
+            <button
+              key={n}
+              onClick={() => pickRandom(n)}
+              disabled={picked.length >= MAX_PROBLEMS}
+              className="inline-flex items-center min-h-[44px] px-s4 rounded-md border border-line text-meta text-ink hover:border-accent transition-colors disabled:opacity-40"
+            >
+              {n}
+            </button>
+          ))}
+        </div>
+      )}
+
       {shown.length === 0 ? (
         <p className="text-meta text-muted max-w-[58ch]">
-          No problems yet. Write one above — a paper of them is what a problem
-          room needs before anything else here matters.
+          {problems.length === 0
+            ? "No problems yet. Write one above — a paper of them is what a problem room needs before anything else here matters."
+            : "Nothing matches that. Try fewer words, or clear the topic."}
         </p>
       ) : (
         <ul className="list-none m-0 p-0 rounded-lg border border-line bg-surface overflow-hidden">
@@ -235,7 +307,7 @@ export function ProblemPicker({
                 <span className="min-w-0">
                   <span className="block text-ui text-ink pb-[2px] break-words">{p.title}</span>
                   <span className="block text-meta text-muted line-clamp-2">
-                    {plainText(p.statement, 120)}
+                    {p.preview}
                   </span>
                   <span className="block font-mono text-label uppercase text-faint mt-1">
                     {p.topic} · {p.maxPoints} marks · {KIND_LABEL[p.answerKind] ?? "written"} ·
@@ -271,6 +343,16 @@ export function ProblemPicker({
             );
           })}
         </ul>
+      )}
+
+      {matching.length > shown.length && (
+        <button
+          onClick={() => setShownCount((n) => n + 60)}
+          className="inline-flex items-center justify-center min-h-[48px] px-s5 rounded-md border border-line text-ui text-muted hover:text-ink transition-colors self-start"
+        >
+          Show {Math.min(60, matching.length - shown.length)} more of{" "}
+          {matching.length - shown.length}
+        </button>
       )}
 
       {/* The room itself, once something is ticked. */}

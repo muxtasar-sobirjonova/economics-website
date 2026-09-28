@@ -458,6 +458,23 @@ saved — the moment to discover the separators are wrong is before sixty
 problems land in the bank. A block that fails is reported by its number and the
 rest are still saved: a typo in problem seven should not cost the other nine.
 
+### The bank at 178 problems
+
+The picker was written for 25 and had only a topic filter. At 178 it needed
+three things, all of which are now there:
+
+- **A preview, not the statement.** `ProblemSummary.preview` is trimmed on the
+  server. Sending 178 full statements to draw a list costs most of a megabyte
+  to show 140 characters a row.
+- **Search**, over the title and that preview — the two things a row shows.
+  **A picked problem always survives the filter**: it is in the set being
+  built, and watching it vanish when the search changes is how a set gets
+  opened with the wrong questions in it.
+- **Forty rows at a time**, and a draw-at-random button for 5, 10 or 20 from
+  whatever the filter leaves. Ticking five boxes by hand out of 178 was the
+  slow half of opening a round. The draw skips retired problems and ones
+  already picked, and stops at `MAX_PROBLEMS`.
+
 ### Problems can be corrected
 
 The editor was only ever opened blank, and `getProblemForEditor` was written
@@ -465,6 +482,29 @@ and never called — so a wrong answer key could be retired but not fixed. There
 is an Edit button on every row now; the key and the solution are fetched when
 it opens rather than sent down with the list, because the list is rendered for
 anyone who may host a room and the key is for whoever may write one.
+
+### Marking is cached, grouped and priced
+
+Three quarters of a grading prompt is the problem and its solution, identical
+for every student answering it. The prompt is built in two halves —
+`buildGradeParts` — and the first carries `cacheControl: {type: "ephemeral"}`,
+so the provider re-reads it at a tenth of the price. Measured on the loaded
+bank: 100 students × 5 problems falls from about $1.96 to $1.04 on Sonnet 5.
+
+**The breakpoint sits after the problem, not after the system prompt.** A
+cached prefix has a minimum size and `GRADER_SYSTEM` alone (~350 tokens) is
+under it; the system prompt still gets cached because it is part of the same
+prefix.
+
+**`gradeNextBatch` orders by problem, not by arrival.** A cache holds a
+_prefix_, so answers interleaved across problems would change it on nearly
+every call and hit nothing. This is not a preference — without it the caching
+above is worth zero.
+
+**One press marks at most 200 answers, and says what it will cost first.**
+`estimateMarkingCost` prices the button from the model in use; it is an
+estimate and the label says "about". A bigger room takes a second press, which
+is the point — spending money twice should be a decision, not a surprise.
 
 ### Marking a room
 
@@ -697,7 +737,7 @@ rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
 ## Tests
 
-328 passing. The pattern is to test **the pure half**: Elo, grading, question
+337 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
 question selection, the CSS token guard, and — new with problem rooms — reading

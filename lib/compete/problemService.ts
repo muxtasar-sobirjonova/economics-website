@@ -12,8 +12,9 @@ import { generateCode, normaliseCode } from "./code";
 import { parseProblem, PROBLEM_ERROR_COPY, type ProblemInput } from "./problem";
 import { markAnswer, hostMark, type MarkableProblem, type AskModel } from "./marking";
 import { cleanText } from "./answerCheck";
-import { gradeWithModel, graderAvailable } from "./grader";
+import { gradeWithModel, graderAvailable, graderModelName } from "./grader";
 import { judge, parseAwayLog, type FocusPolicy } from "./focus";
+import { plainText } from "./markdown";
 import type { Outcome } from "./service";
 
 /**
@@ -151,7 +152,14 @@ export interface ProblemSummary {
   id: string;
   title: string;
   topic: string;
-  statement: string;
+  /**
+   * The opening of the statement, not the statement.
+   *
+   * The bank is 178 problems and every one of them is a page of text; sending
+   * all of it to draw a list costs most of a megabyte to show 120 characters a
+   * row. Trimmed on the server, where the full text already is.
+   */
+  preview: string;
   maxPoints: number;
   answerKind: string;
   gradingMode: string;
@@ -171,7 +179,11 @@ export async function listProblems(includeRetired = false): Promise<ProblemSumma
     },
   });
 
-  return rows.map(({ solution, ...r }) => ({ ...r, hasSolution: Boolean(solution) }));
+  return rows.map(({ solution, statement, ...r }) => ({
+    ...r,
+    preview: plainText(statement, 140),
+    hasSolution: Boolean(solution),
+  }));
 }
 
 /**
@@ -703,6 +715,8 @@ export interface MarkingProgress {
   total: number;
   /** False when no key is configured, which is a state, not a failure. */
   modelAvailable: boolean;
+  /** Which model marks, so the screen can price the button before it is pressed. */
+  model: string;
 }
 
 export async function markingProgress(
@@ -720,7 +734,13 @@ export async function markingProgress(
     prisma.competitionAnswer.count({ where: { competitionId } }),
   ]);
 
-  return { pending, marked: total - pending, total, modelAvailable: graderAvailable() };
+  return {
+    pending,
+    marked: total - pending,
+    total,
+    modelAvailable: graderAvailable(),
+    model: graderModelName(),
+  };
 }
 
 /**
@@ -756,7 +776,11 @@ export async function gradeNextBatch(
 
   const waiting = await prisma.competitionAnswer.findMany({
     where: { competitionId, gradedBy: GradedBy.PENDING, questionId: { in: aiIds } },
-    orderBy: { createdAt: "asc" },
+    // By problem, not by arrival. The prompt's first half — the problem and its
+    // solution — is identical for every student answering it and is cached; a
+    // cache holds a prefix, so taking answers in arrival order would change
+    // that prefix on almost every call and miss it every time.
+    orderBy: [{ questionId: "asc" }, { createdAt: "asc" }],
     take: Math.min(Math.max(1, limit), 12),
     select: { id: true, userId: true, questionId: true, text: true },
   });

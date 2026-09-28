@@ -4,7 +4,7 @@ import { openai } from "@ai-sdk/openai";
 import { z } from "zod";
 import {
   GRADER_SYSTEM,
-  buildGradePrompt,
+  buildGradeParts,
   normaliseGrade,
   type Grade,
   type GradeRequest,
@@ -24,6 +24,13 @@ const SHAPE = z.object({
   comment: z.string().describe("One or two sentences for the student, in their own language."),
 });
 
+export const DEFAULT_GRADER_MODEL = "claude-sonnet-5";
+
+/** Which model marks, as a name — for the cost estimate the host is shown. */
+export function graderModelName(): string {
+  return process.env.COMPETE_GRADER_MODEL || DEFAULT_GRADER_MODEL;
+}
+
 /**
  * Whichever key exists. Anthropic first because marking an economics argument
  * is the kind of judgement the stronger model is worth paying for; OpenAI is
@@ -35,7 +42,7 @@ const SHAPE = z.object({
 function resolveModel() {
   const named = process.env.COMPETE_GRADER_MODEL;
 
-  if (process.env.ANTHROPIC_API_KEY) return anthropic(named || "claude-sonnet-5");
+  if (process.env.ANTHROPIC_API_KEY) return anthropic(named || DEFAULT_GRADER_MODEL);
   if (process.env.OPENAI_API_KEY) return openai(named || "gpt-4o");
   return null;
 }
@@ -58,12 +65,33 @@ export async function gradeWithModel(req: GradeRequest): Promise<Grade | null> {
   const model = resolveModel();
   if (!model) return null;
 
+  const { context, answer } = buildGradeParts(req);
+
   try {
     const { object } = await generateObject({
       model,
       schema: SHAPE,
       system: GRADER_SYSTEM,
-      prompt: buildGradePrompt(req),
+      // Two parts rather than one string, so the provider can cache the first.
+      // The system prompt, the problem and the solution are identical for every
+      // student answering it; only the last block changes. The breakpoint sits
+      // after the context because a cached prefix has a minimum size and the
+      // system prompt alone is under it.
+      messages: [
+        {
+          role: "user",
+          content: [
+            {
+              type: "text",
+              text: context,
+              providerOptions: {
+                anthropic: { cacheControl: { type: "ephemeral" } },
+              },
+            },
+            { type: "text", text: answer },
+          ],
+        },
+      ],
       temperature: 0,
     });
     return normaliseGrade(object, req.maxPoints);

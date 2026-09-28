@@ -80,17 +80,82 @@ export const GRADER_SYSTEM = [
   "Never reveal the full solution in the comment.",
 ].join("\n");
 
-export function buildGradePrompt(req: GradeRequest): string {
-  const parts = [`PROBLEM:\n${req.statement}`];
+/**
+ * The prompt, split where it stops repeating.
+ *
+ * Thirty students answer the same problem, and the problem and its solution are
+ * identical in all thirty requests — about three quarters of every prompt. Cut
+ * in two, the first half can be cached by the provider and re-read at a tenth
+ * of the price, and only the answer is billed in full each time.
+ *
+ * The split is also why the marking pass works through one problem at a time:
+ * a cache holds a *prefix*, so interleaving problems would miss it every turn.
+ */
+export interface GradeParts {
+  /** Identical for every answer to this problem. Cacheable. */
+  context: string;
+  /** This student's answer, fenced. Never the same twice. */
+  answer: string;
+}
 
-  if (req.solution) parts.push(`AUTHOR'S SOLUTION:\n${req.solution}`);
+export function buildGradeParts(req: GradeRequest): GradeParts {
+  const context = [`PROBLEM:\n${req.statement}`];
 
-  parts.push(
+  if (req.solution) context.push(`AUTHOR'S SOLUTION:\n${req.solution}`);
+
+  context.push(
     `MARKS AVAILABLE: ${req.maxPoints} (award a whole number from 0 to ${req.maxPoints})`
   );
-  parts.push(`${FENCE_OPEN}\n${fenceAnswer(req.answer)}\n${FENCE_CLOSE}`);
 
-  return parts.join("\n\n");
+  return {
+    context: context.join("\n\n"),
+    answer: `${FENCE_OPEN}\n${fenceAnswer(req.answer)}\n${FENCE_CLOSE}`,
+  };
+}
+
+/** The whole prompt as one string. The two halves, in the order they are sent. */
+export function buildGradePrompt(req: GradeRequest): string {
+  const { context, answer } = buildGradeParts(req);
+  return `${context}\n\n${answer}`;
+}
+
+/**
+ * Roughly what marking this many answers will cost, in dollars.
+ *
+ * An estimate and labelled as one: it assumes an average problem and an average
+ * answer, and the real figure moves with both. It exists so a host pressing a
+ * button that spends money is told the order of magnitude first — the
+ * difference between a few cents and a few dollars is the part that matters.
+ *
+ * Prices are per million tokens, input and output.
+ */
+export const GRADER_PRICES: Record<string, { input: number; output: number }> = {
+  "claude-opus-5": { input: 5, output: 25 },
+  "claude-sonnet-5": { input: 2, output: 10 },
+  "claude-haiku-4-5": { input: 1, output: 5 },
+};
+
+/** Measured across the loaded bank: prompt without the answer, and with it. */
+const CONTEXT_TOKENS = 1030;
+const ANSWER_TOKENS = 330;
+const OUTPUT_TOKENS = 120;
+
+export function estimateMarkingCost(
+  answers: number,
+  model: string,
+  { cached = false }: { cached?: boolean } = {}
+): number {
+  const price = GRADER_PRICES[model] ?? GRADER_PRICES["claude-sonnet-5"];
+  if (answers <= 0) return 0;
+
+  // Cached: the context is written once and re-read at a tenth of the price.
+  // Uncached: it is paid in full, every time.
+  const contextTokens = cached
+    ? CONTEXT_TOKENS * 1.25 + (answers - 1) * CONTEXT_TOKENS * 0.1
+    : answers * CONTEXT_TOKENS;
+
+  const input = contextTokens + answers * ANSWER_TOKENS;
+  return (input / 1e6) * price.input + ((answers * OUTPUT_TOKENS) / 1e6) * price.output;
 }
 
 /**
