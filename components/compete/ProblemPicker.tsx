@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import {
   createProblemCompetitionAction,
   retireProblemAction,
+  setPracticeOpenAction,
   getProblemAction,
 } from "@/app/actions/problems";
 import type { ProblemSummary } from "@/lib/compete/problemService";
@@ -151,6 +152,18 @@ export function ProblemPicker({
   const retire = (id: string, active: boolean) =>
     start(async () => {
       await retireProblemAction(id, active);
+      router.refresh();
+    });
+
+  /**
+   * Withhold a problem from practice, or put it back.
+   *
+   * Practice hands back the worked solution, so this is how a problem being
+   * saved for a paper stays unspent. Closed before the paper is set, not after.
+   */
+  const practice = (id: string, open: boolean) =>
+    start(async () => {
+      await setPracticeOpenAction(id, open);
       router.refresh();
     });
 
@@ -311,7 +324,18 @@ export function ProblemPicker({
                 )}
 
                 <span className="min-w-0">
-                  <span className="block text-ui text-ink pb-[2px] break-words">{p.title}</span>
+                  <span className="block text-ui text-ink pb-[2px] break-words">
+                    {p.title}
+                    {p.timesPractised > 0 && (
+                      <span
+                        className="ml-s2 font-mono text-label uppercase align-middle"
+                        style={{ color: "var(--danger)" }}
+                        title="People who have practised this on their own and been shown the worked solution"
+                      >
+                        {p.timesPractised} solved it
+                      </span>
+                    )}
+                  </span>
                   <span className="block text-meta text-muted line-clamp-2">
                     {p.preview}
                   </span>
@@ -323,6 +347,7 @@ export function ProblemPicker({
                       : `set ${p.timesUsed} time${p.timesUsed === 1 ? "" : "s"}`}
                     {p.gradingMode === "AI" && !p.hasSolution ? " · no solution" : ""}
                     {p.active ? "" : " · retired"}
+                    {p.practiceOpen ? "" : " · closed to practice"}
                   </span>
                 </span>
 
@@ -342,6 +367,20 @@ export function ProblemPicker({
                         className="text-label uppercase text-faint hover:text-ink transition-colors min-h-[44px] px-s2"
                       >
                         {p.active ? "Retire" : "Restore"}
+                      </button>
+                    )}
+                    {manage && (
+                      <button
+                        onClick={() => practice(p.id, !p.practiceOpen)}
+                        disabled={pending}
+                        title={
+                          p.practiceOpen
+                            ? "Stop it being handed out for practice — for a problem you are saving for a paper"
+                            : "Offer it for practice again"
+                        }
+                        className="text-label uppercase text-faint hover:text-ink transition-colors min-h-[44px] px-s2"
+                      >
+                        {p.practiceOpen ? "Close practice" : "Open practice"}
                       </button>
                     )}
                   </span>

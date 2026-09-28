@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import {
   saveProblem,
   retireProblem,
+  setPracticeOpen,
   getProblemForEditor,
   importProblems,
   createProblemCompetition,
@@ -64,6 +65,17 @@ export async function retireProblemAction(id: string, active: boolean): Promise<
   const result = await retireProblem(user.id, user.email, str(id), active === true);
   if (result.ok) revalidatePath("/compete/problems");
   return result;
+}
+
+export async function setPracticeOpenAction(
+  id: string,
+  open: boolean
+): Promise<Outcome<null>> {
+  const user = await requireUser();
+  if (!user) return { ok: false, error: "Sign in first." };
+  const res = await setPracticeOpen(user.id, user.email, id, open);
+  if (res.ok) revalidatePath("/compete/problems");
+  return res;
 }
 
 export async function createProblemCompetitionAction(

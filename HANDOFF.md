@@ -740,6 +740,52 @@ to the repo, which needs no storage service and no new dependency.
 
 ---
 
+## Practice
+
+`/practice` — the problem bank, on your own, whenever you like. Its own page
+rather than a tab inside `/duel` or `/compete`, because it is neither: a duel
+is rated, a competition has a host, and practice has no clock, no opponent, no
+standing and nothing at stake. Folding it into either would have made that page
+mean two things.
+
+`lib/compete/practice.ts` is the pure half — `practiceMode`, `pickProblem`,
+`topicCounts`, `aiLeftToday`, `totalsOf` — and `practiceService.ts` is the part
+that touches the database. Attempts live in their own `ProblemAttempt` table,
+never in `CompetitionAnswer`: a practice attempt must not be countable into a
+room score, and the surest guarantee is that the scoring queries cannot reach
+it.
+
+**The leak, and the two things that hold it.** Practice hands back the worked
+solution, so a problem practised is a problem part of a later room already has
+the answer to.
+
+- `Problem.practiceOpen` — a host closes a problem to practice _before_ setting
+  it. The preventive half. The toggle is in the bank, beside Retire.
+- `Problem.timesPractised` — how many people have been shown the solution. The
+  diagnostic half, printed in red beside the title in the picker, so a host
+  building a paper can see which problems are spent.
+
+**Who marks it.** Not the problem's own `gradingMode`: `HOST` means "a person
+reads it afterwards", and practice has no afterwards. `practiceMode` decides —
+key if there is a key, otherwise the model against the worked solution,
+otherwise the problem is not offered at all.
+
+**The bill.** A room has a host who chose to spend the money; practice has
+nobody. `DAILY_AI_LIMIT = 15` model-marked answers per person per day, checked
+again at marking time rather than only at serving time, so a page left open
+since the morning cannot spend an allowance that is gone. Key-marked problems
+are free and never counted against it.
+
+One attempt per problem per person, enforced by a unique index as well as a
+check — practising a problem twice is reading the solution and typing it back.
+
+KaTeX is loaded through `RichLazy`, not `Rich`: nothing needs drawing until a
+problem has been asked for, which is a server round trip, so the chunk arrives
+while that is in flight. `/practice` is 101 kB rather than 179 kB because of it
+— the same lesson `/compete` learned.
+
+---
+
 ## Permissions
 
 Telegram-shaped. `lib/permissions.ts` (pure, tested) and `lib/staff.ts`.
@@ -793,12 +839,16 @@ rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
 ## Tests
 
-358 passing. The pattern is to test **the pure half**: Elo, grading, question
+385 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
-question selection, the CSS token guard, and — new with problem rooms — reading
-a written answer, validating a problem, the marking decision, and the Markdown
-parser.
+question selection, the CSS token guard, reading a written answer, validating a
+problem, the marking decision, the Markdown parser, and — new with practice —
+who marks an attempt, how one is picked, and the daily allowance.
+
+One of those practice tests found a real bug on its first run: a broken source
+of randomness made `pickProblem` index an array with `NaN` and hand back
+`undefined`. The clamp is now on both ends.
 
 Two tests once failed on assertions rather than code — a semicolon count across
 a whole file and a spread threshold that sat on a sample minimum. In both cases
@@ -808,9 +858,10 @@ the fix was to **assert the property**, not loosen the number.
 
 ## What is worth doing next
 
-1. **Run the three `20260911_` migrations and `20260928_add_problem_usage`.**
-   Nothing opens a room until the first three are in the database; the fourth
-   adds a counter and backfills it from the rooms that already exist.
+1. **Run `20260928_add_problem_practice`.** Nothing under `/practice` works
+   until it is in the database; the page says so rather than failing silently.
+   The earlier migrations (`20260909_`, the three `20260911_`,
+   `20260928_add_problem_usage`, `20260928_add_player_alias`) are already in.
 2. **Write questions and problems.** Both banks are the constraint. Everything
    else is second.
 3. **Wait a week, then read `/duel/bank`.** It will say whether keys are wrong

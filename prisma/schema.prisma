@@ -58,6 +58,7 @@ model User {
   competitionPlays   CompetitionPlayer[]
   competitionAnswers CompetitionAnswer[]
   authoredProblems   Problem[]           @relation("ProblemAuthor")
+  problemAttempts    ProblemAttempt[]
 
   @@index([lessonsCompleted, lastLessonCompletedAt, createdAt])
 }
@@ -743,6 +744,19 @@ model Problem {
   /// the random draw knows which half of the bank has never been used.
   timesUsed Int @default(0)
 
+  /// Whether it can be practised on its own, outside a room. A host saving a
+  /// problem for a paper turns this off before setting it: practice hands back
+  /// the worked solution, and a solution handed out is a problem spent.
+  practiceOpen Boolean @default(true)
+
+  /// How many people have practised it on their own. Practice hands back the
+  /// worked solution, so a problem with a number here is a problem some of the
+  /// room may already have the answer to — which is a thing a host setting a
+  /// paper has to be able to see.
+  timesPractised Int @default(0)
+
+  attempts ProblemAttempt[]
+
   /// A broken problem is retired, never deleted: rooms that used it still
   /// have to review against something.
   active    Boolean  @default(true)
@@ -762,4 +776,33 @@ enum FocusPolicy {
   WARN
   /// Recorded, and the paper freezes once the allowance is used up.
   LOCK
+}
+
+/// One person working one problem on their own.
+///
+/// Not a CompetitionAnswer: there is no room, no clock, no standing and
+/// nothing to compare against. Keeping it in its own table is what stops a
+/// practice attempt ever being counted into somebody's competition score, in
+/// this code or in any query written later.
+model ProblemAttempt {
+  id        String  @id @default(cuid())
+  userId    String
+  user      User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+  problemId String
+  problem   Problem @relation(fields: [problemId], references: [id], onDelete: Cascade)
+
+  text      String
+  points    Int      @default(0)
+  maxPoints Int      @default(0)
+  gradedBy  GradedBy @default(AUTO)
+  feedback  String?
+  /// Time from being served the problem to answering it, by the server's clock.
+  ms        Int      @default(0)
+  createdAt DateTime @default(now())
+
+  /// One attempt per problem per person. Practising a problem twice is reading
+  /// the solution and typing it back, which teaches nobody anything.
+  @@unique([userId, problemId])
+  @@index([userId, createdAt])
+  @@index([problemId])
 }

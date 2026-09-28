@@ -14,6 +14,7 @@ import {
   IconMicroscope,
   IconSwords,
   IconConfetti,
+  IconPencil,
 } from "@tabler/icons-react";
 import { AuthStatus } from "@/components/AuthStatus";
 import { SidebarSkyline } from "@/components/SidebarSkyline";
@@ -101,6 +102,7 @@ export default function Sidebar() {
     { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
     { name: "Duel", href: "/duel", matchHref: "/duel", icon: IconSwords },
     { name: "Compete", href: "/compete", matchHref: "/compete", icon: IconConfetti },
+    { name: "Practice", href: "/practice", matchHref: "/practice", icon: IconPencil },
   ];
 
   /* Directories of people to reach outside the course — they answer a

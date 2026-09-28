@@ -165,6 +165,15 @@ export interface ProblemSummary {
   preview: string;
   /** How many rooms have been set with it. */
   timesUsed: number;
+  /**
+   * How many people have worked it on their own.
+   *
+   * Practice hands back the worked solution, so this is the number of people
+   * who may already have the answer. A host setting a paper needs to see it.
+   */
+  timesPractised: number;
+  /** Whether it is offered for practice at all. */
+  practiceOpen: boolean;
   maxPoints: number;
   answerKind: string;
   gradingMode: string;
@@ -182,7 +191,8 @@ export async function listProblems(includeRetired = false): Promise<ProblemSumma
     take: 300,
     select: {
       id: true, title: true, topic: true, statement: true, maxPoints: true,
-      answerKind: true, gradingMode: true, active: true, solution: true, timesUsed: true,
+      answerKind: true, gradingMode: true, active: true, solution: true,
+      timesUsed: true, timesPractised: true, practiceOpen: true,
     },
   });
 
@@ -225,6 +235,34 @@ export async function getProblemForEditor(
   const actor = await actorFor(userId, email);
   if (!can(actor, StaffPermission.MANAGE_QUESTIONS)) return null;
   return prisma.problem.findUnique({ where: { id } });
+}
+
+/**
+ * Withholding a problem from practice, or putting it back.
+ *
+ * The preventive half of the practice bargain: practice hands back the worked
+ * solution, so a problem being saved for a paper is closed *before* the paper
+ * is set. The counter on each problem is the other half — it reports the leaks
+ * that were not prevented.
+ */
+export async function setPracticeOpen(
+  userId: string,
+  email: string | null | undefined,
+  id: string,
+  open: boolean
+): Promise<Outcome<null>> {
+  const actor = await actorFor(userId, email);
+  if (!can(actor, StaffPermission.MANAGE_QUESTIONS)) {
+    return { ok: false, error: "You cannot change problems." };
+  }
+
+  try {
+    await prisma.problem.update({ where: { id }, data: { practiceOpen: open } });
+    return { ok: true, data: null };
+  } catch (e) {
+    console.error("setPracticeOpen failed", e);
+    return { ok: false, error: "Could not change that problem." };
+  }
 }
 
 /* ── Opening a room ──────────────────────────────────────────────────────── */

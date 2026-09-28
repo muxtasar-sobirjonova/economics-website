@@ -66,6 +66,13 @@ export default async function CompetePage() {
             move as they go. Nothing here touches your duel rating, so a host
             can set whatever length they like.
           </p>
+          <p className="text-meta text-muted mt-s2 max-w-[56ch]">
+            No room open?{" "}
+            <Link href="/practice" className="text-accent hover:text-accent-strong">
+              Work the problem bank on your own
+            </Link>{" "}
+            — no clock, marked as soon as you answer.
+          </p>
         </header>
 
         <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s5">
