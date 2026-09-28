@@ -33,6 +33,9 @@ export const metadata: Metadata = {
   description: "Learn economics through real entrepreneurship stories.",
   icons: {
     icon: "/favicon.png",
+    // The mark is drawn as a rounded app tile, so iOS should use it when the
+    // site is added to a home screen rather than screenshotting the page.
+    apple: "/favicon.png",
   },
   openGraph: {
     title: "That's So Econ",

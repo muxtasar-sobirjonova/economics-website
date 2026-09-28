@@ -143,8 +143,17 @@ export default function Sidebar() {
       <div className="flex-1 overflow-y-auto overflow-x-hidden py-7 px-5 flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {/* Logo Header */}
         <div className="flex items-center gap-4 mb-8 relative px-1">
-          <div className="bg-white text-white font-black text-[22px] shrink-0 flex items-center justify-center w-11 h-11 rounded-xl shadow-sm overflow-hidden p-1">
-            <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain" />
+          {/* No white tile and no padding behind it: the mark is already a
+              rounded square of its own, and a frame around a frame reads as a
+              black sticker stuck on a white one. */}
+          <div className="shrink-0 w-11 h-11 rounded-xl shadow-sm overflow-hidden">
+            <img
+              src="/favicon.png"
+              alt="That's So Econ"
+              width={44}
+              height={44}
+              className="w-full h-full object-cover"
+            />
           </div>
           <div className="flex flex-col justify-center">
             <span className="text-[10px] font-bold tracking-[0.2em] text-white/90 leading-none mb-0.5">That&apos;s So</span>
