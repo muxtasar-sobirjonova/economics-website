@@ -39,7 +39,7 @@ export function MobileBottomNav() {
   ];
 
   return (
-    <nav className="app-chrome md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-gray-100 z-50 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
+    <nav className="app-chrome md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-line z-50 pb-safe shadow-[0_-4px_20px_rgba(0,0,0,0.03)]">
       <div className="flex items-center overflow-x-auto py-1.5 px-2 snap-x snap-mandatory [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {navItems.map((item) => {
           const isActive =
@@ -58,7 +58,7 @@ export function MobileBottomNav() {
               className={`flex flex-col items-center justify-center flex-1 shrink-0 min-w-[72px] px-1 py-1.5 rounded-xl transition-all snap-center ${
                 isActive 
                   ? "text-brand-primary" 
-                  : "text-gray-400 hover:text-gray-600"
+                  : "text-faint hover:text-muted"
               }`}
             >
               <div className={`flex items-center justify-center w-12 h-8 rounded-full mb-1 transition-colors ${isActive ? "bg-brand-primary/10" : "bg-transparent"}`}>

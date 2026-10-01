@@ -53,7 +53,7 @@ export default function ReviewMistakesComponent() {
     <div className="review-mistakes-container bg-[#FDFBF7] min-h-screen w-full font-sans flex items-center justify-center p-8">
       <div className="w-full max-w-md">
         <div className="text-center mb-4">
-          <p className="text-[#111827] font-semibold">Reviewing Mistake</p>
+          <p className="text-[var(--text)] font-semibold">Reviewing Mistake</p>
           <p className="text-lg font-bold text-[#4ebdd5]">
             {currentMistakeIndex + 1}/{mistakes.length}
           </p>
@@ -66,9 +66,9 @@ export default function ReviewMistakesComponent() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="bg-white rounded-2xl p-8 shadow-lg border border-gray-200"
+            className="bg-white rounded-2xl p-8 shadow-lg border border-line"
           >
-            <h3 className="text-lg font-bold text-[#111827] mb-2">
+            <h3 className="text-lg font-bold text-[var(--text)] mb-2">
               {currentMistake.term}
             </h3>
             <p className="text-[#4B5563]">{currentMistake.mistake}</p>

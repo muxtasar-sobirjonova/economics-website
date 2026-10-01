@@ -41,11 +41,11 @@ export default function BookmarkButton({ slug, initialIsSaved, variant = 'light'
     return (
       <button
         onClick={handleToggleBookmark}
-        className="absolute top-6 right-6 z-10 p-2 rounded-full bg-gray-50 hover:bg-gray-200 transition-all duration-200 shadow-sm"
+        className="absolute top-6 right-6 z-10 p-2 rounded-full bg-surface hover:bg-bg-sunk transition-all duration-200 shadow-sm"
         aria-label={optimisticSaved ? "Remove from saved" : "Save card"}
       >
         {optimisticSaved ? (
-          <IconBookmarkFilled size={22} color="#7B6FE7" fill="#7B6FE7" />
+          <IconBookmarkFilled size={22} color="var(--accent)" fill="var(--accent)" />
         ) : (
           <IconBookmark size={22} color="#888" />
         )}

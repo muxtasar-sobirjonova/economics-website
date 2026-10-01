@@ -54,7 +54,7 @@ export const LearningPathSlider = ({
                   ? "bg-gradient-to-br from-[#E2D4FD] to-[#C6D2FE] border-[2px] border-transparent shadow-[0_8px_20px_rgba(123,104,238,0.2)] hover:-translate-y-0.5"
                   : status === "Completed"
                   ? "bg-gradient-to-br from-[#DBEAFE] to-[#BFDBFE] border-[2px] border-white shadow-sm hover:-translate-y-0.5"
-                  : "bg-gradient-to-br from-gray-200 to-[#F5F5F5] border-[2px] border-white shadow-sm"
+                  : "bg-gradient-to-br from-bg-sunk to-[#F5F5F5] border-[2px] border-white shadow-sm"
               }`}
             >
               {/* Background Icon */}
@@ -86,13 +86,13 @@ export const LearningPathSlider = ({
                     ? "text-[#3B3073]"
                     : status === "Completed"
                     ? "text-[#1E3A8A]"
-                    : "text-gray-500"
+                    : "text-muted"
                 }`}
               >
                 LESSON {lesson.id}
               </div>
               <h4
-                className={`font-bold text-[15px] leading-snug mb-auto line-clamp-2 relative z-10 text-gray-900`}
+                className={`font-bold text-[15px] leading-snug mb-auto line-clamp-2 relative z-10 text-ink`}
               >
                 {lesson.title}
               </h4>
@@ -105,7 +105,7 @@ export const LearningPathSlider = ({
                 )}
 
                 {status === "Locked" && (
-                  <span className="bg-white/60 border border-white text-gray-400 px-3 py-1.5 rounded-full text-[13px] font-bold tracking-wide flex items-center gap-1.5 w-fit shadow-sm">
+                  <span className="bg-white/60 border border-white text-faint px-3 py-1.5 rounded-full text-[13px] font-bold tracking-wide flex items-center gap-1.5 w-fit shadow-sm">
                     Locked <IconLock size={12} stroke={2.5} />
                   </span>
                 )}

@@ -85,8 +85,8 @@ export default async function QuizzesReadPage({
 
   return (
     <div className="content-page min-h-screen w-full font-sans flex flex-col p-0 bg-slate-50">
-      <div className="w-full bg-white border-b border-gray-100 h-[56px] px-8 flex items-center shrink-0">
-        <div className="text-[13px] font-[700] tracking-[0.08em] text-gray-900 uppercase">
+      <div className="w-full bg-white border-b border-line h-[56px] px-8 flex items-center shrink-0">
+        <div className="text-[13px] font-[700] tracking-[0.08em] text-ink uppercase">
           QUIZZES
         </div>
       </div>

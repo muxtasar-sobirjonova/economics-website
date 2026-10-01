@@ -35,17 +35,17 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
     >
       {/* ── Header ── */}
       <div className="flex justify-between items-end mb-1 shrink-0">
-        <h2 className="text-gray-900 font-[800] text-lg lg:text-xl tracking-tight leading-none">
+        <h2 className="text-ink font-[800] text-lg lg:text-xl tracking-tight leading-none">
           Today&apos;s Agenda
         </h2>
-        <div className="text-[11px] lg:text-[12px] font-[600] text-[#5A4FBD] bg-[#F3F0FF] px-2 lg:px-3 py-1 rounded-full leading-none">
+        <div className="text-[11px] lg:text-[12px] font-[600] text-[var(--accent-strong)] bg-[var(--accent-soft)] px-2 lg:px-3 py-1 rounded-full leading-none">
           up to {totalAgendaMinutes} minutes
         </div>
       </div>
       
       {/* Progress Bar */}
       <div className="mb-3 flex flex-col gap-1.5 mt-2 shrink-0">
-        <div className="flex justify-between text-[11px] font-bold text-gray-400 uppercase tracking-wide">
+        <div className="flex justify-between text-[11px] font-bold text-faint uppercase tracking-wide">
           <span>Progress</span>
           <span>{completedCount} of {totalCount} done</span>
         </div>
@@ -98,7 +98,7 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
                 }}
                 animate={{ opacity: item.isCompleted ? 0.6 : 1 }}
                 layout
-                className="flex items-center py-2 px-2.5 lg:px-3 border-[1.5px] border-gray-100 rounded-2xl group bg-white transition-colors hover:shadow-sm hover:border-brand-primary/50 cursor-pointer"
+                className="flex items-center py-2 px-2.5 lg:px-3 border-[1.5px] border-line rounded-2xl group bg-white transition-colors hover:shadow-sm hover:border-brand-primary/50 cursor-pointer"
               >
                 {/* Left accent */}
                 <motion.div
@@ -117,12 +117,12 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
                   </motion.div>
 
                   {/* Title */}
-                  <motion.div layout className="text-xs lg:text-sm font-[600] leading-tight text-gray-900 line-clamp-1 max-w-[160px] sm:max-w-[200px]">
+                  <motion.div layout className="text-xs lg:text-sm font-[600] leading-tight text-ink line-clamp-1 max-w-[160px] sm:max-w-[200px]">
                     {item.title}
                   </motion.div>
                   
                   {/* Time Pill */}
-                  <motion.div layout className="bg-gray-50 text-brand-primary font-[500] text-[10px] lg:text-[11px] px-1.5 lg:px-2 py-0.5 rounded-full whitespace-nowrap ml-auto">
+                  <motion.div layout className="bg-surface text-brand-primary font-[500] text-[10px] lg:text-[11px] px-1.5 lg:px-2 py-0.5 rounded-full whitespace-nowrap ml-auto">
                     {timeText}
                   </motion.div>
                 </div>
@@ -132,7 +132,7 @@ export default function TodayAgendaCard({ initialItems }: TodayAgendaCardProps) 
                   className={`w-8 h-8 rounded-full flex items-center justify-center shrink-0 transition-colors ml-3 ${
                     item.isCompleted
                       ? "bg-green-700 border-green-700 border-[1.5px] shadow-[0_0_0_3px_rgba(21,128,61,0.15)]"
-                      : "border-gray-200 border-[1.5px] bg-gray-50"
+                      : "border-line border-[1.5px] bg-surface"
                   }`}
                 >
                   {item.isCompleted && (

@@ -22,7 +22,7 @@ export const ConceptsMockup = () => (
                <span className="text-[11px] font-bold tracking-wider px-2.5 py-1 rounded-lg text-green-700 bg-green-700/10">LESSON 1</span>
              </div>
              <div className="mb-4"><IconBulb size={24} className="text-gray-600" /></div>
-             <h4 className="font-bold text-[15px] leading-tight mb-2 text-[#111827] line-clamp-2">Value Creation</h4>
+             <h4 className="font-bold text-[15px] leading-tight mb-2 text-[var(--text)] line-clamp-2">Value Creation</h4>
              <div className="flex flex-col gap-1 mb-2">
                <div className="flex items-center gap-1.5 text-gray-500"><IconClock size={14} /><span className="text-xs font-medium">5-10 mins read</span></div>
                <div className="flex items-center gap-1.5"><div className="w-2 h-2 rounded-full flex-shrink-0 bg-gray-300" /><span className="text-xs text-gray-500 font-medium">Completed</span></div>

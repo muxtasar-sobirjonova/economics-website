@@ -96,24 +96,24 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
 
       <main className="px-4 md:px-10 pb-8 md:pb-16 max-w-[1240px] w-full mx-auto mt-4 overflow-hidden md:overflow-visible">
         {/* Clean Header (No Background) */}
-        <div className="flex flex-col md:flex-row items-start md:items-center mb-6 md:mb-10 p-5 md:px-8 md:py-4 rounded-3xl bg-white border border-gray-200 shadow-sm relative overflow-hidden">
+        <div className="flex flex-col md:flex-row items-start md:items-center mb-6 md:mb-10 p-5 md:px-8 md:py-4 rounded-3xl bg-white border border-line shadow-sm relative overflow-hidden">
           <div className="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center w-full relative z-10">
             <div className="w-[60px] h-[60px] md:w-[84px] md:h-[84px] rounded-[16px] md:rounded-[20px] flex items-center justify-center shrink-0 md:ml-2">
               <BookOpen className="text-[#4ebdd5] w-10 h-10 md:w-12 md:h-12" strokeWidth={1.5} />
             </div>
             
             <div className="flex-1 px-1 md:px-3 min-w-0 flex flex-col justify-center w-full">
-              <div className="text-[10px] md:text-[11px] font-bold tracking-[0.08em] uppercase text-gray-900 mb-1.5 drop-shadow-sm">
+              <div className="text-[10px] md:text-[11px] font-bold tracking-[0.08em] uppercase text-ink mb-1.5 drop-shadow-sm">
                 CONCEPT
               </div>
-              <h3 className="text-gray-900 text-xl md:text-[26px] font-bold mb-2 leading-tight md:whitespace-nowrap">
+              <h3 className="text-ink text-xl md:text-[26px] font-bold mb-2 leading-tight md:whitespace-nowrap">
                 {activeLesson.title}
               </h3>
-              <div className="flex items-center text-gray-600 text-[13px] md:text-sm font-medium">
+              <div className="flex items-center text-muted text-[13px] md:text-sm font-medium">
                 <IconClock className="mr-2 w-4 h-4 md:w-[18px] md:h-[18px]" />
                 {timeEstimate} min read
               </div>
-              <div className="text-[13px] md:text-sm text-gray-600 truncate mt-1 max-w-[500px]">
+              <div className="text-[13px] md:text-sm text-muted truncate mt-1 max-w-[500px]">
                 {activeLesson.subtitle}
               </div>
             </div>
@@ -144,12 +144,12 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
         {/* Main Content Layout */}
         <div className="flex flex-col md:flex-row gap-8 md:items-start mb-5">
           <div className="flex-1 flex items-center gap-4">
-             <h3 className="text-[13px] font-bold tracking-[0.08em] text-gray-900 uppercase">
+             <h3 className="text-[13px] font-bold tracking-[0.08em] text-ink uppercase">
                 CONCEPT SUMMARY
              </h3>
           </div>
           <div className="w-full md:w-[340px] flex items-center gap-3">
-             <h3 className="text-[13px] font-bold tracking-[0.08em] text-gray-900 uppercase hidden md:block">
+             <h3 className="text-[13px] font-bold tracking-[0.08em] text-ink uppercase hidden md:block">
                 EXPLORE ARTICLE
              </h3>
           </div>
@@ -157,21 +157,21 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
 
         <div className="flex flex-col md:flex-row gap-8 md:items-stretch mb-10">
           {/* Concept Summary Section */}
-          <div className="flex-1 bg-white p-5 md:p-8 flex flex-col gap-4 border border-gray-200 border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
-             <p className="text-gray-900 text-[15px] leading-[1.7] font-normal">
+          <div className="flex-1 bg-white p-5 md:p-8 flex flex-col gap-4 border border-line border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
+             <p className="text-ink text-[15px] leading-[1.7] font-normal">
                {activeLesson.conceptSummary || activeLesson.description || "Master the fundamental principles of entrepreneurship."}
              </p>
           </div>
 
           {/* Article Section */}
-          <div className="w-full md:w-[340px] bg-white p-5 md:p-8 flex flex-col relative border border-gray-200 border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
+          <div className="w-full md:w-[340px] bg-white p-5 md:p-8 flex flex-col relative border border-line border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
               <div className="flex gap-4 items-start mb-6">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center">
                   <IconCompass size={24} stroke={2} className="text-brand-primary" />
                 </div>
                 <div className="pt-0">
-                  <h4 className="font-bold text-gray-900 text-base mb-1">Dive deeper</h4>
-                  <p className="text-[#333333] text-[13px] leading-[1.7] font-normal">
+                  <h4 className="font-bold text-ink text-base mb-1">Dive deeper</h4>
+                  <p className="text-[var(--muted)] text-[13px] leading-[1.7] font-normal">
                     Read the full article to master these concepts
                   </p>
                 </div>
@@ -190,13 +190,13 @@ export default async function ConceptsPage({ params }: { params: { lessonId: str
         {/* Learning Path */}
         <div>
           <div className="flex items-center justify-between mb-5">
-            <h3 className="text-[13px] font-bold tracking-[0.08em] text-gray-900 uppercase flex items-center gap-1.5">
+            <h3 className="text-[13px] font-bold tracking-[0.08em] text-ink uppercase flex items-center gap-1.5">
               LEARNING PATH <IconTrendingUp size={16} className="text-slate-800" stroke={2.5} />
             </h3>
           </div>
           
           <Suspense fallback={
-            <div className="flex items-center justify-center py-10 bg-white border border-gray-200 rounded-3xl">
+            <div className="flex items-center justify-center py-10 bg-white border border-line rounded-3xl">
               <IconLoader className="animate-spin text-brand-primary" size={32} />
             </div>
           }>

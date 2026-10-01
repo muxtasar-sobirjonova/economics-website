@@ -57,7 +57,7 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
     return (
       <div className="flex flex-col items-center justify-center min-h-[70vh] text-center px-4">
         <h2 className="text-2xl font-bold mb-2 text-brand-800">Welcome to That&apos;s So Econ!</h2>
-        <p className="text-gray-600 mb-6 max-w-md mx-auto">
+        <p className="text-muted mb-6 max-w-md mx-auto">
           We&apos;re setting up your learning profile. Please complete your onboarding or check back in a moment to view your dashboard.
         </p>
       </div>

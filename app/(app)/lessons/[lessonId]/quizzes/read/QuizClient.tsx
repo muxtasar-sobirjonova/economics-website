@@ -58,7 +58,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
     else if (score >= Math.ceil(totalQuestions * 0.6)) message = "👍 Good Job!";
 
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white rounded-3xl shadow-sm border border-gray-200 relative overflow-hidden h-full min-h-[600px] transition-all duration-300">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white rounded-3xl shadow-sm border border-line relative overflow-hidden h-full min-h-[600px] transition-all duration-300">
         {score >= passingScore && (
           <div className="absolute inset-0 pointer-events-none">
             {Array.from({length: 40}).map((_, i) => {
@@ -83,10 +83,10 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
         )}
         
         <h2 className="text-[64px] font-[900] text-[#3D52A0] mb-2">{score} / {totalQuestions}</h2>
-        <p className="text-xl font-[700] text-gray-900 mb-4">{message}</p>
+        <p className="text-xl font-[700] text-ink mb-4">{message}</p>
 
         {score < passingScore && (
-          <p className="text-sm text-gray-500 mb-6 text-center max-w-sm">
+          <p className="text-sm text-muted mb-6 text-center max-w-sm">
             You need {passingScore} / {totalQuestions} to unlock the next topic. Review the lesson and try again.
           </p>
         )}
@@ -101,7 +101,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
            <Link href={`/lessons/${lessonId}/quizzes`} className="px-6 py-3 bg-brand-primary hover:bg-brand-primary/90 text-white font-[500] rounded-lg shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
              Back to Quizzes
            </Link>
-           <Link href="/roadmap" className="px-6 py-3 bg-white border border-gray-200 hover:bg-gray-50 text-[#3D52A0] font-[500] rounded-lg shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+           <Link href="/roadmap" className="px-6 py-3 bg-white border border-line hover:bg-surface text-[#3D52A0] font-[500] rounded-lg shadow-sm transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
              Back to Roadmap
            </Link>
         </div>
@@ -123,11 +123,11 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
              <Link href={`/lessons/${lessonId}/quizzes`} className="flex items-center gap-1 text-[#3D52A0] text-[13px] font-[600] hover:underline focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
                <ArrowLeft size={16} /> Back to Quizzes
              </Link>
-             <div className="px-2 py-0.5 bg-black/5 text-gray-900 text-[10px] font-bold rounded-md">
+             <div className="px-2 py-0.5 bg-black/5 text-ink text-[10px] font-bold rounded-md">
                LESSON {lessonId}
              </div>
            </div>
-           <div className="text-[13px] font-[700] text-gray-900">
+           <div className="text-[13px] font-[700] text-ink">
              Question {currentQuestionIndex + 1} of {totalQuestions}
            </div>
            <div className="text-[13px] font-[700] text-[#3D52A0]">
@@ -169,11 +169,11 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                     <div className="bg-[#3D52A0] text-white text-[10px] font-[700] px-3 py-1 rounded-[20px]">
                        QUESTION {currentQuestionIndex + 1} OF {totalQuestions}
                     </div>
-                    <div className="text-[11px] text-gray-400">
+                    <div className="text-[11px] text-faint">
                        ⚡ Medium
                     </div>
                  </div>
-                 <h2 className="text-lg font-[700] text-gray-900 leading-[1.6] mt-4 max-w-none">
+                 <h2 className="text-lg font-[700] text-ink leading-[1.6] mt-4 max-w-none">
                     {currentQuestion?.questionText || currentQuestion?.question}
                  </h2>
                </div>
@@ -276,7 +276,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                  <button 
                    onClick={handlePrevQuestion} 
                    disabled={currentQuestionIndex === 0}
-                   className={`px-6 py-3 font-[600] text-[15px] rounded-xl transition-colors ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-gray-400 bg-gray-100' : 'text-[#3D52A0] bg-[#EEF3FF] hover:bg-[#E0E7FF]'}`}
+                   className={`px-6 py-3 font-[600] text-[15px] rounded-xl transition-colors ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-faint bg-bg-sunk' : 'text-[#3D52A0] bg-[#EEF3FF] hover:bg-[#E0E7FF]'}`}
                  >
                    ← Previous
                  </button>

@@ -42,8 +42,8 @@ export function ReadPageBookmark({
     >
       <Bookmark
         size={20}
-        color="#7B6FE7"
-        fill={isBookmarked ? "#7B6FE7" : "none"}
+        color="var(--accent)"
+        fill={isBookmarked ? "var(--accent)" : "none"}
         strokeWidth={2}
       />
     </button>

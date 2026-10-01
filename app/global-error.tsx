@@ -21,13 +21,13 @@ export default function GlobalError({
               <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
             </div>
             <h2 className="text-2xl font-extrabold text-[#111111] mb-2 tracking-tight">Something went wrong</h2>
-            <p className="text-[#333333] mb-6 font-medium">
+            <p className="text-[var(--muted)] mb-6 font-medium">
               We encountered a critical error while loading this page.
               {error.message && <span className="block mt-2 text-xs text-red-500 bg-red-50 p-2 rounded">{error.message}</span>}
             </p>
             <button
               onClick={() => reset()}
-              className="px-6 py-3 bg-brand-primary text-white font-bold rounded-xl hover:bg-[#5A4FBD] transition-all shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+              className="px-6 py-3 bg-brand-primary text-white font-bold rounded-xl hover:bg-[var(--accent-strong)] transition-all shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
             >
               Try again
             </button>

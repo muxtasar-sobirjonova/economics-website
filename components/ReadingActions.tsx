@@ -310,7 +310,7 @@ export default function ReadingActions() {
 
   return (
     <>
-      <div className="text-[11px] sm:text-[12px] text-gray-400 font-medium flex items-center gap-1.5 italic bg-white/50 px-2.5 sm:px-3 py-1.5 rounded-full border border-gray-100 shadow-sm pointer-events-none select-none">
+      <div className="text-[11px] sm:text-[12px] text-faint font-medium flex items-center gap-1.5 italic bg-white/50 px-2.5 sm:px-3 py-1.5 rounded-full border border-line shadow-sm pointer-events-none select-none">
         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="opacity-70"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z"/></svg>
         Select text to highlight
       </div>

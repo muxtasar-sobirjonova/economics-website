@@ -104,8 +104,8 @@ export default async function ArticlesReadPage({
 
   return (
     <div className="content-page min-h-screen w-full font-sans flex flex-col p-0 bg-[#FCF6F0]">
-      <div className="w-full bg-white border-b border-gray-100 h-[56px] px-8 flex items-center shrink-0">
-        <div className="text-[13px] font-[700] tracking-[0.08em] text-gray-900 uppercase">
+      <div className="w-full bg-white border-b border-line h-[56px] px-8 flex items-center shrink-0">
+        <div className="text-[13px] font-[700] tracking-[0.08em] text-ink uppercase">
           ARTICLES
         </div>
       </div>
@@ -118,13 +118,13 @@ export default async function ArticlesReadPage({
               <div className="flex items-center justify-between mb-6">
                 <Link
                   href={`/lessons/${lessonId}/articles`}
-                  className="text-brand-primary text-[15px] font-[700] hover:text-[#5A4FBD] transition-colors inline-block w-fit bg-transparent border-none mb-2"
+                  className="text-brand-primary text-[15px] font-[700] hover:text-[var(--accent-strong)] transition-colors inline-block w-fit bg-transparent border-none mb-2"
                 >
                   &larr; Back to Articles
                 </Link>
 
               </div>
-              <div className="flex justify-between items-center gap-3 mb-8 w-full sticky top-[68px] md:top-4 z-20 py-3 bg-[#FCF6F0]/95 backdrop-blur-sm rounded-lg border-b border-gray-200">
+              <div className="flex justify-between items-center gap-3 mb-8 w-full sticky top-[68px] md:top-4 z-20 py-3 bg-[#FCF6F0]/95 backdrop-blur-sm rounded-lg border-b border-line">
                 <div className="inline-block border border-brand-primary bg-transparent text-brand-primary text-[10px] sm:text-[11px] font-[800] tracking-[0.08em] uppercase px-2.5 sm:px-3.5 py-1.5 rounded-full whitespace-nowrap">
                   LESSON {activeLesson.lessonId}
                 </div>

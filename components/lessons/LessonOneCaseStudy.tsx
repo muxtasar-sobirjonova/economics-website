@@ -35,7 +35,7 @@ const EvidenceBlock = ({ index }: { index: number }) => {
 
       <div className="flex flex-col xl:flex-row gap-6 mb-6">
         <h2
-          className={`font-bold text-[#111827] text-xl uppercase leading-[1.4] flex-1`}
+          className={`font-bold text-[var(--text)] text-xl uppercase leading-[1.4] flex-1`}
         >
           — {block.q}
         </h2>
@@ -50,7 +50,7 @@ const EvidenceBlock = ({ index }: { index: number }) => {
         </div>
       </div>
       <p
-        className={`text-[#111827] text-[17px] leading-[1.8] font-normal`}
+        className={`text-[var(--text)] text-[17px] leading-[1.8] font-normal`}
       >
         {block.a}
       </p>
@@ -63,7 +63,7 @@ export const LessonOneCaseStudy = () => {
     <>
       <div className="text-center mb-12">
         <h1
-          className={`font-black text-[#111827] leading-[1.05] uppercase tracking-[-0.02em] text-[38px] md:text-[48px]`}
+          className={`font-black text-[var(--text)] leading-[1.05] uppercase tracking-[-0.02em] text-[38px] md:text-[48px]`}
         >
           DOMINO&apos;S PIZZA &amp;<br />
           ENTREPRENEURIAL ECONOMICS
@@ -77,7 +77,7 @@ export const LessonOneCaseStudy = () => {
 
       <div className="w-full my-12 mx-auto">
         <p
-          className={`italic font-semibold text-[22px] leading-[1.6] text-gray-600 border-l-[3px] border-brand-primary pl-4 my-6`}
+          className={`italic font-semibold text-[22px] leading-[1.6] text-muted border-l-[3px] border-brand-primary pl-4 my-6`}
         >
           &quot;Traditional economics explains why Domino&apos;s worked.
           Entrepreneurial economics is what Monaghan was doing while

@@ -69,7 +69,7 @@ export const DashboardHero = ({
           </Link>
           <Link href="/saved" className="flex-1 flex">
             <button
-              className="w-full bg-white text-brand-primary font-medium text-sm lg:text-[15px] tracking-wide py-3 px-6 lg:py-3.5 lg:px-6 rounded-2xl hover:bg-[#F3F0FF] transition-all border-2 border-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+              className="w-full bg-white text-brand-primary font-medium text-sm lg:text-[15px] tracking-wide py-3 px-6 lg:py-3.5 lg:px-6 rounded-2xl hover:bg-[var(--accent-soft)] transition-all border-2 border-brand-primary focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
             >
               Review Notes
             </button>
@@ -105,7 +105,7 @@ export const DashboardHero = ({
                 🔥 This Week
               </div>
               {/* 'X of 7 days' badge */}
-              <div className="bg-[#F3F0FF] text-brand-primary px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
+              <div className="bg-[var(--accent-soft)] text-brand-primary px-3 py-1 rounded-full text-xs font-bold flex items-center gap-1">
                 {weekDates.filter(d => allCompletedDates.includes(d)).length} of 7 days
               </div>
             </div>

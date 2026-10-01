@@ -60,7 +60,7 @@ export const MarketingHero = () => {
           <span className="text-brand-primary">Time.</span>
         </motion.h1>
         
-        <motion.p variants={fadeUp} className="text-xl text-gray-600 mb-10 leading-relaxed font-medium max-w-2xl mx-auto">
+        <motion.p variants={fadeUp} className="text-xl text-muted mb-10 leading-relaxed font-medium max-w-2xl mx-auto">
           Learn core concepts, apply them through real-world case studies, and build a notebook you&apos;ll actually use. <strong className="text-slate-900">Constantly updated with fresh case studies and interactive lessons.</strong>
         </motion.p>
         
@@ -69,14 +69,14 @@ export const MarketingHero = () => {
             <span className="absolute inset-0 bg-white/20 translate-x-[-100%] animate-[shimmer_2s_infinite]" />
             <span className="relative z-10 group-hover:scale-105 transition-transform duration-200 block">Start learning today</span>
           </Link>
-          <Link href="#roadmap" className="w-full sm:w-auto px-10 py-4 bg-transparent text-gray-600 rounded-full font-bold text-lg hover:bg-gray-50 hover:text-slate-900 transition-colors flex items-center justify-center hover:scale-105 active:scale-95 duration-200 focus:outline-none focus:ring-4 focus:ring-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+          <Link href="#roadmap" className="w-full sm:w-auto px-10 py-4 bg-transparent text-muted rounded-full font-bold text-lg hover:bg-surface hover:text-slate-900 transition-colors flex items-center justify-center hover:scale-105 active:scale-95 duration-200 focus:outline-none focus:ring-4 focus:ring-gray-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
             Take a Quick Tour
           </Link>
         </motion.div>
         
-        <motion.div variants={fadeUp} className="mt-6 flex items-center gap-2 px-4 py-2 bg-gray-50 border border-gray-200 rounded-full shadow-sm">
+        <motion.div variants={fadeUp} className="mt-6 flex items-center gap-2 px-4 py-2 bg-surface border border-line rounded-full shadow-sm">
           <IconRocket size={16} className="text-brand-primary" aria-hidden="true" />
-          <span className="text-sm font-bold text-gray-600 uppercase tracking-widest">Engineered for aspiring founders</span>
+          <span className="text-sm font-bold text-muted uppercase tracking-widest">Engineered for aspiring founders</span>
         </motion.div>
       </motion.div>
       
@@ -96,7 +96,7 @@ export const MarketingHero = () => {
         transition={{ delay: 1, duration: 1 }}
         className="w-full flex justify-center mt-20"
       >
-        <IconChevronDown size={32} className="text-gray-600 animate-bounce" aria-hidden="true" />
+        <IconChevronDown size={32} className="text-muted animate-bounce" aria-hidden="true" />
       </motion.div>
     </div>
   </section>

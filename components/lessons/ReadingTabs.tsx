@@ -132,7 +132,7 @@ export const ReadingTabs = ({
       {/* Floating Toggle Button */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed top-1/2 right-0 -translate-y-1/2 bg-[#5A4FBD] text-white p-2 rounded-l-md shadow-lg hover:bg-[#483d99] transition-all z-[60] flex flex-col items-center gap-2 border border-r-0 border-[#483d99]"
+        className="fixed top-1/2 right-0 -translate-y-1/2 bg-[var(--accent-strong)] text-white p-2 rounded-l-md shadow-lg hover:bg-[#483d99] transition-all z-[60] flex flex-col items-center gap-2 border border-r-0 border-[#483d99]"
         style={{ transform: `translateY(-50%) translateX(${isOpen ? '-308px' : '0'})` }}
       >
         <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M14.5 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7.5L14.5 2z"/><polyline points="14 2 14 8 20 8"/></svg>
@@ -151,25 +151,25 @@ export const ReadingTabs = ({
 
       {/* Sliding Drawer */}
       <div 
-        className={`fixed top-0 right-0 h-screen w-[308px] max-w-[100vw] bg-slate-50 border-l border-gray-200 shadow-2xl z-[50] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
+        className={`fixed top-0 right-0 h-screen w-[308px] max-w-[100vw] bg-slate-50 border-l border-line shadow-2xl z-[50] transform transition-transform duration-300 ease-in-out ${isOpen ? 'translate-x-0' : 'translate-x-full'}`}
       >
         <div className="h-full flex flex-col overflow-hidden">
           {/* Fixed Header */}
-          <div className="px-6 pt-5 pb-3 shrink-0 bg-slate-50 border-b border-gray-100 relative z-10">
+          <div className="px-6 pt-5 pb-3 shrink-0 bg-slate-50 border-b border-line relative z-10">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-lg font-bold text-gray-900">Notes & Takeaways</h3>
-              <button onClick={() => setIsOpen(false)} aria-label="Close notes drawer" className="text-gray-400 hover:text-gray-700 bg-gray-100 p-2 rounded-full">
+              <h3 className="text-lg font-bold text-ink">Notes & Takeaways</h3>
+              <button onClick={() => setIsOpen(false)} aria-label="Close notes drawer" className="text-faint hover:text-muted bg-bg-sunk p-2 rounded-full">
                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>
               </button>
             </div>
             {!hideTakeaways && (
-              <div className="flex bg-slate-50 p-1 rounded-xl shadow-sm border border-gray-100">
+              <div className="flex bg-slate-50 p-1 rounded-xl shadow-sm border border-line">
                 <button
                   onClick={() => setActivePanel("takeaways")}
                   className={`flex-1 text-center py-2 text-[13px] font-semibold rounded-lg cursor-pointer transition-all ${
                     activePanel === "takeaways"
-                      ? "bg-white text-brand-primary shadow-sm border border-gray-100"
-                      : "text-gray-500 bg-transparent border border-transparent hover:text-gray-700 hover:bg-gray-50"
+                      ? "bg-white text-brand-primary shadow-sm border border-line"
+                      : "text-muted bg-transparent border border-transparent hover:text-muted hover:bg-surface"
                   }`}
                 >
                   💡 Takeaways
@@ -178,8 +178,8 @@ export const ReadingTabs = ({
                   onClick={() => setActivePanel("notes")}
                   className={`flex-1 text-center py-2 text-[13px] font-semibold rounded-lg cursor-pointer transition-all ${
                     activePanel === "notes"
-                      ? "bg-white text-brand-primary shadow-sm border border-gray-100"
-                      : "text-gray-500 bg-transparent border border-transparent hover:text-gray-700 hover:bg-gray-50"
+                      ? "bg-white text-brand-primary shadow-sm border border-line"
+                      : "text-muted bg-transparent border border-transparent hover:text-muted hover:bg-surface"
                   }`}
                 >
                   🗒️ My Notes
@@ -196,7 +196,7 @@ export const ReadingTabs = ({
                   KEY TAKEAWAYS
                 </div>
                 <div 
-                  className="text-[#333333] text-[13px] leading-relaxed font-medium prose prose-sm prose-li:marker:text-brand-primary"
+                  className="text-[var(--muted)] text-[13px] leading-relaxed font-medium prose prose-sm prose-li:marker:text-brand-primary"
                   dangerouslySetInnerHTML={{ __html: takeawaysText || "<p>No takeaways available for this lesson.</p>" }}
                 />
               </div>
@@ -227,7 +227,7 @@ export const ReadingTabs = ({
                   <button
                     onClick={handleSaveNotes}
                     disabled={isPending}
-                    className="bg-brand-primary text-white rounded-lg px-4 py-2.5 text-xs font-bold w-[calc(100%-32px)] mx-4 hover:bg-[#6859e0] transition-colors shadow-sm disabled:opacity-50"
+                    className="bg-brand-primary text-white rounded-lg px-4 py-2.5 text-xs font-bold w-[calc(100%-32px)] mx-4 hover:bg-[var(--accent-strong)] transition-colors shadow-sm disabled:opacity-50"
                   >
                     {isPending ? "Saving..." : "+ Save a note"}
                   </button>

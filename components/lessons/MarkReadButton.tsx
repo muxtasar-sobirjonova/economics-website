@@ -34,7 +34,7 @@ export function MarkReadButton({ lessonId, isArticle }: { lessonId: string, isAr
     <button
       onClick={handleClick}
       disabled={isPending}
-      className="bg-brand-primary text-white hover:bg-[#5A4FBD] px-7 py-3 rounded-lg font-[700] text-sm transition-all shadow-sm active:scale-95 disabled:opacity-70 flex items-center gap-2"
+      className="bg-brand-primary text-white hover:bg-[var(--accent-strong)] px-7 py-3 rounded-lg font-[700] text-sm transition-all shadow-sm active:scale-95 disabled:opacity-70 flex items-center gap-2"
     >
       {isPending ? "Saving…" : (isArticle ? "Next: Quizzes →" : "Next: Articles →")}
     </button>

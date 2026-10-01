@@ -111,8 +111,8 @@ export default async function ConceptsReadPage({
 
   return (
     <div className="content-page min-h-screen w-full font-sans flex flex-col p-0 bg-[#FCF6F0]">
-      <div className="w-full bg-white border-b border-gray-100 h-[56px] px-8 flex items-center shrink-0">
-        <div className="text-[13px] font-[700] tracking-[0.08em] text-gray-900 uppercase">
+      <div className="w-full bg-white border-b border-line h-[56px] px-8 flex items-center shrink-0">
+        <div className="text-[13px] font-[700] tracking-[0.08em] text-ink uppercase">
           CONCEPTS
         </div>
       </div>
@@ -125,13 +125,13 @@ export default async function ConceptsReadPage({
               <div className="flex items-center justify-between mb-6">
                 <Link
                   href={`/lessons/${lessonId}/concepts`}
-                  className="text-brand-primary text-[15px] font-[700] hover:text-[#5A4FBD] transition-colors inline-block w-fit bg-transparent border-none mb-2"
+                  className="text-brand-primary text-[15px] font-[700] hover:text-[var(--accent-strong)] transition-colors inline-block w-fit bg-transparent border-none mb-2"
                 >
                   &larr; Back to Concepts
                 </Link>
 
               </div>
-              <div className="flex justify-between items-center gap-3 mb-8 w-full sticky top-[68px] md:top-4 z-20 py-3 bg-[#FCF6F0]/95 backdrop-blur-sm rounded-lg border-b border-gray-200">
+              <div className="flex justify-between items-center gap-3 mb-8 w-full sticky top-[68px] md:top-4 z-20 py-3 bg-[#FCF6F0]/95 backdrop-blur-sm rounded-lg border-b border-line">
                 <div className="inline-block border border-brand-primary bg-transparent text-brand-primary text-[10px] sm:text-[11px] font-[800] tracking-[0.08em] uppercase px-2.5 sm:px-3.5 py-1.5 rounded-full whitespace-nowrap">
                   LESSON {activeLesson.lessonId}
                 </div>
@@ -143,15 +143,15 @@ export default async function ConceptsReadPage({
                   body copy, not just the heading. */}
               <div className="relative z-10" id="main-content">
                 <div className="text-center mb-16 pt-8">
-                    <h1 className={`text-[32px] sm:text-[44px] md:text-[52px] font-black text-[#1A1A2E] leading-[1.1] uppercase tracking-tight`}>
+                    <h1 className={`text-[32px] sm:text-[44px] md:text-[52px] font-black text-[var(--text)] leading-[1.1] uppercase tracking-tight`}>
                       {activeLesson.title}
                     </h1>
-                    <div className="text-center text-gray-400 font-sans font-[500] text-[13px] mt-6 tracking-wide uppercase">
+                    <div className="text-center text-faint font-sans font-[500] text-[13px] mt-6 tracking-wide uppercase">
                       ESTIMATED READING TIME (10-20 MIN) • DAY 0{lessonId || 1}
                     </div>
                 </div>
                 <div className="flex flex-col">
-                  <div className="prose prose-lg max-w-[800px] mx-auto w-full prose-h2:text-[#1A1A2E] prose-h2:uppercase prose-h2:tracking-tight prose-h2:font-bold prose-h2:mt-12 prose-p:text-[18px] prose-p:leading-[1.8] prose-p:text-gray-800">
+                  <div className="prose prose-lg max-w-[800px] mx-auto w-full prose-h2:text-[var(--text)] prose-h2:uppercase prose-h2:tracking-tight prose-h2:font-bold prose-h2:mt-12 prose-p:text-[18px] prose-p:leading-[1.8] prose-p:text-ink">
                     <div dangerouslySetInnerHTML={{ __html: cleanConceptHtml }} />
                   </div>
                 </div>

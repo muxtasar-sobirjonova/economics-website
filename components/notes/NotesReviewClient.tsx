@@ -143,8 +143,8 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
      return (
        <div className="flex-1 min-h-screen bg-slate-50 flex flex-col p-10 relative max-w-[1200px] mx-auto w-full">
          <div className="mb-2 shrink-0">
-           <h1 className="text-[13px] font-[700] text-gray-900 uppercase tracking-[0.08em] mb-1">{title}</h1>
-           <p className="text-sm text-gray-500">Card Review Complete</p>
+           <h1 className="text-[13px] font-[700] text-ink uppercase tracking-[0.08em] mb-1">{title}</h1>
+           <p className="text-sm text-muted">Card Review Complete</p>
          </div>
          
          <div className="flex-1 flex flex-col items-center justify-center">
@@ -163,8 +163,8 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
              </div>
            )}
            
-           <h2 className="text-[28px] font-[900] text-gray-900 mb-2 z-10">🎉 All Done!</h2>
-           <p className="text-base text-gray-500 z-10">You memorized {knewIt.length} of {totalInSession} notes today</p>
+           <h2 className="text-[28px] font-[900] text-ink mb-2 z-10">🎉 All Done!</h2>
+           <p className="text-base text-muted z-10">You memorized {knewIt.length} of {totalInSession} notes today</p>
            {reviewAgainCount > 0 && (
              <p className="text-sm text-red-500 mt-2 font-bold z-10">↻ {reviewAgainCount} notes needed review</p>
            )}
@@ -220,19 +220,19 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
     return (
       <div className="flex-1 min-h-screen bg-slate-50 flex flex-col p-6 md:p-10 relative max-w-[1200px] mx-auto w-full">
         <div className="mb-8">
-          <h1 className="text-2xl md:text-3xl font-extrabold text-gray-900 tracking-tight">My Notes</h1>
-          <p className="text-sm md:text-base text-gray-500 mt-1">Review all your saved insights across lessons.</p>
+          <h1 className="text-2xl md:text-3xl font-extrabold text-ink tracking-tight">My Notes</h1>
+          <p className="text-sm md:text-base text-muted mt-1">Review all your saved insights across lessons.</p>
         </div>
         
         <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md mx-auto">
-          <div className="bg-white border border-gray-200 shadow-sm rounded-3xl p-8 flex flex-col items-center text-center w-full">
+          <div className="bg-white border border-line shadow-sm rounded-3xl p-8 flex flex-col items-center text-center w-full">
             <div className="w-16 h-16 bg-brand-primary/10 rounded-2xl flex items-center justify-center mb-5">
               <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-brand-primary">
                 <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" />
               </svg>
             </div>
-            <h2 className="text-2xl font-extrabold text-gray-900 mb-3">No notes yet!</h2>
-            <p className="text-[15px] text-gray-600 mb-8 leading-relaxed">
+            <h2 className="text-2xl font-extrabold text-ink mb-3">No notes yet!</h2>
+            <p className="text-[15px] text-muted mb-8 leading-relaxed">
               You haven&apos;t saved any notes yet. Complete lessons and save insights to review them here.
             </p>
             <Link href="/roadmap" className="bg-brand-primary text-white w-full py-3.5 rounded-2xl font-bold text-[15px] shadow-sm hover:opacity-90 transition-opacity flex items-center justify-center gap-2">
@@ -259,10 +259,10 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
       {/* Header and Day Pills */}
       <div className="mb-2 shrink-0">
-        <h1 className="text-[13px] font-[700] text-gray-900 uppercase tracking-[0.08em] mb-1">
+        <h1 className="text-[13px] font-[700] text-ink uppercase tracking-[0.08em] mb-1">
           {title}
         </h1>
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted">
           {subtitle}
         </p>
       </div>
@@ -311,27 +311,27 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
                     <div className="h-2.5 bg-[rgba(0,0,0,0.08)] rounded mb-2 w-full" />
                     <div className="h-2.5 bg-[rgba(0,0,0,0.08)] rounded mb-2 w-[60%]" />
                   </div>
-                  <div className="text-[10px] text-gray-400">Lesson 1 · Concepts</div>
+                  <div className="text-[10px] text-faint">Lesson 1 · Concepts</div>
               </div>
            </div>
 
            {/* Instructions */}
            <div className="mb-4">
-              <h2 className="text-xl font-[800] text-gray-900 text-center mb-2">Review your notes</h2>
-              <p className="text-sm text-gray-500 text-center leading-[1.6] max-w-[320px] mx-auto">Pick a day above to start reviewing your saved insights.</p>
+              <h2 className="text-xl font-[800] text-ink text-center mb-2">Review your notes</h2>
+              <p className="text-sm text-muted text-center leading-[1.6] max-w-[320px] mx-auto">Pick a day above to start reviewing your saved insights.</p>
            </div>
 
            {/* 3 Steps */}
            <div className="flex gap-2.5 justify-center mb-4">
-              <div className="bg-white border border-gray-200 rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600">
+              <div className="bg-white border border-line rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">1</div>
                  Pick a day
               </div>
-              <div className="bg-white border border-gray-200 rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600">
+              <div className="bg-white border border-line rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">2</div>
                  Read each card
               </div>
-              <div className="bg-white border border-gray-200 rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-gray-600">
+              <div className="bg-white border border-line rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">3</div>
                  Sort by memory
               </div>
@@ -340,12 +340,12 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
            {/* Swipe Hint */}
            <div className="flex items-center gap-5 justify-center">
                <div className="text-[13px] font-[700] text-green-500">← Memorized</div>
-               <div className="w-[1px] h-6 bg-gray-200" />
+               <div className="w-[1px] h-6 bg-bg-sunk" />
                <div className="text-[13px] font-[700] text-red-500">Review Again →</div>
            </div>
         </div>
       ) : reviewQueue.length === 0 && knewIt.length === 0 ? (
-        <div className="flex-1 flex items-center justify-center text-center text-gray-500">
+        <div className="flex-1 flex items-center justify-center text-center text-muted">
            No reviewable notes found for this day. (New notes must be filled out first.)
         </div>
       ) : (
@@ -353,7 +353,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
         <div className="relative flex flex-col items-center justify-center min-h-[calc(100vh-160px)] w-full max-w-[900px] mx-auto">
           
           {/* Counter */}
-          <div className="text-sm font-[700] text-gray-600 text-center mb-3">
+          <div className="text-sm font-[700] text-muted text-center mb-3">
              Card {Math.min(currentCardNum, totalInSession)} of {totalInSession}
           </div>
 
@@ -433,10 +433,10 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
                     <div className="text-red-500 text-xl font-[900] px-4 py-2 rotate-[15deg]">↻ REVIEW</div>
                  </div>
 
-                 <div className="text-base leading-[1.8] text-gray-900 font-sans flex-1 overflow-y-auto scrollbar-hide break-words whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: activeCard.content }} />
+                 <div className="text-base leading-[1.8] text-ink font-sans flex-1 overflow-y-auto scrollbar-hide break-words whitespace-pre-wrap" dangerouslySetInnerHTML={{ __html: activeCard.content }} />
                  
                  <div className="mt-6 flex justify-between items-center shrink-0">
-                    <span className="text-[11px] text-gray-400">Lesson {lesson?.id} · {lesson?.title}</span>
+                    <span className="text-[11px] text-faint">Lesson {lesson?.id} · {lesson?.title}</span>
                  </div>
               </div>
             )}

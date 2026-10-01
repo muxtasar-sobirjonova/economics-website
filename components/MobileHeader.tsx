@@ -24,7 +24,7 @@ export default async function MobileHeader() {
          <div className="w-8 h-8 flex items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-primary/5 border border-brand-primary/10 group-hover:bg-brand-primary/20 transition-colors">
             <Compass size={18} className="text-brand-primary" strokeWidth={2.5} />
          </div>
-         <IconChevronDown size={16} className="text-gray-500 group-hover:text-gray-900 transition-colors" stroke={2.5} />
+         <IconChevronDown size={16} className="text-muted group-hover:text-ink transition-colors" stroke={2.5} />
       </Link>
 
       {/* Right side: Rewards */}

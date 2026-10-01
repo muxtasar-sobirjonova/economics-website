@@ -22,7 +22,7 @@ export const LearningStats = ({
   return (
     <div className="w-full mx-auto mt-8 max-w-[1200px]">
       <div className="flex items-center gap-3 mb-4">
-        <h3 className="text-gray-900 font-extrabold text-base tracking-tight">
+        <h3 className="text-ink font-extrabold text-base tracking-tight">
           Your Learning Stats
         </h3>
       </div>
@@ -35,7 +35,7 @@ export const LearningStats = ({
             </div>
             <span className="font-bold text-slate-900 text-xs lg:text-[13px] whitespace-normal leading-tight">Current Streak</span>
           </div>
-          <div className="text-2xl font-black text-slate-900 leading-none mt-auto"><AnimatedNumber value={backendStreak} /> <span className="text-[13px] font-bold text-gray-500">days</span></div>
+          <div className="text-2xl font-black text-slate-900 leading-none mt-auto"><AnimatedNumber value={backendStreak} /> <span className="text-[13px] font-bold text-muted">days</span></div>
         </div>
 
         <div className="bg-white rounded-3xl p-4 flex flex-col gap-3 hover:-translate-y-1 transition-all duration-300 active:scale-[0.97] active:translate-y-0 cursor-pointer shadow-sm">
@@ -45,7 +45,7 @@ export const LearningStats = ({
             </div>
             <span className="font-bold text-slate-900 text-xs lg:text-[13px] whitespace-normal leading-tight">Lessons</span>
           </div>
-          <div className="text-2xl font-black text-slate-900 leading-none mt-auto"><AnimatedNumber value={completedLessonsCount} /> <span className="text-[13px] font-bold text-gray-500">completed</span></div>
+          <div className="text-2xl font-black text-slate-900 leading-none mt-auto"><AnimatedNumber value={completedLessonsCount} /> <span className="text-[13px] font-bold text-muted">completed</span></div>
         </div>
 
         <div className="bg-white rounded-3xl p-4 flex flex-col gap-3 hover:-translate-y-1 transition-all duration-300 active:scale-[0.97] active:translate-y-0 cursor-pointer shadow-sm">
@@ -57,7 +57,7 @@ export const LearningStats = ({
           </div>
           <div className="flex items-end gap-2 leading-none mt-auto">
             <div className="text-2xl font-black text-slate-900">
-              <AnimatedNumber value={avgQuizScore} /><span className="text-[13px] font-bold text-gray-500">%</span>
+              <AnimatedNumber value={avgQuizScore} /><span className="text-[13px] font-bold text-muted">%</span>
             </div>
             {avgQuizScore > 0 && ( <>
               <div className="flex items-end gap-0.5 mb-0.5 h-4 ml-auto">

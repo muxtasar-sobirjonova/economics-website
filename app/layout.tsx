@@ -63,7 +63,7 @@ export default function RootLayout({
       <body
         className={`${inter.className} ${literata.variable} ${jetbrains.variable} min-h-screen bg-white text-[#24203F] not-italic`}
       >
-        <NextTopLoader color="#7B6FE7" height={3} showSpinner={false} shadow="0 0 10px #7B6FE7,0 0 5px #7B6FE7" />
+        <NextTopLoader color="var(--accent)" height={3} showSpinner={false} shadow="0 0 10px var(--accent),0 0 5px var(--accent)" />
         {children}
       </body>
     </html>

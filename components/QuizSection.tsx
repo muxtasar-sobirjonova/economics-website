@@ -102,7 +102,7 @@ export default function QuizSection({
 
   return (
     <div className="mt-12">
-      <h2 style={{ color: '#1A1A2E', fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>
+      <h2 style={{ color: 'var(--text)', fontSize: '18px', fontWeight: 700, marginBottom: '16px' }}>
         {retryMode ? "Review Your Mistakes" : "Comprehension Check"}
       </h2>
 
@@ -112,7 +112,7 @@ export default function QuizSection({
           className="bg-gradient-to-br from-[#EEF3FF] to-slate-50 rounded-2xl p-4 sm:p-6 mb-4 border border-[#C7D7FF]"
         >
           <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '14px' }}>
-            <div style={{ background: '#7B6FE7', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '4px 10px', borderRadius: '20px', letterSpacing: '0.06em' }}>
+            <div style={{ background: 'var(--accent)', color: '#fff', fontSize: '10px', fontWeight: 700, padding: '4px 10px', borderRadius: '20px', letterSpacing: '0.06em' }}>
               QUESTION {idx + 1} OF {questions.length}
             </div>
             <div style={{ fontSize: '10px', color: '#888', fontWeight: 600 }}>
@@ -162,8 +162,8 @@ export default function QuizSection({
                   optionStyle.opacity = 0.4;
                   optionStyle.textDecoration = 'line-through';
                 } else if (isSelected) {
-                  optionStyle.background = '#7B6FE7';
-                  optionStyle.borderColor = '#7B6FE7';
+                  optionStyle.background = 'var(--accent)';
+                  optionStyle.borderColor = 'var(--accent)';
                   optionStyle.color = '#ffffff';
                   optionStyle.fontWeight = 600;
                   optionStyle.transform = 'translateX(0)';
@@ -179,7 +179,7 @@ export default function QuizSection({
                     aria-pressed={isSelected}
                     onMouseEnter={(e) => {
                       if (!submitted && !isSelected) {
-                        e.currentTarget.style.borderColor = '#7B6FE7';
+                        e.currentTarget.style.borderColor = 'var(--accent)';
                         e.currentTarget.style.boxShadow = '0 2px 8px rgba(61,82,160,0.12)';
                         e.currentTarget.style.transform = 'translateX(4px)';
                       }
@@ -192,7 +192,7 @@ export default function QuizSection({
                       }
                     }}
                   >
-                    <span style={{ color: isSelected ? '#ffffff' : '#1A1A2E', fontSize: '14px', fontWeight: isSelected ? 600 : 400 }}>{opt}</span>
+                    <span style={{ color: isSelected ? '#ffffff' : 'var(--text)', fontSize: '14px', fontWeight: isSelected ? 600 : 400 }}>{opt}</span>
                     <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
                       {!isSelected && (
                         <button 
@@ -225,8 +225,8 @@ export default function QuizSection({
                 disabled={submitted}
                 className={`w-full p-3 border rounded-lg text-sm transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
                   submitted
-                    ? "border-green-500 bg-green-50 text-gray-700"
-                    : "border-gray-200 hover:border-indigo-300"
+                    ? "border-green-500 bg-green-50 text-muted"
+                    : "border-line hover:border-indigo-300"
                 }`}
                 rows={3}
                 placeholder="Type your answer here..."
@@ -245,7 +245,7 @@ export default function QuizSection({
                 {showExplanation[q._key] ? "Hide Explanation" : "Show Explanation"}
               </button>
               {showExplanation[q._key] && (
-                <div id={`explanation-${q._key}`} className="w-full p-4 bg-[#EEF3FF] rounded-lg text-sm text-[#1A1A2E] border border-[#C7D7FF] text-left" aria-live="polite">
+                <div id={`explanation-${q._key}`} className="w-full p-4 bg-[#EEF3FF] rounded-lg text-sm text-[var(--text)] border border-[#C7D7FF] text-left" aria-live="polite">
                   <span className="font-semibold text-brand-500 block mb-1">
                     Explanation:
                   </span>
@@ -262,12 +262,12 @@ export default function QuizSection({
           onClick={handleSubmit}
           disabled={Object.keys(answers).length === 0 || isPending}
           className="focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-indigo-500"
-          style={{ background: '#7B6FE7', color: '#ffffff', opacity: Object.keys(answers).length === 0 || isPending ? 0.5 : 1, fontWeight: 700, fontSize: '15px', borderRadius: '8px', padding: '14px 32px', width: '100%', border: 'none', cursor: Object.keys(answers).length === 0 || isPending ? 'not-allowed' : 'pointer' }}
+          style={{ background: 'var(--accent)', color: '#ffffff', opacity: Object.keys(answers).length === 0 || isPending ? 0.5 : 1, fontWeight: 700, fontSize: '15px', borderRadius: '8px', padding: '14px 32px', width: '100%', border: 'none', cursor: Object.keys(answers).length === 0 || isPending ? 'not-allowed' : 'pointer' }}
         >
           {isPending ? "Submitting..." : "Submit Answers"}
         </button>
       ) : (
-        <div className="mt-8 text-center bg-white rounded-xl border border-gray-200 p-8 shadow-sm" aria-live="assertive" tabIndex={-1} ref={(el) => { if (el && submitted) el.focus(); }}>
+        <div className="mt-8 text-center bg-white rounded-xl border border-line p-8 shadow-sm" aria-live="assertive" tabIndex={-1} ref={(el) => { if (el && submitted) el.focus(); }}>
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-slate-800">Quiz Complete!</h3>
             <div className="bg-brand-500 text-white text-sm font-bold px-4 py-1.5 rounded-full">
@@ -287,7 +287,7 @@ export default function QuizSection({
           </p>
           <button
             onClick={() => router.push("/roadmap")}
-            className="bg-brand-primary hover:bg-[#5A4FBD] text-white px-7 py-[13px] rounded-[50px] font-bold text-sm transition-colors shadow-[0_4px_12px_rgba(123,111,231,0.3)]"
+            className="bg-brand-primary hover:bg-[var(--accent-strong)] text-white px-7 py-[13px] rounded-[50px] font-bold text-sm transition-colors shadow-[0_4px_12px_rgba(123,111,231,0.3)]"
           >
             Back to Roadmap →
           </button>

@@ -21,7 +21,12 @@ const config: Config = {
         "brand-yellow": "#FFF9C4",
         "brand-purple": "#E8D6FF",
         "brand-blue": "#D6E8FF",
-        "brand-primary": "#7B6FE7",
+        // One purple, not four. This used to be #7B6FE7 while the v2 system
+        // used --accent (#6E5FC4) and two more shades were hardcoded as hover
+        // states — the same colour, four times, none of them themeable. The
+        // 212 places that say `brand-primary` now follow the token, and the
+        // brand hue is changed in `--accent` in globals.css rather than here.
+        "brand-primary": "var(--accent)",
         brand: {
           50: '#F5F3FF',
           100: '#EBE5FF',

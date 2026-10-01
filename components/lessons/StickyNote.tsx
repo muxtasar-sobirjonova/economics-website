@@ -70,27 +70,27 @@ export const StickyNote = ({
         <button
           onClick={() => updateNoteColor(note.id, "#FFF5D6")}
           aria-label="Set color to Yellow"
-          className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer bg-[#FFF5D6]"
+          className="w-4 h-4 rounded-full border border-line cursor-pointer bg-[#FFF5D6]"
         ></button>
         <button
           onClick={() => updateNoteColor(note.id, "#FFD6D6")}
           aria-label="Set color to Red"
-          className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer bg-[#FFD6D6]"
+          className="w-4 h-4 rounded-full border border-line cursor-pointer bg-[#FFD6D6]"
         ></button>
         <button
           onClick={() => updateNoteColor(note.id, "#D6E8FF")}
           aria-label="Set color to Blue"
-          className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer bg-[#D6E8FF]"
+          className="w-4 h-4 rounded-full border border-line cursor-pointer bg-[#D6E8FF]"
         ></button>
         <button
           onClick={() => updateNoteColor(note.id, "#D6F5E3")}
           aria-label="Set color to Green"
-          className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer bg-[#D6F5E3]"
+          className="w-4 h-4 rounded-full border border-line cursor-pointer bg-[#D6F5E3]"
         ></button>
         <button
           onClick={() => updateNoteColor(note.id, "#E8D6FF")}
           aria-label="Set color to Purple"
-          className="w-4 h-4 rounded-full border border-gray-300 cursor-pointer bg-[#E8D6FF]"
+          className="w-4 h-4 rounded-full border border-line cursor-pointer bg-[#E8D6FF]"
         ></button>
       </div>
 
@@ -104,7 +104,7 @@ export const StickyNote = ({
           className={`w-7 h-7 rounded-md cursor-pointer text-[13px] border ${
             formats.bold
               ? "border-brand-primary bg-brand-primary text-white font-black"
-              : "border-gray-200 bg-white text-gray-900 font-black"
+              : "border-line bg-white text-ink font-black"
           }`}
         >
           B
@@ -118,7 +118,7 @@ export const StickyNote = ({
           className={`w-7 h-7 rounded-md cursor-pointer text-[13px] border italic ${
             formats.italic
               ? "border-brand-primary bg-brand-primary text-white"
-              : "border-gray-200 bg-white text-gray-900"
+              : "border-line bg-white text-ink"
           }`}
         >
           I
@@ -132,7 +132,7 @@ export const StickyNote = ({
           className={`w-7 h-7 rounded-md cursor-pointer text-[13px] border underline ${
             formats.underline
               ? "border-brand-primary bg-brand-primary text-white"
-              : "border-gray-200 bg-white text-gray-900"
+              : "border-line bg-white text-ink"
           }`}
         >
           U
@@ -146,7 +146,7 @@ export const StickyNote = ({
           className={`w-7 h-7 rounded-md cursor-pointer text-[13px] border line-through ${
             formats.strikeThrough
               ? "border-brand-primary bg-brand-primary text-white"
-              : "border-gray-200 bg-white text-gray-900"
+              : "border-line bg-white text-ink"
           }`}
         >
           S
@@ -156,8 +156,8 @@ export const StickyNote = ({
           onClick={toggleHighlight}
           className={`w-7 h-7 rounded-md cursor-pointer text-[13px] font-black border ${
             highlight
-              ? "border-yellow-700 bg-[#FFE066] text-gray-900"
-              : "border-gray-200 bg-white text-gray-900"
+              ? "border-yellow-700 bg-[#FFE066] text-ink"
+              : "border-line bg-white text-ink"
           }`}
         >
           H
@@ -173,14 +173,14 @@ export const StickyNote = ({
         onKeyUp={checkFormats}
         onMouseUp={checkFormats}
         data-placeholder="Write your key insight..."
-        className="min-h-[120px] w-full outline-none font-sans text-sm leading-relaxed text-gray-900 cursor-text break-words"
+        className="min-h-[120px] w-full outline-none font-sans text-sm leading-relaxed text-ink cursor-text break-words"
       ></div>
 
       {canDelete && (
         <button
           onClick={() => deleteNote(note.id)}
           aria-label="Delete note"
-          className="absolute top-2 right-2 bg-transparent border-none cursor-pointer text-base text-gray-500 leading-none"
+          className="absolute top-2 right-2 bg-transparent border-none cursor-pointer text-base text-muted leading-none"
         >
           ×
         </button>

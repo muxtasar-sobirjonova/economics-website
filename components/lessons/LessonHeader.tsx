@@ -11,8 +11,8 @@ interface LessonHeaderProps {
 
 export function LessonHeader({ lessonId, activeTab, avatarLetter, hasLesson = true }: LessonHeaderProps) {
   return (
-    <header className="hidden md:flex sticky top-0 z-50 bg-white border-b border-gray-100 items-center justify-between px-10 py-4">
-      <div className="flex items-center gap-6 text-sm font-medium text-gray-500">
+    <header className="hidden md:flex sticky top-0 z-50 bg-white border-b border-line items-center justify-between px-10 py-4">
+      <div className="flex items-center gap-6 text-sm font-medium text-muted">
         <Link href="/roadmap" className="flex items-center hover:text-black transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
           Roadmap
         </Link>
@@ -27,7 +27,7 @@ export function LessonHeader({ lessonId, activeTab, avatarLetter, hasLesson = tr
                 Concepts
               </Link>
               {activeTab === 'concepts' && (
-                <div className="absolute bottom-0 w-full h-[3px] bg-[#111827] rounded-t-md"></div>
+                <div className="absolute bottom-0 w-full h-[3px] bg-[var(--text)] rounded-t-md"></div>
               )}
             </div>
 
@@ -39,7 +39,7 @@ export function LessonHeader({ lessonId, activeTab, avatarLetter, hasLesson = tr
                 Articles
               </Link>
               {activeTab === 'articles' && (
-                <div className="absolute bottom-0 w-full h-[3px] bg-[#111827] rounded-t-md"></div>
+                <div className="absolute bottom-0 w-full h-[3px] bg-[var(--text)] rounded-t-md"></div>
               )}
             </div>
           </>
@@ -53,7 +53,7 @@ export function LessonHeader({ lessonId, activeTab, avatarLetter, hasLesson = tr
             Quizzes
           </Link>
           {activeTab === 'quizzes' && (
-            <div className="absolute bottom-0 w-full h-[3px] bg-[#111827] rounded-t-md"></div>
+            <div className="absolute bottom-0 w-full h-[3px] bg-[var(--text)] rounded-t-md"></div>
           )}
         </div>
 

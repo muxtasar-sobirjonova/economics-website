@@ -45,7 +45,7 @@ export function FaqAccordion() {
         return (
           <div 
             key={index} 
-            className="border border-gray-200 rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-200 hover:shadow-md"
+            className="border border-line rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-200 hover:shadow-md"
           >
             <button
               onClick={() => toggleAccordion(index)}
@@ -62,7 +62,7 @@ export function FaqAccordion() {
                 isOpen ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
               } overflow-hidden`}
             >
-              <div className="p-6 pt-0 text-gray-600 leading-relaxed">
+              <div className="p-6 pt-0 text-muted leading-relaxed">
                 {faq.answer}
               </div>
             </div>

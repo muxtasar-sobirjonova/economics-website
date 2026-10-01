@@ -29,7 +29,7 @@ export const RoadmapUnitCard = ({
         <div className="text-[11px] lg:text-[12px] font-bold tracking-widest text-[#3a2072] uppercase mb-1.5 lg:mb-2 opacity-80">
           CHAPTER {chapterNumber}
         </div>
-        <div className="font-extrabold text-lg lg:text-xl mb-2 lg:mb-3 text-gray-900 leading-[1.25]">
+        <div className="font-extrabold text-lg lg:text-xl mb-2 lg:mb-3 text-ink leading-[1.25]">
           {title}
         </div>
         <div className="text-[13px] lg:text-[14px] text-[#222222] font-medium leading-[1.5]">

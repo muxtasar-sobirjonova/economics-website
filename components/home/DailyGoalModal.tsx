@@ -58,7 +58,7 @@ export const DailyGoalModal = ({ currentGoal }: { currentGoal: number }) => {
               localStorage.setItem('hasSeenDailyGoalModal', 'true');
               setShowDailyGoalModal(false);
             }}
-            className="text-gray-400 hover:text-gray-600 text-xl font-bold p-2"
+            className="text-faint hover:text-muted text-xl font-bold p-2"
           >
             ✕
           </button>
