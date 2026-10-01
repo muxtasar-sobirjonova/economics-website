@@ -170,7 +170,7 @@ export function ProblemEditor({
         <div className="rounded-md border border-line bg-bg-sunk p-s4">
           <span className="text-label uppercase text-faint">How it will look</span>
           <div className="mt-s3">
-            <Rich source={draft.statement} />
+            <Rich source={draft.statement} size="compact" />
           </div>
         </div>
       )}
@@ -301,7 +301,7 @@ export function ProblemEditor({
             How the solution will look
           </span>
           <div className="mt-s3">
-            <Rich source={draft.solution} />
+            <Rich source={draft.solution} size="compact" />
           </div>
         </div>
       )}

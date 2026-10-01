@@ -94,11 +94,22 @@ describe("parseInline — emphasis", () => {
 describe("parseBlocks", () => {
   const first = (src: string): Block => parseBlocks(src)[0];
 
-  it("splits paragraphs on blank lines and keeps line breaks inside one", () => {
+  it("splits paragraphs on blank lines and reflows the wrapping inside one", () => {
+    // A newline inside a paragraph is where the editor wrapped, not where the
+    // author meant to break. Honouring it set every pasted case as a ragged
+    // column.
     const blocks = parseBlocks("Line one\nLine two\n\nSecond paragraph");
     expect(blocks).toHaveLength(2);
     expect(blocks[0].t).toBe("p");
-    expect(textOf((blocks[0] as { v: Inline[] }).v)).toBe("Line one\nLine two");
+    expect(textOf((blocks[0] as { v: Inline[] }).v)).toBe("Line one Line two");
+  });
+
+  it("keeps a break the author asked for", () => {
+    // The usual Markdown signals, so verse and addresses still work.
+    expect(textOf((parseBlocks("Line one  \nLine two")[0] as { v: Inline[] }).v))
+      .toBe("Line one\nLine two");
+    expect(textOf((parseBlocks("Line one\\\nLine two")[0] as { v: Inline[] }).v))
+      .toBe("Line one\nLine two");
   });
 
   it("reads headings", () => {
@@ -118,6 +129,56 @@ describe("parseBlocks", () => {
     expect(b.t).toBe("ol");
     expect(b.start).toBe(3);
     expect(b.items).toHaveLength(2);
+  });
+
+  it("keeps a wrapped item in the item it belongs to", () => {
+    // The bug this guards: a question copied out of a paper wraps, and the
+    // second line used to end the list, orphan itself as a paragraph, and
+    // leave the next number starting a fresh list of one.
+    const blocks = parseBlocks(
+      "1. Artel uchun o'zaro talab elastikligini\n   hisoblang va izohlang.\n" +
+        "2. Quvvat cheklovi MC egri chizig'iga qanday\n   ta'sir qiladi?"
+    );
+
+    expect(blocks).toHaveLength(1);
+    const b = blocks[0] as Extract<Block, { t: "ol" }>;
+    expect(b.items).toHaveLength(2);
+    expect(textOf(b.items[0])).toBe("Artel uchun o'zaro talab elastikligini hisoblang va izohlang.");
+    expect(textOf(b.items[1])).toBe("Quvvat cheklovi MC egri chizig'iga qanday ta'sir qiladi?");
+  });
+
+  it("continues a bulleted item the same way", () => {
+    const b = first("- a long point that runs\n  onto a second line\n- a short one") as Extract<
+      Block,
+      { t: "ul" }
+    >;
+    expect(b.items).toHaveLength(2);
+    expect(textOf(b.items[0])).toBe("a long point that runs onto a second line");
+  });
+
+  it("continues an item that wrapped without being indented", () => {
+    // Text pasted out of a .docx keeps no indentation at all.
+    const b = first("1. the question runs\nstraight on") as Extract<Block, { t: "ol" }>;
+    expect(b.items).toHaveLength(1);
+    expect(textOf(b.items[0])).toBe("the question runs straight on");
+  });
+
+  it("ends the list at a blank line rather than swallowing what follows", () => {
+    const blocks = parseBlocks("1. one\n2. two\n\nA paragraph after it.");
+    expect(blocks.map((b) => b.t)).toEqual(["ol", "p"]);
+    expect(textOf((blocks[1] as { v: Inline[] }).v)).toBe("A paragraph after it.");
+  });
+
+  it("ends the list at anything that starts a block of its own", () => {
+    // A heading, a quote and a table must not be eaten as the rest of an item.
+    expect(parseBlocks("- one\n## Heading").map((b) => b.t)).toEqual(["ul", "h"]);
+    expect(parseBlocks("- one\n> quoted").map((b) => b.t)).toEqual(["ul", "quote"]);
+    expect(parseBlocks("- one\n| A | B |\n| --- | --- |").map((b) => b.t)).toEqual(["ul", "table"]);
+    expect(parseBlocks("- one\n![d](/problems/a.png)").map((b) => b.t)).toEqual(["ul", "image"]);
+  });
+
+  it("switches list when the marker changes", () => {
+    expect(parseBlocks("- bulleted\n1. numbered").map((b) => b.t)).toEqual(["ul", "ol"]);
   });
 
   it("reads a table, with figures right aligned", () => {

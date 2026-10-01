@@ -352,10 +352,17 @@ export function ProblemPlay({ session }: { session: ProblemSession }) {
           </span>
         </div>
 
-        <div className="p-s5 flex flex-col gap-s4">
+        <div className="p-s4 md:p-s5 flex flex-col gap-s4">
           <h2 className="text-h3 font-semibold text-ink">{problem.title}</h2>
 
-          <div onCopy={(e) => watched && e.preventDefault()}>
+          {/* The case sits on its own surface. `--read-bg` was designed for
+              reading and then used by nothing for months; this is what it is
+              for — it separates the thing being read from the chrome around
+              it, which is most of why these screens were hard to read. */}
+          <div
+            onCopy={(e) => watched && e.preventDefault()}
+            className="rounded-md bg-read-bg border border-line px-s3 py-s4 md:px-s5 md:py-s5"
+          >
             <Rich source={problem.statement} />
           </div>
 

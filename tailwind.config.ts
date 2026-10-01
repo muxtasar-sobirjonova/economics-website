@@ -81,6 +81,11 @@ const config: Config = {
         label: ["11px", { lineHeight: "1", letterSpacing: ".10em" }],
         meta: ["12.5px", { lineHeight: "1.45" }],
         ui: ["14.5px", { lineHeight: "1.5" }],
+        // Prose. `ui` is a size for buttons and labels, and a case study set in
+        // it ran to 93 characters a line — half again the readable range. This
+        // is the size the lesson reader already uses, brought into the scale so
+        // every long-form screen can reach it.
+        read: ["17px", { lineHeight: "1.65" }],
         h3: ["19px", { lineHeight: "1.25", letterSpacing: "-.01em" }],
         h2: ["26px", { lineHeight: "1.15", letterSpacing: "-.02em" }],
         h1: ["36px", { lineHeight: "1.08", letterSpacing: "-.025em" }],

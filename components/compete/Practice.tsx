@@ -138,7 +138,7 @@ export function Practice({ overview }: { overview: PracticeOverview }) {
             </span>
           </header>
 
-          <div className="text-ui text-ink leading-relaxed">
+          <div className="rounded-md bg-read-bg border border-line px-s3 py-s4 md:px-s5 md:py-s5">
             <Rich source={phase.problem.statement} />
           </div>
 
@@ -389,7 +389,7 @@ function Marked({
       {result.solution && (
         <section className="flex flex-col gap-s2">
           <h3 className="text-label uppercase text-faint">Worked solution</h3>
-          <div className="text-ui text-ink leading-relaxed">
+          <div className="rounded-md bg-read-bg border border-line px-s3 py-s4 md:px-s4">
             <Rich source={result.solution} />
           </div>
         </section>

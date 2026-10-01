@@ -282,7 +282,7 @@ function AnswerCard({
             The problem
           </summary>
           <div className="mt-s3 pl-s3 border-l-2 border-line">
-            <Rich source={answer.statement} />
+            <Rich source={answer.statement} size="compact" />
           </div>
         </details>
 

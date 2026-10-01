@@ -156,12 +156,32 @@ export function parseInline(text: string): Inline[] {
 }
 
 /** A paragraph's own line breaks are kept: an author who put an equation on its own line meant it. */
+/**
+ * The lines of one paragraph.
+ *
+ * A single newline is a soft wrap, not a line break. Where the text comes from
+ * decides this: a case is written in a document and pasted in, and the editor
+ * that wrapped it put a newline every seventy characters. Honouring those as
+ * breaks set every case as a ragged column — on a phone, lines of thirty
+ * characters that stopped in the middle of a sentence.
+ *
+ * A break that was meant is still a break, by the usual Markdown signal: two
+ * spaces at the end of the line, or a trailing backslash. Addresses and verse
+ * keep working; wrapped prose reflows.
+ */
+const HARD_BREAK = /(?: {2,}|\\)$/;
+
 function parseParagraph(lines: string[]): Inline[] {
   const out: Inline[] = [];
+
   lines.forEach((line, i) => {
-    if (i > 0) out.push({ t: "break" });
-    out.push(...parseInline(line));
+    if (i > 0) {
+      if (HARD_BREAK.test(lines[i - 1])) out.push({ t: "break" });
+      else out.push({ t: "text", v: " " });
+    }
+    out.push(...parseInline(line.replace(HARD_BREAK, "").trimEnd()));
   });
+
   return out;
 }
 
@@ -180,6 +200,67 @@ function splitRow(line: string): string[] {
     .replace(/\|\s*$/, "")
     .split("|")
     .map((c) => c.trim());
+}
+
+/**
+ * Does this line open a block of its own?
+ *
+ * Asked only to find where a list item ends. Everything that is not one of
+ * these, and not blank, is the rest of the sentence the item started.
+ */
+function startsBlock(line: string, next: string | undefined): boolean {
+  const t = line.trim();
+  if (!t) return true;
+
+  return (
+    BULLET.test(t) ||
+    NUMBERED.test(t) ||
+    HEADING.test(t) ||
+    QUOTE.test(t) ||
+    IMAGE_ONLY.test(t) ||
+    t.startsWith("```") ||
+    t.startsWith("$$") ||
+    (t.includes("|") && next !== undefined && TABLE_RULE.test(next.trim()))
+  );
+}
+
+/**
+ * One list, items and all.
+ *
+ * The continuation rule is the whole point of this function. A question
+ * written out of a paper wraps onto a second line, and reading only the lines
+ * that carry a marker used to end the list there: the second half of the
+ * question was orphaned as a paragraph at the wrong indent, and the next
+ * number began a fresh list of one. Three questions became three lists and
+ * three orphans, in every case in the bank written the way people write.
+ */
+function readList(
+  lines: string[],
+  from: number,
+  marker: RegExp,
+  group: number
+): { items: Inline[][]; next: number } {
+  const items: string[] = [];
+  let i = from;
+
+  while (i < lines.length) {
+    const found = lines[i].trim().match(marker);
+
+    if (found) {
+      items.push(found[group]);
+      i++;
+      continue;
+    }
+
+    if (items.length === 0 || startsBlock(lines[i], lines[i + 1])) break;
+
+    // Joined with a space, not a newline: it was one sentence before the
+    // editor wrapped it, and it should read as one again.
+    items[items.length - 1] += " " + lines[i].trim();
+    i++;
+  }
+
+  return { items: items.map(parseInline), next: i };
 }
 
 function alignOf(rule: string): Align[] {
@@ -282,24 +363,18 @@ export function parseBlocks(source: string): Block[] {
 
     if (BULLET.test(trimmed)) {
       flush();
-      const items: Inline[][] = [];
-      while (i < lines.length && BULLET.test(lines[i].trim())) {
-        items.push(parseInline(lines[i].trim().match(BULLET)![1]));
-        i++;
-      }
+      const { items, next } = readList(lines, i, BULLET, 1);
       blocks.push({ t: "ul", items });
+      i = next;
       continue;
     }
 
     if (NUMBERED.test(trimmed)) {
       flush();
       const start = Number(trimmed.match(NUMBERED)![1]);
-      const items: Inline[][] = [];
-      while (i < lines.length && NUMBERED.test(lines[i].trim())) {
-        items.push(parseInline(lines[i].trim().match(NUMBERED)![2]));
-        i++;
-      }
+      const { items, next } = readList(lines, i, NUMBERED, 2);
       blocks.push({ t: "ol", items, start });
+      i = next;
       continue;
     }
 
@@ -314,7 +389,9 @@ export function parseBlocks(source: string): Block[] {
       continue;
     }
 
-    paragraph.push(trimmed);
+    // Leading space only: the trailing two-space break marker has to survive
+    // as far as parseParagraph.
+    paragraph.push(line.trimStart());
     i++;
   }
 

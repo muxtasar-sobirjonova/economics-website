@@ -70,7 +70,7 @@ export function PracticeHistory({ attempts }: { attempts: PastAttempt[] }) {
                     <div className="flex flex-col gap-s1">
                       <span className="text-label uppercase text-faint">Worked solution</span>
                       <div className="text-meta text-ink leading-relaxed">
-                        <Rich source={a.solution} />
+                        <Rich source={a.solution} size="compact" />
                       </div>
                     </div>
                   )}

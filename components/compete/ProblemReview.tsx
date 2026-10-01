@@ -64,7 +64,9 @@ export function ProblemReview({ lines }: { lines: ProblemReviewLine[] }) {
               </div>
 
               <div className="p-s4 flex flex-col gap-s4">
-                <Rich source={line.statement} />
+                <div className="rounded-md bg-read-bg border border-line px-s3 py-s4 md:px-s4">
+                  <Rich source={line.statement} />
+                </div>
 
                 {line.imageUrl && (
                   // eslint-disable-next-line @next/next/no-img-element -- see Rich.

@@ -74,11 +74,22 @@ function Spans({ nodes }: { nodes: Inline[] }) {
   );
 }
 
-function One({ block }: { block: Block }) {
+/**
+ * How big the prose is set.
+ *
+ * `read` is the default because the common case is a student reading a case
+ * study, and a case study is not a user interface. `compact` is for the host
+ * screens, where the job is scanning thirty answers rather than reading one.
+ */
+export type RichSize = "read" | "compact";
+
+function One({ block, size }: { block: Block; size: RichSize }) {
+  const body = size === "read" ? "text-read" : "text-ui leading-relaxed";
+
   switch (block.t) {
     case "p":
       return (
-        <p className="text-ui text-ink leading-relaxed">
+        <p className={`${body} text-ink max-w-[68ch]`}>
           <Spans nodes={block.v} />
         </p>
       );
@@ -89,14 +100,14 @@ function One({ block }: { block: Block }) {
           <Spans nodes={block.v} />
         </h3>
       ) : (
-        <h4 className="text-ui font-semibold text-ink">
+        <h4 className={`${body} font-semibold text-ink`}>
           <Spans nodes={block.v} />
         </h4>
       );
 
     case "ul":
       return (
-        <ul className="list-disc pl-s5 flex flex-col gap-s2 text-ui text-ink">
+        <ul className={`list-disc pl-s5 flex flex-col gap-s2 text-ink max-w-[68ch] ${body}`}>
           {block.items.map((item, i) => (
             <li key={i}>
               <Spans nodes={item} />
@@ -107,7 +118,7 @@ function One({ block }: { block: Block }) {
 
     case "ol":
       return (
-        <ol start={block.start} className="list-decimal pl-s5 flex flex-col gap-s2 text-ui text-ink">
+        <ol start={block.start} className={`list-decimal pl-s5 flex flex-col gap-s2 text-ink max-w-[68ch] ${body}`}>
           {block.items.map((item, i) => (
             <li key={i}>
               <Spans nodes={item} />
@@ -118,7 +129,7 @@ function One({ block }: { block: Block }) {
 
     case "quote":
       return (
-        <blockquote className="border-l-2 border-line pl-s4 text-ui text-muted italic">
+        <blockquote className={`border-l-2 border-line pl-s4 text-muted italic max-w-[68ch] ${body}`}>
           <Spans nodes={block.v} />
         </blockquote>
       );
@@ -151,7 +162,7 @@ function One({ block }: { block: Block }) {
         // The table scrolls, the page does not: a wide table on a phone must
         // never make the whole problem slide sideways.
         <div className="overflow-x-auto rounded-md border border-line">
-          <table className="w-full border-collapse text-meta">
+          <table className={`w-full border-collapse ${size === "read" ? "text-ui" : "text-meta"}`}>
             <thead>
               <tr>
                 {block.head.map((cell, i) => (
@@ -168,11 +179,15 @@ function One({ block }: { block: Block }) {
             </thead>
             <tbody>
               {block.rows.map((row, r) => (
-                <tr key={r}>
+                // The divider belongs to the row. Put on the cell it fell to
+                // the last cell of *every* row instead of the last row, and
+                // each line stopped short of the final column — a ragged rule
+                // under every line of figures.
+                <tr key={r} className="border-b border-line last:border-b-0">
                   {row.map((cell, c) => (
                     <td
                       key={c}
-                      className="px-s3 py-s2 border-b border-line text-ink tabular last:border-b-0"
+                      className="px-s3 py-s2 text-ink tabular"
                       style={{ textAlign: block.align[c] ?? "left" }}
                     >
                       <Spans nodes={cell} />
@@ -188,14 +203,22 @@ function One({ block }: { block: Block }) {
 }
 
 /** A written problem, a solution, or a host's note. */
-export function Rich({ source, className = "" }: { source: string; className?: string }) {
+export function Rich({
+  source,
+  className = "",
+  size = "read",
+}: {
+  source: string;
+  className?: string;
+  size?: RichSize;
+}) {
   const blocks = parseBlocks(source);
   if (blocks.length === 0) return null;
 
   return (
-    <div className={`flex flex-col gap-s3 ${className}`}>
+    <div className={`flex flex-col gap-s4 ${className}`}>
       {blocks.map((block, i) => (
-        <One key={i} block={block} />
+        <One key={i} block={block} size={size} />
       ))}
     </div>
   );
