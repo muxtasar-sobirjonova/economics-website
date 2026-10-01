@@ -835,11 +835,55 @@ speak it.
 `tsconfig.json` now sets `"target": "ES2017"`. Without it tsc assumed ES5 and
 rejected iterating a `Set` or `Map`, which blocked three correct changes.
 
+### Typography and the case screens
+
+`Rich` sets prose at the `read` size — 17px on 1.65 — and holds the text
+blocks to a 68ch measure while tables and diagrams keep the full card. Before
+that, prose had no size in the scale at all and a case ran to 93 characters a
+line in `ui`, a 14.5px size meant for buttons. Host screens that scan rather
+than read pass `size="compact"`.
+
+The case itself sits on `--read-bg`, a reading surface that was defined in
+both themes and used by nothing for months. It is what separates the thing
+being read from the chrome around it.
+
+Two parser rules exist because of where the content comes from — a `.docx`,
+pasted in, wrapped by whatever editor wrote it:
+
+- A list item continues until something else starts a block. Reading only the
+  lines carrying a marker made three questions into three lists of one plus
+  three orphaned paragraphs.
+- A newline inside a paragraph is a soft wrap. Two trailing spaces or a
+  backslash still force a break, so verse and addresses are unharmed.
+
+---
+
+## The design system, and the half of the app still outside it
+
+Tokens live on `:root`, not under `.theme-v2`; that class only switches the
+subtree to Literata. So a page can move its colours onto the system without
+changing a typeface — which is what made the migration safe.
+
+Tailwind's gray scale maps onto the tokens it was standing in for: `gray-900`
+→ `ink`, `700/600/500` → `muted`, `400/300` → `faint`, the border grays →
+`line`, `gray-50` → `surface`, `100/200` → `bg-sunk`.
+
+There is **one** purple. `brand-primary` in `tailwind.config.ts` points at
+`var(--accent)`, so the brand hue is changed in `globals.css` and nowhere
+else. It used to exist four times over, twice as hardcoded hover shades.
+
+904 hardcoded colour values are now 459. What remains is **not** mechanical:
+the old pages give Articles a teal and Notes a blue, while the v2 system has
+its own `--concept` (burnt orange), `--article` (deep teal) and `--quiz`
+(purple), and the two disagree about which colour means what. Reconciling
+them is a decision about the product. The marketing `*Mockup*` components are
+artwork and were left alone deliberately.
+
 ---
 
 ## Tests
 
-385 passing. The pattern is to test **the pure half**: Elo, grading, question
+392 passing. The pattern is to test **the pure half**: Elo, grading, question
 selection, CSV parsing and import validation, SQL escaping, review building,
 calibration thresholds, permissions, join codes, competition setup, daily
 question selection, the CSS token guard, reading a written answer, validating a
