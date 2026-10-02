@@ -22,18 +22,18 @@ export function AuthStatus() {
     const authName = session.user.name || session.user.email || "Student";
     
     return (
-      <div className="flex items-center px-3 py-2.5 gap-3 text-white group">
-        <div className="w-9 h-9 rounded-full bg-brand-primary flex items-center justify-center text-white font-[500] text-sm shrink-0 border-2 border-white/20">
+      <div className="flex items-center px-1.5 py-1 gap-3 text-white group">
+        <div className="w-9 h-9 rounded-full bg-[var(--rail-tile-hover)] flex items-center justify-center text-white font-semibold text-sm shrink-0 border border-rail-line">
           {authName.charAt(0).toUpperCase()}
         </div>
         <div className="flex flex-col overflow-hidden w-full">
           <span className="text-sm font-bold truncate">{authName}</span>
-          <button 
+          <button
             onClick={() => signOut({ callbackUrl: '/' })}
-            className="text-[11px] text-gray-200 hover:text-white flex items-center gap-1 transition-colors mt-0.5 text-left"
+            className="text-[11px] text-rail-dim hover:text-white flex items-center gap-1 transition-colors mt-0.5 text-left"
           >
             <IconLogout size={12} />
-            Sign Out
+            Sign out
           </button>
         </div>
       </div>

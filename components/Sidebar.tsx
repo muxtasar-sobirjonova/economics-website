@@ -48,20 +48,20 @@ const NavItem = ({ item, pathname, setIsOpen, tone }: NavItemProps) => {
       href={item.href}
       onClick={() => setIsOpen(false)}
       aria-current={isActive ? "page" : undefined}
-      className={`flex items-center gap-3 py-1.5 pl-1.5 pr-3 text-sm rounded-xl transition-all duration-150 active:scale-[0.98] ${
+      className={`flex items-center gap-3 py-1.5 pl-1.5 pr-3 min-h-[48px] text-sm rounded-full transition-all duration-150 active:scale-[0.98] ${
         isActive
-          ? "bg-white text-brand-800 font-bold shadow-[0_2px_10px_rgba(0,0,0,.18)]"
-          : "text-white font-medium hover:bg-[rgba(255,255,255,.09)] hover:translate-x-[3px]"
+          ? "bg-white text-brand-800 font-bold shadow-[0_4px_14px_rgba(0,0,0,.22)]"
+          : "text-white font-medium hover:bg-[var(--rail-tile)] hover:translate-x-[3px]"
       }`}
     >
       {/* The icon sits on its own tile, which takes the section's colour when
           the page is open — the same tone the page itself uses. */}
       <span
-        className="w-8 h-8 rounded-lg grid place-items-center shrink-0 transition-colors"
+        className="w-9 h-9 rounded-full grid place-items-center shrink-0 transition-colors"
         style={
           isActive
-            ? { background: `var(--${tone}-soft)`, color: `var(--${tone})` }
-            : { background: "rgba(255,255,255,.10)", color: "#fff" }
+            ? { background: `var(--${tone})`, color: "#fff" }
+            : { background: "var(--rail-tile)", color: "#fff" }
         }
       >
         <Icon
@@ -74,9 +74,20 @@ const NavItem = ({ item, pathname, setIsOpen, tone }: NavItemProps) => {
       <span className="truncate">{item.name}</span>
 
       {item.badge && (
-        <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full font-bold bg-[rgba(255,255,255,.16)]">
+        <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full font-bold bg-[var(--rail-tile-hover)]">
           {item.badge}
         </span>
+      )}
+
+      {/* A dot on the open row. The white pill already says which page you are
+          on; this says it again at the end of the line, where the eye lands
+          when it is scanning down the rail rather than reading it. */}
+      {isActive && !item.badge && (
+        <span
+          className="ml-auto w-2 h-2 rounded-full shrink-0"
+          style={{ background: `var(--${tone})` }}
+          aria-hidden
+        />
       )}
     </Link>
   );
@@ -84,10 +95,13 @@ const NavItem = ({ item, pathname, setIsOpen, tone }: NavItemProps) => {
 
 /** A section label, its tone dot and the rule that carries it across. */
 const SectionLabel = ({ children, tone }: { children: React.ReactNode; tone: string }) => (
-  <h3 className="flex items-center gap-2.5 pl-1.5 text-[11px] font-[700] tracking-[0.1em] uppercase mb-3 text-[rgba(255,255,255,.72)]">
+  // The dot is not decoration: it is the colour that section's own pages are
+  // set in, so the rail says where you are about to go as well as where you
+  // are. The rule that used to run past it is gone — with the sections spaced
+  // this far apart it was holding nothing together.
+  <h3 className="flex items-center gap-2.5 pl-3 text-[11px] font-[700] tracking-[0.12em] uppercase mb-3 text-rail-dim">
     <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `var(--${tone})` }} aria-hidden />
     {children}
-    <span className="h-px flex-1 bg-[rgba(255,255,255,.16)]" aria-hidden />
   </h3>
 );
 
@@ -140,9 +154,29 @@ export default function Sidebar() {
   ];
 
   return (
-    <aside className="app-chrome hidden md:flex w-[248px] text-white flex-col h-full shrink-0 group border-r border-[rgba(0,0,0,.25)] relative z-40 bg-gradient-to-b from-[#5A4F94] via-[#4C4380] to-[#3A3163]">
+    // The rail floats: a rounded panel with the page showing around it, rather
+    // than a slab welded to the window edge. `h-full` is gone on purpose — the
+    // flex row stretches it, and a height of 100% plus margins overflows.
+    <aside
+      className="app-chrome hidden md:flex w-[260px] m-s3 mr-0 rounded-xl text-white flex-col shrink-0 group relative z-40 overflow-hidden shadow-sh3"
+      style={{
+        background:
+          "linear-gradient(170deg, var(--rail-top) 0%, var(--rail-mid) 45%, var(--rail-bottom) 100%)",
+      }}
+    >
+      {/* Two soft lights behind everything, so a long flat panel has somewhere
+          for the eye to rest. Pointer-events off: they are paint, not surface. */}
+      <div
+        className="absolute inset-0 pointer-events-none"
+        aria-hidden
+        style={{
+          background:
+            "radial-gradient(420px 320px at 85% -5%, var(--rail-glow), transparent 70%), radial-gradient(360px 300px at 0% 72%, var(--rail-glow), transparent 70%)",
+        }}
+      />
+
       {/* Scrollable area */}
-      <div className="flex-1 overflow-y-auto overflow-x-hidden py-7 px-5 flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+      <div className="relative flex-1 overflow-y-auto overflow-x-hidden py-7 px-4 flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {/* Logo Header */}
         <div className="flex items-center gap-4 mb-8 relative px-1">
           {/* No white tile and no padding behind it: the mark is already a
@@ -164,7 +198,7 @@ export default function Sidebar() {
         </div>
 
         {/* Dashboard Section */}
-        <div className="mb-7">
+        <div className="mb-6">
           <SectionLabel tone="quiz">Dashboard</SectionLabel>
           <nav className="space-y-1">
             {dashboardItems.map((item) => (
@@ -174,7 +208,7 @@ export default function Sidebar() {
         </div>
 
         {/* Learn Section */}
-        <div className="mb-7">
+        <div className="mb-6">
           <SectionLabel tone="article">Learn</SectionLabel>
           <nav className="space-y-1">
             {learnItems.map((item) => (
@@ -194,11 +228,17 @@ export default function Sidebar() {
         </div>
 
         {/* The panel ends on a horizon: the city this course is about building. */}
-        <div className="mt-auto -mx-5 pt-10">
+        <div className="mt-auto -mx-4 pt-10">
           <SidebarSkyline />
         </div>
+      </div>
 
-        <div className="pt-4 border-t border-[rgba(255,255,255,.14)]">
+      {/* Outside the scrolling area on purpose. Twelve rows and a skyline
+          already overflow a short laptop, and signing out is not something to
+          go looking for. Signing out used to be a grey line under a rule; on
+          its own card it is something you can see and aim at. */}
+      <div className="relative shrink-0 px-4 pb-4 pt-2">
+        <div className="rounded-xl border border-rail-line bg-[var(--rail-tile)] px-2 py-1.5">
           <AuthStatus />
         </div>
       </div>

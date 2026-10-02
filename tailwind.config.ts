@@ -47,6 +47,8 @@ const config: Config = {
         /* ── Design-system v2. Added alongside the names above so pages can
            migrate one at a time; nothing here overrides an existing name. ── */
         bg: "var(--bg)",
+        "rail-dim": "var(--rail-dim)",
+        "rail-line": "var(--rail-line)",
         "bg-sunk": "var(--bg-sunk)",
         surface: "var(--surface)",
         raised: "var(--raised)",

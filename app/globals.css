@@ -301,6 +301,21 @@ body {
   --danger:        #B23A2E;  --danger-soft:  #F7E2DE;
   --reward:        #A97711;  --reward-soft:  #F7ECD2;
 
+  /* The navigation rail.
+     Its own tokens, and the same ones in both themes on purpose: this is the
+     one surface that stays dark whatever the page does. A rail that went light
+     with the theme would take the only piece of brand colour on screen with
+     it. Before this the three gradient stops were hardcoded in the component,
+     which is how the rest of the app came to have four purples. */
+  --rail-top:    #5544B5;
+  --rail-mid:    #43369B;
+  --rail-bottom: #2E2566;
+  --rail-dim:    rgba(255, 255, 255, .72);
+  --rail-tile:   rgba(255, 255, 255, .10);
+  --rail-tile-hover: rgba(255, 255, 255, .16);
+  --rail-line:   rgba(255, 255, 255, .16);
+  --rail-glow:   rgba(255, 255, 255, .06);
+
   --sh1: 0 1px 2px rgba(27, 29, 42, .06);
   --sh2: 0 4px 14px rgba(27, 29, 42, .09);
   --sh3: 0 18px 40px rgba(27, 29, 42, .14);
