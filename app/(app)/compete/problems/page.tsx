@@ -1,12 +1,11 @@
 import { Metadata } from "next";
-import Link from "next/link";
 import { auth } from "@/auth";
 import { redirect, notFound } from "next/navigation";
 import { StaffPermission } from "@prisma/client";
 import { actorFor } from "@/lib/staff";
 import { can } from "@/lib/permissions";
 import { listProblemsSafe } from "@/lib/compete/problemService";
-import { ProblemBank } from "@/components/compete/ProblemBank";
+import { ProblemWorkspace } from "@/components/compete/ProblemWorkspace";
 
 export const metadata: Metadata = { title: "Problems | That's So Econ" };
 export const dynamic = "force-dynamic";
@@ -28,37 +27,18 @@ export default async function ProblemsPage() {
   const mayHost = can(actor, StaffPermission.HOST_COMPETITIONS);
   const { problems, available } = await listProblemsSafe(true);
 
-  const active = problems.filter((p) => p.active);
-  const marks = active.reduce((sum, p) => sum + p.maxPoints, 0);
-
   return (
-    <div className="theme-v2 min-h-screen w-full flex flex-col bg-bg bg-sky">
-      <div className="w-full max-w-[880px] mx-auto px-s4 md:px-s5 py-s5 md:py-s6 flex flex-col gap-s5">
-        <header>
-          <Link
-            href="/compete"
-            className="font-mono text-label uppercase text-accent hover:text-accent-strong"
-          >
-            ← Competitions
-          </Link>
-          <h1 className="text-h1 font-semibold text-ink mt-s2 pb-[3px]">Problems</h1>
-          <p className="text-meta text-muted mt-s2 max-w-[58ch]">
-            Written problems, out of a paper. {active.length} live, worth {marks}{" "}
-            marks between them. Rooms are opened from{" "}
-            <Link href="/compete" className="text-accent hover:text-accent-strong">
-              the competitions page
-            </Link>
-            ; this is where they are written and retired.
-          </p>
-        </header>
-
-        <ProblemBank
-          problems={problems}
-          mayHost={mayHost}
-          mayWrite
-          available={available}
-        />
-      </div>
+    // Full bleed and full height: this is a workspace, not an article. The
+    // page chrome is the workspace's own top bar, and the two panels do their
+    // own scrolling. On a phone the shell has to make room for the header and
+    // the bottom nav, which the app layout pads for but cannot size against.
+    <div className="h-[calc(100dvh-9rem)] md:h-full">
+      <ProblemWorkspace
+        problems={problems}
+        mayHost={mayHost}
+        mayWrite
+        available={available}
+      />
     </div>
   );
 }
