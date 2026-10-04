@@ -40,8 +40,8 @@ export default async function BankPage() {
     <div className="theme-v2 min-h-screen w-full flex flex-col bg-bg bg-sky">
       <div className="w-full max-w-[1000px] mx-auto px-s4 md:px-s5 py-s5 md:py-s6 flex flex-col gap-s5">
         <header>
-          <Link href="/duel" className="font-mono text-label uppercase text-accent hover:text-accent-strong">
-            ← Duel
+          <Link href="/practice" className="font-mono text-label uppercase text-accent hover:text-accent-strong">
+            ← Practice
           </Link>
           <h1 className="text-h1 font-semibold text-ink mt-s2 pb-[3px]">Question bank</h1>
           <p className="text-meta text-muted mt-s2 max-w-[62ch]">

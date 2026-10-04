@@ -35,7 +35,7 @@ export async function setQuestionActiveAction(
 
   try {
     await prisma.duelQuestion.update({ where: { id }, data: { active: Boolean(active) } });
-    revalidatePath("/duel/bank");
+    revalidatePath("/practice/bank");
     return { ok: true };
   } catch (e) {
     console.error("setQuestionActive failed", e);
@@ -96,7 +96,7 @@ export async function saveQuestionAction(
           explanation: q.explanation ?? undefined,
         },
       });
-      revalidatePath("/duel/bank");
+      revalidatePath("/practice/bank");
       return { ok: true, id: draft.id };
     }
 
@@ -110,7 +110,7 @@ export async function saveQuestionAction(
         explanation: q.explanation ?? undefined,
       },
     });
-    revalidatePath("/duel/bank");
+    revalidatePath("/practice/bank");
     return { ok: true, id: q.id };
   } catch (e) {
     console.error("saveQuestion failed", e);
@@ -173,7 +173,7 @@ export async function importQuestionsAction(
     return { ok: false, error: "Could not save those questions." };
   }
 
-  revalidatePath("/duel/bank");
+  revalidatePath("/practice/bank");
   revalidatePath("/compete");
 
   return {

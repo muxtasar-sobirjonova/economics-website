@@ -81,6 +81,16 @@ export interface StartOptions {
   faceRunId?: string;
   /** Prefer a set this particular player is waiting on. */
   rematchUserId?: string;
+  /**
+   * False for a practice round: dealt a set of its own, never paired, and no
+   * rating moves either way. It is still written to DuelRun, so the questions
+   * count as seen and cannot come back in a rated duel.
+   */
+  rated?: boolean;
+  /** How many questions. Rated duels are always QUESTIONS_PER_DUEL. */
+  count?: number;
+  /** Narrow the draw to one topic. Practice only. */
+  topic?: string | null;
 }
 
 export async function startDuel(
@@ -89,8 +99,12 @@ export async function startDuel(
 ): Promise<StartedDuel> {
   const rating = await ensureRating(userId);
 
+  const rated = options.rated !== false;
+
+  // Resume only a run of the kind being asked for. A half-finished practice
+  // round must not be handed back as a rated duel, or the other way round.
   const existing = await prisma.duelRun.findFirst({
-    where: { userId, finishedAt: null },
+    where: { userId, finishedAt: null, rated },
     orderBy: { startedAt: "desc" },
     select: { id: true, setId: true },
   });
@@ -112,18 +126,18 @@ export async function startDuel(
     facingOpponent = true;
     resumed = true;
   } else {
-    const invited = options.faceRunId
+    const invited = rated && options.faceRunId
       ? await findChallenge(userId, options.faceRunId)
       : null;
 
     // A rematch is a preference, not a promise: if they have nothing waiting
     // you still get a duel, and the screen says so rather than refusing.
     const rematch =
-      !invited && options.rematchUserId
+      rated && !invited && options.rematchUserId
         ? await findSetWaitingFrom(userId, options.rematchUserId)
         : null;
 
-    const live = invited || rematch ? null : await findLiveSet(userId);
+    const live = !rated || invited || rematch ? null : await findLiveSet(userId);
 
     if (invited) {
       setId = invited.setId;
@@ -141,8 +155,9 @@ export async function startDuel(
       facingOpponent = true;
       liveOpponentName = live.name;
     } else {
-      const waiting = await prisma.duelRun.findFirst({
+      const waiting = !rated ? null : await prisma.duelRun.findFirst({
         where: {
+          rated: true,
           status: DuelRunStatus.OPEN,
           finishedAt: { not: null },
           userId: { not: userId },
@@ -169,7 +184,13 @@ export async function startDuel(
             select: { questionId: true },
             distinct: ["questionId"],
           }),
-          prisma.duelQuestion.findMany({ where: { active: true }, select: { id: true } }),
+          prisma.duelQuestion.findMany({
+            where: {
+              active: true,
+              ...(rated || !options.topic ? {} : { topic: options.topic }),
+            },
+            select: { id: true },
+          }),
         ]);
 
         const seen: string[] = [];
@@ -179,7 +200,7 @@ export async function startDuel(
         const picked = pickQuestionIds(
           active.map((q) => q.id),
           seen,
-          QUESTIONS_PER_DUEL
+          rated ? QUESTIONS_PER_DUEL : Math.max(1, Math.min(options.count ?? QUESTIONS_PER_DUEL, 40))
         );
         if (picked.ids.length === 0) {
           throw new Error("The question bank is empty.");
@@ -192,7 +213,7 @@ export async function startDuel(
     }
 
     const run = await prisma.duelRun.create({
-      data: { userId, setId, ratingBefore: rating.rating },
+      data: { userId, setId, ratingBefore: rating.rating, rated },
       select: { id: true },
     });
     runId = run.id;
@@ -223,6 +244,7 @@ async function findSetWaitingFrom(userId: string, opponentId: string) {
   const run = await prisma.duelRun.findFirst({
     where: {
       userId: opponentId,
+      rated: true,
       status: DuelRunStatus.OPEN,
       finishedAt: { not: null },
       set: { runs: { none: { userId } } },
@@ -249,6 +271,7 @@ async function findLiveSet(userId: string) {
   const candidate = await prisma.duelRun.findFirst({
     where: {
       finishedAt: null,
+      rated: true,
       status: DuelRunStatus.OPEN,
       userId: { not: userId },
       startedAt: { gt: new Date(Date.now() - LIVE_WINDOW_MS) },
@@ -280,6 +303,7 @@ async function loadOpponentPace(setId: string, userId: string): Promise<Opponent
     where: {
       setId,
       userId: { not: userId },
+      rated: true,
       finishedAt: { not: null },
       status: DuelRunStatus.OPEN,
     },
@@ -318,6 +342,7 @@ async function findChallenge(userId: string, runId: string) {
       setId: true,
       userId: true,
       status: true,
+      rated: true,
       finishedAt: true,
       user: { select: { name: true } },
       set: { select: { runs: { where: { userId }, select: { id: true } } } },
@@ -326,6 +351,7 @@ async function findChallenge(userId: string, runId: string) {
 
   if (!run) return null;
   if (run.userId === userId) return null;              // your own link
+  if (!run.rated) return null;                         // a practice round
   if (!run.finishedAt) return null;                    // they have not played it
   if (run.status !== DuelRunStatus.OPEN) return null;  // already settled
   if (run.set.runs.length > 0) return null;            // you have faced this set
@@ -396,6 +422,7 @@ export async function submitDuel(
       setId: true,
       finishedAt: true,
       startedAt: true,
+      rated: true,
       set: { select: { questionIds: true } },
     },
   });
@@ -435,7 +462,7 @@ export async function submitDuel(
       });
     }
 
-    await settle(tx, runId, run.setId, userId);
+    if (run.rated) await settle(tx, runId, run.setId, userId);
   });
 
   return readOutcome(userId, runId);
@@ -451,6 +478,7 @@ async function settle(
   const opponent = await tx.duelRun.findFirst({
     where: {
       setId,
+      rated: true,
       status: DuelRunStatus.OPEN,
       finishedAt: { not: null },
       userId: { not: userId },
@@ -740,6 +768,7 @@ export async function getRatingHistory(userId: string, limit = 40): Promise<Rati
 export async function countLivePlayers(excludeUserId: string): Promise<number> {
   return prisma.duelRun.count({
     where: {
+      rated: true,
       finishedAt: null,
       status: DuelRunStatus.OPEN,
       userId: { not: excludeUserId },
@@ -752,6 +781,7 @@ export async function countLivePlayers(excludeUserId: string): Promise<number> {
 export async function countWaitingSets(excludeUserId: string): Promise<number> {
   return prisma.duelRun.count({
     where: {
+      rated: true,
       status: DuelRunStatus.OPEN,
       finishedAt: { not: null },
       userId: { not: excludeUserId },

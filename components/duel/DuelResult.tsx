@@ -47,7 +47,7 @@ export function DuelResult({
             {s && onRematch ? "Someone else" : "Play again"}
           </button>
           <Link
-            href="/duel"
+            href="/practice"
             className="inline-flex items-center min-h-[48px] px-s5 rounded-md border border-line text-ui text-muted hover:text-ink transition-colors"
           >
             Back to the ladder

@@ -1,6 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
+import { parseSetup, isRated, lengthOf } from "@/lib/practice/session";
 import {
   startDuel,
   submitDuel,
@@ -23,10 +24,16 @@ export type ActionResult<T> = { ok: true; data: T } | { ok: false; error: string
 
 export async function startDuelAction(
   faceRunId?: string,
-  rematchUserId?: string
+  rematchUserId?: string,
+  rawSetup?: unknown
 ): Promise<ActionResult<StartedDuel>> {
   const session = await auth();
   if (!session?.user?.id) return { ok: false, error: "Sign in to play." };
+
+  // Parsed rather than trusted: this is a public endpoint and one of the
+  // settings on it decides whether a rating moves. Anything unrecognised
+  // falls back to the unrated default.
+  const setup = parseSetup(rawSetup);
 
   try {
     // An unusable challenge id is ignored by the engine, not rejected here —
@@ -37,6 +44,9 @@ export async function startDuelAction(
         faceRunId: typeof faceRunId === "string" && faceRunId ? faceRunId : undefined,
         rematchUserId:
           typeof rematchUserId === "string" && rematchUserId ? rematchUserId : undefined,
+        rated: isRated(setup),
+        count: lengthOf(setup),
+        topic: setup.topic,
       }),
     };
   } catch (e) {

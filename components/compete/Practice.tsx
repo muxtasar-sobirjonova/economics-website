@@ -32,8 +32,19 @@ const EMPTY_COPY: Record<"topic-done" | "all-done" | "ai-spent", string> = {
     "Today's marked answers are used up. Problems with an answer key are still open, and the rest come back tomorrow.",
 };
 
-export function Practice({ overview }: { overview: PracticeOverview }) {
-  const [topic, setTopic] = useState<string | null>(null);
+export function Practice({
+  overview,
+  lockedTopic,
+}: {
+  overview: PracticeOverview;
+  /**
+   * Set by the session deck. When it is given, this screen does not show a
+   * topic bar of its own — two places to change the same thing is how a player
+   * ends up with a session they did not ask for.
+   */
+  lockedTopic?: string | null;
+}) {
+  const [topic, setTopic] = useState<string | null>(lockedTopic ?? null);
   const [phase, setPhase] = useState<Phase>({ at: "idle" });
   const [answer, setAnswer] = useState("");
   const [error, setError] = useState<string | null>(null);
@@ -83,15 +94,17 @@ export function Practice({ overview }: { overview: PracticeOverview }) {
 
   return (
     <div ref={top} className="flex flex-col gap-s5 scroll-mt-s4">
-      <TopicBar
-        overview={overview}
-        topic={topic}
-        onPick={(t) => {
-          setTopic(t);
-          if (phase.at !== "working") serve(t);
-        }}
-        working={phase.at === "working"}
-      />
+      {lockedTopic === undefined && (
+        <TopicBar
+          overview={overview}
+          topic={topic}
+          onPick={(t) => {
+            setTopic(t);
+            if (phase.at !== "working") serve(t);
+          }}
+          working={phase.at === "working"}
+        />
+      )}
 
       {error && (
         <p

@@ -12,7 +12,6 @@ import {
   IconNotes,
   IconBriefcase,
   IconMicroscope,
-  IconSwords,
   IconConfetti,
   IconPencil,
 } from "@tabler/icons-react";
@@ -26,7 +25,6 @@ export function MobileBottomNav() {
     { name: "Home", href: "/home", icon: IconHome },
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
     { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
-    { name: "Duel", href: "/duel", matchHref: "/duel", icon: IconSwords },
     { name: "Compete", href: "/compete", matchHref: "/compete", icon: IconConfetti },
     { name: "Practice", href: "/practice", matchHref: "/practice", icon: IconPencil },
     // Same order as the sidebar groups: dashboard, then learn, then opportunities.

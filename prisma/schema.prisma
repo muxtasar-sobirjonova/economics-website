@@ -421,9 +421,18 @@ model DuelRun {
   /// The player's rating when they sat down. Not used to settle the duel —
   /// that reads live ratings — but it is the record calibration needs later.
   ratingBefore Int
-  status       DuelRunStatus @default(OPEN)
-  startedAt    DateTime      @default(now())
-  finishedAt   DateTime?
+
+  /// Whether this run can settle a duel and move a rating.
+  ///
+  /// False for a practice round. A practice run is still written here, and
+  /// deliberately: the set of questions a player has already met is read off
+  /// this table, so a question answered in practice counts as seen and cannot
+  /// come back in a rated duel. Every query that looks for an opponent filters
+  /// on this; the one that builds the seen set does not.
+  rated      Boolean       @default(true)
+  status     DuelRunStatus @default(OPEN)
+  startedAt  DateTime      @default(now())
+  finishedAt DateTime?
 
   duelsAsA Duel[] @relation("DuelRunA")
   duelsAsB Duel[] @relation("DuelRunB")
