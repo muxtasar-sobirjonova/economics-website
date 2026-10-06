@@ -25,7 +25,7 @@ export function RecentDuels({ duels }: { duels: RecentDuel[] }) {
       {duels.map((d) => (
         <Link
           key={d.runId}
-          href={`/duel/${d.runId}`}
+          href={`/practice/${d.runId}`}
           className="grid grid-cols-[auto_1fr_auto] gap-s3 items-center px-s4 py-s3 border-t border-line hover:bg-bg-sunk transition-colors"
         >
           <span

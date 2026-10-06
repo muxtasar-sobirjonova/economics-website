@@ -25,8 +25,8 @@ export function MobileBottomNav() {
     { name: "Home", href: "/home", icon: IconHome },
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
     { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
-    { name: "Compete", href: "/compete", matchHref: "/compete", icon: IconConfetti },
     { name: "Practice", href: "/practice", matchHref: "/practice", icon: IconPencil },
+    { name: "Competitions", href: "/compete", matchHref: "/compete", icon: IconConfetti },
     // Same order as the sidebar groups: dashboard, then learn, then opportunities.
     { name: "Concepts", href: `/lessons/${currentLessonId}/concepts`, matchHref: "/concepts", icon: IconBulb },
     { name: "Articles", href: `/lessons/${currentLessonId}/articles`, matchHref: "/articles", icon: IconArticle },

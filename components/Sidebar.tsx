@@ -113,8 +113,14 @@ export default function Sidebar() {
     { name: "Home", href: "/home", icon: IconHome },
     { name: "Roadmap", href: "/roadmap", icon: IconMap },
     { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
-    { name: "Compete", href: "/compete", matchHref: "/compete", icon: IconConfetti },
+  ];
+
+  /* The two halves of the same thing: a room somebody hosts, and the same
+     problems on your own. They were sitting among Home and Roadmap, where
+     neither of them said what it was for. */
+  const caseItems = [
     { name: "Practice", href: "/practice", matchHref: "/practice", icon: IconPencil },
+    { name: "Competitions", href: "/compete", matchHref: "/compete", icon: IconConfetti },
   ];
 
   /* Directories of people to reach outside the course — they answer a
@@ -177,16 +183,17 @@ export default function Sidebar() {
       <div className="relative flex-1 overflow-y-auto overflow-x-hidden py-7 px-4 flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
         {/* Logo Header */}
         <div className="flex items-center gap-4 mb-8 relative px-1">
-          {/* No white tile and no padding behind it: the mark is already a
-              rounded square of its own, and a frame around a frame reads as a
-              black sticker stuck on a white one. */}
-          <div className="shrink-0 w-11 h-11 rounded-xl shadow-sm overflow-hidden">
+          {/* The mark is a bare purple arrow on nothing, so it needs a light
+              tile to sit on — on the rail it would otherwise be a purple shape
+              on a purple panel. `contain`, not `cover`: the arrow is the whole
+              logo and cropping it crops the brand. */}
+          <div className="shrink-0 w-11 h-11 rounded-xl shadow-sm overflow-hidden bg-white p-1.5 grid place-items-center">
             <img
               src="/favicon.png"
               alt="That's So Econ"
               width={44}
               height={44}
-              className="w-full h-full object-cover"
+              className="w-full h-full object-contain"
             />
           </div>
           <div className="flex flex-col justify-center">
@@ -201,6 +208,16 @@ export default function Sidebar() {
           <nav className="space-y-1">
             {dashboardItems.map((item) => (
               <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} tone="quiz" />
+            ))}
+          </nav>
+        </div>
+
+        {/* Case Competitions */}
+        <div className="mb-6">
+          <SectionLabel tone="concept">Case Competitions</SectionLabel>
+          <nav className="space-y-1">
+            {caseItems.map((item) => (
+              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} tone="concept" />
             ))}
           </nav>
         </div>

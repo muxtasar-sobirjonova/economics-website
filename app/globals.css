@@ -285,9 +285,12 @@ body {
   --muted:         #5C6072;
   --faint:         #8A8FA3;
 
-  --accent:        #6E5FC4;
-  --accent-strong: #554896;
-  --accent-soft:   #EAE7FB;
+  /* The brand purple. #7B6FE7 is the one the team settled on and the one the
+     Continue Learning button has always been; the whole app follows this
+     token, so the hue is changed here and nowhere else. */
+  --accent:        #7B6FE7;
+  --accent-strong: #5A4FBD;
+  --accent-soft:   #F3F0FF;
   --on-accent:     #FFFFFF;
 
   --read-bg:       #F7F3EC;

@@ -2,7 +2,6 @@
 
 import { useState, useEffect, useMemo } from 'react';
 import Link from 'next/link';
-import { Lightbulb, BookOpen, Brain } from "lucide-react";
 import { IconCheck, IconX } from "@tabler/icons-react";
 
 export const DashboardHero = ({ 
@@ -76,21 +75,6 @@ export const DashboardHero = ({
           </Link>
         </div>
 
-        {/* Features Row */}
-        <div className="flex flex-wrap items-center gap-2 lg:gap-6">
-          <div className="flex items-center gap-2 text-slate-900 text-[13px] font-bold">
-            <Lightbulb size={16} color="#EAB308" /> Concepts
-          </div>
-          <div className="flex items-center gap-2 text-slate-900 text-[13px] font-bold">
-            <BookOpen size={16} color="#3B82F6" /> Articles
-          </div>
-          <div className="flex items-center gap-2 text-slate-900 text-[13px] font-bold">
-            <Brain size={16} color="#8B5CF6" /> Quizzes
-          </div>
-          <div className="flex items-center gap-2 text-slate-900 text-[13px] font-bold">
-            <span className="text-[15px]">📝</span> My Notes
-          </div>
-        </div>
       </div>
 
       {/* Right col: This Week Card */}
