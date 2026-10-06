@@ -9,21 +9,25 @@ import { can } from "@/lib/permissions";
 import { listCompetitions } from "@/lib/compete/service";
 import { listProblemsSafe } from "@/lib/compete/problemService";
 import { HostPanel } from "@/components/compete/HostPanel";
-import { JoinByCode } from "@/components/compete/JoinByCode";
+import { JoinRoom } from "@/components/compete/JoinRoom";
+import { RoomCards } from "@/components/compete/RoomCards";
+import { PlayedResults } from "@/components/compete/PlayedResults";
 
 export const metadata: Metadata = {
-  title: "Competitions | That's So Econ",
-  description: "Open a room, share a code, and everyone answers the same questions.",
+  title: "Case Competitions | That's So Econ",
+  description: "Join a live room with a code. Everyone solves the same problems.",
 };
 
 export const dynamic = "force-dynamic";
 
-const STATUS_COPY = {
-  LOBBY: { label: "Waiting", tone: "reward" },
-  RUNNING: { label: "Playing", tone: "success" },
-  ENDED: { label: "Finished", tone: "muted" },
-} as const;
-
+/**
+ * The competitions page.
+ *
+ * Three questions in the order they get asked: have you been given a code,
+ * is anything open, and how did the ones you sat go. The host's own tools sit
+ * between the first two and are not there at all for anyone who cannot open a
+ * room.
+ */
 export default async function CompetePage() {
   const session = await auth();
   if (!session?.user?.id) redirect("/login");
@@ -44,41 +48,37 @@ export default async function CompetePage() {
           _count: { _all: true },
         })
       : Promise.resolve([]),
-    runsRooms
-      ? listProblemsSafe()
-      : Promise.resolve({ problems: [], available: true }),
+    runsRooms ? listProblemsSafe() : Promise.resolve({ problems: [], available: true }),
   ]);
 
   const topics = topicRows
     .map((t) => ({ name: t.topic, count: t._count._all }))
     .sort((a, b) => b.count - a.count);
 
+  const liveRooms = open.filter((c) => c.status === "LOBBY").length;
+
   return (
     <div className="theme-v2 min-h-screen w-full flex flex-col bg-bg bg-sky">
-      <div className="w-full max-w-[880px] mx-auto px-s4 md:px-s5 py-s5 md:py-s6 flex flex-col gap-s5">
+      <div className="w-full max-w-[880px] mx-auto px-s4 md:px-s5 py-s5 md:py-s6 flex flex-col gap-s6">
         <header>
-          <span className="font-mono text-label uppercase text-faint">
-            Rooms · unrated
-          </span>
-          <h1 className="text-h1 font-semibold text-ink mt-s2 pb-[3px]">Competitions</h1>
-          <p className="text-meta text-muted mt-s2 max-w-[56ch]">
-            Everyone in the room answers the same questions and the standings
-            move as they go. Nothing here touches your duel rating, so a host
-            can set whatever length they like.
-          </p>
-          <p className="text-meta text-muted mt-s2 max-w-[56ch]">
-            No room open?{" "}
-            <Link href="/practice" className="text-accent hover:text-accent-strong">
-              Work the problem bank on your own
-            </Link>{" "}
-            — no clock, marked as soon as you answer.
+          <h1 className="text-h1 font-bold tracking-tight text-ink pb-[3px]">
+            Case Competitions
+          </h1>
+          <p className="text-meta text-muted mt-s2 max-w-[60ch]">
+            Join a live room with a code. Everyone answers the same problems and
+            the ranking moves as they go.
           </p>
         </header>
 
-        <section className="rounded-lg border border-line bg-surface shadow-sh1 p-s5">
-          <h2 className="text-label uppercase text-faint mb-s3">Have a code?</h2>
-          <JoinByCode />
-        </section>
+        <JoinRoom liveRooms={liveRooms} />
+
+        <p className="text-meta text-muted -mt-s4">
+          No code?{" "}
+          <Link href="/practice" className="text-accent hover:text-accent-strong font-semibold">
+            Practice on your own
+          </Link>
+          .
+        </p>
 
         {runsRooms && (
           <HostPanel
@@ -90,134 +90,51 @@ export default async function CompetePage() {
           />
         )}
 
-        <Section title="Open now" empty="Nothing is running. If you have a code, use it above." rows={open} />
+        <section id="open" className="scroll-mt-s5">
+          <div className="flex items-center justify-between gap-s4 mb-s4">
+            <h2 className="text-h3 font-bold text-ink">Open rooms</h2>
+            {open.length > 0 && (
+              <span
+                className="text-meta font-semibold rounded-full px-s3 py-0.5"
+                style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
+              >
+                {open.length} {open.length === 1 ? "room" : "rooms"}
+              </span>
+            )}
+          </div>
+          <RoomCards
+            rooms={open}
+            empty="No open rooms. Enter a code above to join one."
+          />
+        </section>
 
-        {mine.length > 0 && <Section title="Yours" empty="" rows={mine} />}
+        {mine.length > 0 && (
+          <section>
+            <div className="flex items-center justify-between gap-s4 mb-s4">
+              <h2 className="text-h3 font-bold text-ink">Rooms you host</h2>
+              <span
+                className="text-meta font-semibold rounded-full px-s3 py-0.5"
+                style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
+              >
+                {mine.length}
+              </span>
+            </div>
+            <RoomCards rooms={mine} empty="" />
+          </section>
+        )}
 
-        {/*
-          Rooms this person sat, which the page did not list at all: it showed
-          what is open and what you host, and a student is neither. The mark is
-          the reason they came looking, so it is on the row.
-        */}
         {played.length > 0 && (
           <section>
-            <div className="flex items-baseline gap-s4 mb-s3">
-              <h2 className="text-h2 font-semibold text-ink whitespace-nowrap">You played</h2>
-              <span className="h-px bg-line flex-1" />
+            <div className="flex items-center justify-between gap-s4 mb-s4">
+              <h2 className="text-h3 font-bold text-ink">Your results</h2>
+              <span className="text-meta text-muted">
+                {played.length} {played.length === 1 ? "room" : "rooms"} played
+              </span>
             </div>
-
-            <ul className="list-none m-0 p-0 rounded-lg border border-line bg-surface shadow-sh1 overflow-hidden">
-              {played.map((c) => (
-                <li key={c.code}>
-                  <Link
-                    href={`/compete/${c.code}`}
-                    className="grid grid-cols-[1fr_auto] gap-s3 items-center px-s4 py-s3 border-t border-line first:border-t-0 hover:bg-bg-sunk transition-colors"
-                  >
-                    <span className="min-w-0">
-                      <span className="block text-ui text-ink truncate pb-[2px]">{c.title}</span>
-                      <span className="block font-mono text-label uppercase text-faint truncate">
-                        {c.hostName || "Anonymous"} · {c.questionCount}{" "}
-                        {c.format === "PROBLEMS" ? "problems" : "questions"}
-                        {c.myDisqualified
-                          ? " · disqualified"
-                          : c.status === "ENDED"
-                            ? ""
-                            : " · still open"}
-                      </span>
-                    </span>
-
-                    <span className="text-right shrink-0">
-                      {/* Only once the room has ended: a mark shown while others
-                          are still writing is a mark shown to the room. */}
-                      {c.status === "ENDED" ? (
-                        <>
-                          <span
-                            className="block font-mono text-ui tabular"
-                            style={{
-                              color: c.myDisqualified ? "var(--danger)" : "var(--text)",
-                              textDecoration: c.myDisqualified ? "line-through" : undefined,
-                            }}
-                          >
-                            {c.myScore}
-                          </span>
-                          <span className="block font-mono text-label uppercase text-faint">
-                            marks
-                          </span>
-                        </>
-                      ) : (
-                        <span className="font-mono text-label uppercase text-faint">
-                          {c.myFinished ? "submitted" : "open"}
-                        </span>
-                      )}
-                    </span>
-                  </Link>
-                </li>
-              ))}
-            </ul>
+            <PlayedResults rows={played} />
           </section>
         )}
       </div>
     </div>
-  );
-}
-
-function Section({
-  title,
-  empty,
-  rows,
-}: {
-  title: string;
-  empty: string;
-  rows: {
-    code: string; title: string; status: keyof typeof STATUS_COPY;
-    format: "QUIZ" | "PROBLEMS";
-    topic: string | null; questionCount: number; hostName: string | null; players: number;
-  }[];
-}) {
-  return (
-    <section>
-      <div className="flex items-baseline gap-s4 mb-s3">
-        <h2 className="text-h2 font-semibold text-ink whitespace-nowrap">{title}</h2>
-        <span className="h-px bg-line flex-1" />
-      </div>
-
-      {rows.length === 0 ? (
-        empty ? (
-          <p className="text-meta text-muted">{empty}</p>
-        ) : null
-      ) : (
-        <ul className="list-none m-0 p-0 rounded-lg border border-line bg-surface shadow-sh1 overflow-hidden">
-          {rows.map((c) => {
-            const s = STATUS_COPY[c.status];
-            return (
-              <li key={c.code}>
-                <Link
-                  href={`/compete/${c.code}`}
-                  className="grid grid-cols-[1fr_auto] gap-s3 items-center px-s4 py-s3 border-t border-line first:border-t-0 hover:bg-bg-sunk transition-colors"
-                >
-                  <span className="min-w-0">
-                    <span className="block text-ui text-ink truncate pb-[2px]">{c.title}</span>
-                    <span className="block font-mono text-label uppercase text-faint truncate">
-                      {c.hostName || "Anonymous"} · {c.questionCount}{" "}
-                      {c.format === "PROBLEMS" ? "problems" : "questions"}
-                      {c.topic ? ` · ${c.topic}` : ""} · {c.players} in
-                    </span>
-                  </span>
-                  <span className="flex items-center gap-s3 shrink-0">
-                    <span
-                      className="text-label uppercase px-s2 py-1 rounded-sm"
-                      style={{ background: `var(--${s.tone}-soft)`, color: `var(--${s.tone})` }}
-                    >
-                      {s.label}
-                    </span>
-                    <span className="font-mono text-meta text-muted tracking-[0.15em]">{c.code}</span>
-                  </span>
-                </Link>
-              </li>
-            );
-          })}
-        </ul>
-      )}
-    </section>
   );
 }
