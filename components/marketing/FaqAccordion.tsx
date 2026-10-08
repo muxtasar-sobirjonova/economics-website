@@ -45,7 +45,7 @@ export function FaqAccordion() {
         return (
           <div 
             key={index} 
-            className="border border-line rounded-2xl overflow-hidden bg-white shadow-sm transition-all duration-200 hover:shadow-md"
+            className="border border-line rounded-lg overflow-hidden bg-white shadow-sm transition-all duration-200 hover:shadow-md"
           >
             <button
               onClick={() => toggleAccordion(index)}

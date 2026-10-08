@@ -23,7 +23,7 @@ export const RoadmapUnitCard = ({
 }: RoadmapUnitCardProps) => {
   return (
     <div 
-      className={`w-full max-w-[520px] rounded-3xl p-5 lg:p-6 mt-8 mb-6 relative shrink-0 font-sans shadow-sm border-none flex flex-col sm:block ${bgClass} ${disabled ? "opacity-60" : ""}`}
+      className={`w-full max-w-[520px] rounded-lg p-5 lg:p-6 mt-8 mb-6 relative shrink-0 font-sans shadow-sm border-none flex flex-col sm:block ${bgClass} ${disabled ? "opacity-60" : ""}`}
     >
       <div className="pl-1 lg:pl-2 pr-0 sm:pr-32">
         <div className="text-[11px] lg:text-[12px] font-bold tracking-widest text-[#3a2072] uppercase mb-1.5 lg:mb-2 opacity-80">

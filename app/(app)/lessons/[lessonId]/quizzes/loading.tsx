@@ -17,7 +17,7 @@ export default function Loading() {
 
       <main className="px-10 pb-16 max-w-[1240px] w-full mx-auto mt-4">
         {/* Skeleton Header Card */}
-        <div className="flex items-center mb-10 px-8 py-4 rounded-3xl bg-white border border-line shadow-sm relative h-[116px]">
+        <div className="flex items-center mb-10 px-8 py-4 rounded-lg bg-white border border-line shadow-sm relative h-[116px]">
           <div className="w-[84px] h-[84px] rounded-lg bg-bg-sunk animate-pulse shrink-0 ml-2"></div>
           <div className="flex-1 px-3 ml-6 flex flex-col justify-center gap-2">
             <div className="h-3 w-20 bg-bg-sunk rounded animate-pulse"></div>
@@ -38,12 +38,12 @@ export default function Loading() {
         </div>
 
         <div className="flex flex-col md:flex-row gap-6">
-          <div className="flex-1 bg-white p-8 border border-line border-l-4 border-l-gray-300 rounded-2xl h-[180px] animate-pulse"></div>
-          <div className="w-full md:w-[340px] bg-white p-8 border border-line border-l-4 border-l-gray-300 rounded-2xl h-[280px] animate-pulse"></div>
+          <div className="flex-1 bg-white p-8 border border-line border-l-4 border-l-gray-300 rounded-lg h-[180px] animate-pulse"></div>
+          <div className="w-full md:w-[340px] bg-white p-8 border border-line border-l-4 border-l-gray-300 rounded-lg h-[280px] animate-pulse"></div>
         </div>
         
         {/* Skeleton Loader Spinner for Slider */}
-        <div className="flex items-center justify-center py-10 bg-white border border-line rounded-3xl">
+        <div className="flex items-center justify-center py-10 bg-white border border-line rounded-lg">
            <IconLoader className="animate-spin text-faint" size={32} />
         </div>
       </main>

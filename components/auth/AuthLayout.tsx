@@ -3,7 +3,7 @@ import React from 'react';
 export default function AuthLayout({ children, title, subtitle }: { children: React.ReactNode, title: string, subtitle: string }) {
   return (
     <div className="min-h-screen flex items-center justify-center bg-slate-50 py-12 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-2xl shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-line">
+      <div className="max-w-md w-full space-y-8 bg-white p-8 rounded-lg shadow-[0_8px_30px_rgb(0,0,0,0.04)] border border-line">
         
         {/* Header / Logo */}
         <div className="flex flex-col items-center justify-center space-y-4">

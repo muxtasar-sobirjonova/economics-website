@@ -58,7 +58,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
     else if (score >= Math.ceil(totalQuestions * 0.6)) message = "👍 Good Job!";
 
     return (
-      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white rounded-3xl shadow-sm border border-line relative overflow-hidden h-full min-h-[600px] transition-all duration-300">
+      <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white rounded-lg shadow-sm border border-line relative overflow-hidden h-full min-h-[600px] transition-all duration-300">
         {score >= passingScore && (
           <div className="absolute inset-0 pointer-events-none">
             {Array.from({length: 40}).map((_, i) => {
@@ -113,7 +113,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
     <div className="flex-1 relative flex flex-col h-full w-full">
       {/* Screen Flash Overlay */}
       {showFlash && (
-        <div className="absolute inset-0 z-[300] pointer-events-none bg-[rgba(34,197,94,0.08)] animate-flash rounded-3xl" />
+        <div className="absolute inset-0 z-[300] pointer-events-none bg-[rgba(34,197,94,0.08)] animate-flash rounded-lg" />
       )}
 
       <div className="flex-1 flex flex-col w-full h-full">
@@ -225,7 +225,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                         whileHover={!hasAnsweredCurrent ? { x: 6 } : {}}
                         whileTap={!hasAnsweredCurrent ? { scale: 0.98 } : {}}
                         onClick={() => handleSelectAnswer(idx)}
-                        className={`relative border-[1.5px] rounded-2xl px-5 py-4 flex items-center gap-4 cursor-pointer transition-colors duration-200 ease-out shadow-sm ${hoverClass} ${disabledClass}`}
+                        className={`relative border-[1.5px] rounded-lg px-5 py-4 flex items-center gap-4 cursor-pointer transition-colors duration-200 ease-out shadow-sm ${hoverClass} ${disabledClass}`}
                         style={{ backgroundColor: bg, borderColor: border }}
                       >
                         <div className="w-8 h-8 rounded-lg flex items-center justify-center text-[13px] font-[800] shrink-0 transition-colors" style={{ backgroundColor: badgeBg, color: badgeColor }}>

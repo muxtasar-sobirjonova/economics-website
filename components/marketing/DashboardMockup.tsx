@@ -8,7 +8,7 @@ export const DashboardMockup = () => (
     initial={{ rotate: 2 }}
     whileHover={{ rotate: 0, y: -4, boxShadow: "0px 10px 20px rgba(0,0,0,0.15)" }}
     transition={{ duration: 0.2, ease: "easeInOut" }}
-    className="bg-white rounded-3xl shadow-[0_8px_32px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden text-left flex flex-col h-auto max-h-[520px] w-full max-w-lg mx-auto relative z-10"
+    className="bg-white rounded-lg shadow-[0_8px_32px_rgba(0,0,0,0.04)] border border-gray-100 overflow-hidden text-left flex flex-col h-auto max-h-[520px] w-full max-w-lg mx-auto relative z-10"
   >
     <BrowserChrome />
     <div className="p-10 flex-1 overflow-y-auto flex flex-col">
@@ -41,7 +41,7 @@ export const DashboardMockup = () => (
       {/* ── Items ── */}
       <div className="flex flex-col gap-3 flex-1">
         {/* Concept */}
-        <div className="flex items-center py-2 pr-3 pl-3 border-[1.5px] border-gray-100 rounded-2xl group bg-white transition-all hover:shadow-sm hover:border-gray-200 opacity-60">
+        <div className="flex items-center py-2 pr-3 pl-3 border-[1.5px] border-gray-100 rounded-lg group bg-white transition-all hover:shadow-sm hover:border-gray-200 opacity-60">
           <div className="w-1 h-6 rounded-full mr-3 shrink-0 transition-colors group-hover:shadow-[0_0_8px_rgba(123,111,231,0.5)] bg-amber-600" />
           <div className="flex-1 flex items-center flex-wrap gap-2">
             <div className="text-[10px] font-[800] px-2 py-0.5 rounded-md tracking-wider uppercase bg-amber-100 text-amber-600">CONCEPT</div>
@@ -54,7 +54,7 @@ export const DashboardMockup = () => (
         </div>
         
         {/* Article */}
-        <div className="flex items-center py-2 pr-3 pl-3 border-[1.5px] border-gray-100 rounded-2xl group bg-white transition-all hover:shadow-sm hover:border-gray-200 opacity-100">
+        <div className="flex items-center py-2 pr-3 pl-3 border-[1.5px] border-gray-100 rounded-lg group bg-white transition-all hover:shadow-sm hover:border-gray-200 opacity-100">
           <div className="w-1 h-6 rounded-full mr-3 shrink-0 transition-colors group-hover:shadow-[0_0_8px_rgba(123,111,231,0.5)] bg-blue-600" />
           <div className="flex-1 flex items-center flex-wrap gap-2">
             <div className="text-[10px] font-[800] px-2 py-0.5 rounded-md tracking-wider uppercase bg-blue-100 text-blue-600">ARTICLE</div>
@@ -65,7 +65,7 @@ export const DashboardMockup = () => (
         </div>
         
         {/* Quiz */}
-        <div className="flex items-center py-2 pr-3 pl-3 border-[1.5px] border-gray-100 rounded-2xl group bg-white transition-all hover:shadow-sm hover:border-gray-200 opacity-100">
+        <div className="flex items-center py-2 pr-3 pl-3 border-[1.5px] border-gray-100 rounded-lg group bg-white transition-all hover:shadow-sm hover:border-gray-200 opacity-100">
           <div className="w-1 h-6 rounded-full mr-3 shrink-0 transition-colors group-hover:shadow-[0_0_8px_rgba(123,111,231,0.5)] bg-purple-600" />
           <div className="flex-1 flex items-center flex-wrap gap-2">
             <div className="text-[10px] font-[800] px-2 py-0.5 rounded-md tracking-wider uppercase bg-purple-100 text-purple-600">QUIZ</div>

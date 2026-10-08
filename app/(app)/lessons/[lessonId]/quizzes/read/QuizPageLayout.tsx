@@ -30,7 +30,7 @@ export default function QuizPageLayout({ quizContent, notesContent }: QuizPageLa
       >
         <button 
           onClick={() => setMarginOpen(!marginOpen)}
-          className="absolute left-[-28px] top-10 w-7 h-[80px] bg-brand-primary rounded-l-[8px] cursor-pointer flex flex-col items-center justify-center gap-1 text-white hover:bg-[var(--accent-strong)] transition-colors shadow-[-2px_0_8px_rgba(0,0,0,0.1)] border-none"
+          className="absolute left-[-28px] top-10 w-7 h-[80px] bg-brand-primary rounded-l-sm cursor-pointer flex flex-col items-center justify-center gap-1 text-white hover:bg-[var(--accent-strong)] transition-colors shadow-[-2px_0_8px_rgba(0,0,0,0.1)] border-none"
         >
           {marginOpen ? (
             <XIcon size={16} />

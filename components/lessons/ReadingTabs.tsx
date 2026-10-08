@@ -191,7 +191,7 @@ export const ReadingTabs = ({
           {/* Scrollable Content */}
           <div className="flex-1 overflow-y-auto px-6 py-4">
             {activePanel === "takeaways" && (
-              <div className="bg-brand-primary/5 rounded-2xl border border-brand-primary/20 p-5 shadow-sm">
+              <div className="bg-brand-primary/5 rounded-lg border border-brand-primary/20 p-5 shadow-sm">
                 <div className="text-[11px] font-bold tracking-widest text-brand-primary uppercase mb-4 opacity-80">
                   KEY TAKEAWAYS
                 </div>

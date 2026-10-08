@@ -25,10 +25,10 @@ export const FeatureCard = ({ icon, title, description, colorClass = "text-brand
       onMouseMove={handleMouseMove}
       whileHover={{ y: -4, boxShadow: "0px 10px 20px rgba(0,0,0,0.15)" }}
       transition={{ duration: 0.2, ease: "easeInOut" }}
-      className="relative group flex flex-col items-start text-left p-8 bg-white rounded-3xl border border-line shadow-sm h-full cursor-pointer overflow-hidden" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}
+      className="relative group flex flex-col items-start text-left p-8 bg-white rounded-lg border border-line shadow-sm h-full cursor-pointer overflow-hidden" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}
     >
       <motion.div
-        className="pointer-events-none absolute -inset-px rounded-3xl opacity-0 transition duration-300 group-hover:opacity-100 z-0"
+        className="pointer-events-none absolute -inset-px rounded-lg opacity-0 transition duration-300 group-hover:opacity-100 z-0"
         style={{
           /* Dynamic radial gradient based on mouse position (runtime value) */
           background: useMotionTemplate`
@@ -40,7 +40,7 @@ export const FeatureCard = ({ icon, title, description, colorClass = "text-brand
           `,
         }}
       />
-      <div className={`relative z-10 w-14 h-14 ${bgClass} ${colorClass} rounded-2xl flex items-center justify-center mb-6`}>
+      <div className={`relative z-10 w-14 h-14 ${bgClass} ${colorClass} rounded-lg flex items-center justify-center mb-6`}>
         {icon}
       </div>
       <h3 className="relative z-10 font-bold text-slate-900 text-xl mb-3">{title}</h3>

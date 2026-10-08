@@ -2,7 +2,7 @@
 import { motion } from 'framer-motion';
 
 export const FlashcardMockup = () => (
-  <div className="bg-white rounded-3xl border border-gray-200 shadow-[0_8px_32px_rgba(0,0,0,0.04)] w-full text-center relative overflow-hidden flex flex-col h-[480px]">
+  <div className="bg-white rounded-lg border border-gray-200 shadow-[0_8px_32px_rgba(0,0,0,0.04)] w-full text-center relative overflow-hidden flex flex-col h-[480px]">
     <div className="bg-gray-100 border-b border-gray-200 px-4 py-2 flex items-center gap-2 w-full shrink-0 h-6"></div>
     <div className="relative flex flex-col items-center justify-center flex-1 p-6 overflow-hidden">
       

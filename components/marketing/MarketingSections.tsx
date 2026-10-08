@@ -23,8 +23,8 @@ export const MarketingSections = () => (
             <p className="text-xl text-muted leading-relaxed mb-8">
               Every day, we build a personalized agenda for you—so you know exactly where to pick up.
             </p>
-            <div className="bg-white p-6 rounded-3xl border border-line shadow-sm flex gap-4 transition-shadow hover:shadow-md">
-              <div className="w-12 h-12 rounded-2xl bg-yellow-50 text-yellow-500 flex items-center justify-center shrink-0">
+            <div className="bg-white p-6 rounded-lg border border-line shadow-sm flex gap-4 transition-shadow hover:shadow-md">
+              <div className="w-12 h-12 rounded-lg bg-yellow-50 text-yellow-500 flex items-center justify-center shrink-0">
                 <IconTrophy size={24} />
               </div>
               <div>
@@ -82,8 +82,8 @@ export const MarketingSections = () => (
             </p>
           </ScrollReveal>
           <ScrollReveal delay={0.2} className="text-left">
-            <div className="flex items-start gap-5 bg-white p-8 rounded-3xl border border-line shadow-sm w-full cursor-pointer">
-               <div className="w-14 h-14 rounded-2xl bg-purple-50 text-purple-500 flex items-center justify-center shrink-0">
+            <div className="flex items-start gap-5 bg-white p-8 rounded-lg border border-line shadow-sm w-full cursor-pointer">
+               <div className="w-14 h-14 rounded-lg bg-purple-50 text-purple-500 flex items-center justify-center shrink-0">
                  <IconBulb size={28} />
                </div>
                <div>
@@ -163,7 +163,7 @@ export const MarketingSections = () => (
 
     <section className="py-20 md:py-24 bg-surface border-y border-line">
       <div className="max-w-4xl mx-auto px-6">
-        <ScrollReveal delay={0} className="bg-white rounded-3xl p-10 md:p-14 border border-line shadow-sm relative">
+        <ScrollReveal delay={0} className="bg-white rounded-lg p-10 md:p-14 border border-line shadow-sm relative">
           <div className="absolute -top-6 -left-6 text-gray-200">
             <svg width="80" height="80" fill="currentColor" viewBox="0 0 24 24"><path d="M14.017 21v-7.391c0-5.704 3.731-9.57 8.983-10.609l.995 2.151c-2.432.917-3.995 3.638-3.995 5.849h4v10h-9.983zm-14.017 0v-7.391c0-5.704 3.748-9.57 9-10.609l.996 2.151c-2.433.917-3.996 3.638-3.996 5.849h3.983v10h-9.983z"/></svg>
           </div>

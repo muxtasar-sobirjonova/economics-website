@@ -66,7 +66,7 @@ export default function ReviewMistakesComponent() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3 }}
-            className="bg-white rounded-2xl p-8 shadow-lg border border-line"
+            className="bg-white rounded-lg p-8 shadow-lg border border-line"
           >
             <h3 className="text-lg font-bold text-[var(--text)] mb-2">
               {currentMistake.term}

@@ -3,7 +3,7 @@ import { IconBook, IconCheck, IconLock } from '@tabler/icons-react';
 import { motion } from 'framer-motion';
 
 export const RoadmapMockup = () => (
-  <div className="bg-slate-50 rounded-3xl border border-gray-200 shadow-xl relative w-full h-auto max-h-[520px] flex flex-col overflow-hidden text-left z-10 mx-auto group">
+  <div className="bg-slate-50 rounded-lg border border-gray-200 shadow-xl relative w-full h-auto max-h-[520px] flex flex-col overflow-hidden text-left z-10 mx-auto group">
     <div className="bg-gray-100 border-b border-gray-200 px-4 py-2 flex items-center gap-2 w-full shrink-0 h-6"></div>
     <div className="flex-1 flex overflow-hidden">
       <div className="w-[60px] md:w-[80px] bg-brand-800 shrink-0 flex flex-col items-center py-6 border-r border-gray-200 z-20">
@@ -19,7 +19,7 @@ export const RoadmapMockup = () => (
           <motion.div 
             whileHover={{ y: -4, boxShadow: "0px 10px 20px rgba(0,0,0,0.15)", scale: 1.01 }} 
             transition={{ duration: 0.2, ease: "easeInOut" }}
-            className="w-full max-w-sm bg-purple-100 rounded-3xl p-6 text-left relative overflow-hidden mb-16 shadow-sm border border-purple-200 cursor-pointer" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}
+            className="w-full max-w-sm bg-purple-100 rounded-lg p-6 text-left relative overflow-hidden mb-16 shadow-sm border border-purple-200 cursor-pointer" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}
           >
             <div className="text-brand-800 text-xs font-bold uppercase tracking-wider mb-2">Chapter 1</div>
             <h3 className="text-xl font-black text-slate-900 leading-tight mb-3">Foundations of<br/>Entrepreneurship Economics</h3>

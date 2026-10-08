@@ -75,7 +75,7 @@ export default async function ReviewPage() {
 
       <main className="flex-1 max-w-[800px] w-full mx-auto p-4 md:p-8 flex flex-col gap-6">
         
-        <div className="bg-white rounded-3xl p-6 md:p-8 border border-line shadow-sm">
+        <div className="bg-white rounded-lg p-6 md:p-8 border border-line shadow-sm">
           <h2 className="text-2xl font-bold text-ink mb-2">Room for Improvement</h2>
           <p className="text-muted text-[15px] mb-8">
             These are lessons where you scored less than 6 out of 10 on the quiz. We recommend reviewing the core materials before trying again!
@@ -92,7 +92,7 @@ export default async function ReviewPage() {
           ) : (
             <div className="flex flex-col gap-4">
               {lessonsToReview.map((lesson) => (
-                <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-2xl border border-line bg-surface hover:bg-bg-sunk/50 transition-colors">
+                <div key={lesson.id} className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 p-5 rounded-lg border border-line bg-surface hover:bg-bg-sunk/50 transition-colors">
                   <div className="flex flex-col pr-4">
                     <span className="text-xs font-bold text-brand-primary tracking-wider uppercase mb-1">
                       Lesson {lesson.dayOrder}

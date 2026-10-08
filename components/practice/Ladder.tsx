@@ -81,7 +81,7 @@ function Podium({ rows }: { rows: LadderRow[] }) {
               {fmt(r.rating)}
             </span>
             <span
-              className="w-full rounded-t-xl grid place-items-start justify-center pt-s2 text-h2 font-extrabold text-white"
+              className="w-full rounded-t-lg grid place-items-start justify-center pt-s2 text-h2 font-extrabold text-white"
               style={{
                 height: height[place - 1],
                 background: fill[place - 1],

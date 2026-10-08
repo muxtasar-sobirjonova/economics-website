@@ -106,7 +106,7 @@ async function ArticlesContent({ userId, lessonId }: { userId: string, lessonId:
   return (
     <main className="px-4 md:px-10 pb-8 md:pb-16 max-w-[1240px] w-full mt-4 overflow-hidden md:overflow-visible">
       {/* Hero Banner */}
-      <div className="flex flex-col md:flex-row items-start md:items-center mb-6 md:mb-10 p-5 md:px-8 md:py-4 rounded-3xl bg-white border border-line shadow-sm relative overflow-hidden">
+      <div className="flex flex-col md:flex-row items-start md:items-center mb-6 md:mb-10 p-5 md:px-8 md:py-4 rounded-lg bg-white border border-line shadow-sm relative overflow-hidden">
         <div className="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center w-full relative z-10">
           <div className="w-[60px] h-[60px] md:w-[84px] md:h-[84px] rounded-lg md:rounded-lg flex items-center justify-center shrink-0 md:ml-2">
             <FileText className="text-brand-primary w-10 h-10 md:w-12 md:h-12" strokeWidth={1.5} />
@@ -170,7 +170,7 @@ async function ArticlesContent({ userId, lessonId }: { userId: string, lessonId:
         <ArticleSummary text={articleSummary || articleText} />
 
         {/* Quiz Section */}
-        <div className="w-full md:w-[340px] bg-white p-5 md:p-8 flex flex-col relative border border-line border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
+        <div className="w-full md:w-[340px] bg-white p-5 md:p-8 flex flex-col relative border border-line border-l-4 border-l-brand-primary rounded-lg shadow-sm">
             <div className="flex gap-4 items-start mb-6">
               <div className="flex-shrink-0 w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center">
                 <IconBrain size={24} stroke={2} className="text-brand-primary" />
@@ -184,7 +184,7 @@ async function ArticlesContent({ userId, lessonId }: { userId: string, lessonId:
             </div>
             <div className="mt-auto pt-4">
               <Link href={`/lessons/${lessonId}/quizzes`}>
-                <button className="w-full bg-brand-primary hover:bg-brand-primary/90 text-white font-medium py-3.5 px-6 rounded-2xl transition-transform duration-150 active:scale-95 flex items-center justify-center gap-2 text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+                <button className="w-full bg-brand-primary hover:bg-brand-primary/90 text-white font-medium py-3.5 px-6 rounded-lg transition-transform duration-150 active:scale-95 flex items-center justify-center gap-2 text-[15px] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
                   Start Quiz
                   <IconFileText size={18} />
                 </button>
@@ -216,10 +216,10 @@ async function ArticlesContent({ userId, lessonId }: { userId: string, lessonId:
 function ArticlesSkeleton() {
   return (
     <main className="px-4 md:px-10 pb-8 md:pb-16 max-w-[1240px] w-full mt-4">
-      <div className="w-full h-[120px] bg-slate-100 animate-pulse rounded-3xl mb-10"></div>
+      <div className="w-full h-[120px] bg-slate-100 animate-pulse rounded-lg mb-10"></div>
       <div className="flex flex-col md:flex-row gap-8 mb-10">
-        <div className="flex-1 h-[300px] bg-slate-100 animate-pulse rounded-2xl"></div>
-        <div className="w-full md:w-[340px] h-[300px] bg-slate-100 animate-pulse rounded-2xl"></div>
+        <div className="flex-1 h-[300px] bg-slate-100 animate-pulse rounded-lg"></div>
+        <div className="w-full md:w-[340px] h-[300px] bg-slate-100 animate-pulse rounded-lg"></div>
       </div>
     </main>
   );

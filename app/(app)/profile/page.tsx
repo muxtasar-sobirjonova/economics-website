@@ -45,7 +45,7 @@ export default async function ProfilePage() {
 
       <main className="flex-1 max-w-[600px] w-full mx-auto p-6 md:p-10 flex flex-col gap-6">
         {/* Profile Card */}
-        <div className="bg-white rounded-3xl p-8 border border-line shadow-sm flex flex-col items-center text-center relative overflow-hidden">
+        <div className="bg-white rounded-lg p-8 border border-line shadow-sm flex flex-col items-center text-center relative overflow-hidden">
           <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-br from-brand-primary/20 to-indigo-500/20"></div>
           
           <div className="w-24 h-24 rounded-full bg-brand-primary text-white font-black text-4xl flex items-center justify-center shadow-lg border-4 border-white relative z-10 mb-4">
@@ -60,7 +60,7 @@ export default async function ProfilePage() {
           </div>
 
           <div className="w-full flex gap-4 mt-2">
-            <div className="flex-1 bg-surface rounded-2xl p-4 flex flex-col items-center justify-center border border-line">
+            <div className="flex-1 bg-surface rounded-lg p-4 flex flex-col items-center justify-center border border-line">
               <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center mb-2">
                 <Award size={20} />
               </div>
@@ -68,7 +68,7 @@ export default async function ProfilePage() {
               <div className="text-xs font-semibold text-muted tracking-wider uppercase mt-1">Lessons</div>
             </div>
             
-            <div className="flex-1 bg-surface rounded-2xl p-4 flex flex-col items-center justify-center border border-line">
+            <div className="flex-1 bg-surface rounded-lg p-4 flex flex-col items-center justify-center border border-line">
               <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center mb-2">
                 <Clock size={20} />
               </div>
@@ -79,10 +79,10 @@ export default async function ProfilePage() {
         </div>
 
         {/* Settings / Details */}
-        <div className="bg-white rounded-3xl p-6 border border-line shadow-sm flex flex-col">
+        <div className="bg-white rounded-lg p-6 border border-line shadow-sm flex flex-col">
           <h3 className="text-sm font-bold text-ink uppercase tracking-wider mb-4 px-2">Account Details</h3>
           
-          <div className="flex items-center justify-between p-4 bg-surface rounded-2xl border border-line mb-4">
+          <div className="flex items-center justify-between p-4 bg-surface rounded-lg border border-line mb-4">
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
                 <Compass size={18} className="text-brand-primary" />

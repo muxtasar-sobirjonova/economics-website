@@ -489,7 +489,7 @@ function Popover({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="w-full sm:max-w-[420px] max-h-[82vh] bg-surface rounded-t-xl sm:rounded-lg shadow-sh3 flex flex-col overflow-hidden"
+        className="w-full sm:max-w-[420px] max-h-[82vh] bg-surface rounded-t-lg sm:rounded-lg shadow-sh3 flex flex-col overflow-hidden"
       >
         <div className="p-s3 border-b border-line">
           <input
@@ -590,7 +590,7 @@ function Drawer({
         role="dialog"
         aria-modal="true"
         aria-label={row.title}
-        className="w-full sm:w-[420px] max-h-[88vh] sm:max-h-none bg-surface overflow-y-auto p-s5 rounded-t-xl sm:rounded-none shadow-sh3"
+        className="w-full sm:w-[420px] max-h-[88vh] sm:max-h-none bg-surface overflow-y-auto p-s5 rounded-t-lg sm:rounded-none shadow-sh3"
       >
         <div className="flex gap-s3 items-start">
           <span className="w-12 h-12 rounded-lg grid place-items-center font-bold text-h3 shrink-0"

@@ -26,7 +26,7 @@ export default function TopicsPage() {
           <Link
             key={topic._id}
             href={`/articles?topic=${topic.slug.current}`}
-            className="group block bg-white border border-line rounded-2xl p-8 hover:border-brand-primary hover:shadow-md transition-all"
+            className="group block bg-white border border-line rounded-lg p-8 hover:border-brand-primary hover:shadow-md transition-all"
           >
             <h2 className="text-2xl font-bold text-brand-primary group-hover:text-[var(--accent-strong)] mb-3 transition-colors">
               {topic.title}
@@ -45,7 +45,7 @@ export default function TopicsPage() {
         ))}
 
         {/* Coming soon placeholder */}
-        <div className="block bg-surface border border-dashed border-line rounded-2xl p-8 flex flex-col items-start justify-center opacity-60">
+        <div className="block bg-surface border border-dashed border-line rounded-lg p-8 flex flex-col items-start justify-center opacity-60">
           <h2 className="text-2xl font-bold text-faint mb-3">More coming soon</h2>
           <p className="text-faint text-sm">
             New topic areas are being added as new lessons launch.

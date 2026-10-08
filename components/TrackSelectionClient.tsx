@@ -83,7 +83,7 @@ export function TrackSelectionClient({ currentTrack }: TrackSelectionClientProps
             <div
               key={track.id}
               onClick={() => handleSelectTrack(track.id)}
-              className={`flex flex-col bg-white border-2 rounded-2xl p-4 md:p-6 cursor-pointer transition-all duration-300 relative ${
+              className={`flex flex-col bg-white border-2 rounded-lg p-4 md:p-6 cursor-pointer transition-all duration-300 relative ${
                 isSelected 
                   ? `${track.accentColor} shadow-md` 
                   : "border-slate-200 hover:border-slate-300 shadow-sm"

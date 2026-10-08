@@ -1,7 +1,7 @@
 import { BrowserChrome } from './BrowserChrome';
 
 export const NotesMockup = () => (
-  <div className="w-full shrink-0 bg-white rounded-3xl border border-gray-200 shadow-[0_8px_32px_rgba(0,0,0,0.04)] flex flex-col overflow-hidden text-left h-[480px]">
+  <div className="w-full shrink-0 bg-white rounded-lg border border-gray-200 shadow-[0_8px_32px_rgba(0,0,0,0.04)] flex flex-col overflow-hidden text-left h-[480px]">
     <BrowserChrome />
     <div className="flex flex-col items-center justify-center flex-1 shrink-0 p-8">
        {/* Card Stack */}

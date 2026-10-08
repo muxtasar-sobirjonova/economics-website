@@ -102,7 +102,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
 
       <main className="px-4 md:px-10 pb-8 md:pb-16 max-w-[1240px] w-full mx-auto mt-4 overflow-hidden md:overflow-visible">
         {/* Hero Banner */}
-        <div className="flex flex-col md:flex-row items-start md:items-center mb-6 md:mb-10 p-5 md:px-8 md:py-4 rounded-3xl bg-white border border-line shadow-sm relative overflow-hidden">
+        <div className="flex flex-col md:flex-row items-start md:items-center mb-6 md:mb-10 p-5 md:px-8 md:py-4 rounded-lg bg-white border border-line shadow-sm relative overflow-hidden">
           <div className="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center w-full relative z-10">
             <div className="w-[60px] h-[60px] md:w-[84px] md:h-[84px] rounded-lg md:rounded-lg flex items-center justify-center shrink-0 md:ml-2">
               <BrainCircuit className="text-emerald-400 w-10 h-10 md:w-12 md:h-12" strokeWidth={1.5} />
@@ -163,7 +163,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
 
         <div className="flex flex-col md:flex-row gap-8 md:items-stretch mb-10">
           {/* Mistakes Section */}
-          <div className="flex-1 bg-white p-5 md:p-8 flex flex-col border border-line border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
+          <div className="flex-1 bg-white p-5 md:p-8 flex flex-col border border-line border-l-4 border-l-brand-primary rounded-lg shadow-sm">
                {!hasCompleted ? (
                  <div className="flex flex-col items-center justify-center h-full text-center">
                    <div className="w-12 h-12 bg-bg-sunk text-faint rounded-full flex items-center justify-center mb-3">
@@ -176,7 +176,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                   </div>
                ) : currentQuizResult && currentQuizResult.score >= passingScore ? (
                  <div className="flex flex-col items-center justify-center h-full text-center">
-                   <div className="w-12 h-12 bg-green-50 text-green-500 rounded-2xl flex items-center justify-center mb-3 shadow-sm border border-green-100">
+                   <div className="w-12 h-12 bg-green-50 text-green-500 rounded-lg flex items-center justify-center mb-3 shadow-sm border border-green-100">
                      <IconCheck size={24} stroke={3} />
                    </div>
                    <h4 className="font-bold text-ink text-base mb-1">Excellent Work!</h4>
@@ -186,7 +186,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                  </div>
                ) : currentQuizResult && currentQuizResult.score >= Math.ceil(servedQuestions * 0.6) ? (
                  <div className="flex flex-col items-center justify-center h-full text-center">
-                   <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center mb-3 shadow-sm border border-blue-100">
+                   <div className="w-12 h-12 bg-blue-50 text-blue-500 rounded-lg flex items-center justify-center mb-3 shadow-sm border border-blue-100">
                      <IconCheck size={24} stroke={3} />
                    </div>
                    <h4 className="font-bold text-ink text-base mb-1">Good job!</h4>
@@ -196,7 +196,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
                  </div>
                ) : (
                   <div className="flex flex-col gap-2 h-full items-center text-center justify-center py-2">
-                    <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center mb-1 mx-auto shadow-sm border border-amber-100 shrink-0">
+                    <div className="w-12 h-12 bg-amber-50 text-amber-500 rounded-lg flex items-center justify-center mb-1 mx-auto shadow-sm border border-amber-100 shrink-0">
                       <IconClipboardList size={24} stroke={2} />
                     </div>
                     <h4 className="font-bold text-ink text-base mb-1">Review Recommended</h4>
@@ -218,7 +218,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
           </div>
 
           {/* Action Section */}
-          <div className="w-full md:w-[340px] bg-white p-5 md:p-8 flex flex-col relative border border-line border-l-4 border-l-brand-primary rounded-2xl shadow-sm">
+          <div className="w-full md:w-[340px] bg-white p-5 md:p-8 flex flex-col relative border border-line border-l-4 border-l-brand-primary rounded-lg shadow-sm">
               <div className="flex gap-4 items-start mb-6">
                 <div className="flex-shrink-0 w-10 h-10 rounded-full bg-brand-primary/10 flex items-center justify-center">
                   <IconFileText size={24} stroke={2} className="text-brand-primary" />
@@ -232,7 +232,7 @@ export default async function QuizzesPage({ params }: { params: { lessonId: stri
               </div>
               <div className="mt-auto pt-4">
                 <Link href={`/lessons/${lessonId}/quizzes/read`}>
-                  <div className="w-full bg-brand-primary hover:bg-brand-primary/90 text-white font-medium py-3.5 px-6 rounded-2xl transition-transform duration-150 active:scale-95 flex items-center justify-center gap-2 text-[15px] cursor-pointer">
+                  <div className="w-full bg-brand-primary hover:bg-brand-primary/90 text-white font-medium py-3.5 px-6 rounded-lg transition-transform duration-150 active:scale-95 flex items-center justify-center gap-2 text-[15px] cursor-pointer">
                     Continue Quiz
                     <IconArrowRight size={18} />
                   </div>

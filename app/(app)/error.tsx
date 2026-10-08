@@ -8,7 +8,7 @@ export default function AppError({
   reset: () => void;
 }) {
   return (
-    <div className="p-8 m-4 bg-red-50 text-red-900 border border-red-200 rounded-2xl">
+    <div className="p-8 m-4 bg-red-50 text-red-900 border border-red-200 rounded-lg">
       <h2 className="text-xl font-bold mb-4">Dashboard Client Error</h2>
       <p className="font-mono text-sm mb-4 break-all">{error.message || "Unknown error"}</p>
       {error.stack && (

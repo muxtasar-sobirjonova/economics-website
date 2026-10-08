@@ -34,17 +34,22 @@ function Chip({
   label: string;
 }) {
   return (
-    <div className="flex items-center gap-s3 border border-line rounded-2xl py-s2 pl-s2 pr-s4">
+    // The redesign's stat tile: a fixed height, the icon in a soft square, and
+    // the label above the figure rather than under it — the number is what you
+    // came for, so it reads last and largest.
+    <div className="h-[76px] bg-surface flex items-center gap-s3 border border-line rounded-lg px-s3 min-w-0">
       <span
-        className="w-9 h-9 rounded-xl grid place-items-center shrink-0"
-        style={{ background: "var(--accent-soft)", color: "var(--accent)" }}
+        className="w-9 h-9 rounded-md grid place-items-center shrink-0"
+        style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
         aria-hidden
       >
         {icon}
       </span>
       <span className="min-w-0">
-        <b className="block text-ui font-extrabold leading-tight text-ink">{value}</b>
-        <small className="text-meta text-muted">{label}</small>
+        <span className="block text-meta text-muted leading-tight truncate">{label}</span>
+        <b className="block text-h3 font-bold tracking-tight text-ink leading-tight tabular">
+          {value}
+        </b>
       </span>
     </div>
   );
