@@ -81,11 +81,12 @@ export function JoinRoom({ liveRooms = 0 }: { liveRooms?: number }) {
   return (
     <form
       onSubmit={submit}
-      className="rounded-lg border border-line bg-bg-sunk shadow-sh1 p-s5 grid lg:grid-cols-[200px_1fr] gap-s5 items-center"
+      className="rounded-lg border border-line p-s5 md:px-s6 grid lg:grid-cols-[230px_1fr] gap-s5 lg:gap-s7 items-center"
+      style={{ background: "var(--bg-sunk)" }}
     >
       <div>
-        <h2 className="text-h3 font-semibold text-ink">Join a room</h2>
-        <p className="text-meta text-muted mt-s1">
+        <h2 className="font-reading text-h2 font-semibold tracking-tight text-ink">Join a room</h2>
+        <p className="text-ui text-muted mt-s1">
           Enter the {CODE_LENGTH}-character code from your host.
         </p>
         {liveRooms > 0 && (
@@ -121,8 +122,12 @@ export function JoinRoom({ liveRooms = 0 }: { liveRooms?: number }) {
               autoComplete="off"
               spellCheck={false}
               aria-label={`Character ${i + 1}`}
-              className="w-[42px] h-[52px] text-center font-bold text-h3 uppercase rounded-md border bg-raised text-ink focus:outline-none transition-colors"
-              style={{ borderColor: error ? "var(--danger)" : "var(--border-strong)" }}
+              className="w-[44px] h-[54px] text-center font-mono font-semibold text-h2 uppercase rounded-md border-[1.5px] bg-raised text-ink focus:outline-none transition-colors"
+              style={{
+                borderColor: error ? "var(--danger)" : "var(--border-strong)",
+                // Split after three, the way a code is read aloud.
+                marginRight: i === 2 ? 10 : undefined,
+              }}
             />
           ))}
         </div>

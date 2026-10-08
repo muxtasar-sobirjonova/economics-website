@@ -61,10 +61,10 @@ export default async function CompetePage() {
     <div className="theme-v2 min-h-screen w-full flex flex-col bg-bg bg-sky">
       <div className="w-full max-w-[880px] mx-auto px-s4 md:px-s5 py-s5 md:py-s6 flex flex-col gap-s6">
         <header>
-          <h1 className="text-h1 font-bold tracking-tight text-ink pb-[3px]">
+          <h1 className="font-reading text-h1 font-semibold tracking-tight text-ink leading-[1.1]">
             Case Competitions
           </h1>
-          <p className="text-meta text-muted mt-s2 max-w-[60ch]">
+          <p className="text-ui text-muted mt-s2 max-w-[56ch]">
             Join a live room with a code. Everyone answers the same problems and
             the ranking moves as they go.
           </p>
@@ -92,12 +92,9 @@ export default async function CompetePage() {
 
         <section id="open" className="scroll-mt-s5">
           <div className="flex items-center justify-between gap-s4 mb-s4">
-            <h2 className="text-h3 font-bold text-ink">Open rooms</h2>
+            <h2 className="font-reading text-h2 font-semibold tracking-tight text-ink">Open rooms</h2>
             {open.length > 0 && (
-              <span
-                className="text-meta font-semibold rounded-full px-s3 py-0.5"
-                style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
-              >
+              <span className="font-mono text-meta text-muted">
                 {open.length} {open.length === 1 ? "room" : "rooms"}
               </span>
             )}
@@ -111,13 +108,8 @@ export default async function CompetePage() {
         {mine.length > 0 && (
           <section>
             <div className="flex items-center justify-between gap-s4 mb-s4">
-              <h2 className="text-h3 font-bold text-ink">Rooms you host</h2>
-              <span
-                className="text-meta font-semibold rounded-full px-s3 py-0.5"
-                style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
-              >
-                {mine.length}
-              </span>
+              <h2 className="font-reading text-h2 font-semibold tracking-tight text-ink">Rooms you host</h2>
+              <span className="font-mono text-meta text-muted">{mine.length}</span>
             </div>
             <RoomCards rooms={mine} empty="" />
           </section>
@@ -126,8 +118,8 @@ export default async function CompetePage() {
         {played.length > 0 && (
           <section>
             <div className="flex items-center justify-between gap-s4 mb-s4">
-              <h2 className="text-h3 font-bold text-ink">Your results</h2>
-              <span className="text-meta text-muted">
+              <h2 className="font-reading text-h2 font-semibold tracking-tight text-ink">Your results</h2>
+              <span className="font-mono text-meta text-muted">
                 {played.length} {played.length === 1 ? "room" : "rooms"} played
               </span>
             </div>

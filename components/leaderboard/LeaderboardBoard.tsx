@@ -1,6 +1,6 @@
 import React from "react";
 import Link from "next/link";
-import { PodiumPlot } from "./PodiumPlot";
+import { Plot, BADGE, type Metal } from "./Plot";
 import { getLeagueData } from "@/lib/league";
 import type { BoardEntry, Standing } from "@/lib/leaderboard";
 
@@ -10,41 +10,94 @@ function Row({ entry, leaderLessons }: { entry: BoardEntry; leaderLessons: numbe
 
   return (
     <div
-      className={`relative grid grid-cols-[2.5rem_1fr_auto] gap-s3 items-center px-s4 py-s3 border-t border-line ${
-        entry.isYou ? "bg-accent-soft" : ""
-      }`}
+      className="grid grid-cols-[40px_minmax(0,1fr)_56px] sm:grid-cols-[64px_minmax(0,1fr)_150px_56px] gap-s3 items-center px-s4 sm:px-s5 min-h-[62px] border-t border-line first:border-t-0"
+      style={entry.isYou ? { background: "var(--accent-soft)", boxShadow: "inset 3px 0 0 var(--accent)" } : undefined}
     >
-      {entry.isYou && <span className="absolute left-0 top-0 bottom-0 w-[3px] bg-accent" aria-hidden />}
-
-      <span className={`font-mono text-meta tabular ${entry.isYou ? "text-accent-strong" : "text-faint"}`}>
+      <span className="font-mono text-ui tabular text-muted">
         {String(entry.rank).padStart(2, "0")}
       </span>
 
-      <span className="flex items-center gap-s3 min-w-0">
+      <span
+        className="flex items-center gap-s3 min-w-0 font-reading text-h3"
+        style={entry.isYou ? { color: "var(--accent-strong)", fontWeight: 600 } : undefined}
+      >
         <span
-          className={`w-8 h-8 rounded-full grid place-items-center shrink-0 font-semibold text-meta ${
-            entry.isYou ? "bg-accent text-on-accent" : "bg-bg-sunk text-muted"
-          }`}
+          className="w-10 h-10 rounded-full grid place-items-center shrink-0 font-sans font-bold text-meta"
+          style={
+            entry.isYou
+              ? { background: "var(--accent)", color: "var(--on-accent)" }
+              : { background: "var(--accent-soft)", color: "var(--accent-strong)" }
+          }
+          aria-hidden
         >
           {(entry.username || "?").charAt(0).toUpperCase()}
         </span>
-        <span className={`text-ui truncate pb-[2px] ${entry.isYou ? "text-accent-strong font-semibold" : "text-ink"}`}>
+        <span className="truncate">
           {entry.isYou ? `You · ${entry.username || "Anonymous"}` : entry.username || "Anonymous"}
         </span>
       </span>
 
-      <span className="flex items-center gap-s3 shrink-0">
-        {/* Scaled to the leader, so the gap between places is visible, not just the order */}
-        <span className="hidden sm:block w-[88px] h-1.5 rounded-full bg-bg-sunk overflow-hidden" aria-hidden>
-          <span
-            className="block h-full rounded-full bg-accent"
-            style={{ width: `${Math.max(pct, 6)}%`, opacity: entry.isYou ? 1 : 0.5 }}
-          />
-        </span>
-        <span className="font-mono text-meta text-ink tabular text-right w-6">
-          {entry.lessonsCompleted}
-        </span>
+      <span className="hidden sm:block h-1.5 rounded-full overflow-hidden" style={{ background: "var(--bg-sunk)" }} aria-hidden>
+        <span
+          className="block h-full rounded-full"
+          style={{ width: `${Math.max(pct, 6)}%`, background: "var(--accent)", opacity: entry.isYou ? 1 : 0.55 }}
+        />
       </span>
+
+      <span className="font-mono text-ui text-ink tabular text-right">
+        {entry.lessonsCompleted}
+      </span>
+    </div>
+  );
+}
+
+const PLACE: { metal: Metal; height: number; caption: string }[] = [
+  { metal: "silver", height: 96, caption: "Runner up" },
+  { metal: "gold", height: 116, caption: "Grand champion" },
+  { metal: "bronze", height: 88, caption: "Third place" },
+];
+
+/** Second, first, third — the shape a podium is. */
+function Podium({ rows }: { rows: BoardEntry[] }) {
+  const order = [1, 0, 2];
+
+  return (
+    <div
+      className="border border-line rounded-lg grid grid-cols-3 gap-s2 items-end px-s4 pt-s7 pb-s5 mt-s4"
+      style={{ background: "linear-gradient(180deg,#ddd8f1 0%,#f3f1fb 38%,var(--surface) 70%)" }}
+    >
+      {order.map((i, slot) => {
+        const r = rows[i];
+        if (!r) return <div key={slot} />;
+        const place = PLACE[slot];
+        const badge = BADGE[place.metal];
+
+        return (
+          <div key={r.userId} className="flex flex-col items-center text-center min-w-0">
+            <Plot metal={place.metal} height={place.height} />
+            <span
+              className="w-9 h-9 rounded-full grid place-items-center font-reading text-ui font-semibold border-[1.5px] -mt-[26px] relative"
+              style={{ background: badge.bg, borderColor: badge.edge, color: badge.ink }}
+            >
+              {i + 1}
+            </span>
+            <span
+              className="font-mono text-label uppercase tracking-[.16em] mt-s3"
+              style={{ color: badge.ink }}
+            >
+              {place.caption}
+            </span>
+            {/* Smaller on a phone: at 19px in a third of 375px, "Tuychibaeva"
+                does not fit and breaks in the middle of itself. */}
+            <span className="font-reading text-ui sm:text-h3 font-semibold mt-s1 text-ink break-words max-w-full">
+              {r.isYou ? "You" : r.username || "Anonymous"}
+            </span>
+            <span className="font-mono text-meta text-muted mt-s1">
+              {r.lessonsCompleted} lessons
+            </span>
+          </div>
+        );
+      })}
     </div>
   );
 }
@@ -84,8 +137,10 @@ export function LeaderboardBoard({
               Top {podium.length + rest.length} · everyone
             </span>
           )}
-          <h1 className="text-h1 font-semibold text-ink mt-s2 pb-[3px]">Leaderboard</h1>
-          <p className="text-meta text-muted mt-s2 max-w-[56ch]">
+          <h1 className="font-reading text-h1 font-semibold tracking-tight text-ink mt-s2 leading-[1.1]">
+            Leaderboard
+          </h1>
+          <p className="text-ui text-muted mt-s2 max-w-[56ch]">
             The podium is three plots, not three medals — rank is measured in
             what people built. Everyone is on one board; leagues are a mark of
             how far you have come, not a group you are ranked inside.
@@ -105,25 +160,18 @@ export function LeaderboardBoard({
           </section>
         ) : (
           <>
-            {/* Podium — 2nd, 1st, 3rd so the champion stands in the middle */}
-            <section
-              className="rounded-lg border border-line bg-surface shadow-sh1 p-s5"
-              style={{ backgroundImage: "linear-gradient(180deg, var(--podium-wash) 0%, transparent 58%)" }}
-            >
-              <div className="flex items-end gap-s2">
-                <PodiumPlot place={2} entry={podium[1]} />
-                <PodiumPlot place={1} entry={podium[0]} />
-                <PodiumPlot place={3} entry={podium[2]} />
-              </div>
-            </section>
+            <Podium rows={podium} />
 
             {/* The next seven */}
             {rest.length > 0 && (
-              <section className="rounded-lg border border-line bg-surface shadow-sh1 overflow-hidden">
-                <div className="grid grid-cols-[2.5rem_1fr_auto] gap-s3 px-s4 py-s3 bg-bg-sunk text-label uppercase text-faint">
+              <section className="rounded-lg border border-line bg-surface overflow-hidden mt-s4">
+                <div
+                  className="grid grid-cols-[40px_minmax(0,1fr)_56px] sm:grid-cols-[64px_minmax(0,1fr)_150px_56px] gap-s3 items-center px-s4 sm:px-s5 h-11 font-mono text-label uppercase tracking-[.14em]"
+                  style={{ background: "var(--bg-sunk)", color: "var(--muted)" }}
+                >
                   <span>Rank</span>
                   <span>Learner</span>
-                  <span className="text-right">Lessons</span>
+                  <span className="sm:col-span-2 text-right">Lessons</span>
                 </div>
                 {rest.map((e) => (
                   <Row key={e.userId} entry={e} leaderLessons={leaderLessons} />
