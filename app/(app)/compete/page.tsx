@@ -11,7 +11,8 @@ import { listProblemsSafe } from "@/lib/compete/problemService";
 import { HostPanel } from "@/components/compete/HostPanel";
 import { JoinRoom } from "@/components/compete/JoinRoom";
 import { RoomCards } from "@/components/compete/RoomCards";
-import { PlayedResults } from "@/components/compete/PlayedResults";
+import { PlayedResults, resultTotals } from "@/components/compete/PlayedResults";
+import { StatTiles } from "@/components/ui/Page";
 
 export const metadata: Metadata = {
   title: "Case Competitions | That's So Econ",
@@ -56,17 +57,18 @@ export default async function CompetePage() {
     .sort((a, b) => b.count - a.count);
 
   const liveRooms = open.filter((c) => c.status === "LOBBY").length;
+  const totals = resultTotals(played);
 
   return (
     <div className="theme-v2 min-h-screen w-full flex flex-col bg-bg bg-sky">
       <div className="w-full max-w-[880px] mx-auto px-s4 md:px-s5 py-s5 md:py-s6 flex flex-col gap-s6">
         <header>
           <h1 className="font-reading text-h1 font-semibold tracking-tight text-ink leading-[1.1]">
-            Case Competitions
+            Competitions
           </h1>
           <p className="text-ui text-muted mt-s2 max-w-[56ch]">
-            Join a live room with a code. Everyone answers the same problems and
-            the ranking moves as they go.
+            Join a live competition with a room code. Everyone solves the same
+            problems, and the ranking updates live.
           </p>
         </header>
 
@@ -101,7 +103,7 @@ export default async function CompetePage() {
           </div>
           <RoomCards
             rooms={open}
-            empty="No open rooms. Enter a code above to join one."
+            empty="Enter a code above to join one."
           />
         </section>
 
@@ -123,6 +125,14 @@ export default async function CompetePage() {
                 {played.length} {played.length === 1 ? "room" : "rooms"} played
               </span>
             </div>
+            <StatTiles
+              stats={[
+                { label: "Rooms played", value: totals.played, icon: '<path d="M5 21V4l7 2 7-2v11l-7 2-7-2z"/>' },
+                { label: "Total marks", value: totals.total, icon: '<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>' },
+                { label: "Best room", value: totals.best, good: true, icon: '<path d="M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z"/>' },
+                { label: "Average", value: totals.average, icon: '<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.2"/>' },
+              ]}
+            />
             <PlayedResults rows={played} />
           </section>
         )}
