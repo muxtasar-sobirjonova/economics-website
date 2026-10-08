@@ -123,7 +123,7 @@ export default function ArticleBody({
             alt="Pizza Delivery Illustration"
             fill
             sizes="(max-width: 768px) 100vw, 45vw"
-            className="rounded-xl shadow-sm border border-sky-blue filter sepia-[0.3] object-cover"
+            className="rounded-lg shadow-sm border border-sky-blue filter sepia-[0.3] object-cover"
           />
           <div className="absolute top-4 right-4 bg-white/90 backdrop-blur-sm px-3 py-1 rounded-lg border border-sky-blue shadow-sm font-bold text-[#4ebdd5] text-sm">
             30 MINUTE DELIVERY

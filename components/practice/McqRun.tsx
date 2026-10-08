@@ -93,7 +93,7 @@ export function McqRun({ setup, onLeave }: { setup: Setup; onLeave: () => void }
   }
 
   return (
-    <div className="rounded-xl border border-line bg-surface p-s6 flex flex-col items-start gap-s4">
+    <div className="rounded-lg border border-line bg-surface p-s6 flex flex-col items-start gap-s4">
       {phase.name === "error" ? (
         <>
           <p className="text-ui text-ink max-w-[52ch]">{phase.message}</p>

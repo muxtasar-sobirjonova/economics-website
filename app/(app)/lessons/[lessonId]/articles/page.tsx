@@ -108,7 +108,7 @@ async function ArticlesContent({ userId, lessonId }: { userId: string, lessonId:
       {/* Hero Banner */}
       <div className="flex flex-col md:flex-row items-start md:items-center mb-6 md:mb-10 p-5 md:px-8 md:py-4 rounded-3xl bg-white border border-line shadow-sm relative overflow-hidden">
         <div className="flex-1 flex flex-col md:flex-row gap-4 md:gap-6 items-start md:items-center w-full relative z-10">
-          <div className="w-[60px] h-[60px] md:w-[84px] md:h-[84px] rounded-[16px] md:rounded-[20px] flex items-center justify-center shrink-0 md:ml-2">
+          <div className="w-[60px] h-[60px] md:w-[84px] md:h-[84px] rounded-lg md:rounded-lg flex items-center justify-center shrink-0 md:ml-2">
             <FileText className="text-brand-primary w-10 h-10 md:w-12 md:h-12" strokeWidth={1.5} />
           </div>
           
@@ -130,7 +130,7 @@ async function ArticlesContent({ userId, lessonId }: { userId: string, lessonId:
 
           <div className="shrink-0 flex items-start md:items-end justify-start md:justify-center w-full md:w-auto md:mr-4 md:self-end mt-2 md:mt-0 md:mb-2">
                <Link href={`/lessons/${lessonId}/articles/read`} className="w-full md:w-auto">
-                 <div className="w-full md:w-auto bg-brand-primary text-white font-medium text-[14px] md:text-[13px] tracking-wide py-3 px-6 md:px-7 rounded-[14px] hover:opacity-90 hover:scale-105 transition-transform flex items-center justify-center gap-2 group active:scale-95 border border-transparent cursor-pointer">
+                 <div className="w-full md:w-auto bg-brand-primary text-white font-medium text-[14px] md:text-[13px] tracking-wide py-3 px-6 md:px-7 rounded-lg hover:opacity-90 hover:scale-105 transition-transform flex items-center justify-center gap-2 group active:scale-95 border border-transparent cursor-pointer">
                    Continue Article
                    <svg
                      width="14"

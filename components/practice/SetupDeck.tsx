@@ -27,7 +27,7 @@ function Group<T extends string>({
   return (
     <div className="grid sm:grid-cols-[64px_1fr] items-center gap-s2 sm:gap-s3">
       <span className="text-meta font-bold text-muted">{label}</span>
-      <div className="inline-flex flex-wrap gap-[3px] bg-bg-sunk p-[3px] rounded-xl justify-self-start max-w-full">
+      <div className="inline-flex flex-wrap gap-[3px] bg-bg-sunk p-[3px] rounded-lg justify-self-start max-w-full">
         {options.map((o) => {
           const on = o.v === value;
           return (
@@ -36,7 +36,7 @@ function Group<T extends string>({
               type="button"
               onClick={() => onPick(o.v)}
               aria-pressed={on}
-              className="inline-flex items-center gap-2 min-h-[44px] px-s4 rounded-[9px] text-ui font-semibold transition-colors"
+              className="inline-flex items-center gap-2 min-h-[44px] px-s4 rounded-sm text-ui font-semibold transition-colors"
               style={
                 on
                   ? { background: "var(--accent)", color: "var(--on-accent)" }
@@ -96,7 +96,7 @@ export function SetupDeck({
   const rated = isRated(setup);
 
   return (
-    <div className="grid lg:grid-cols-[1fr_320px] rounded-xl border border-line overflow-hidden">
+    <div className="grid lg:grid-cols-[1fr_320px] rounded-lg border border-line overflow-hidden">
       <div className="p-s5 flex flex-col gap-s4 justify-center">
         <Group<SessionType>
           label="Type"
@@ -215,7 +215,7 @@ export function SetupDeck({
             type="button"
             onClick={onStart}
             disabled={pending}
-            className="mt-s4 min-h-[48px] px-s5 rounded-xl bg-white text-ui font-extrabold inline-flex items-center justify-center gap-2 disabled:opacity-70 transition-opacity"
+            className="mt-s4 min-h-[48px] px-s5 rounded-lg bg-white text-ui font-extrabold inline-flex items-center justify-center gap-2 disabled:opacity-70 transition-opacity"
             style={{ color: "var(--accent-strong)" }}
           >
             {pending ? "Dealing…" : "Start practice"}

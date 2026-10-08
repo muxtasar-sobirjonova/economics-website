@@ -504,7 +504,7 @@ function List({
                         style={
                           at >= 0
                             ? { background: "var(--accent)", color: "var(--on-accent)" }
-                            : { background: "var(--reward-soft)", color: "var(--reward)" }
+                            : { background: "var(--accent-soft)", color: "var(--accent-strong)" }
                         }
                       >
                         {at >= 0 ? `#${at + 1} in the set` : `${p.maxPoints} marks`}
@@ -701,7 +701,7 @@ function Detail({
         <div className="flex flex-wrap items-center gap-s2">
           <span
             className={pill}
-            style={{ background: "var(--reward-soft)", color: "var(--reward)", borderColor: "transparent" }}
+            style={{ background: "var(--accent-soft)", color: "var(--accent-strong)", borderColor: "transparent" }}
           >
             {summary.topic}
           </span>

@@ -45,7 +45,7 @@ export const LearningPathSlider = ({
                   router.push(`/lessons/${lesson.id}/${routeSuffix}`);
                 }
               }}
-              className={`flex-shrink-0 w-[280px] flex flex-col items-start p-5 rounded-[20px] transition-all h-[140px] relative overflow-hidden ${
+              className={`flex-shrink-0 w-[280px] flex flex-col items-start p-5 rounded-lg transition-all h-[140px] relative overflow-hidden ${
                 status === "Locked" ? "cursor-not-allowed opacity-80" : "cursor-pointer"
               } ${
                 isCurrent ? "ring-2 ring-brand-primary ring-offset-2" : ""

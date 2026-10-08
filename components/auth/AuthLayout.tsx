@@ -8,7 +8,7 @@ export default function AuthLayout({ children, title, subtitle }: { children: Re
         {/* Header / Logo */}
         <div className="flex flex-col items-center justify-center space-y-4">
           <div className="flex items-center gap-4">
-            <div className="bg-white text-white font-black text-2xl flex items-center justify-center w-11 h-11 rounded-xl shadow-sm p-1">
+            <div className="bg-white text-white font-black text-2xl flex items-center justify-center w-11 h-11 rounded-lg shadow-sm p-1">
                <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col justify-center mt-1">

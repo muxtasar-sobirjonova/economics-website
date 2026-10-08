@@ -41,7 +41,7 @@ export function SidebarProgress() {
 
   if (!data) {
     return (
-      <div className="rounded-xl bg-[rgba(255,255,255,.07)] px-3.5 py-3 mb-7 animate-pulse">
+      <div className="rounded-lg bg-[rgba(255,255,255,.07)] px-3.5 py-3 mb-7 animate-pulse">
         <div className="h-2.5 w-20 rounded bg-[rgba(255,255,255,.15)]" />
         <div className="h-1.5 w-full rounded-full bg-[rgba(255,255,255,.12)] mt-3" />
         <div className="h-2.5 w-24 rounded bg-[rgba(255,255,255,.12)] mt-3" />
@@ -54,7 +54,7 @@ export function SidebarProgress() {
   return (
     <Link
       href="/roadmap"
-      className="block rounded-xl bg-[rgba(255,255,255,.08)] hover:bg-[rgba(255,255,255,.13)] transition-colors px-3.5 py-3 mb-7 border border-[rgba(255,255,255,.10)]"
+      className="block rounded-lg bg-[rgba(255,255,255,.08)] hover:bg-[rgba(255,255,255,.13)] transition-colors px-3.5 py-3 mb-7 border border-[rgba(255,255,255,.10)]"
     >
       <div className="flex items-baseline justify-between gap-2">
         <span className="text-[10px] font-bold tracking-[0.14em] uppercase text-[rgba(255,255,255,.65)]">

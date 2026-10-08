@@ -7,7 +7,7 @@ export const RoadmapMockup = () => (
     <div className="bg-gray-100 border-b border-gray-200 px-4 py-2 flex items-center gap-2 w-full shrink-0 h-6"></div>
     <div className="flex-1 flex overflow-hidden">
       <div className="w-[60px] md:w-[80px] bg-brand-800 shrink-0 flex flex-col items-center py-6 border-r border-gray-200 z-20">
-        <div className="w-8 h-8 md:w-10 md:h-10 rounded-xl bg-brand-primary text-white font-bold text-lg flex items-center justify-center mb-8 shadow-sm"><IconBook size={20} /></div>
+        <div className="w-8 h-8 md:w-10 md:h-10 rounded-lg bg-brand-primary text-white font-bold text-lg flex items-center justify-center mb-8 shadow-sm"><IconBook size={20} /></div>
         <div className="w-full flex flex-col gap-4 px-3 opacity-60">
           <div className="w-full h-6 md:h-8 rounded-lg bg-white/10"></div>
           <div className="w-full h-6 md:h-8 rounded-lg bg-white/20 border-l-4 border-white"></div>

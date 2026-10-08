@@ -4,7 +4,7 @@ import { SearchX } from "lucide-react";
 export default function NotFound() {
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-      <div className="bg-white p-8 rounded-xl shadow-sm max-w-md w-full text-center border border-slate-200">
+      <div className="bg-white p-8 rounded-lg shadow-sm max-w-md w-full text-center border border-slate-200">
         <div className="w-16 h-16 bg-slate-100 text-slate-400 rounded-full flex items-center justify-center mx-auto mb-6">
           <SearchX size={32} />
         </div>
@@ -14,7 +14,7 @@ export default function NotFound() {
         </p>
         <Link
           href="/"
-          className="inline-block px-6 py-3 bg-brand-primary text-white font-semibold rounded-xl hover:opacity-90 transition-opacity"
+          className="inline-block px-6 py-3 bg-brand-primary text-white font-semibold rounded-lg hover:opacity-90 transition-opacity"
         >
           Return Home
         </Link>

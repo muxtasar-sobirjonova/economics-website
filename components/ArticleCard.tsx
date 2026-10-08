@@ -7,7 +7,7 @@ export default function ArticleCard({ article }: { article: Article }) {
   return (
     <Link
       href={`/articles/${article.slug.current}`}
-      className="group block bg-white rounded-xl border border-line p-6 hover:shadow-sm transition-shadow h-full flex flex-col"
+      className="group block bg-white rounded-lg border border-line p-6 hover:shadow-sm transition-shadow h-full flex flex-col"
     >
       <div className="mb-4">
         <span className="inline-block bg-[rgba(200,217,230,0.4)] text-[#4ebdd5] text-xs font-bold px-2 py-1 rounded-full">

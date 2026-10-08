@@ -77,7 +77,7 @@ export default function ReviewMistakesComponent() {
 
         <button
           onClick={handleNextMistake}
-          className="w-full mt-6 bg-brand-primary text-white font-[500] py-3 px-4 rounded-xl hover:bg-brand-primary transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#4ebdd5] focus:ring-opacity-50"
+          className="w-full mt-6 bg-brand-primary text-white font-[500] py-3 px-4 rounded-lg hover:bg-brand-primary transition-colors duration-300 focus:outline-none focus:ring-2 focus:ring-[#4ebdd5] focus:ring-opacity-50"
         >
           Got it — mark reviewed
         </button>

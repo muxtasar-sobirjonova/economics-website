@@ -275,7 +275,7 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
             <button
               key={id}
               onClick={() => startSession(id)}
-              className="rounded-[20px] px-[18px] py-2 text-xs font-[700] border transition-colors cursor-pointer"
+              className="rounded-lg px-[18px] py-2 text-xs font-[700] border transition-colors cursor-pointer"
               style={{
                 backgroundColor: isActive ? '#3D52A0' : '#EEF3FF',
                 borderColor: isActive ? '#3D52A0' : '#C7D7FF',
@@ -301,11 +301,11 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
            {/* Card Stack */}
            <div className="relative w-[280px] h-[180px] mb-5">
               {/* Card 3 */}
-              <div className="absolute top-5 left-10 w-[240px] h-[140px] bg-[#E8D6FF] rounded-xl opacity-40 shadow-[2px_2px_8px_rgba(0,0,0,0.08)]" style={{ transform: 'rotate(6deg)' }} />
+              <div className="absolute top-5 left-10 w-[240px] h-[140px] bg-[#E8D6FF] rounded-lg opacity-40 shadow-[2px_2px_8px_rgba(0,0,0,0.08)]" style={{ transform: 'rotate(6deg)' }} />
               {/* Card 2 */}
-              <div className="absolute top-2.5 left-5 w-[240px] h-[140px] bg-[#D6E8FF] rounded-xl opacity-60 shadow-[2px_2px_8px_rgba(0,0,0,0.1)]" style={{ transform: 'rotate(3deg)' }} />
+              <div className="absolute top-2.5 left-5 w-[240px] h-[140px] bg-[#D6E8FF] rounded-lg opacity-60 shadow-[2px_2px_8px_rgba(0,0,0,0.1)]" style={{ transform: 'rotate(3deg)' }} />
               {/* Card 1 */}
-              <div className="absolute top-0 left-0 w-[240px] h-[140px] bg-[#FFF9C4] rounded-xl shadow-[4px_4px_16px_rgba(0,0,0,0.12)] p-4 flex flex-col justify-between animate-float" style={{ transform: 'rotate(-1deg)' }}>
+              <div className="absolute top-0 left-0 w-[240px] h-[140px] bg-[#FFF9C4] rounded-lg shadow-[4px_4px_16px_rgba(0,0,0,0.12)] p-4 flex flex-col justify-between animate-float" style={{ transform: 'rotate(-1deg)' }}>
                   <div>
                     <div className="h-2.5 bg-[rgba(0,0,0,0.08)] rounded mb-2 w-full" />
                     <div className="h-2.5 bg-[rgba(0,0,0,0.08)] rounded mb-2 w-full" />
@@ -323,15 +323,15 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
            {/* 3 Steps */}
            <div className="flex gap-2.5 justify-center mb-4">
-              <div className="bg-white border border-line rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
+              <div className="bg-white border border-line rounded-md px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">1</div>
                  Pick a day
               </div>
-              <div className="bg-white border border-line rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
+              <div className="bg-white border border-line rounded-md px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">2</div>
                  Read each card
               </div>
-              <div className="bg-white border border-line rounded-[10px] px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
+              <div className="bg-white border border-line rounded-md px-3.5 py-2 flex items-center gap-2 text-xs text-muted">
                  <div className="w-[22px] h-[22px] rounded-full bg-[#3D52A0] text-white flex items-center justify-center font-[800] text-[11px]">3</div>
                  Sort by memory
               </div>
@@ -392,27 +392,27 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
             
             {/* Slide Under Temp Card (rejoining back of queue visually) */}
             {showSlideUnder && slideUnderCard && (
-               <div className={`absolute ${cardWidthClass} ${cardMinHeightClass} rounded-xl p-7 animate-slideUnder z-[7]`}
+               <div className={`absolute ${cardWidthClass} ${cardMinHeightClass} rounded-lg p-7 animate-slideUnder z-[7]`}
                     style={{ backgroundColor: slideUnderCard.color || '#FFF9C4' }}>
                </div>
             )}
 
             {/* Ghost 2 */}
             {ghost2 && (
-              <div className={`absolute ${cardWidthClass} ${cardMinHeightClass} rounded-xl p-7 opacity-35 z-[8]`} 
+              <div className={`absolute ${cardWidthClass} ${cardMinHeightClass} rounded-lg p-7 opacity-35 z-[8]`} 
                    style={{ backgroundColor: ghost2.color || '#FFF9C4', transform: 'translateY(20px) scale(0.94)' }} />
             )}
             
             {/* Ghost 1 */}
             {ghost1 && (
-              <div className={`absolute ${cardWidthClass} ${cardMinHeightClass} rounded-xl p-7 opacity-60 ${animState === 'flyingLeft' ? 'animate-stackPopV2 delay-[0.4s]' : 'z-[9]'}`}
+              <div className={`absolute ${cardWidthClass} ${cardMinHeightClass} rounded-lg p-7 opacity-60 ${animState === 'flyingLeft' ? 'animate-stackPopV2 delay-[0.4s]' : 'z-[9]'}`}
                    style={{ backgroundColor: ghost1.color || '#FFF9C4', transform: 'translateY(10px) scale(0.97)' }} />
             )}
 
             {/* Active Card */}
             {activeCard && (
               <div 
-                className={`absolute ${cardWidthClass} ${cardMinHeightClass} rounded-xl p-7 shadow-[0_8px_32px_rgba(0,0,0,0.15)] flex flex-col z-[10] ${animClass}`}
+                className={`absolute ${cardWidthClass} ${cardMinHeightClass} rounded-lg p-7 shadow-[0_8px_32px_rgba(0,0,0,0.15)] flex flex-col z-[10] ${animClass}`}
                 style={{ 
                   backgroundColor: activeCard.color || '#FFF9C4', 
                   cursor: isDragging ? 'grabbing' : 'grab',
@@ -424,12 +424,12 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
                 onPointerCancel={handlePointerUp}
               >
                  {/* KNEW IT overlay */}
-                 <div className={`absolute inset-0 bg-[rgba(34,197,94,0.12)] rounded-xl flex items-center justify-center transition-opacity duration-200 pointer-events-none ${showKnewIt ? 'opacity-100' : 'opacity-0'}`}>
+                 <div className={`absolute inset-0 bg-[rgba(34,197,94,0.12)] rounded-lg flex items-center justify-center transition-opacity duration-200 pointer-events-none ${showKnewIt ? 'opacity-100' : 'opacity-0'}`}>
                     <div className="text-green-500 text-xl font-[900] px-4 py-2 rotate-[-15deg]">✓ MEMORIZED</div>
                  </div>
 
                  {/* REVIEW overlay */}
-                 <div className={`absolute inset-0 bg-[rgba(239,68,68,0.12)] rounded-xl flex items-center justify-center transition-opacity duration-200 pointer-events-none ${showReview ? 'opacity-100' : 'opacity-0'}`}>
+                 <div className={`absolute inset-0 bg-[rgba(239,68,68,0.12)] rounded-lg flex items-center justify-center transition-opacity duration-200 pointer-events-none ${showReview ? 'opacity-100' : 'opacity-0'}`}>
                     <div className="text-red-500 text-xl font-[900] px-4 py-2 rotate-[15deg]">↻ REVIEW</div>
                  </div>
 
@@ -444,10 +444,10 @@ export const NotesReviewClient = ({ initialNotes, lessons, title = "My Notes", s
 
           {/* Action Buttons */}
           <div className="mt-8 flex gap-4 justify-center shrink-0 z-20">
-             <button onClick={() => confirmAction('reviewAgain')} className="bg-white/80 backdrop-blur border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
+             <button onClick={() => confirmAction('reviewAgain')} className="bg-white/80 backdrop-blur border-2 border-red-500 text-red-500 hover:bg-red-500 hover:text-white rounded-lg px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
                ↻ Review Again
              </button>
-             <button onClick={() => confirmAction('knewIt')} className="bg-white/80 backdrop-blur border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white rounded-xl px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
+             <button onClick={() => confirmAction('knewIt')} className="bg-white/80 backdrop-blur border-2 border-green-500 text-green-500 hover:bg-green-500 hover:text-white rounded-lg px-8 py-3.5 font-[700] text-sm transition-colors min-w-[160px] shadow-sm">
                ✓ Memorized
              </button>
           </div>

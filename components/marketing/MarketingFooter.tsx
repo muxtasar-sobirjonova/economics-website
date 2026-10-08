@@ -6,7 +6,7 @@ export const MarketingFooter = () => (
       <div className="grid grid-cols-1 md:grid-cols-2 gap-12 items-center">
         <div className="flex flex-col items-start gap-4">
           <div className="flex items-center gap-4">
-            <div className="bg-white text-white font-black text-xl flex items-center justify-center w-10 h-10 rounded-xl shadow-sm p-1">
+            <div className="bg-white text-white font-black text-xl flex items-center justify-center w-10 h-10 rounded-lg shadow-sm p-1">
                <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain" />
             </div>
             <div className="flex flex-col justify-center mt-1">

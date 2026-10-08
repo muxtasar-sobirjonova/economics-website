@@ -152,7 +152,7 @@ export function Directory({ config, storageKey }: { config: DirConfig; storageKe
         </div>
 
         {/* ── Finder ──────────────────────────────────────────────────── */}
-        <section className="mt-s5 bg-surface border border-line rounded-xl shadow-sh1 p-s3">
+        <section className="mt-s5 bg-surface border border-line rounded-lg shadow-sh1 p-s3">
           <div className="flex flex-col sm:flex-row gap-s3">
             <div className="relative flex-1 min-w-0">
               <span className="absolute left-s4 top-1/2 -translate-y-1/2 text-faint pointer-events-none">
@@ -237,7 +237,7 @@ export function Directory({ config, storageKey }: { config: DirConfig; storageKe
         </div>
 
         {/* ── List ────────────────────────────────────────────────────── */}
-        <div className="bg-surface border border-line rounded-xl shadow-sh1 overflow-hidden">
+        <div className="bg-surface border border-line rounded-lg shadow-sh1 overflow-hidden">
           {slice.length === 0 ? (
             <div className="p-s6 text-center text-meta text-muted">
               <b className="block text-ui text-ink mb-s1">Nothing matches</b>
@@ -489,7 +489,7 @@ function Popover({
         role="dialog"
         aria-modal="true"
         aria-label={title}
-        className="w-full sm:max-w-[420px] max-h-[82vh] bg-surface rounded-t-xl sm:rounded-xl shadow-sh3 flex flex-col overflow-hidden"
+        className="w-full sm:max-w-[420px] max-h-[82vh] bg-surface rounded-t-xl sm:rounded-lg shadow-sh3 flex flex-col overflow-hidden"
       >
         <div className="p-s3 border-b border-line">
           <input

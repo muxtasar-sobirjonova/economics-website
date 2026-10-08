@@ -147,7 +147,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                 extraClass = 'animate-pulse-custom';
              }
              return (
-                <div key={i} className={`flex-1 h-1.5 rounded-[3px] ${extraClass}`} style={{ backgroundColor: bgColor }} />
+                <div key={i} className={`flex-1 h-1.5 rounded-sm ${extraClass}`} style={{ backgroundColor: bgColor }} />
              );
            })}
          </div>
@@ -164,9 +164,9 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                className="flex flex-col w-full"
              >
                {/* Card */}
-               <div className="bg-[linear-gradient(135deg,#EEF3FF,#F8F9FC)] border border-[#C7D7FF] rounded-[20px] px-8 py-6 shadow-[0_4px_20px_rgba(61,82,160,0.08)] shrink-0">
+               <div className="bg-[linear-gradient(135deg,#EEF3FF,#F8F9FC)] border border-[#C7D7FF] rounded-lg px-8 py-6 shadow-[0_4px_20px_rgba(61,82,160,0.08)] shrink-0">
                  <div className="flex justify-between items-center">
-                    <div className="bg-[#3D52A0] text-white text-[10px] font-[700] px-3 py-1 rounded-[20px]">
+                    <div className="bg-[#3D52A0] text-white text-[10px] font-[700] px-3 py-1 rounded-lg">
                        QUESTION {currentQuestionIndex + 1} OF {totalQuestions}
                     </div>
                     <div className="text-[11px] text-faint">
@@ -276,7 +276,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                  <button 
                    onClick={handlePrevQuestion} 
                    disabled={currentQuestionIndex === 0}
-                   className={`px-6 py-3 font-[600] text-[15px] rounded-xl transition-colors ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-faint bg-bg-sunk' : 'text-[#3D52A0] bg-[#EEF3FF] hover:bg-[#E0E7FF]'}`}
+                   className={`px-6 py-3 font-[600] text-[15px] rounded-lg transition-colors ${currentQuestionIndex === 0 ? 'opacity-50 cursor-not-allowed text-faint bg-bg-sunk' : 'text-[#3D52A0] bg-[#EEF3FF] hover:bg-[#E0E7FF]'}`}
                  >
                    ← Previous
                  </button>
@@ -284,7 +284,7 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                  {currentQuestionIndex === displayQuestions.length - 1 && hasAnsweredCurrent ? (
                    <button 
                      onClick={handleFinishQuiz}
-                     className="bg-brand-primary hover:bg-brand-primary/90 text-white rounded-xl px-8 py-3 font-[700] text-[15px] shadow-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+                     className="bg-brand-primary hover:bg-brand-primary/90 text-white rounded-lg px-8 py-3 font-[700] text-[15px] shadow-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                    >
                      Finish Quiz
                    </button>
@@ -292,14 +292,14 @@ export default function QuizClient({ lessonId, questions }: QuizClientProps) {
                    <button 
                      onClick={handleSubmitAnswer}
                      disabled={isSubmitting}
-                     className={`bg-brand-primary text-white rounded-xl px-8 py-3 font-[700] text-[15px] shadow-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-brand-primary/90'}`}
+                     className={`bg-brand-primary text-white rounded-lg px-8 py-3 font-[700] text-[15px] shadow-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary ${isSubmitting ? 'opacity-50 cursor-not-allowed' : 'hover:bg-brand-primary/90'}`}
                    >
                      {isSubmitting ? 'Submitting...' : 'Submit'}
                    </button>
                  ) : (
                    <button 
                      onClick={hasAnsweredCurrent ? handleNextQuestion : handleNextQuestion} // Skip also goes next
-                     className="bg-brand-primary hover:bg-brand-primary/90 text-white rounded-xl px-8 py-3 font-[700] text-[15px] shadow-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
+                     className="bg-brand-primary hover:bg-brand-primary/90 text-white rounded-lg px-8 py-3 font-[700] text-[15px] shadow-md transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary"
                    >
                      {hasAnsweredCurrent ? 'Next Question →' : 'Skip Question →'}
                    </button>

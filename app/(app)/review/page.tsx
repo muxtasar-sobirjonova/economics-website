@@ -103,13 +103,13 @@ export default async function ReviewPage() {
                   
                   <div className="flex items-center gap-2 shrink-0 mt-2 sm:mt-0">
                     <Link href={`/lessons/${lesson.dayOrder}/concepts`} className="flex-1 sm:flex-none">
-                      <button className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-white border border-line text-muted text-sm font-semibold flex items-center justify-center gap-2 hover:bg-surface hover:text-brand-primary transition-all">
+                      <button className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-white border border-line text-muted text-sm font-semibold flex items-center justify-center gap-2 hover:bg-surface hover:text-brand-primary transition-all">
                         <Lightbulb size={16} />
                         Concept
                       </button>
                     </Link>
                     <Link href={`/lessons/${lesson.dayOrder}/articles`} className="flex-1 sm:flex-none">
-                      <button className="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-brand-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-brand-primary/90 transition-all">
+                      <button className="w-full sm:w-auto px-4 py-2.5 rounded-lg bg-brand-primary text-white text-sm font-semibold flex items-center justify-center gap-2 hover:bg-brand-primary/90 transition-all">
                         <BookOpen size={16} />
                         Article
                       </button>

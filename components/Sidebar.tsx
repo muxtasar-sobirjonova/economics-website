@@ -28,11 +28,9 @@ interface NavItemProps {
   };
   pathname: string;
   setIsOpen: (val: boolean) => void;
-  /** Design token the section is coloured with. */
-  tone: string;
 }
 
-const NavItem = ({ item, pathname, setIsOpen, tone }: NavItemProps) => {
+const NavItem = ({ item, pathname, setIsOpen }: NavItemProps) => {
   const isActive =
     item.href === "/home"
       ? pathname === "/home"
@@ -53,13 +51,13 @@ const NavItem = ({ item, pathname, setIsOpen, tone }: NavItemProps) => {
           : "text-white font-medium hover:bg-[var(--rail-tile)] hover:translate-x-[3px]"
       }`}
     >
-      {/* The icon sits on its own tile, which takes the section's colour when
-          the page is open — the same tone the page itself uses. */}
+      {/* The icon sits on its own tile, which fills with the brand colour
+          when the page is open. */}
       <span
         className="w-9 h-9 rounded-full grid place-items-center shrink-0 transition-colors"
         style={
           isActive
-            ? { background: `var(--${tone})`, color: "#fff" }
+            ? { background: "var(--accent)", color: "#fff" }
             : { background: "var(--rail-tile)", color: "#fff" }
         }
       >
@@ -84,7 +82,7 @@ const NavItem = ({ item, pathname, setIsOpen, tone }: NavItemProps) => {
       {isActive && !item.badge && (
         <span
           className="ml-auto w-2 h-2 rounded-full shrink-0"
-          style={{ background: `var(--${tone})` }}
+          style={{ background: "var(--accent)" }}
           aria-hidden
         />
       )}
@@ -92,14 +90,14 @@ const NavItem = ({ item, pathname, setIsOpen, tone }: NavItemProps) => {
   );
 };
 
-/** A section label, its tone dot and the rule that carries it across. */
-const SectionLabel = ({ children, tone }: { children: React.ReactNode; tone: string }) => (
-  // The dot is not decoration: it is the colour that section's own pages are
-  // set in, so the rail says where you are about to go as well as where you
-  // are. The rule that used to run past it is gone — with the sections spaced
-  // this far apart it was holding nothing together.
+/** A section label and its dot. */
+const SectionLabel = ({ children }: { children: React.ReactNode }) => (
+  // One dot, one colour. It used to take the section's own hue, back when the
+  // pages under it were four different colours; they are one colour now, so
+  // four dots were four hues saying nothing — and the orange one did not sit
+  // with the others at all.
   <h3 className="flex items-center gap-2.5 pl-3 text-[11px] font-[700] tracking-[0.12em] uppercase mb-3 text-rail-dim">
-    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: `var(--${tone})` }} aria-hidden />
+    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "var(--accent)" }} aria-hidden />
     {children}
   </h3>
 );
@@ -162,7 +160,7 @@ export default function Sidebar() {
     // than a slab welded to the window edge. `h-full` is gone on purpose — the
     // flex row stretches it, and a height of 100% plus margins overflows.
     <aside
-      className="app-chrome hidden md:flex w-[260px] m-s3 mr-0 rounded-xl text-white flex-col shrink-0 group relative z-40 overflow-hidden shadow-sh3"
+      className="app-chrome hidden md:flex w-[260px] m-s3 mr-0 rounded-lg text-white flex-col shrink-0 group relative z-40 overflow-hidden shadow-sh3"
       style={{
         background:
           "linear-gradient(170deg, var(--rail-top) 0%, var(--rail-mid) 45%, var(--rail-bottom) 100%)",
@@ -187,7 +185,7 @@ export default function Sidebar() {
               tile to sit on — on the rail it would otherwise be a purple shape
               on a purple panel. `contain`, not `cover`: the arrow is the whole
               logo and cropping it crops the brand. */}
-          <div className="shrink-0 w-11 h-11 rounded-xl shadow-sm overflow-hidden bg-white p-1.5 grid place-items-center">
+          <div className="shrink-0 w-11 h-11 rounded-lg shadow-sm overflow-hidden bg-white p-1.5 grid place-items-center">
             <img
               src="/favicon.png"
               alt="That's So Econ"
@@ -204,40 +202,40 @@ export default function Sidebar() {
 
         {/* Dashboard Section */}
         <div className="mb-6">
-          <SectionLabel tone="quiz">Dashboard</SectionLabel>
+          <SectionLabel>Dashboard</SectionLabel>
           <nav className="space-y-1">
             {dashboardItems.map((item) => (
-              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} tone="quiz" />
+              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} />
             ))}
           </nav>
         </div>
 
         {/* Case Competitions */}
         <div className="mb-6">
-          <SectionLabel tone="concept">Case Competitions</SectionLabel>
+          <SectionLabel>Case Competitions</SectionLabel>
           <nav className="space-y-1">
             {caseItems.map((item) => (
-              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} tone="concept" />
+              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} />
             ))}
           </nav>
         </div>
 
         {/* Learn Section */}
         <div className="mb-6">
-          <SectionLabel tone="article">Learn</SectionLabel>
+          <SectionLabel>Learn</SectionLabel>
           <nav className="space-y-1">
             {learnItems.map((item) => (
-              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} tone="article" />
+              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} />
             ))}
           </nav>
         </div>
 
         {/* Opportunities Section */}
         <div>
-          <SectionLabel tone="reward">Opportunities</SectionLabel>
+          <SectionLabel>Opportunities</SectionLabel>
           <nav className="space-y-1">
             {opportunityItems.map((item) => (
-              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} tone="reward" />
+              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} />
             ))}
           </nav>
         </div>
@@ -253,7 +251,7 @@ export default function Sidebar() {
           go looking for. Signing out used to be a grey line under a rule; on
           its own card it is something you can see and aim at. */}
       <div className="relative shrink-0 px-4 pb-4 pt-2">
-        <div className="rounded-xl border border-rail-line bg-[var(--rail-tile)] px-2 py-1.5">
+        <div className="rounded-lg border border-rail-line bg-[var(--rail-tile)] px-2 py-1.5">
           <AuthStatus />
         </div>
       </div>

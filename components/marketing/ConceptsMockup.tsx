@@ -12,8 +12,8 @@ export const ConceptsMockup = () => (
          whileHover={{ y: -4, boxShadow: "0px 10px 20px rgba(0,0,0,0.15)" }}
          transition={{ duration: 0.2, ease: "easeInOut" }}
        >
-         <div className="relative w-full h-full min-h-[220px] p-6 rounded-[20px] cursor-pointer bg-white flex flex-col border-y border-r border-gray-100 border-l-[5px] transition-all duration-200 ease-out border-l-green-700 shadow-sm -translate-y-1" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}>
-           <div className="absolute inset-0 rounded-[20px] bg-white/60 z-20 pointer-events-none" />
+         <div className="relative w-full h-full min-h-[220px] p-6 rounded-lg cursor-pointer bg-white flex flex-col border-y border-r border-gray-100 border-l-[5px] transition-all duration-200 ease-out border-l-green-700 shadow-sm -translate-y-1" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}>
+           <div className="absolute inset-0 rounded-lg bg-white/60 z-20 pointer-events-none" />
            <div className="absolute top-4 right-4 z-30 w-7 h-7 rounded-full flex items-center justify-center shadow-sm bg-green-700">
              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
            </div>

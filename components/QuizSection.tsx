@@ -267,7 +267,7 @@ export default function QuizSection({
           {isPending ? "Submitting..." : "Submit Answers"}
         </button>
       ) : (
-        <div className="mt-8 text-center bg-white rounded-xl border border-line p-8 shadow-sm" aria-live="assertive" tabIndex={-1} ref={(el) => { if (el && submitted) el.focus(); }}>
+        <div className="mt-8 text-center bg-white rounded-lg border border-line p-8 shadow-sm" aria-live="assertive" tabIndex={-1} ref={(el) => { if (el && submitted) el.focus(); }}>
           <div className="flex justify-between items-center mb-6">
             <h3 className="text-xl font-bold text-slate-800">Quiz Complete!</h3>
             <div className="bg-brand-500 text-white text-sm font-bold px-4 py-1.5 rounded-full">
@@ -287,7 +287,7 @@ export default function QuizSection({
           </p>
           <button
             onClick={() => router.push("/roadmap")}
-            className="bg-brand-primary hover:bg-[var(--accent-strong)] text-white px-7 py-[13px] rounded-[50px] font-bold text-sm transition-colors shadow-[0_4px_12px_rgba(123,111,231,0.3)]"
+            className="bg-brand-primary hover:bg-[var(--accent-strong)] text-white px-7 py-[13px] rounded-lg font-bold text-sm transition-colors shadow-[0_4px_12px_rgba(123,111,231,0.3)]"
           >
             Back to Roadmap →
           </button>

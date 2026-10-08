@@ -18,13 +18,13 @@ export default function Loading() {
       <main className="px-10 pb-16 max-w-[1240px] w-full mx-auto mt-4">
         {/* Skeleton Header Card */}
         <div className="flex items-center mb-10 px-8 py-4 rounded-3xl bg-white border border-line shadow-sm relative h-[116px]">
-          <div className="w-[84px] h-[84px] rounded-[20px] bg-bg-sunk animate-pulse shrink-0 ml-2"></div>
+          <div className="w-[84px] h-[84px] rounded-lg bg-bg-sunk animate-pulse shrink-0 ml-2"></div>
           <div className="flex-1 px-3 ml-6 flex flex-col justify-center gap-2">
             <div className="h-3 w-20 bg-bg-sunk rounded animate-pulse"></div>
             <div className="h-6 w-64 bg-bg-sunk rounded animate-pulse"></div>
             <div className="h-4 w-32 bg-bg-sunk rounded animate-pulse"></div>
           </div>
-          <div className="w-[160px] h-[44px] bg-bg-sunk rounded-[14px] animate-pulse"></div>
+          <div className="w-[160px] h-[44px] bg-bg-sunk rounded-lg animate-pulse"></div>
         </div>
 
         {/* Skeleton Layout Content */}

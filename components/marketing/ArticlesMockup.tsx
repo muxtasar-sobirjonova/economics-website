@@ -7,7 +7,7 @@ export const ArticlesMockup = () => (
     <div className="p-6 flex-1 flex items-center justify-center bg-gray-50 flex-nowrap overflow-x-auto snap-x px-6 gap-4">
        <motion.div 
          whileHover={{ y: -4, boxShadow: "0px 10px 20px rgba(0,0,0,0.15)" }}
-         className="w-[280px] group block bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col cursor-pointer shrink-0 snap-center" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}
+         className="w-[280px] group block bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex flex-col cursor-pointer shrink-0 snap-center" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}
        >
          <div className="mb-4">
            <span className="inline-block bg-[rgba(200,217,230,0.4)] text-[#4ebdd5] text-xs font-bold px-2 py-1 rounded-full">Network Effects</span>
@@ -20,7 +20,7 @@ export const ArticlesMockup = () => (
        </motion.div>
        <motion.div 
          whileHover={{ y: -4, boxShadow: "0px 10px 20px rgba(0,0,0,0.15)" }}
-         className="w-[280px] group block bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col cursor-pointer shrink-0 snap-center" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}
+         className="w-[280px] group block bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex flex-col cursor-pointer shrink-0 snap-center" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}
        >
          <div className="mb-4">
            <span className="inline-block bg-purple-50 text-purple-600 text-xs font-bold px-2 py-1 rounded-full">Unit Economics</span>
@@ -33,7 +33,7 @@ export const ArticlesMockup = () => (
        </motion.div>
        <motion.div 
          whileHover={{ y: -4, boxShadow: "0px 10px 20px rgba(0,0,0,0.15)" }}
-         className="w-[280px] group block bg-white rounded-xl border border-gray-200 p-6 shadow-sm flex flex-col cursor-pointer shrink-0 snap-center" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}
+         className="w-[280px] group block bg-white rounded-lg border border-gray-200 p-6 shadow-sm flex flex-col cursor-pointer shrink-0 snap-center" role="button" tabIndex={0} onKeyDown={(e) => { if(e.key === 'Enter' || e.key === ' ') {} }}
        >
          <div className="mb-4">
            <span className="inline-block bg-blue-50 text-blue-600 text-xs font-bold px-2 py-1 rounded-full">Monopoly</span>

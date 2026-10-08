@@ -60,7 +60,7 @@ function Podium({ rows }: { rows: LadderRow[] }) {
 
   return (
     <div
-      className="mx-s5 rounded-xl p-s5 pb-0 grid grid-cols-3 gap-s3 items-end"
+      className="mx-s5 rounded-lg p-s5 pb-0 grid grid-cols-3 gap-s3 items-end"
       style={{ background: "linear-gradient(180deg, var(--accent-soft), transparent)" }}
     >
       {order.map((i) => {
@@ -113,7 +113,7 @@ export function Ladder({
   const rest = rows.slice(3, 10);
 
   return (
-    <section className="rounded-xl border border-line overflow-hidden">
+    <section className="rounded-lg border border-line overflow-hidden">
       <div className="p-s5 pb-0 flex flex-wrap items-start justify-between gap-s4">
         <div className="flex items-center gap-s3">
           <svg className="w-[52px] h-[52px] shrink-0" viewBox="0 0 52 52" aria-hidden>
@@ -133,14 +133,14 @@ export function Ladder({
           </div>
         </div>
 
-        <div className="inline-flex gap-[3px] bg-bg-sunk p-[3px] rounded-xl">
+        <div className="inline-flex gap-[3px] bg-bg-sunk p-[3px] rounded-lg">
           {([["rating", "Rating"], ["xp", "All time XP"]] as const).map(([v, name]) => (
             <button
               key={v}
               type="button"
               onClick={() => setTab(v)}
               aria-pressed={tab === v}
-              className="min-h-[40px] px-s4 rounded-[9px] text-meta font-semibold transition-colors"
+              className="min-h-[40px] px-s4 rounded-sm text-meta font-semibold transition-colors"
               style={
                 tab === v
                   ? { background: "var(--accent)", color: "var(--on-accent)" }
@@ -240,7 +240,7 @@ export function Ladder({
       )}
 
       {tab === "rating" && myRating !== null && (
-        <div className="m-s5 rounded-xl p-s4 flex flex-wrap gap-s4 items-center justify-between" style={{ background: "var(--accent-soft)" }}>
+        <div className="m-s5 rounded-lg p-s4 flex flex-wrap gap-s4 items-center justify-between" style={{ background: "var(--accent-soft)" }}>
           <p className="text-ui text-ink max-w-[46ch]">
             Your rating is{" "}
             <b style={{ color: "var(--accent-strong)" }}>{fmt(myRating)}</b>. It moves

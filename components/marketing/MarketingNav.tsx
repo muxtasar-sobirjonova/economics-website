@@ -4,8 +4,8 @@ export const MarketingNav = () => (
   <nav className="sticky top-0 z-50 bg-white/90 backdrop-blur-md shadow-sm border-b border-line w-full transition-all duration-300" aria-label="Main Navigation">
     <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
       <div className="flex items-center gap-3 relative z-50">
-        <Link href="/" aria-label="That's So Econ Home" className="flex items-center gap-4 focus:outline-none focus:ring-4 focus:ring-brand-primary/50 rounded-xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
-          <div className="bg-white text-white font-black text-2xl flex items-center justify-center w-10 h-10 rounded-xl shadow-sm p-1">
+        <Link href="/" aria-label="That's So Econ Home" className="flex items-center gap-4 focus:outline-none focus:ring-4 focus:ring-brand-primary/50 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary">
+          <div className="bg-white text-white font-black text-2xl flex items-center justify-center w-10 h-10 rounded-lg shadow-sm p-1">
              <img src="/favicon.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <div className="flex flex-col justify-center mt-1">

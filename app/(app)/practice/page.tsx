@@ -21,7 +21,7 @@ import { practiceHistory } from "@/lib/compete/practiceService";
 
 const PracticeHome = dynamicImport(
   () => import("@/components/practice/PracticeHome").then((m) => m.PracticeHome),
-  { loading: () => <div className="h-[420px] rounded-xl border border-line bg-surface" /> }
+  { loading: () => <div className="h-[420px] rounded-lg border border-line bg-surface" /> }
 );
 
 const PracticeHistory = dynamicImport(

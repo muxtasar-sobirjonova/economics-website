@@ -21,7 +21,7 @@ export default async function MobileHeader() {
     <header className="app-chrome md:hidden fixed top-0 left-0 right-0 h-16 bg-slate-50 z-50 flex items-center justify-between px-5">
       {/* Left side: Track Selector */}
       <Link href="/track-selection" className="flex items-center gap-2 group">
-         <div className="w-8 h-8 flex items-center justify-center rounded-xl bg-gradient-to-br from-brand-primary/10 to-brand-primary/5 border border-brand-primary/10 group-hover:bg-brand-primary/20 transition-colors">
+         <div className="w-8 h-8 flex items-center justify-center rounded-lg bg-gradient-to-br from-brand-primary/10 to-brand-primary/5 border border-brand-primary/10 group-hover:bg-brand-primary/20 transition-colors">
             <Compass size={18} className="text-brand-primary" strokeWidth={2.5} />
          </div>
          <IconChevronDown size={16} className="text-muted group-hover:text-ink transition-colors" stroke={2.5} />

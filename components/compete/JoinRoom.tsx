@@ -81,7 +81,7 @@ export function JoinRoom({ liveRooms = 0 }: { liveRooms?: number }) {
   return (
     <form
       onSubmit={submit}
-      className="rounded-xl border border-line bg-bg-sunk shadow-sh1 p-s5 grid lg:grid-cols-[200px_1fr] gap-s5 items-center"
+      className="rounded-lg border border-line bg-bg-sunk shadow-sh1 p-s5 grid lg:grid-cols-[200px_1fr] gap-s5 items-center"
     >
       <div>
         <h2 className="text-h3 font-semibold text-ink">Join a room</h2>
@@ -121,7 +121,7 @@ export function JoinRoom({ liveRooms = 0 }: { liveRooms?: number }) {
               autoComplete="off"
               spellCheck={false}
               aria-label={`Character ${i + 1}`}
-              className="w-[42px] h-[52px] text-center font-bold text-h3 uppercase rounded-[12px] border bg-raised text-ink focus:outline-none transition-colors"
+              className="w-[42px] h-[52px] text-center font-bold text-h3 uppercase rounded-md border bg-raised text-ink focus:outline-none transition-colors"
               style={{ borderColor: error ? "var(--danger)" : "var(--border-strong)" }}
             />
           ))}

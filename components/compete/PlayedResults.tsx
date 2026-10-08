@@ -26,7 +26,7 @@ function Tile({
   icon: React.ReactNode;
 }) {
   return (
-    <div className="bg-surface border border-line rounded-xl px-s4 py-s3 flex items-center gap-s3 min-w-0">
+    <div className="bg-surface border border-line rounded-lg px-s4 py-s3 flex items-center gap-s3 min-w-0">
       <span
         className="w-9 h-9 rounded-lg grid place-items-center shrink-0"
         style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
@@ -58,7 +58,7 @@ export function PlayedResults({ rows }: { rows: PlayedRow[] }) {
   const average = ended.length ? (total / ended.length).toFixed(1) : "—";
 
   return (
-    <div className="rounded-xl border border-line bg-surface shadow-sh1 overflow-hidden">
+    <div className="rounded-lg border border-line bg-surface shadow-sh1 overflow-hidden">
       <div className="grid grid-cols-3 gap-s3 p-s4 bg-bg-sunk border-b border-line">
         <Tile label="Total marks" value={total} icon={svg("M5 20V10M12 20V4M19 20v-7")} />
         <Tile label="Best room" value={best} icon={svg("M12 3l2.7 5.6 6.1.9-4.4 4.3 1 6.1L12 17l-5.4 2.9 1-6.1L3.2 9.5l6.1-.9z")} />

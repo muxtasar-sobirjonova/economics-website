@@ -85,7 +85,7 @@ export function SignupForm() {
     <>
       <form className="mt-8 space-y-5" onSubmit={handleFormSubmit(onSubmit)}>
         {error && (
-          <div className="bg-red-50 text-red-600 p-3 rounded-xl text-sm text-center border border-red-200 font-medium">
+          <div className="bg-red-50 text-red-600 p-3 rounded-lg text-sm text-center border border-red-200 font-medium">
             {error}
           </div>
         )}

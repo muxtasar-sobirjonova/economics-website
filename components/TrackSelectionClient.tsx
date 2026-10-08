@@ -95,7 +95,7 @@ export function TrackSelectionClient({ currentTrack }: TrackSelectionClientProps
                 </div>
               )}
 
-              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-xl flex items-center justify-center mb-3 md:mb-6 ${track.iconBg}`}>
+              <div className={`w-10 h-10 md:w-12 md:h-12 rounded-lg flex items-center justify-center mb-3 md:mb-6 ${track.iconBg}`}>
                 <Icon className="w-5 h-5 md:w-6 md:h-6" />
               </div>
 
@@ -116,7 +116,7 @@ export function TrackSelectionClient({ currentTrack }: TrackSelectionClientProps
       <button
         onClick={handleConfirm}
         disabled={!selected || isPending}
-        className={`px-8 py-3.5 rounded-xl font-bold text-white shadow-lg transition-all duration-200 min-w-[200px] flex items-center justify-center gap-2 ${
+        className={`px-8 py-3.5 rounded-lg font-bold text-white shadow-lg transition-all duration-200 min-w-[200px] flex items-center justify-center gap-2 ${
           selected 
             ? `${tracks.find(t => t.id === selected)?.buttonColor} active:scale-[0.98] cursor-pointer` 
             : "bg-slate-300 cursor-not-allowed shadow-none"

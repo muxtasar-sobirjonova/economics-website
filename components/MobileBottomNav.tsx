@@ -53,7 +53,7 @@ export function MobileBottomNav() {
             <Link
               key={item.name}
               href={item.href}
-              className={`flex flex-col items-center justify-center flex-1 shrink-0 min-w-[72px] px-1 py-1.5 rounded-xl transition-all snap-center ${
+              className={`flex flex-col items-center justify-center flex-1 shrink-0 min-w-[72px] px-1 py-1.5 rounded-lg transition-all snap-center ${
                 isActive 
                   ? "text-brand-primary" 
                   : "text-faint hover:text-muted"

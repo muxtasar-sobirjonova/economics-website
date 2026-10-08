@@ -30,7 +30,7 @@ function Icon() {
 export function RoomCards({ rooms, empty }: { rooms: RoomRow[]; empty: string }) {
   if (rooms.length === 0) {
     return (
-      <div className="rounded-xl border border-dashed border-line p-s6 text-center text-meta text-muted">
+      <div className="rounded-lg border border-dashed border-line p-s6 text-center text-meta text-muted">
         {empty}
       </div>
     );
@@ -45,7 +45,7 @@ export function RoomCards({ rooms, empty }: { rooms: RoomRow[]; empty: string })
         return (
           <div
             key={r.code}
-            className="rounded-xl border border-line bg-surface shadow-sh1 p-s4 flex flex-col gap-s4"
+            className="rounded-lg border border-line bg-surface shadow-sh1 p-s4 flex flex-col gap-s4"
             style={{ opacity: live ? 1 : 0.7 }}
           >
             <div className="flex items-center gap-s3 min-w-0">

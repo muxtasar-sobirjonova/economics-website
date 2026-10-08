@@ -163,7 +163,7 @@ export const ReadingTabs = ({
               </button>
             </div>
             {!hideTakeaways && (
-              <div className="flex bg-slate-50 p-1 rounded-xl shadow-sm border border-line">
+              <div className="flex bg-slate-50 p-1 rounded-lg shadow-sm border border-line">
                 <button
                   onClick={() => setActivePanel("takeaways")}
                   className={`flex-1 text-center py-2 text-[13px] font-semibold rounded-lg cursor-pointer transition-all ${

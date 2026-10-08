@@ -41,7 +41,7 @@ export const RoadmapUnitCard = ({
         <Link href={startHref} className={`mt-4 sm:mt-0 sm:absolute sm:top-6 sm:right-6 w-max ${disabled ? "pointer-events-none" : ""}`}>
           <Button 
             disabled={disabled}
-            className={`rounded-[14px] flex items-center gap-2 group text-white border-none shadow-sm px-4 py-2 font-bold transition-all hover:brightness-110 hover:-translate-y-[2px] ${btnClass}`}
+            className={`rounded-lg flex items-center gap-2 group text-white border-none shadow-sm px-4 py-2 font-bold transition-all hover:brightness-110 hover:-translate-y-[2px] ${btnClass}`}
           >
             {disabled ? "Locked" : "Start"}
             <svg
@@ -63,7 +63,7 @@ export const RoadmapUnitCard = ({
         <div className="mt-4 sm:mt-0 sm:absolute sm:top-6 sm:right-6 w-max">
           <Button 
             disabled={true}
-            className={`rounded-[14px] flex items-center gap-2 group text-white border-none shadow-sm px-4 py-2 font-bold transition-all hover:brightness-110 hover:-translate-y-[2px] ${btnClass}`}
+            className={`rounded-lg flex items-center gap-2 group text-white border-none shadow-sm px-4 py-2 font-bold transition-all hover:brightness-110 hover:-translate-y-[2px] ${btnClass}`}
           >
             Locked
             <svg

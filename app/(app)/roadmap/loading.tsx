@@ -22,9 +22,9 @@ export default function RoadmapLoading() {
         {/* Right panel Skeleton */}
         <div className="w-full xl:w-[320px] shrink-0 bg-white border border-slate-200 rounded-2xl p-6 flex flex-col gap-4">
           <div className="h-8 w-32 bg-bg-sunk rounded animate-pulse mb-4"></div>
-          <div className="h-24 w-full bg-bg-sunk rounded-xl animate-pulse"></div>
-          <div className="h-24 w-full bg-bg-sunk rounded-xl animate-pulse"></div>
-          <div className="h-24 w-full bg-bg-sunk rounded-xl animate-pulse"></div>
+          <div className="h-24 w-full bg-bg-sunk rounded-lg animate-pulse"></div>
+          <div className="h-24 w-full bg-bg-sunk rounded-lg animate-pulse"></div>
+          <div className="h-24 w-full bg-bg-sunk rounded-lg animate-pulse"></div>
         </div>
       </div>
     </div>

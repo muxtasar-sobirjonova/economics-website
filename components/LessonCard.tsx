@@ -76,7 +76,7 @@ export default function LessonCard({
     <Link href={href} className="block shrink-0 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-primary" style={{ width: "260px", minHeight: "220px" }}>
       <div
         data-active={isActive}
-        className={`relative w-full h-full min-h-[220px] p-6 rounded-[20px] cursor-pointer bg-white flex flex-col
+        className={`relative w-full h-full min-h-[220px] p-6 rounded-lg cursor-pointer bg-white flex flex-col
           border-y border-r border-line border-l-[5px] transition-all duration-200 ease-out
           ${isActive
             ? `${config.borderClass} ${config.activeBg} -translate-y-1`
