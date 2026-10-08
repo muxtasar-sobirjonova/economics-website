@@ -1,36 +1,44 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { useSession, signOut } from "next-auth/react";
 import {
-  IconHome,
-  IconMap,
-  IconBulb,
-  IconArticle,
-  IconBookmark,
-  IconNotes,
-  IconTrophy,
-  IconBriefcase,
-  IconMicroscope,
-  IconConfetti,
-  IconPencil,
+  IconHome, IconMap, IconBulb, IconArticle, IconBookmark, IconNotes,
+  IconTrophy, IconBriefcase, IconMicroscope, IconConfetti, IconPencil,
+  IconChevronLeft, IconLogout,
 } from "@tabler/icons-react";
-import { AuthStatus } from "@/components/AuthStatus";
 import { SidebarSkyline } from "@/components/SidebarSkyline";
 
-interface NavItemProps {
-  item: {
-    name: string;
-    href: string;
-    matchHref?: string;
-    icon: React.ElementType;
-    badge?: string;
-  };
-  pathname: string;
-  setIsOpen: (val: boolean) => void;
+/**
+ * The navigation rail.
+ *
+ * A flat panel in the brand colour rather than a gradient under two soft
+ * lights: with one purple everywhere, the gradient was the only place in the
+ * app still mixing three of them, and at this width nobody reads it as depth.
+ *
+ * It collapses to an icon rail. That is the one thing a 248px panel owes a
+ * 1280px laptop, and the choice is remembered — wrapped, because site data can
+ * be cleared and a rail that refuses to render is worse than one that forgets.
+ */
+
+const STORE = "tse.rail.collapsed";
+
+interface Item {
+  name: string;
+  href: string;
+  matchHref?: string;
+  icon: React.ElementType;
 }
 
-const NavItem = ({ item, pathname, setIsOpen }: NavItemProps) => {
+function NavItem({
+  item, pathname, collapsed,
+}: {
+  item: Item;
+  pathname: string;
+  collapsed: boolean;
+}) {
   const isActive =
     item.href === "/home"
       ? pathname === "/home"
@@ -43,217 +51,187 @@ const NavItem = ({ item, pathname, setIsOpen }: NavItemProps) => {
   return (
     <Link
       href={item.href}
-      onClick={() => setIsOpen(false)}
       aria-current={isActive ? "page" : undefined}
-      className={`flex items-center gap-3 py-1.5 pl-1.5 pr-3 min-h-[48px] text-sm rounded-full transition-all duration-150 active:scale-[0.98] ${
+      title={collapsed ? item.name : undefined}
+      className={`flex items-center gap-3 min-h-[44px] rounded-md text-ui transition-colors ${
+        collapsed ? "justify-center px-0" : "px-3"
+      } ${
         isActive
-          ? "bg-white text-brand-800 font-bold shadow-[0_4px_14px_rgba(0,0,0,.22)]"
-          : "text-white font-medium hover:bg-[var(--rail-tile)] hover:translate-x-[3px]"
+          ? "bg-white font-bold"
+          : "text-white font-medium hover:bg-[var(--rail-tile)]"
       }`}
+      style={isActive ? { color: "var(--accent-strong)" } : undefined}
     >
-      {/* The icon sits on its own tile, which fills with the brand colour
-          when the page is open. */}
-      <span
-        className="w-9 h-9 rounded-full grid place-items-center shrink-0 transition-colors"
-        style={
-          isActive
-            ? { background: "var(--accent)", color: "#fff" }
-            : { background: "var(--rail-tile)", color: "#fff" }
-        }
-      >
-        <Icon
-          size={18}
-          stroke={1.6}
-          fill={isActive && item.name === "Concepts" ? "currentColor" : "none"}
-        />
-      </span>
-
-      <span className="truncate">{item.name}</span>
-
-      {item.badge && (
-        <span className="ml-auto text-[10px] px-2 py-0.5 rounded-full font-bold bg-[var(--rail-tile-hover)]">
-          {item.badge}
-        </span>
-      )}
-
-      {/* A dot on the open row. The white pill already says which page you are
-          on; this says it again at the end of the line, where the eye lands
-          when it is scanning down the rail rather than reading it. */}
-      {isActive && !item.badge && (
-        <span
-          className="ml-auto w-2 h-2 rounded-full shrink-0"
-          style={{ background: "var(--accent)" }}
-          aria-hidden
-        />
-      )}
+      <Icon size={19} stroke={1.8} className="shrink-0" />
+      {!collapsed && <span className="truncate">{item.name}</span>}
     </Link>
   );
-};
-
-/** A section label and its dot. */
-const SectionLabel = ({ children }: { children: React.ReactNode }) => (
-  // One dot, one colour. It used to take the section's own hue, back when the
-  // pages under it were four different colours; they are one colour now, so
-  // four dots were four hues saying nothing — and the orange one did not sit
-  // with the others at all.
-  <h3 className="flex items-center gap-2.5 pl-3 text-[11px] font-[700] tracking-[0.12em] uppercase mb-3 text-rail-dim">
-    <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ background: "var(--accent)" }} aria-hidden />
-    {children}
-  </h3>
-);
+}
 
 export default function Sidebar() {
   const pathname = usePathname() || "";
+  const { data: session } = useSession();
+  const [collapsed, setCollapsed] = useState(false);
+  /**
+   * The server cannot know the choice, so the rail is rendered open and
+   * corrected on mount. Without this flag that correction *animates*, and
+   * every page load began with the rail sliding shut in front of you.
+   */
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    try {
+      setCollapsed(window.localStorage.getItem(STORE) === "1");
+    } catch {
+      /* private window, blocked storage — it simply opens expanded */
+    }
+    setMounted(true);
+  }, []);
+
+  const toggle = () =>
+    setCollapsed((v) => {
+      const next = !v;
+      try {
+        window.localStorage.setItem(STORE, next ? "1" : "0");
+      } catch {
+        /* as above */
+      }
+      return next;
+    });
+
   const match = pathname.match(/^\/lessons\/(\d+)/);
-  const currentLessonId = match ? match[1] : "1";
-  
-  const dashboardItems = [
-    { name: "Home", href: "/home", icon: IconHome },
-    { name: "Roadmap", href: "/roadmap", icon: IconMap },
-    { name: "Leaderboard", href: "/leaderboard", icon: IconTrophy },
+  const lessonId = match ? match[1] : "1";
+
+  const groups: { label: string; items: Item[] }[] = [
+    {
+      label: "Dashboard",
+      items: [
+        { name: "Home", href: "/home", icon: IconHome },
+        { name: "Roadmap", href: "/roadmap", matchHref: "/roadmap", icon: IconMap },
+        { name: "Leaderboard", href: "/leaderboard", matchHref: "/leaderboard", icon: IconTrophy },
+      ],
+    },
+    {
+      label: "Case competitions",
+      items: [
+        { name: "Practice", href: "/practice", matchHref: "/practice", icon: IconPencil },
+        { name: "Competitions", href: "/compete", matchHref: "/compete", icon: IconConfetti },
+      ],
+    },
+    {
+      label: "Learn",
+      items: [
+        { name: "Concepts", href: `/lessons/${lessonId}/concepts`, matchHref: "/concepts", icon: IconBulb },
+        { name: "Articles", href: `/lessons/${lessonId}/articles`, matchHref: "/articles", icon: IconArticle },
+        { name: "Quizzes", href: `/lessons/${lessonId}/quizzes`, matchHref: "/quizzes", icon: IconNotes },
+        { name: "My notes", href: "/saved", matchHref: "/saved", icon: IconBookmark },
+      ],
+    },
+    {
+      label: "Opportunities",
+      items: [
+        { name: "Internships", href: "/internships", matchHref: "/internships", icon: IconBriefcase },
+        { name: "Research", href: "/research", matchHref: "/research", icon: IconMicroscope },
+      ],
+    },
   ];
 
-  /* The two halves of the same thing: a room somebody hosts, and the same
-     problems on your own. They were sitting among Home and Roadmap, where
-     neither of them said what it was for. */
-  const caseItems = [
-    { name: "Practice", href: "/practice", matchHref: "/practice", icon: IconPencil },
-    { name: "Competitions", href: "/compete", matchHref: "/compete", icon: IconConfetti },
-  ];
-
-  /* Directories of people to reach outside the course — they answer a
-     different question from the daily lessons, so they get their own group. */
-  const opportunityItems = [
-    { name: "Internships", href: "/internships", matchHref: "/internships", icon: IconBriefcase },
-    { name: "Research", href: "/research", matchHref: "/research", icon: IconMicroscope },
-  ];
-
-  const learnItems = [
-    {
-      name: "Concepts",
-      href: `/lessons/${currentLessonId}/concepts`,
-      matchHref: "/concepts",
-      icon: IconBulb,
-    },
-    {
-      name: "Articles",
-      href: `/lessons/${currentLessonId}/articles`,
-      matchHref: "/articles",
-      icon: IconArticle,
-    },
-    {
-      name: "Quizzes",
-      href: `/lessons/${currentLessonId}/quizzes`,
-      matchHref: "/quizzes",
-      icon: IconNotes,
-    },
-    {
-      name: "My Notes",
-      href: "/saved",
-      matchHref: "/saved",
-      icon: IconBookmark,
-    },
-  ];
+  const name = session?.user?.name || session?.user?.email || "Student";
 
   return (
-    // The rail floats: a rounded panel with the page showing around it, rather
-    // than a slab welded to the window edge. `h-full` is gone on purpose — the
-    // flex row stretches it, and a height of 100% plus margins overflows.
     <aside
-      className="app-chrome hidden md:flex w-[260px] m-s3 mr-0 rounded-lg text-white flex-col shrink-0 group relative z-40 overflow-hidden shadow-sh3"
-      style={{
-        background:
-          "linear-gradient(170deg, var(--rail-top) 0%, var(--rail-mid) 45%, var(--rail-bottom) 100%)",
-      }}
+      className={`app-chrome hidden md:flex ${collapsed ? "w-[72px]" : "w-[248px]"} m-s3 mr-0 rounded-lg text-white flex-col shrink-0 relative z-40 overflow-hidden shadow-sh3 ${mounted ? "transition-[width] duration-200" : ""}`}
+      style={{ background: "var(--accent)" }}
+      aria-label="Main navigation"
     >
-      {/* Two soft lights behind everything, so a long flat panel has somewhere
-          for the eye to rest. Pointer-events off: they are paint, not surface. */}
-      <div
-        className="absolute inset-0 pointer-events-none"
-        aria-hidden
-        style={{
-          background:
-            "radial-gradient(420px 320px at 85% -5%, var(--rail-glow), transparent 70%), radial-gradient(360px 300px at 0% 72%, var(--rail-glow), transparent 70%)",
-        }}
-      />
+      {/* Brand */}
+      <div className={`flex items-center gap-s3 px-s2 pt-s3 pb-s3 ${collapsed ? "flex-col" : ""}`}>
+        <span className="w-[38px] h-[38px] rounded-md bg-white grid place-items-center shrink-0 overflow-hidden p-1.5">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/favicon.png" alt="That's So Econ" width={38} height={38} className="w-full h-full object-contain" />
+        </span>
 
-      {/* Scrollable area */}
-      <div className="relative flex-1 overflow-y-auto overflow-x-hidden py-7 px-4 flex flex-col [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
-        {/* Logo Header */}
-        <div className="flex items-center gap-4 mb-8 relative px-1">
-          {/* The mark is a bare purple arrow on nothing, so it needs a light
-              tile to sit on — on the rail it would otherwise be a purple shape
-              on a purple panel. `contain`, not `cover`: the arrow is the whole
-              logo and cropping it crops the brand. */}
-          <div className="shrink-0 w-11 h-11 rounded-lg shadow-sm overflow-hidden bg-white p-1.5 grid place-items-center">
-            <img
-              src="/favicon.png"
-              alt="That's So Econ"
-              width={44}
-              height={44}
-              className="w-full h-full object-contain"
-            />
-          </div>
-          <div className="flex flex-col justify-center">
-            <span className="text-[10px] font-bold tracking-[0.2em] text-white/90 leading-none mb-0.5">That&apos;s So</span>
-            <span className="text-2xl font-black text-white leading-none">Econ<span className="text-white">!</span></span>
-          </div>
-        </div>
+        {!collapsed && (
+          <span className="leading-[1.05] whitespace-nowrap min-w-0">
+            <small className="block text-[11px] font-semibold opacity-80">That&apos;s So</small>
+            <b className="text-h3 font-semibold tracking-tight">Econ!</b>
+          </span>
+        )}
 
-        {/* Dashboard Section */}
-        <div className="mb-6">
-          <SectionLabel>Dashboard</SectionLabel>
-          <nav className="space-y-1">
-            {dashboardItems.map((item) => (
-              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} />
-            ))}
-          </nav>
-        </div>
-
-        {/* Case Competitions */}
-        <div className="mb-6">
-          <SectionLabel>Case Competitions</SectionLabel>
-          <nav className="space-y-1">
-            {caseItems.map((item) => (
-              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} />
-            ))}
-          </nav>
-        </div>
-
-        {/* Learn Section */}
-        <div className="mb-6">
-          <SectionLabel>Learn</SectionLabel>
-          <nav className="space-y-1">
-            {learnItems.map((item) => (
-              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} />
-            ))}
-          </nav>
-        </div>
-
-        {/* Opportunities Section */}
-        <div>
-          <SectionLabel>Opportunities</SectionLabel>
-          <nav className="space-y-1">
-            {opportunityItems.map((item) => (
-              <NavItem key={item.name} item={item} pathname={pathname} setIsOpen={() => {}} />
-            ))}
-          </nav>
-        </div>
-
-        {/* The panel ends on a horizon: the city this course is about building. */}
-        <div className="mt-auto -mx-4 pt-10">
-          <SidebarSkyline />
-        </div>
+        <button
+          type="button"
+          onClick={toggle}
+          aria-label={collapsed ? "Expand sidebar" : "Collapse sidebar"}
+          aria-expanded={!collapsed}
+          className={`${collapsed ? "" : "ml-auto"} w-8 h-8 rounded-md grid place-items-center shrink-0 transition-colors`}
+          style={{ background: "var(--rail-tile)" }}
+        >
+          <IconChevronLeft
+            size={16}
+            stroke={2.4}
+            style={{ transform: collapsed ? "rotate(180deg)" : undefined }}
+          />
+        </button>
       </div>
 
-      {/* Outside the scrolling area on purpose. Twelve rows and a skyline
-          already overflow a short laptop, and signing out is not something to
-          go looking for. Signing out used to be a grey line under a rule; on
-          its own card it is something you can see and aim at. */}
-      <div className="relative shrink-0 px-4 pb-4 pt-2">
-        <div className="rounded-lg border border-rail-line bg-[var(--rail-tile)] px-2 py-1.5">
-          <AuthStatus />
-        </div>
+      {/* Nav */}
+      <nav className="flex-1 overflow-y-auto overflow-x-hidden px-s2 [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]">
+        {groups.map((g) => (
+          <div key={g.label}>
+            {collapsed ? (
+              <div className="h-px mx-s3 my-s3" style={{ background: "var(--rail-line)" }} aria-hidden />
+            ) : (
+              <h3 className="text-meta font-semibold px-3 mt-s5 mb-s2 whitespace-nowrap first:mt-s2 text-rail-dim">
+                {g.label}
+              </h3>
+            )}
+            <div className="flex flex-col gap-0.5">
+              {g.items.map((item) => (
+                <NavItem key={item.name} item={item} pathname={pathname} collapsed={collapsed} />
+              ))}
+            </div>
+          </div>
+        ))}
+
+        {/* The panel ends on a horizon: the city this course is about building. */}
+        {!collapsed && (
+          <div className="mt-s6 -mx-s2">
+            <SidebarSkyline />
+          </div>
+        )}
+      </nav>
+
+      {/* Whoever is signed in. Outside the scroll, so signing out is never
+          below the fold on a short laptop. */}
+      <div
+        className={`shrink-0 flex items-center gap-s3 px-s2 pt-s3 pb-s3 mt-s2 mx-s2 border-t ${collapsed ? "justify-center" : ""}`}
+        style={{ borderColor: "var(--rail-line)" }}
+      >
+        <span
+          className="w-9 h-9 rounded-full grid place-items-center font-semibold text-ui shrink-0 bg-white"
+          style={{ color: "var(--accent-strong)" }}
+          aria-hidden
+        >
+          {name.charAt(0).toUpperCase()}
+        </span>
+
+        {!collapsed && (
+          <>
+            <span className="min-w-0 leading-[1.25]">
+              <b className="block text-ui font-bold truncate">{name}</b>
+              <span className="text-meta opacity-75">Student</span>
+            </span>
+            <button
+              type="button"
+              onClick={() => signOut({ callbackUrl: "/" })}
+              aria-label="Sign out"
+              title="Sign out"
+              className="ml-auto w-9 h-9 rounded-md grid place-items-center shrink-0 transition-colors hover:bg-[var(--rail-tile)]"
+            >
+              <IconLogout size={18} stroke={2} />
+            </button>
+          </>
+        )}
       </div>
     </aside>
   );
