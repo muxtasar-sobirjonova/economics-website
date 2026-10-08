@@ -53,7 +53,7 @@ function NavItem({
       href={item.href}
       aria-current={isActive ? "page" : undefined}
       title={collapsed ? item.name : undefined}
-      className={`flex items-center gap-3 min-h-[44px] rounded-md text-ui transition-colors ${
+      className={`flex items-center gap-3 min-h-[48px] rounded-md text-read font-medium transition-colors ${
         collapsed ? "justify-center px-0" : "px-3"
       } ${
         isActive
@@ -62,7 +62,7 @@ function NavItem({
       }`}
       style={isActive ? { color: "var(--accent-strong)" } : undefined}
     >
-      <Icon size={19} stroke={1.8} className="shrink-0" />
+      <Icon size={21} stroke={1.8} className="shrink-0" />
       {!collapsed && <span className="truncate">{item.name}</span>}
     </Link>
   );
@@ -140,13 +140,13 @@ export default function Sidebar() {
 
   return (
     <aside
-      className={`app-chrome hidden md:flex ${collapsed ? "w-[72px]" : "w-[248px]"} m-s3 mr-0 rounded-lg text-white flex-col shrink-0 relative z-40 overflow-hidden shadow-sh3 ${mounted ? "transition-[width] duration-200" : ""}`}
+      className={`app-chrome hidden md:flex ${collapsed ? "w-[84px]" : "w-[272px]"} m-s3 mr-0 rounded-lg text-white flex-col shrink-0 relative z-40 overflow-hidden shadow-sh3 ${mounted ? "transition-[width] duration-200" : ""}`}
       style={{ background: "var(--accent)" }}
       aria-label="Main navigation"
     >
       {/* Brand */}
       <div className={`flex items-center gap-s3 px-s2 pt-s3 pb-s3 ${collapsed ? "flex-col" : ""}`}>
-        <span className="w-[38px] h-[38px] rounded-md bg-white grid place-items-center shrink-0 overflow-hidden p-1.5">
+        <span className="w-[42px] h-[42px] rounded-md bg-white grid place-items-center shrink-0 overflow-hidden p-1.5">
           {/* eslint-disable-next-line @next/next/no-img-element */}
           <img src="/favicon.png" alt="That's So Econ" width={38} height={38} className="w-full h-full object-contain" />
         </span>
@@ -154,7 +154,7 @@ export default function Sidebar() {
         {!collapsed && (
           <span className="leading-[1.05] whitespace-nowrap min-w-0">
             <small className="block text-[11px] font-semibold opacity-80">That&apos;s So</small>
-            <b className="text-h3 font-semibold tracking-tight">Econ!</b>
+            <b className="font-reading text-h3 font-semibold tracking-tight">Econ!</b>
           </span>
         )}
 
@@ -181,11 +181,11 @@ export default function Sidebar() {
             {collapsed ? (
               <div className="h-px mx-s3 my-s3" style={{ background: "var(--rail-line)" }} aria-hidden />
             ) : (
-              <h3 className="text-meta font-semibold px-3 mt-s5 mb-s2 whitespace-nowrap first:mt-s2 text-rail-dim">
+              <h3 className="text-ui font-semibold px-3 mt-s5 mb-s2 whitespace-nowrap first:mt-s2 text-rail-dim">
                 {g.label}
               </h3>
             )}
-            <div className="flex flex-col gap-0.5">
+            <div className="flex flex-col gap-1">
               {g.items.map((item) => (
                 <NavItem key={item.name} item={item} pathname={pathname} collapsed={collapsed} />
               ))}
@@ -208,7 +208,7 @@ export default function Sidebar() {
         style={{ borderColor: "var(--rail-line)" }}
       >
         <span
-          className="w-9 h-9 rounded-full grid place-items-center font-semibold text-ui shrink-0 bg-white"
+          className="w-10 h-10 rounded-full grid place-items-center font-semibold text-ui shrink-0 bg-white"
           style={{ color: "var(--accent-strong)" }}
           aria-hidden
         >
@@ -218,7 +218,7 @@ export default function Sidebar() {
         {!collapsed && (
           <>
             <span className="min-w-0 leading-[1.25]">
-              <b className="block text-ui font-bold truncate">{name}</b>
+              <b className="block text-read font-bold truncate leading-tight">{name}</b>
               <span className="text-meta opacity-75">Student</span>
             </span>
             <button
