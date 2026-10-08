@@ -74,24 +74,21 @@ export function LeaderboardBoard({
     <div className="theme-v2 min-h-screen w-full flex flex-col bg-bg bg-sky">
       <div className="w-full max-w-[1080px] mx-auto px-s4 md:px-s5 py-s5 md:py-s6 flex flex-col gap-s5">
         <header>
-          <span className="inline-flex items-center gap-s2 flex-wrap">
-            <span
-              className="inline-flex items-center gap-s2 px-s3 py-1 rounded-full border font-mono text-label uppercase"
-              style={{ color: league.ink, background: league.soft, borderColor: league.edge }}
-            >
-              <span className="w-2 h-2 rounded-full" style={{ background: league.ink }} aria-hidden />
-              {league.name} league
+          {/* The viewer's league used to be badged here, directly above a board
+              that is the whole school's top ten. It read as "this is the Bronze
+              league table", which it never was: the leader on it can be three
+              leagues above you. The badge belongs in Your standing, where it is
+              about you, and it is already there. */}
+          {!empty && (
+            <span className="font-mono text-label uppercase text-faint">
+              Top {podium.length + rest.length} · everyone
             </span>
-            {!empty && (
-              <span className="font-mono text-label uppercase text-faint">
-                top {podium.length + rest.length}
-              </span>
-            )}
-          </span>
+          )}
           <h1 className="text-h1 font-semibold text-ink mt-s2 pb-[3px]">Leaderboard</h1>
           <p className="text-meta text-muted mt-s2 max-w-[56ch]">
             The podium is three plots, not three medals — rank is measured in
-            what people built.
+            what people built. Everyone is on one board; leagues are a mark of
+            how far you have come, not a group you are ranked inside.
           </p>
         </header>
 
