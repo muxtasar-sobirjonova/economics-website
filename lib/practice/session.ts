@@ -110,7 +110,8 @@ export const MODE_NOTE: Record<SessionMode, string> = {
 export function describe(setup: Setup): string {
   const kind = setup.type === "OPEN" ? "Open-ended" : "Multiple choice";
   const mode = setup.mode === "STRICT" ? "Strict" : "Default";
-  return `${kind} · ${mode} · ${lengthOf(setup)} questions · ~${estimateMinutes(setup)} min`;
+  const n = lengthOf(setup);
+  return `${kind} · ${mode} · ${n} ${n === 1 ? "problem" : "problems"}`;
 }
 
 /**

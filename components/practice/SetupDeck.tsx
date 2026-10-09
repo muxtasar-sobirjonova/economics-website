@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import {
   LENGTHS, MODE_NOTE, describe, isRated, lengthOf, maxXp,
   type Setup, type SessionType, type SessionMode,
@@ -65,6 +66,32 @@ function Group<T extends string>({
   );
 }
 
+function TopicChip({
+  children,
+  on,
+  onClick,
+}: {
+  children: React.ReactNode;
+  on: boolean;
+  onClick: () => void;
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      aria-pressed={on}
+      className="min-h-[40px] px-s4 rounded-md border text-meta font-semibold transition-colors"
+      style={
+        on
+          ? { background: "var(--accent)", borderColor: "var(--accent)", color: "var(--on-accent)" }
+          : { borderColor: "var(--border)", background: "var(--surface)", color: "var(--text)" }
+      }
+    >
+      {children}
+    </button>
+  );
+}
+
 const icon = (d: string) => (
   <svg
     width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
@@ -94,6 +121,11 @@ export function SetupDeck({
   error: string | null;
 }) {
   const rated = isRated(setup);
+  const [open, setOpen] = useState(false);
+
+  const inline = topics.slice(0, 3);
+  const rest = topics.slice(3);
+  const restIsChosen = rest.some((t) => t.topic === setup.topic);
 
   return (
     <div className="grid lg:grid-cols-[1fr_320px] rounded-lg border border-line overflow-hidden">
@@ -128,38 +160,47 @@ export function SetupDeck({
         <div className="grid sm:grid-cols-[64px_1fr] items-start gap-s2 sm:gap-s3">
           <span className="text-meta font-bold text-muted sm:pt-s2">Topic</span>
           <div className="flex flex-wrap gap-s2">
-            <button
-              type="button"
-              onClick={() => setSetup({ ...setup, topic: null })}
-              aria-pressed={setup.topic === null}
-              className="min-h-[40px] px-s4 rounded-full border text-meta font-semibold transition-colors"
-              style={
-                setup.topic === null
-                  ? { background: "var(--accent)", borderColor: "var(--accent)", color: "var(--on-accent)" }
-                  : { borderColor: "var(--border)", color: "var(--text)" }
-              }
-            >
+            <TopicChip on={setup.topic === null} onClick={() => setSetup({ ...setup, topic: null })}>
               Any topic
-            </button>
-            {topics.map((t) => {
+            </TopicChip>
+
+            {/* The first few inline, the rest behind a count. A bank with
+                twenty topics in it would otherwise be twenty chips before you
+                reach the button. */}
+            {inline.map((t) => {
               const on = setup.topic === t.topic;
               return (
-                <button
+                <TopicChip
                   key={t.topic}
-                  type="button"
+                  on={on}
                   onClick={() => setSetup({ ...setup, topic: on ? null : t.topic })}
-                  aria-pressed={on}
-                  className="min-h-[40px] px-s4 rounded-full border text-meta font-semibold transition-colors"
-                  style={
-                    on
-                      ? { background: "var(--accent)", borderColor: "var(--accent)", color: "var(--on-accent)" }
-                      : { borderColor: "var(--border)", color: "var(--text)" }
-                  }
                 >
                   {t.topic}
-                </button>
+                </TopicChip>
               );
             })}
+
+            {rest.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setOpen(true)}
+                aria-haspopup="dialog"
+                className="min-h-[40px] px-s4 rounded-md border border-dashed text-meta font-semibold inline-flex items-center gap-s2 transition-colors"
+                style={{
+                  borderColor: "var(--border-strong)",
+                  background: "var(--bg-sunk)",
+                  color: "var(--accent-strong)",
+                }}
+              >
+                {restIsChosen ? setup.topic : "Cases & subjects"}
+                <b
+                  className="text-label rounded-sm px-1.5"
+                  style={{ background: "var(--accent)", color: "var(--on-accent)" }}
+                >
+                  {rest.length}
+                </b>
+              </button>
+            )}
           </div>
         </div>
 
@@ -223,6 +264,70 @@ export function SetupDeck({
           </button>
         </div>
       </aside>
+
+      {open && (
+        <div
+          className="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-s5"
+          style={{ background: "rgba(36,31,64,.4)" }}
+          onClick={(e) => {
+            if (e.target === e.currentTarget) setOpen(false);
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Choose a topic"
+            className="w-full sm:max-w-[420px] max-h-[78vh] bg-surface rounded-t-lg sm:rounded-lg shadow-sh3 flex flex-col overflow-hidden"
+          >
+            <div className="flex-1 overflow-y-auto p-s2">
+              {rest.map((t) => {
+                const on = setup.topic === t.topic;
+                return (
+                  <button
+                    key={t.topic}
+                    type="button"
+                    onClick={() => {
+                      setSetup({ ...setup, topic: on ? null : t.topic });
+                      setOpen(false);
+                    }}
+                    aria-pressed={on}
+                    className="w-full flex items-center justify-between gap-s3 text-left px-s4 min-h-[48px] rounded-md hover:bg-bg-sunk transition-colors"
+                  >
+                    <span className="text-ui text-ink truncate">{t.topic}</span>
+                    <span
+                      className="font-mono text-meta shrink-0"
+                      style={{ color: on ? "var(--accent-strong)" : "var(--muted)" }}
+                    >
+                      {t.total}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+            <div className="flex items-center gap-s4 p-s3 border-t border-line bg-bg-sunk">
+              <button
+                type="button"
+                onClick={() => {
+                  setSetup({ ...setup, topic: null });
+                  setOpen(false);
+                }}
+                className="text-meta font-semibold min-h-[44px]"
+                style={{ color: "var(--accent-strong)" }}
+              >
+                Any topic
+              </button>
+              <button
+                type="button"
+                onClick={() => setOpen(false)}
+                className="ml-auto min-h-[44px] px-s5 rounded-md text-meta font-semibold"
+                style={{ background: "var(--accent)", color: "var(--on-accent)" }}
+              >
+                Done
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }

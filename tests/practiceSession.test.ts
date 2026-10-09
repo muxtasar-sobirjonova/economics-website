@@ -93,11 +93,11 @@ describe("estimateMinutes and strictMs", () => {
 describe("describe", () => {
   it("says what the session is", () => {
     expect(line(setup({ type: "OPEN", mode: "STRICT", length: 20 })))
-      .toBe("Open-ended · Strict · 20 questions · ~80 min");
+      .toBe("Open-ended · Strict · 20 problems");
   });
 
   it("says ten for a rated duel however it was set", () => {
-    expect(line(setup({ type: "MCQ", mode: "STRICT", length: 5 }))).toContain("10 questions");
+    expect(line(setup({ type: "MCQ", mode: "STRICT", length: 5 }))).toContain("10 problems");
   });
 });
 

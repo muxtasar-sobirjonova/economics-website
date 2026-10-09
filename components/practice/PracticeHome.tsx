@@ -6,7 +6,7 @@ import { SetupDeck } from "@/components/practice/SetupDeck";
 import { McqRun } from "@/components/practice/McqRun";
 import { Ladder } from "@/components/practice/Ladder";
 import { DEFAULT_SETUP, isRated, type Setup } from "@/lib/practice/session";
-import type { PracticeHome as HomeData } from "@/lib/practice/home";
+import { DAILY_GOAL, type PracticeHome as HomeData } from "@/lib/practice/home";
 
 /**
  * One page where there used to be two.
@@ -24,27 +24,59 @@ const Practice = dynamic(
   { loading: () => <div className="h-[220px] rounded-lg border border-line bg-surface" /> }
 );
 
+function Ring({ done, goal }: { done: number; goal: number }) {
+  const r = 14;
+  const c = 2 * Math.PI * r;
+  const pct = Math.min(1, goal > 0 ? done / goal : 0);
+
+  return (
+    <span className="relative w-9 h-9 shrink-0 grid place-items-center" aria-hidden>
+      <svg width="36" height="36" viewBox="0 0 36 36" className="-rotate-90">
+        <circle cx="18" cy="18" r={r} fill="none" stroke="var(--bg-sunk)" strokeWidth="5" />
+        <circle
+          cx="18" cy="18" r={r} fill="none" stroke="var(--success)" strokeWidth="5"
+          strokeLinecap="round" strokeDasharray={c} strokeDashoffset={c * (1 - pct)}
+        />
+      </svg>
+    </span>
+  );
+}
+
 function Chip({
   icon,
   value,
   label,
+  good,
+  bare,
 }: {
   icon: React.ReactNode;
   value: string;
   label: string;
+  /** Green, for a figure that is a good thing rather than a measurement. */
+  good?: boolean;
+  /** The icon draws its own shape — no tinted square behind it. */
+  bare?: boolean;
 }) {
   return (
     // The redesign's stat tile: a fixed height, the icon in a soft square, and
     // the label above the figure rather than under it — the number is what you
     // came for, so it reads last and largest.
     <div className="h-[76px] bg-surface flex items-center gap-s3 border border-line rounded-lg px-s3 min-w-0">
-      <span
-        className="w-9 h-9 rounded-md grid place-items-center shrink-0"
-        style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
-        aria-hidden
-      >
-        {icon}
-      </span>
+      {bare ? (
+        icon
+      ) : (
+        <span
+          className="w-9 h-9 rounded-md grid place-items-center shrink-0"
+          style={
+            good
+              ? { background: "var(--success-soft)", color: "var(--success)" }
+              : { background: "var(--accent-soft)", color: "var(--accent-strong)" }
+          }
+          aria-hidden
+        >
+          {icon}
+        </span>
+      )}
       <span className="min-w-0">
         <span className="block text-meta text-muted leading-tight truncate">{label}</span>
         <b className="block text-h3 font-bold tracking-tight text-ink leading-tight tabular">
@@ -106,33 +138,41 @@ export function PracticeHome({ data }: { data: HomeData }) {
 
   return (
     <div className="flex flex-col gap-s5">
-      <div className="flex flex-wrap items-end justify-between gap-s4">
-        <div>
-          <h1 className="text-h1 font-extrabold tracking-tight text-ink pb-[3px]">Practice</h1>
-          <p className="text-meta text-muted mt-s2 max-w-[50ch]">
-            Build your session, solve, and climb the ladder.
-          </p>
-        </div>
+      <div>
+        <h1 className="font-reading text-h1 font-semibold tracking-tight text-ink leading-[1.1]">
+          Practice
+        </h1>
+        <p className="text-ui text-muted mt-s2 max-w-[56ch]">
+          Build a session, solve, and climb your league.
+        </p>
+      </div>
 
-        <div className="flex flex-wrap gap-s3">
-          <Chip
-            icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3.5 5 5.5 5 10a5 5 0 01-10 0c0-1.7.8-3 1.8-4 .2 1.2.9 2 1.7 2.3C10 7.5 10.5 4.5 12 2z"/></svg>}
-            value={`${data.streak} ${data.streak === 1 ? "day" : "days"}`}
-            label="Streak"
-          />
-          <Chip
-            icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>}
-            value={`${data.weeklyXp.toLocaleString("en-US")} XP`}
-            label="All time"
-          />
-          {data.myRating !== null && (
-            <Chip
-              icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round"><path d="M4 20V12M12 20V6M20 20V3"/></svg>}
-              value={String(data.myRating)}
-              label="Rating"
-            />
-          )}
-        </div>
+      {/* Four figures, across the page rather than crowded beside the title:
+          what you have kept up, what you have earned, what is left today, and
+          where that puts you. */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-s3">
+        <Chip
+          good
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2c1 3.5 5 5.5 5 10a5 5 0 01-10 0c0-1.7.8-3 1.8-4 .2 1.2.9 2 1.7 2.3C10 7.5 10.5 4.5 12 2z"/></svg>}
+          value={`${data.streak} ${data.streak === 1 ? "day" : "days"}`}
+          label="Streak"
+        />
+        <Chip
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>}
+          value={data.weeklyXp.toLocaleString("en-US")}
+          label="XP"
+        />
+        <Chip
+          icon={<Ring done={data.solvedToday} goal={DAILY_GOAL} />}
+          value={`${data.solvedToday} of ${DAILY_GOAL}`}
+          label="Daily goal"
+          bare
+        />
+        <Chip
+          icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round"><path d="M8 21h8M12 17v4M7 4h10v5a5 5 0 01-10 0zM17 5h3v2a3 3 0 01-3 3M7 5H4v2a3 3 0 003 3"/></svg>}
+          value={data.rank ? `#${data.rank}` : "—"}
+          label="League rank"
+        />
       </div>
 
       <SetupDeck
