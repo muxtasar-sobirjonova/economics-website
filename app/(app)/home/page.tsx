@@ -2,9 +2,11 @@ import { Track } from "@prisma/client";
 import { auth } from "@/auth";
 import { redirect } from "next/navigation";
 import { prisma } from "@/lib/prisma";
+import TodayAgendaCard from "@/components/TodayAgendaCard";
 import { DailyQuote } from "@/components/home/DailyQuote";
-import { Dashboard } from "@/components/home/Dashboard";
 
+import { DashboardHero } from "@/components/home/DashboardHero";
+import { LearningStats } from "@/components/home/LearningStats";
 
 import { ensureUserProgress } from "@/lib/user-progress";
 import { Suspense } from "react";
@@ -17,6 +19,24 @@ export const metadata: Metadata = {
 };
 
 
+async function DashboardStatsAsync({ userId, streak, activeTrack = Track.ENTREPRENEURSHIP_ECONOMICS, currentDay }: { userId: string, streak: number, activeTrack?: Track, currentDay: number }) {
+  const {
+    quizAgg,
+    totalLessonsAgg,
+  } = await getUserDashboardData(userId, activeTrack as Track, currentDay);
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  let avgQuizScore = (quizAgg as any)?._avg?.score ? Math.round((quizAgg as any)._avg.score * 10) : 0;
+  if (avgQuizScore > 100) avgQuizScore = 100;
+
+  return (
+    <LearningStats 
+      backendStreak={streak}
+      completedLessonsCount={totalLessonsAgg}
+      avgQuizScore={avgQuizScore}
+    />
+  );
+}
 
 async function DashboardData({ userId, userName }: { userId: string; userName: string }) {
   const userRecord = await prisma.user.findUnique({
@@ -44,7 +64,7 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
     );
   }
 
-  // The streak lives in the rail and the leaderboard now, not on this page.
+  const streak = trackProgress.streak || 0;
   const currentDay = trackProgress.currentDay || 1;
   const {
     recentLessons,
@@ -157,17 +177,34 @@ async function DashboardData({ userId, userName }: { userId: string; userName: s
   }
 
 
-  const completedDates = Array.from(
-    new Set([...completedLessonDates, ...completedAgendaDates])
-  );
-
   return (
-    <Dashboard
-      userName={userName}
-      items={agendaItems}
-      completedDates={completedDates}
-      quote={<DailyQuote activeTrack={activeTrack} />}
-    />
+    <>
+      <DailyQuote activeTrack={activeTrack} />
+      <div className="flex flex-col justify-center py-10 px-4 md:px-12">
+        <DashboardHero 
+          completedAgendaDates={completedAgendaDates}
+          completedDates={completedLessonDates}
+          userName={userName} 
+        />
+      </div>
+
+      <div className="flex flex-col justify-start py-4 px-4 md:px-12">
+        <div className="flex flex-col lg:flex-row w-full mx-auto gap-6 max-w-[1200px]">
+          <TodayAgendaCard initialItems={agendaItems} />
+        </div>
+        
+        <div className="mt-6 w-full mx-auto max-w-[1200px]">
+          <Suspense fallback={<div className="h-32 w-full bg-slate-100 animate-pulse rounded-xl" />}>
+            <DashboardStatsAsync
+              userId={userId}
+              streak={streak}
+              activeTrack={activeTrack}
+              currentDay={currentDay}
+            />
+          </Suspense>
+        </div>
+      </div>
+    </>
   );
 }
 
