@@ -1,8 +1,8 @@
 "use client";
 
-import { Inter } from "next/font/google";
+import { Figtree } from "next/font/google";
 
-const inter = Inter({ subsets: ["latin"] });
+const figtree = Figtree({ subsets: ["latin"] });
 
 export default function GlobalError({
   error,
@@ -14,7 +14,7 @@ export default function GlobalError({
   console.error("Global Error:", error);
   return (
     <html lang="en">
-      <body className={inter.className}>
+      <body className={figtree.className}>
         <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
           <div className="bg-white p-8 rounded-lg shadow-sm max-w-md w-full text-center border border-[#C7D7FF]">
             <div className="w-16 h-16 bg-red-100 text-red-500 rounded-full flex items-center justify-center mx-auto mb-4">
