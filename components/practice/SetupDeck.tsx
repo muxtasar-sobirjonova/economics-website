@@ -28,7 +28,10 @@ function Group<T extends string>({
   return (
     <div className="grid sm:grid-cols-[64px_1fr] items-center gap-s2 sm:gap-s3">
       <span className="text-meta font-bold text-muted">{label}</span>
-      <div className="inline-flex flex-wrap gap-[3px] bg-bg-sunk p-[3px] rounded-lg justify-self-start max-w-full">
+      {/* Fills its row. A grid item is blockified, so the mock's inline-flex
+          bar spans the cell; ours was hugging its buttons and left every row
+          looking half-finished. */}
+      <div className="flex flex-wrap gap-[3px] bg-bg-sunk border border-line p-[3px] rounded-md">
         {options.map((o) => {
           const on = o.v === value;
           return (
@@ -243,7 +246,7 @@ export function SetupDeck({
 
           <p className="text-meta opacity-85 flex items-center gap-s2 mt-s2">
             <span className="w-2 h-2 rounded-full bg-white shrink-0" aria-hidden />
-            {setup.topic ?? "Any topic"} · {poolSize} unseen
+            {setup.topic ?? "Any topic"} · {poolSize} unsolved
           </p>
 
           {rated && (

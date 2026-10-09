@@ -160,7 +160,7 @@ export function PracticeHome({ data }: { data: HomeData }) {
         <Chip
           icon={<svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M13 2L4 14h6l-1 8 9-12h-6z"/></svg>}
           value={data.weeklyXp.toLocaleString("en-US")}
-          label="XP"
+          label="XP this week"
         />
         <Chip
           icon={<Ring done={data.solvedToday} goal={DAILY_GOAL} />}

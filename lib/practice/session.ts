@@ -101,9 +101,8 @@ export function strictMs(setup: Setup): number | null {
 }
 
 export const MODE_NOTE: Record<SessionMode, string> = {
-  DEFAULT:
-    "No clock, and the worked solution shows right after each answer. Nothing counts towards your rating.",
-  STRICT: "Timed, no going back, and solutions only at the end.",
+  DEFAULT: "Default: no clock, and the worked solution shows right after each answer.",
+  STRICT: "Strict: timed, no going back, and solutions are revealed at the end.",
 };
 
 /** What the session line says it is. */
