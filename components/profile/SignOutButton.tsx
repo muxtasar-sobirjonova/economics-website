@@ -8,10 +8,17 @@ export default function SignOutButton() {
   return (
     <button
       onClick={() => signOut({ callbackUrl: '/' })}
-      className="w-full flex items-center justify-center gap-2 py-3.5 px-6 rounded-lg border-2 border-red-100 bg-red-50 text-red-600 font-bold hover:bg-red-100 hover:border-red-200 transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
+      // Red because it is the one thing on this page that cannot be undone
+      // with a click back — but the project's red, not Tailwind's.
+      className="w-full flex items-center justify-center gap-s2 min-h-[48px] px-s5 rounded-md border font-semibold text-ui transition-colors"
+      style={{
+        borderColor: "var(--danger)",
+        background: "var(--danger-soft)",
+        color: "var(--danger)",
+      }}
     >
       <LogOut size={18} />
-      Sign Out
+      Sign out
     </button>
   );
 }

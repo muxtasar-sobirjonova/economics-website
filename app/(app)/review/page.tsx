@@ -9,7 +9,7 @@ import { Track } from '@prisma/client';
 export default async function ReviewPage() {
   const session = await auth();
   if (!session?.user?.id) {
-    redirect('/auth/signin');
+    redirect('/login');
   }
 
   const user = await prisma.user.findUnique({

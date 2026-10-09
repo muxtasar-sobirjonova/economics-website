@@ -202,35 +202,51 @@ export default function Sidebar() {
       </nav>
 
       {/* Whoever is signed in. Outside the scroll, so signing out is never
-          below the fold on a short laptop. */}
+          below the fold on a short laptop.
+
+          The person is a link to their profile and the arrow is a button that
+          signs them out — two targets, side by side, because they are not the
+          same thing and one of them cannot be undone. The button is a sibling
+          of the link rather than inside it: a button inside an anchor is
+          invalid, and browsers disagree about which one a click belongs to. */}
       <div
-        className={`shrink-0 flex items-center gap-s3 px-s2 pt-s3 pb-s3 mt-s2 mx-s2 border-t ${collapsed ? "justify-center" : ""}`}
+        className={`shrink-0 flex items-center gap-s2 px-s2 pt-s3 pb-s3 mt-s2 mx-s2 border-t ${collapsed ? "justify-center" : ""}`}
         style={{ borderColor: "var(--rail-line)" }}
       >
-        <span
-          className="w-10 h-10 rounded-full grid place-items-center font-semibold text-ui shrink-0 bg-white"
-          style={{ color: "var(--accent-strong)" }}
-          aria-hidden
+        <Link
+          href="/profile"
+          aria-current={pathname.startsWith("/profile") ? "page" : undefined}
+          title={collapsed ? `${name} — your profile` : "Your profile"}
+          className={`flex items-center gap-s3 min-w-0 rounded-md py-s2 transition-colors hover:bg-[var(--rail-tile)] ${
+            collapsed ? "px-0" : "flex-1 px-s2 -mx-s1"
+          }`}
         >
-          {name.charAt(0).toUpperCase()}
-        </span>
+          <span
+            className="w-10 h-10 rounded-full grid place-items-center font-semibold text-ui shrink-0 bg-white"
+            style={{ color: "var(--accent-strong)" }}
+            aria-hidden
+          >
+            {name.charAt(0).toUpperCase()}
+          </span>
 
-        {!collapsed && (
-          <>
+          {!collapsed && (
             <span className="min-w-0 leading-[1.25]">
               <b className="block text-read font-bold truncate leading-tight">{name}</b>
               <span className="text-meta opacity-75">Student</span>
             </span>
-            <button
-              type="button"
-              onClick={() => signOut({ callbackUrl: "/" })}
-              aria-label="Sign out"
-              title="Sign out"
-              className="ml-auto w-9 h-9 rounded-md grid place-items-center shrink-0 transition-colors hover:bg-[var(--rail-tile)]"
-            >
-              <IconLogout size={18} stroke={2} />
-            </button>
-          </>
+          )}
+        </Link>
+
+        {!collapsed && (
+          <button
+            type="button"
+            onClick={() => signOut({ callbackUrl: "/" })}
+            aria-label="Sign out"
+            title="Sign out"
+            className="w-11 h-11 rounded-md grid place-items-center shrink-0 transition-colors hover:bg-[var(--rail-tile)]"
+          >
+            <IconLogout size={18} stroke={2} />
+          </button>
         )}
       </div>
     </aside>

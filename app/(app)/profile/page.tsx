@@ -1,107 +1,123 @@
-import React from 'react';
-import { auth } from '@/auth';
-import { prisma } from '@/lib/prisma';
-import { redirect } from 'next/navigation';
-import { Mail, Award, Clock, Compass } from 'lucide-react';
-import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
-import SignOutButton from '@/components/profile/SignOutButton'; // We'll create this to handle sign out safely on client
+import { Metadata } from "next";
+import Link from "next/link";
+import { auth } from "@/auth";
+import { prisma } from "@/lib/prisma";
+import { redirect } from "next/navigation";
+import SignOutButton from "@/components/profile/SignOutButton";
+import { Page, PageHead, Card, StatTiles } from "@/components/ui/Page";
 
+export const metadata: Metadata = { title: "Profile | That's So Econ" };
+export const dynamic = "force-dynamic";
+
+const ICON = {
+  award: '<circle cx="12" cy="9" r="6"/><path d="M8.2 14L7 22l5-3 5 3-1.2-8"/>',
+  clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  compass: '<circle cx="12" cy="12" r="9"/><path d="M15.5 8.5l-2 5-5 2 2-5z"/>',
+  mail: '<rect x="3" y="5" width="18" height="14" rx="3"/><path d="M3 8l9 6 9-6"/>',
+};
+
+/**
+ * The profile.
+ *
+ * Reached from the person at the foot of the rail, which is where people look
+ * for it. It used to carry its own header with a back arrow pointing at "/" —
+ * the marketing site — which was right when this page stood alone and wrong
+ * ever since it moved inside the app shell.
+ */
 export default async function ProfilePage() {
   const session = await auth();
-  if (!session?.user?.id) {
-    redirect('/auth/signin');
-  }
+  if (!session?.user?.id) redirect("/login");
 
   const user = await prisma.user.findUnique({
     where: { id: session.user.id },
-    include: {
-      progress: true
-    }
+    include: { progress: true },
   });
 
-  if (!user) {
-    redirect('/auth/signin');
-  }
+  if (!user) redirect("/login");
 
-  const avatarLetter = (user.name?.trim().charAt(0) || user.email?.trim().charAt(0) || "?").toUpperCase();
-  const joinedDate = new Date(user.createdAt).toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  const name = user.name?.trim() || "Student";
+  const initial = (name.charAt(0) || user.email?.charAt(0) || "?").toUpperCase();
+  const joined = new Date(user.createdAt).toLocaleDateString("en-GB", {
+    month: "long",
+    year: "numeric",
+  });
 
-  // Format track name to look nice (e.g. ENTREPRENEURSHIP_ECONOMICS -> Entrepreneurship Economics)
-  const trackName = (user.activeTrack || 'No track selected')
-    .split('_')
-    .map(word => word.charAt(0) + word.slice(1).toLowerCase())
-    .join(' ');
+  const track = (user.activeTrack || "No track selected")
+    .split("_")
+    .map((w) => w.charAt(0) + w.slice(1).toLowerCase())
+    .join(" ");
 
   return (
-    <div className="min-h-screen bg-slate-50 flex flex-col font-sans">
-      {/* Header */}
-      <header className="bg-white border-b border-line px-6 py-4 flex items-center shrink-0">
-        <Link href="/" className="mr-4 p-2 -ml-2 rounded-full hover:bg-surface transition-colors">
-          <ArrowLeft size={20} className="text-muted" />
+    <Page>
+      <PageHead title="Your profile" lead="What the course knows about you, and the one setting that changes what it teaches." />
+
+      <Card padded className="flex flex-col sm:flex-row items-center sm:items-start gap-s5 text-center sm:text-left">
+        <span
+          className="w-20 h-20 rounded-full grid place-items-center font-reading font-semibold text-h1 shrink-0"
+          style={{ background: "var(--accent)", color: "var(--on-accent)" }}
+          aria-hidden
+        >
+          {initial}
+        </span>
+
+        <div className="min-w-0">
+          <h2 className="font-reading text-h2 font-semibold tracking-tight text-ink break-words">
+            {name}
+          </h2>
+          <p className="flex items-center justify-center sm:justify-start gap-s2 text-ui text-muted mt-s2 break-all">
+            <svg
+              width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round" aria-hidden
+              className="shrink-0"
+              dangerouslySetInnerHTML={{ __html: ICON.mail }}
+            />
+            {user.email || "No email on file"}
+          </p>
+        </div>
+      </Card>
+
+      <div className="mt-s4">
+        <StatTiles
+          stats={[
+            { label: "Lessons finished", value: user.lessonsCompleted ?? 0, icon: ICON.award, good: true },
+            { label: "Experience", value: (user.progress?.totalXP ?? 0).toLocaleString("en-US"), icon: '<path d="M13 2L4 14h6l-1 8 9-12h-6z"/>' },
+            { label: "Streak", value: `${user.progress?.streak ?? 0} days`, icon: '<path d="M12 2c1 3.5 5 5.5 5 10a5 5 0 01-10 0c0-1.7.8-3 1.8-4 .2 1.2.9 2 1.7 2.3C10 7.5 10.5 4.5 12 2z"/>' },
+            { label: "Joined", value: joined, icon: ICON.clock },
+          ]}
+        />
+      </div>
+
+      <Card padded className="flex flex-wrap items-center gap-s4 justify-between">
+        <span className="flex items-center gap-s3 min-w-0">
+          <span
+            className="w-10 h-10 rounded-md grid place-items-center shrink-0"
+            style={{ background: "var(--accent-soft)", color: "var(--accent-strong)" }}
+            aria-hidden
+          >
+            <svg
+              width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+              strokeWidth={2.2} strokeLinecap="round" strokeLinejoin="round"
+              dangerouslySetInnerHTML={{ __html: ICON.compass }}
+            />
+          </span>
+          <span className="min-w-0">
+            <span className="block text-meta text-muted">Current track</span>
+            <b className="block text-ui font-semibold text-ink truncate">{track}</b>
+          </span>
+        </span>
+
+        <Link
+          href="/track-selection"
+          className="inline-flex items-center min-h-[44px] px-s5 rounded-md border border-line text-ui font-semibold transition-colors hover:bg-bg-sunk"
+          style={{ color: "var(--accent-strong)" }}
+        >
+          Change track
         </Link>
-        <h1 className="text-lg font-bold text-ink">My Profile</h1>
-      </header>
+      </Card>
 
-      <main className="flex-1 max-w-[600px] w-full mx-auto p-6 md:p-10 flex flex-col gap-6">
-        {/* Profile Card */}
-        <div className="bg-white rounded-lg p-8 border border-line shadow-sm flex flex-col items-center text-center relative overflow-hidden">
-          <div className="absolute top-0 left-0 right-0 h-24 bg-gradient-to-br from-brand-primary/20 to-indigo-500/20"></div>
-          
-          <div className="w-24 h-24 rounded-full bg-brand-primary text-white font-black text-4xl flex items-center justify-center shadow-lg border-4 border-white relative z-10 mb-4">
-            {avatarLetter}
-          </div>
-          
-          <h2 className="text-2xl font-bold text-ink mb-1">{user.name || 'Student'}</h2>
-          
-          <div className="flex items-center gap-1.5 text-muted text-sm mb-6">
-            <Mail size={14} />
-            {user.email || 'No email provided'}
-          </div>
-
-          <div className="w-full flex gap-4 mt-2">
-            <div className="flex-1 bg-surface rounded-lg p-4 flex flex-col items-center justify-center border border-line">
-              <div className="w-10 h-10 rounded-full bg-amber-100 text-amber-500 flex items-center justify-center mb-2">
-                <Award size={20} />
-              </div>
-              <div className="text-2xl font-black text-ink">{user.lessonsCompleted || 0}</div>
-              <div className="text-xs font-semibold text-muted tracking-wider uppercase mt-1">Lessons</div>
-            </div>
-            
-            <div className="flex-1 bg-surface rounded-lg p-4 flex flex-col items-center justify-center border border-line">
-              <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-500 flex items-center justify-center mb-2">
-                <Clock size={20} />
-              </div>
-              <div className="text-lg font-black text-ink mt-1">{joinedDate}</div>
-              <div className="text-xs font-semibold text-muted tracking-wider uppercase mt-1">Joined</div>
-            </div>
-          </div>
-        </div>
-
-        {/* Settings / Details */}
-        <div className="bg-white rounded-lg p-6 border border-line shadow-sm flex flex-col">
-          <h3 className="text-sm font-bold text-ink uppercase tracking-wider mb-4 px-2">Account Details</h3>
-          
-          <div className="flex items-center justify-between p-4 bg-surface rounded-lg border border-line mb-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center shadow-sm">
-                <Compass size={18} className="text-brand-primary" />
-              </div>
-              <div className="flex flex-col">
-                <span className="text-xs font-semibold text-muted">Current Track</span>
-                <span className="text-sm font-bold text-ink">{trackName}</span>
-              </div>
-            </div>
-            <Link href="/track-selection" className="text-xs font-bold text-brand-primary hover:underline px-2 py-1">
-              Change
-            </Link>
-          </div>
-
-          <div className="mt-2">
-             <SignOutButton />
-          </div>
-        </div>
-      </main>
-    </div>
+      <div className="mt-s5">
+        <SignOutButton />
+      </div>
+    </Page>
   );
 }
