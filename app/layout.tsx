@@ -1,17 +1,23 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, Literata, JetBrains_Mono } from "next/font/google";
+import { Figtree, Newsreader, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
 import NextTopLoader from 'nextjs-toploader';
 
-const inter = Inter({ subsets: ["latin"], display: 'swap' });
+/**
+ * The three faces the design asks for, and no substitutes.
+ *
+ * Figtree for the interface, Newsreader for headings, JetBrains Mono for
+ * figures. Inter and Literata stood in for the first two for a while on the
+ * grounds that nobody could tell them apart; the person who drew the design
+ * could, at a glance, so they are gone.
+ */
+const figtree = Figtree({ subsets: ["latin"], display: "swap" });
 
-// Available to migrated pages via `font-reading` / `font-mono`; Inter is still
-// the default everywhere else.
-const literata = Literata({
+const newsreader = Newsreader({
   subsets: ["latin"],
   display: "swap",
   style: ["normal", "italic"],
-  variable: "--font-literata",
+  variable: "--font-reading",
 });
 const jetbrains = JetBrains_Mono({
   subsets: ["latin"],
@@ -61,7 +67,7 @@ export default function RootLayout({
         <link rel="preconnect" href="https://cdn.sanity.io" crossOrigin="anonymous" />
       </head>
       <body
-        className={`${inter.className} ${literata.variable} ${jetbrains.variable} min-h-screen bg-white text-[#24203F] not-italic`}
+        className={`${figtree.className} ${newsreader.variable} ${jetbrains.variable} min-h-screen bg-white text-[#24203F] not-italic`}
       >
         <NextTopLoader color="var(--accent)" height={3} showSpinner={false} shadow="0 0 10px var(--accent),0 0 5px var(--accent)" />
         {children}

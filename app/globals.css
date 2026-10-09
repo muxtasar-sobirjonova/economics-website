@@ -421,7 +421,7 @@ body {
 
 /* A migrated subtree opts into the reading face and the v2 ground. */
 .theme-v2 {
-  font-family: var(--font-literata), Georgia, serif;
+  font-family: var(--font-reading), Georgia, serif;
   color: var(--text);
   background: var(--bg);
 }

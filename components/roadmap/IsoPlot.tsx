@@ -92,7 +92,7 @@ const DoneTag = ({ x, y, day, score }: { x: number; y: number; day: number; scor
     <text x="0" y="-1" textAnchor="middle" style={{ font: "600 10px var(--font-mono), monospace", fill: "var(--success)" }}>
       DAY {day}
     </text>
-    <text x="0" y="10" textAnchor="middle" style={{ font: "500 9.5px var(--font-literata), Georgia, serif", fill: "var(--muted)" }}>
+    <text x="0" y="10" textAnchor="middle" style={{ font: "500 9.5px var(--font-reading), Georgia, serif", fill: "var(--muted)" }}>
       {score != null ? `${score}/10` : "cleared"}
     </text>
   </g>
@@ -203,10 +203,10 @@ export function IsoPlot({
         <g transform={`translate(${pos[activeIndex].x}, ${pos[activeIndex].y - 132})`} pointerEvents="none">
           <rect x="-92" y="-26" width="184" height="52" rx="10" fill="var(--accent)" opacity=".14" />
           <rect x="-92" y="-26" width="184" height="52" rx="10" fill="var(--surface)" stroke="var(--accent)" strokeWidth="1.5" />
-          <text x="0" y="-7" textAnchor="middle" style={{ font: "600 10px var(--font-literata), Georgia, serif", letterSpacing: ".14em", fill: "var(--accent-strong)" }}>
+          <text x="0" y="-7" textAnchor="middle" style={{ font: "600 10px var(--font-reading), Georgia, serif", letterSpacing: ".14em", fill: "var(--accent-strong)" }}>
             DAY {days[activeIndex].dayOrder} · BUILD IT
           </text>
-          <text x="0" y="9" textAnchor="middle" style={{ font: "500 11px var(--font-literata), Georgia, serif", fill: "var(--text)" }}>
+          <text x="0" y="9" textAnchor="middle" style={{ font: "500 11px var(--font-reading), Georgia, serif", fill: "var(--text)" }}>
             {days[activeIndex].title.length > 26 ? `${days[activeIndex].title.slice(0, 25)}…` : days[activeIndex].title}
           </text>
         </g>
@@ -216,7 +216,7 @@ export function IsoPlot({
         <g transform={`translate(${pos[activeIndex].x}, ${pos[activeIndex].y + 36})`} pointerEvents="none">
           <path d="M0 0 l0 14" stroke="var(--accent)" strokeWidth="1.5" />
           <rect x="-58" y="14" width="116" height="24" rx="12" fill="var(--accent)" />
-          <text x="0" y="30" textAnchor="middle" style={{ font: "600 11px var(--font-literata), Georgia, serif", letterSpacing: ".06em", fill: "#FFFFFF" }}>
+          <text x="0" y="30" textAnchor="middle" style={{ font: "600 11px var(--font-reading), Georgia, serif", letterSpacing: ".06em", fill: "#FFFFFF" }}>
             {activitiesLeft} {activitiesLeft === 1 ? "ACTIVITY" : "ACTIVITIES"} LEFT
           </text>
         </g>
@@ -230,7 +230,7 @@ export function IsoPlot({
         return (
           <g transform={`translate(${pos[mid.i].x - 38}, ${pos[mid.i].y + 30})`} pointerEvents="none">
             <rect x="-46" y="-14" width="92" height="28" rx="8" fill="var(--bg-sunk)" stroke="var(--border)" />
-            <text x="0" y="4" textAnchor="middle" style={{ font: "500 10.5px var(--font-literata), Georgia, serif", fill: "var(--faint)" }}>
+            <text x="0" y="4" textAnchor="middle" style={{ font: "500 10.5px var(--font-reading), Georgia, serif", fill: "var(--faint)" }}>
               {first === last ? `DAY ${first} LOCKED` : `DAYS ${first}–${last} LOCKED`}
             </text>
           </g>
@@ -242,10 +242,10 @@ export function IsoPlot({
         day.isQuiz && day.state !== "done" ? (
           <g key="quiz-tag" transform={`translate(${pos[i].x + 116}, ${pos[i].y + 4})`} pointerEvents="none">
             <rect x="-58" y="-16" width="116" height="32" rx="8" fill="var(--reward-soft)" stroke="var(--reward)" strokeWidth="1.2" />
-            <text x="0" y="-1" textAnchor="middle" style={{ font: "600 10px var(--font-literata), Georgia, serif", letterSpacing: ".1em", fill: "var(--reward)" }}>
+            <text x="0" y="-1" textAnchor="middle" style={{ font: "600 10px var(--font-reading), Georgia, serif", letterSpacing: ".1em", fill: "var(--reward)" }}>
               DAY {day.dayOrder} · REVIEW
             </text>
-            <text x="0" y="10" textAnchor="middle" style={{ font: "500 9.5px var(--font-literata), Georgia, serif", fill: "var(--muted)" }}>
+            <text x="0" y="10" textAnchor="middle" style={{ font: "500 9.5px var(--font-reading), Georgia, serif", fill: "var(--muted)" }}>
               closes the chapter
             </text>
           </g>

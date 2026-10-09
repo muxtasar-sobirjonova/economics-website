@@ -15,7 +15,7 @@ import { join } from "node:path";
 
 /** Set at runtime rather than in the stylesheet. */
 const RUNTIME_DEFINED = new Set([
-  "--font-literata",
+  "--font-reading",
   "--font-mono",
   "--delay",
   "--duration",

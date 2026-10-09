@@ -80,8 +80,8 @@ const config: Config = {
         "sky-2": "var(--sky-2)",
       },
       fontFamily: {
-        // Inter stays the default; Literata is opt-in per migrated page.
-        reading: ["var(--font-literata)", "Georgia", "serif"],
+        // Figtree is the default; Newsreader is the heading face.
+        reading: ["var(--font-reading)", "Georgia", "serif"],
         mono: ["var(--font-mono)", "ui-monospace", "monospace"],
       },
       fontSize: {
